@@ -79,6 +79,7 @@ class _DashboardState extends State<Dashboard> {
                 onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
+
                 child: Image.asset(
                   "assets/menu.png",
                   width: 24,
