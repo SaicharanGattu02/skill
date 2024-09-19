@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'Notifications.dart';
+
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
 
@@ -70,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
         toolbarHeight: 48,
         backgroundColor: const Color(0xff8856F4),
         title: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+          padding: const EdgeInsets.only( bottom: 10),
           child: Row(
             children: [
               InkWell(
@@ -94,11 +96,15 @@ class _DashboardState extends State<Dashboard> {
               const Spacer(),
               Row(
                 children: [
-                  Image.asset(
-                    "assets/notify.png",
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.contain,
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));
+                  },
+                    child: Image.asset(
+                      "assets/notify.png",
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   const SizedBox(width: 20),
                   InkWell(
