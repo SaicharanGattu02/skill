@@ -163,12 +163,15 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Row(
                       children: [
-                        // Profile Image
-                        Image.asset(
-                          "assets/prashanth.png",
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.cover,
+                        ClipOval(
+                          child: Center(
+                            child: Image.asset(
+                              "assets/pic.jpeg",
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 10),
                         // User Info and Performance
@@ -434,7 +437,7 @@ class _DashboardState extends State<Dashboard> {
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     childAspectRatio:
-                        0.34, // Adjust this ratio to fit your design
+                        0.362, // Adjust this ratio to fit your design
                   ),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
@@ -496,7 +499,7 @@ class _DashboardState extends State<Dashboard> {
                               padding: EdgeInsets.only(
                                   left: 5, right: 5, top: 2, bottom: 3),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F41A).withOpacity(0.10),
+                                  color: Color(0x1A8856F4),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
@@ -531,7 +534,7 @@ class _DashboardState extends State<Dashboard> {
                               padding: EdgeInsets.only(
                                   left: 5, right: 5, top: 2, bottom: 5),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F41A).withOpacity(0.10),
+                                  color: Color(0xffF1FFF3),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
@@ -566,7 +569,8 @@ class _DashboardState extends State<Dashboard> {
                               padding: EdgeInsets.only(
                                   left: 5, right: 5, top: 2, bottom: 5),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F41A).withOpacity(0.10),
+                                  color: Color(0x1AFBBC04),
+
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
@@ -601,7 +605,8 @@ class _DashboardState extends State<Dashboard> {
                               padding: EdgeInsets.only(
                                   left: 5, right: 5, top: 2, bottom: 5),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F41A).withOpacity(0.10),
+                                  color: Color(0x1A08BED0),
+
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
@@ -1049,7 +1054,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("Dashboard",
                   style:  TextStyle(
                     color: Color(0xff8856F4),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1069,7 +1074,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("Messages",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1088,7 +1093,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("To Do List",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1107,7 +1112,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("Projects",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1126,7 +1131,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("Channels",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1145,7 +1150,7 @@ class _DashboardState extends State<Dashboard> {
                 Text("Leaves",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
@@ -1164,11 +1169,55 @@ class _DashboardState extends State<Dashboard> {
                 Text("Meetings",
                   style:  TextStyle(
                     color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
                   ),),
+
+                Spacer(),
+
+                Container(
+                  padding: EdgeInsets.all(4),
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(4)),
+                  child: Image.asset("assets/Settings.png"),
+                ),
+                SizedBox(height: 4,),
+                Text("Settings",
+                  style:  TextStyle(
+                    color: Color(0xff6C848F),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    overflow: TextOverflow.ellipsis,
+                    fontFamily: "Inter",
+                  ),),
+                SizedBox(height: 20,),
+                Container(
+                  padding: EdgeInsets.all(4),
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(4)),
+                  child: Image.asset("assets/logout.png"),
+                ),
+                SizedBox(height: 4,),
+                Text("Logout",
+                  style:  TextStyle(
+                    color: Color(0xffDE350B),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    overflow: TextOverflow.ellipsis,
+                    fontFamily: "Inter",
+                  ),),
+                SizedBox(height: 22,),
+
+
+
 
 
 
