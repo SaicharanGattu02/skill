@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'Notifications.dart';
-
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
 
@@ -69,21 +67,19 @@ class _DashboardState extends State<Dashboard> {
         actions: <Widget>[
           Container()
         ], // this will hide endDrawer hamburger icon
-        toolbarHeight: 48,
+        toolbarHeight: 58,
         backgroundColor: const Color(0xff8856F4),
         title: Padding(
-          padding: const EdgeInsets.only( bottom: 10),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Row(
             children: [
-              InkWell(
+              InkResponse(
                 onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
-
                 child: Image.asset(
                   "assets/menu.png",
                   width: 24,
-                  height: 24,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -91,21 +87,17 @@ class _DashboardState extends State<Dashboard> {
               Image.asset(
                 "assets/skillLogo.png",
                 width: 80,
-                height: 40,
+                height: 35,
                 fit: BoxFit.contain,
               ),
               const Spacer(),
               Row(
                 children: [
-                  InkWell(onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));
-                  },
-                    child: Image.asset(
-                      "assets/notify.png",
-                      width: 24,
-                      height: 24,
-                      fit: BoxFit.contain,
-                    ),
+                  Image.asset(
+                    "assets/notify.png",
+                    width: 30,
+                    height: 30,
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 20),
                   InkWell(
@@ -129,13 +121,13 @@ class _DashboardState extends State<Dashboard> {
         physics: NeverScrollableScrollPhysics(),
         child: Padding(
           padding:
-              const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+          const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
           child: Column(
             children: [
               // Search Container
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                     color: const Color(0xffffffff),
                     borderRadius: BorderRadius.circular(8)),
@@ -159,7 +151,9 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              const SizedBox(height: 6),
+              SizedBox(
+                height: w*0.03,
+              ),
               // User Info Container
               Container(
                 padding: const EdgeInsets.all(8),
@@ -209,7 +203,7 @@ class _DashboardState extends State<Dashboard> {
                                   const SizedBox(width: 15),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 5),
+                                        horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
                                       color: const Color(0xff2FB035),
                                       borderRadius: BorderRadius.circular(100),
@@ -218,8 +212,8 @@ class _DashboardState extends State<Dashboard> {
                                       "Active",
                                       style: TextStyle(
                                           color: Color(0xffFFFFFF),
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
                                           overflow: TextOverflow.ellipsis,
                                           fontFamily: "Nunito"),
                                     ),
@@ -234,7 +228,7 @@ class _DashboardState extends State<Dashboard> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "UX/UI Designer",
@@ -243,6 +237,8 @@ class _DashboardState extends State<Dashboard> {
                                                   .withOpacity(0.7),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14,
+                                              height: 1.21,
+                                              letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Inter"),
                                         ),
@@ -254,6 +250,8 @@ class _DashboardState extends State<Dashboard> {
                                                   .withOpacity(0.7),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14,
+                                              height: 1.21,
+                                              letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Inter"),
                                         ),
@@ -265,6 +263,8 @@ class _DashboardState extends State<Dashboard> {
                                                   .withOpacity(0.7),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14,
+                                              height: 1.21,
+                                              letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Inter"),
                                         ),
@@ -281,7 +281,7 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: const [
                                         Text(
                                           "79.65%",
@@ -289,6 +289,8 @@ class _DashboardState extends State<Dashboard> {
                                               color: Color(0xff2FB035),
                                               fontWeight: FontWeight.w500,
                                               fontSize: 14,
+                                              height: 1.21,
+                                              letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Nunito"),
                                         ),
@@ -297,7 +299,9 @@ class _DashboardState extends State<Dashboard> {
                                           style: TextStyle(
                                               color: Color(0xff8856F4),
                                               fontWeight: FontWeight.w500,
-                                              fontSize: 14,
+                                              fontSize: 12,
+                                              height: 1.2,
+                                              letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Nunito"),
                                         ),
@@ -314,15 +318,18 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(
+                height: w*0.04,
+              ),
               Row(
                 children: [
                   const Text(
-                    "Ongoing Projects",
+                    "Projects",
                     style: TextStyle(
                         color: Color(0xff16192C),
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
+                        height: 24.48/18,
                         fontFamily: "Inter"),
                   ),
                   const Spacer(),
@@ -332,28 +339,31 @@ class _DashboardState extends State<Dashboard> {
                         color: Color(0xff8856F4),
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
+                        height: 16.94/14,
                         decoration: TextDecoration.underline,
                         decorationColor: Color(0xff8856F4),
                         fontFamily: "Inter"),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
               SizedBox(
-                height: 160, // Adjust height to fit your design
+                height: w*0.02,
+              ),
+              SizedBox(
+                height: w*0.37,
                 child: GridView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: items1.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1, // Two items per row
-                    childAspectRatio: 0.9, // Adjust this ratio to fit your design
-                    mainAxisSpacing: 12, // Space between items horizontally
+                    childAspectRatio:0.76, // Adjust this ratio to fit your design
+                    mainAxisSpacing: 2, // Space between items horizontally
                   ),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.only(left: 16,right: 16,top: 10,bottom: 10),
                         decoration: BoxDecoration(
                           color: const Color(0xffF7F4FC),
                           borderRadius: BorderRadius.circular(8),
@@ -364,8 +374,8 @@ class _DashboardState extends State<Dashboard> {
                             // Center Image
                             Image.asset(
                               items1[index]['image']!,
-                              width: 60,
-                              height: 60,
+                              width: 48,
+                              height: 48,
                               fit: BoxFit.contain,
                             ),
                             const SizedBox(height: 8),
@@ -375,26 +385,44 @@ class _DashboardState extends State<Dashboard> {
                               style: const TextStyle(
                                   color: Color(0xff4F3A84),
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 12,
+                                  fontSize: 16,
+                                  height: 19.36/16,
                                   overflow: TextOverflow.ellipsis,
                                   fontFamily: "Nunito"),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Progress",
-                                  style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      fontFamily: "Inter"),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Progress",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 12,
+                                          height: 14.52/12,
+                                          fontFamily: "Inter"),
+                                    ),
+                                    Text(
+                                      "35%",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 12,
+                                          fontFamily: "Inter"),
+                                    ),
+                                  ],
                                 ),
+
                                 const SizedBox(height: 4),
                                 LinearProgressIndicator(
                                   value: double.parse(items1[index]['value']!),
+                                  minHeight: 7,
                                   backgroundColor: const Color(0xffE0E0E0),
+                                  borderRadius: BorderRadius.circular(20),
                                   color: const Color(0xff2FB035),
                                 ),
                               ],
@@ -406,7 +434,9 @@ class _DashboardState extends State<Dashboard> {
                   },
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(
+                height: w*0.04,
+              ),
               Row(
                 children: [
                   const Text(
@@ -432,19 +462,18 @@ class _DashboardState extends State<Dashboard> {
               ),
 
               SizedBox(
-                height: 8,
+                height: w*0.02,
               ),
               SizedBox(
-                height: 140, // Adjust the height to fit your design
+                height: w*0.3,
                 child: GridView.builder(
                   scrollDirection:
-                      Axis.horizontal, // Changed to vertical to display in rows
+                  Axis.horizontal, // Changed to vertical to display in rows
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio:
-                        0.362, // Adjust this ratio to fit your design
+                    mainAxisSpacing: 2,
+                    childAspectRatio: 0.28, // Adjust this ratio to fit your design
                   ),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
@@ -472,7 +501,8 @@ class _DashboardState extends State<Dashboard> {
                               style: const TextStyle(
                                 color: Color(0xff27272E),
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: 13,
+                                height: 16.94/14,
                                 overflow: TextOverflow.ellipsis,
                                 fontFamily: "Inter",
                               ),
@@ -486,34 +516,36 @@ class _DashboardState extends State<Dashboard> {
               ),
 
               SizedBox(
-                height: 10,
+                height: w*0.05,
               ),
 
               Container(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                     color: Color(0xffFFFFFF),
                     borderRadius: BorderRadius.circular(10)),
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Column(
                           children: [
                             Container(
+                              width:w*0.16,
+                              height: w*0.115,
                               padding: EdgeInsets.only(
-                                  left: 5, right: 5, top: 2, bottom: 3),
+                                  left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
                                   color: Color(0x1A8856F4),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
-                                  "23",
+                                  "237",
                                   style: TextStyle(
                                       color: Color(0xff000000),
-                                      fontSize: 34,
+                                      fontSize: 25,
                                       fontWeight: FontWeight.w700,
                                       fontFamily: "Sarabun"),
                                 ),
@@ -523,7 +555,7 @@ class _DashboardState extends State<Dashboard> {
                               height: 8,
                             ),
                             Text(
-                              "Projects",
+                              "PROJECTS",
                               style: TextStyle(
                                   color: Color(0xff000000),
                                   fontSize: 10,
@@ -533,22 +565,24 @@ class _DashboardState extends State<Dashboard> {
                           ],
                         ),
                         SizedBox(
-                          width: 20,
+                          width: w*0.03,
                         ),
                         Column(
                           children: [
                             Container(
+                              width:w*0.16,
+                              height: w*0.115,
                               padding: EdgeInsets.only(
-                                  left: 5, right: 5, top: 2, bottom: 5),
+                                  left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
                                   color: Color(0xffF1FFF3),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
-                                  "06",
+                                  "064",
                                   style: TextStyle(
                                       color: Color(0xff000000),
-                                      fontSize: 34,
+                                      fontSize: 25,
                                       fontWeight: FontWeight.w700,
                                       fontFamily: "Sarabun"),
                                 ),
@@ -558,7 +592,7 @@ class _DashboardState extends State<Dashboard> {
                               height: 8,
                             ),
                             Text(
-                              "To Do",
+                              "TO DO",
                               style: TextStyle(
                                   color: Color(0xff000000),
                                   fontSize: 10,
@@ -573,18 +607,20 @@ class _DashboardState extends State<Dashboard> {
                         Column(
                           children: [
                             Container(
+                              width:w*0.16,
+                              height: w*0.115,
                               padding: EdgeInsets.only(
-                                  left: 5, right: 5, top: 2, bottom: 5),
+                                  left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
                                   color: Color(0x1AFBBC04),
 
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
-                                  "04",
+                                  "048",
                                   style: TextStyle(
                                       color: Color(0xff000000),
-                                      fontSize: 34,
+                                      fontSize: 25,
                                       fontWeight: FontWeight.w700,
                                       fontFamily: "Sarabun"),
                                 ),
@@ -594,7 +630,7 @@ class _DashboardState extends State<Dashboard> {
                               height: 8,
                             ),
                             Text(
-                              "Tasks",
+                              "TASKS",
                               style: TextStyle(
                                   color: Color(0xff000000),
                                   fontSize: 10,
@@ -609,18 +645,20 @@ class _DashboardState extends State<Dashboard> {
                         Column(
                           children: [
                             Container(
+                              width:w*0.16,
+                              height: w*0.115,
                               padding: EdgeInsets.only(
-                                  left: 5, right: 5, top: 2, bottom: 5),
+                                  left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
                                   color: Color(0x1A08BED0),
 
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
-                                  "01",
+                                  "014",
                                   style: TextStyle(
                                       color: Color(0xff000000),
-                                      fontSize: 34,
+                                      fontSize: 25,
                                       fontWeight: FontWeight.w700,
                                       fontFamily: "Sarabun"),
                                 ),
@@ -630,7 +668,7 @@ class _DashboardState extends State<Dashboard> {
                               height: 8,
                             ),
                             Text(
-                              "meetings",
+                              "MEETINGS",
                               style: TextStyle(
                                   color: Color(0xff000000),
                                   fontSize: 10,
@@ -642,7 +680,7 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
                     SizedBox(
-                      height: 24,
+                      height: 20,
                     ),
                     Container(
                       padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -1016,11 +1054,11 @@ class _DashboardState extends State<Dashboard> {
                         color: Color(0xffFFFFFF1A).withOpacity(0.10)),
                     child: Center(
                         child: Image.asset(
-                      "assets/add.png",
-                      fit: BoxFit.contain,
-                      height: 9,
-                      width: 9,
-                    )),
+                          "assets/add.png",
+                          fit: BoxFit.contain,
+                          height: 9,
+                          width: 9,
+                        )),
                   ),
                   SizedBox(
                     width: 8,
@@ -1221,13 +1259,7 @@ class _DashboardState extends State<Dashboard> {
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
                   ),),
-                SizedBox(height: 22,),
-
-
-
-
-
-
+                SizedBox(height: 22,)
               ],
             ),
           ),
