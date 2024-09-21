@@ -11,14 +11,14 @@ class Todolist extends StatefulWidget {
 class _TodolistState extends State<Todolist> {
   final List<Map<String, String>> tasks = [
     {
-      'date': 'September 20, 2024',
+      'date': 'September 21, 2024',
       'title': 'PRPL Application',
       'subtitle': 'Presentation of new products and cost structure'
     },
-    {'date': 'April 23, 2024', 'title': 'Raay Project'},
-    {'date': 'April 23, 2024', 'title': 'Dotclinic Project'},
+    {'date': 'September 20, 2024', 'title': 'Raay Project'},
+    {'date': 'September 20', 'title': 'Dotclinic Project'},
     {
-      'date': 'September 20, 2024',
+      'date': 'September 21, 2024',
       'title': 'Raay Project',
       'subtitle': 'Presentation of new products and cost structure'
     },
@@ -28,28 +28,53 @@ class _TodolistState extends State<Todolist> {
   List<DateTime> dates = [];
   DateTime selectedDate = DateTime.now();
   DateTime currentMonth = DateTime.now();
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _generateDates();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDate();
+    });
   }
 
-  // void _generateDates(DateTime month) {
-  //   final startOfMonth = DateTime(month.year, month.month, 1);
-  //   final endOfMonth = DateTime(month.year, month.month + 1, 0); // Last day of the month
-  //   final startOfWeek = startOfMonth.subtract(Duration(days: startOfMonth.weekday - 1)); // Start from Monday
-  //
-  //   setState(() {
-  //     dates = List.generate(7, (index) => startOfWeek.add(Duration(days: index))); // Generate only 7 days for the week
-  //   });
-  // }
-  void _generateDates() {
-    final today = DateTime.now();
-    final startOfWeek =
-    today.subtract(Duration(days: today.weekday - 1)); // Start from Monday
-    dates = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
+
+  void _scrollToSelectedDate() {
+    final index = dates.indexWhere((date) =>
+    date.day == selectedDate.day &&
+        date.month == selectedDate.month &&
+        date.year == selectedDate.year);
+
+    if (index != -1) {
+      // Scroll to the selected date with some offset to keep it centered
+      final double offset = index * 55.0; // Adjust the 55.0 based on the item width
+      _scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _generateDates() {
+    final startOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+    final endOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0); // Last day of the month
+
+    setState(() {
+      dates = List.generate(
+        endOfMonth.day,
+            (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+      ); // Generate all dates in the current month
+    });
+  }
+
   Future<void> _pickMonth() async {
     final picked = await showDatePicker(
       context: context,
@@ -62,9 +87,10 @@ class _TodolistState extends State<Todolist> {
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: const Color(0xff8856F4), // Change the color of the header
-          // Change the color of the selected date
-            colorScheme: ColorScheme.light(primary: const Color(0xff8856F4)), // Change color of selected date
-            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary), // Change button color
+            colorScheme:
+            ColorScheme.light(primary: const Color(0xff8856F4)), // Change color of selected date
+            buttonTheme: const ButtonThemeData(
+                textTheme: ButtonTextTheme.primary), // Change button color
           ),
           child: child!,
         );
@@ -88,8 +114,7 @@ class _TodolistState extends State<Todolist> {
     final selectedDateFormatted = DateFormat('MMMM d, y').format(selectedDate);
 
     // Filter tasks for the selected date
-    final selectedTasks =
-    tasks.where((task) => task['date'] == selectedDateFormatted).toList();
+    final selectedTasks = tasks.where((task) => task['date'] == selectedDateFormatted).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
@@ -116,8 +141,7 @@ class _TodolistState extends State<Todolist> {
           ),
         ),
       ),
-      body:
-      Container(
+      body: Container(
         width: w,
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(16),
@@ -158,11 +182,11 @@ class _TodolistState extends State<Todolist> {
               ),
             ),
             const SizedBox(height: 18),
-            // Horizontal Scrollable Calendar
             SingleChildScrollView(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: List.generate(7, (index) {
+                children: List.generate(dates.length, (index) {
                   final isSelected = dates[index].day == selectedDate.day &&
                       dates[index].month == selectedDate.month &&
                       dates[index].year == selectedDate.year;
@@ -172,11 +196,12 @@ class _TodolistState extends State<Todolist> {
                       setState(() {
                         selectedDate = dates[index]; // Update selected date
                       });
+                      _scrollToSelectedDate(); // Scroll to selected date when tapped
                     },
                     child: ClipRect(
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        width: (w - 65) / 7, // Adjust the width to ensure it fits within one screen
+                        width: 55, // Adjust width to fit more dates
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xffF0EAFF)
@@ -197,7 +222,7 @@ class _TodolistState extends State<Todolist> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              daysOfWeek[index % 7],
+                              daysOfWeek[dates[index].weekday - 1],
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: Color(0xff94A3B8),
@@ -214,6 +239,7 @@ class _TodolistState extends State<Todolist> {
                 }),
               ),
             ),
+
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
@@ -247,27 +273,28 @@ class _TodolistState extends State<Todolist> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
                                     selectedTasks[index]['title']!,
                                     style: const TextStyle(
-                                        color: Color(0xff141516),
-                                        fontSize: 16,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w500,
-                                        height: 20 / 16),
-                                  ),
-                                  if (selectedTasks[index]['subtitle'] != null)
-                                    Text(
-                                      selectedTasks[index]['subtitle']!,
-                                      style: const TextStyle(
-                                          color: Color(0xff4A4A4A),
-                                          fontSize: 14,
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.w400,
-                                          height: 19.36 / 14),
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14.0,
+                                      color: Color(0xff000000),
+                                      height: 16.94 / 14.0,
                                     ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    selectedTasks[index]['subtitle'] ?? "",
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12.0,
+                                      color: Color(0xff475569),
+                                      height: 14.52 / 12.0,
+                                    ),
+                                  ),
                                   const SizedBox(
                                     height: 8,
                                   ),
@@ -299,17 +326,15 @@ class _TodolistState extends State<Todolist> {
                           ],
                         ),
                       ),
-                      if (index != selectedTasks.length - 1) // Add divider except after the last item
-                        Divider(
-                          color: Color(0xff9AADB6).withOpacity(0.6), // Change color as needed
-                          height: 20,
-                          thickness: 1,
-                        ),
+                      Divider(
+                        thickness: 1,
+                        color: const Color(0xff94A3B8).withOpacity(0.3),
+                      ),
                     ],
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
