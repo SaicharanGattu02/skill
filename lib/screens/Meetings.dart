@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 
-class Task extends StatefulWidget {
-  const Task({super.key});
+class Meetings extends StatefulWidget {
+  const Meetings({super.key});
 
   @override
-  State<Task> createState() => _TaskState();
+  State<Meetings> createState() => _MeetingsState();
 }
 
-class _TaskState extends State<Task> {
+class _MeetingsState extends State<Meetings> {
   final List<String> daysOfWeek = ['Mo', 'Tu', 'Wed', 'Th', 'Fr', 'Sa', 'Su'];
   List<DateTime> dates = [];
   DateTime selectedDate = DateTime.now();
@@ -18,18 +18,10 @@ class _TaskState extends State<Task> {
   // Sample task data
   final List<Map<String, String>> tasks = [
     {
-      "title": "Plan and conduct user research and competitor analysis.",
-      "subtitle": "Brainstorming brings team members' diverse experience into play.",
-      "collaborators": "+6 Collaborators",
-      "startDate": "10-09-2024",
-      "endDate": "10-09-2024",
-    },
-    {
-      "title": "Interpret data and qualitative feedback.",
-      "subtitle": "Brainstorming brings team members' diverse experience into play.",
-      "collaborators": "+6 Collaborators",
-      "startDate": "10-09-2024",
-      "endDate": "10-09-2024",
+      "date": "2/28/2024",
+      "time": "8:30–9:00 AM",
+      "title": "Presentation of new products and cost structure.",
+      "link": "https://zoom.us/i/1983475281",
     },
   ];
 
@@ -104,7 +96,7 @@ class _TaskState extends State<Task> {
           ),
         ),
         title: const Text(
-          "Tasks",
+          "Meetings",
           style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 24.0,
@@ -256,89 +248,93 @@ class _TaskState extends State<Task> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Today",
+                              style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xff9AADB6),
+                                  height: 20 / 15,
+                                  fontFamily: "Inter"),
+                            ),
+                            SizedBox(width: w * 0.009),
+                            Text(
+                              task["date"]!,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff9AADB6),
+                                fontFamily: "Inter",
+                                height: 20 / 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            ClipOval(
+                                child: Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xff3B82F6),
+                                      borderRadius: BorderRadius.circular(100)),
+                                )),
+                            SizedBox(width: w * 0.008),
+                            Column(
+                              children: [
+                                Text(
+                                  task["time"]!,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    height: 16 / 12,
+                                    color: Color(0xff4A4A4A),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                            SizedBox(width: w * 0.008),
+                            ClipOval(
+                              child: Container( width: 12,
+                                height: 12,
+                                padding:EdgeInsets.all(2),
+                                decoration:BoxDecoration(color: Color(0xffF0EAFF),borderRadius: BorderRadius.circular(100)),
+                                child: Image.asset(
+                                  "assets/meet.png",
+                                  width: 4,height: 4,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Text(
                           task["title"]!,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xff1D1C1D),
-                            height: 21 / 18,
+                            color: Color(0xff141516),
+                            height: 16 / 21,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task["subtitle"]!,
+                          task["link"]!,
                           style: const TextStyle(
-                            fontSize: 12,
-                            height: 16 / 12,
-                            color: Color(0xff787486),
+                            fontSize: 14,
+                            fontFamily: "Inter",
+                            height: 16 / 14,
+                            decoration:TextDecoration.underline,
+                            decorationColor: Color(0xffDE350B),
                             fontWeight: FontWeight.w400,
+                            color: Color(0xffDE350B),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            // Adding the images before the collaborators text
-                            ...List.generate(1, (index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 4.0),
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    imageList[index],
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              );
-                            }),
-                            const SizedBox(width: 4),
-                            Text(
-                              task["collaborators"]!,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xff64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Start Date: ",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff64748B),
-                              ),
-                            ),
-                            Text(
-                             "${task["startDate"]!}",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff64748B),
-                              ),
-                            ),
-                            Spacer(),
-                            Text(
-                              "End Date: ",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff64748B),
-                              ),
-                            ),
-                            Text(
-                              "${task["endDate"]!}",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff64748B),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),

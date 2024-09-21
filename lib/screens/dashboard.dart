@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/AllChannels.dart';
+import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/screens/Projetcs.dart';
 import 'package:skill/screens/Task.dart';
@@ -671,39 +672,43 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: 20,
                         ),
-                        Column(
-                          children: [
-                            Container(
-                              width: w * 0.16,
-                              height: w * 0.115,
-                              padding: EdgeInsets.only(
-                                  left: 3, right: 3, top: 2, bottom: 2),
-                              decoration: BoxDecoration(
-                                  color: Color(0x1A08BED0),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "014",
-                                  style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: "Sarabun"),
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Meetings()));
+                        },
+                          child: Column(
+                            children: [
+                              Container(
+                                width: w * 0.16,
+                                height: w * 0.115,
+                                padding: EdgeInsets.only(
+                                    left: 3, right: 3, top: 2, bottom: 2),
+                                decoration: BoxDecoration(
+                                    color: Color(0x1A08BED0),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    "014",
+                                    style: TextStyle(
+                                        color: Color(0xff000000),
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Sarabun"),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "MEETINGS",
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "MEETINGS",
+                                style: TextStyle(
+                                    color: Color(0xff000000),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Inter"),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
