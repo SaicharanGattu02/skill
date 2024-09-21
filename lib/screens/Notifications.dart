@@ -38,10 +38,15 @@ class _NotificationsState extends State<Notifications> {
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: const Color(0xff8856F4),
-        leading: Icon(
-          Icons.arrow_back,
-          color: Color(0xffffffff),
-        ),
+        leading: InkWell(onTap: (){
+          Navigator.pop(context);
+        },
+          child: Icon(
+            Icons.arrow_back,
+            color: Color(0xffffffff),
+          ),
+        )
+        ,
         title: Text(
           "Notifications",
           textAlign: TextAlign.left,

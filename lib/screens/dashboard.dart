@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/screens/AllChannels.dart';
+import 'package:skill/screens/Notifications.dart';
+import 'package:skill/screens/Projetcs.dart';
+import 'package:skill/screens/Task.dart';
+import 'package:skill/screens/ToDoList.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -10,6 +15,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final List<Map<String, String>> items1 = [
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
@@ -33,7 +39,6 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
-
   ];
 
   final List<Map<String, String>> users = [
@@ -93,22 +98,40 @@ class _DashboardState extends State<Dashboard> {
               const Spacer(),
               Row(
                 children: [
-                  Image.asset(
-                    "assets/notify.png",
-                    width: 30,
-                    height: 30,
-                    fit: BoxFit.contain,
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));
+                  },
+                    child: Container(
+                      width:
+                          48, // Increase this size to make the area more tappable
+                      height:
+                          48, // Increase this size to make the area more tappable
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        "assets/notify.png",
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 20),
+           
                   InkWell(
                     onTap: () {
                       _scaffoldKey.currentState?.openEndDrawer();
                     },
-                    child: Image.asset(
-                      "assets/dashboard.png",
-                      width: 24,
-                      height: 24,
-                      fit: BoxFit.contain,
+                    child: Container(
+                      width:
+                          48, // Increase this size to make the area more tappable
+                      height:
+                          48, // Increase this size to make the area more tappable
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        "assets/dashboard.png",
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ],
@@ -121,13 +144,13 @@ class _DashboardState extends State<Dashboard> {
         physics: NeverScrollableScrollPhysics(),
         child: Padding(
           padding:
-          const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+              const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
           child: Column(
             children: [
               // Search Container
               Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                     color: const Color(0xffffffff),
                     borderRadius: BorderRadius.circular(8)),
@@ -152,7 +175,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               SizedBox(
-                height: w*0.03,
+                height: w * 0.03,
               ),
               // User Info Container
               Container(
@@ -228,7 +251,7 @@ class _DashboardState extends State<Dashboard> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "UX/UI Designer",
@@ -281,7 +304,7 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: const [
                                         Text(
                                           "79.65%",
@@ -319,7 +342,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               SizedBox(
-                height: w*0.04,
+                height: w * 0.04,
               ),
               Row(
                 children: [
@@ -329,7 +352,7 @@ class _DashboardState extends State<Dashboard> {
                         color: Color(0xff16192C),
                         fontWeight: FontWeight.w500,
                         fontSize: 18,
-                        height: 24.48/18,
+                        height: 24.48 / 18,
                         fontFamily: "Inter"),
                   ),
                   const Spacer(),
@@ -339,7 +362,7 @@ class _DashboardState extends State<Dashboard> {
                         color: Color(0xff8856F4),
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
-                        height: 16.94/14,
+                        height: 16.94 / 14,
                         decoration: TextDecoration.underline,
                         decorationColor: Color(0xff8856F4),
                         fontFamily: "Inter"),
@@ -347,23 +370,25 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
               SizedBox(
-                height: w*0.02,
+                height: w * 0.02,
               ),
               SizedBox(
-                height: w*0.37,
+                height: w * 0.37,
                 child: GridView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: items1.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1, // Two items per row
-                    childAspectRatio:0.76, // Adjust this ratio to fit your design
+                    childAspectRatio:
+                        0.76, // Adjust this ratio to fit your design
                     mainAxisSpacing: 2, // Space between items horizontally
                   ),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Container(
-                        padding: const EdgeInsets.only(left: 16,right: 16,top: 10,bottom: 10),
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, top: 10, bottom: 10),
                         decoration: BoxDecoration(
                           color: const Color(0xffF7F4FC),
                           borderRadius: BorderRadius.circular(8),
@@ -386,7 +411,7 @@ class _DashboardState extends State<Dashboard> {
                                   color: Color(0xff4F3A84),
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16,
-                                  height: 19.36/16,
+                                  height: 19.36 / 16,
                                   overflow: TextOverflow.ellipsis,
                                   fontFamily: "Nunito"),
                             ),
@@ -395,7 +420,8 @@ class _DashboardState extends State<Dashboard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       "Progress",
@@ -403,7 +429,7 @@ class _DashboardState extends State<Dashboard> {
                                           color: Color(0xff000000),
                                           fontWeight: FontWeight.w400,
                                           fontSize: 12,
-                                          height: 14.52/12,
+                                          height: 14.52 / 12,
                                           fontFamily: "Inter"),
                                     ),
                                     Text(
@@ -416,7 +442,6 @@ class _DashboardState extends State<Dashboard> {
                                     ),
                                   ],
                                 ),
-
                                 const SizedBox(height: 4),
                                 LinearProgressIndicator(
                                   value: double.parse(items1[index]['value']!),
@@ -435,7 +460,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               SizedBox(
-                height: w*0.04,
+                height: w * 0.04,
               ),
               Row(
                 children: [
@@ -462,18 +487,19 @@ class _DashboardState extends State<Dashboard> {
               ),
 
               SizedBox(
-                height: w*0.02,
+                height: w * 0.02,
               ),
               SizedBox(
-                height: w*0.3,
+                height: w * 0.3,
                 child: GridView.builder(
                   scrollDirection:
-                  Axis.horizontal, // Changed to vertical to display in rows
+                      Axis.horizontal, // Changed to vertical to display in rows
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 2,
-                    childAspectRatio: 0.28, // Adjust this ratio to fit your design
+                    childAspectRatio:
+                        0.28, // Adjust this ratio to fit your design
                   ),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
@@ -502,7 +528,7 @@ class _DashboardState extends State<Dashboard> {
                                 color: Color(0xff27272E),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
-                                height: 16.94/14,
+                                height: 16.94 / 14,
                                 overflow: TextOverflow.ellipsis,
                                 fontFamily: "Inter",
                               ),
@@ -516,7 +542,7 @@ class _DashboardState extends State<Dashboard> {
               ),
 
               SizedBox(
-                height: w*0.05,
+                height: w * 0.05,
               ),
 
               Container(
@@ -533,8 +559,8 @@ class _DashboardState extends State<Dashboard> {
                         Column(
                           children: [
                             Container(
-                              width:w*0.16,
-                              height: w*0.115,
+                              width: w * 0.16,
+                              height: w * 0.115,
                               padding: EdgeInsets.only(
                                   left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
@@ -565,13 +591,13 @@ class _DashboardState extends State<Dashboard> {
                           ],
                         ),
                         SizedBox(
-                          width: w*0.03,
+                          width: w * 0.03,
                         ),
                         Column(
                           children: [
                             Container(
-                              width:w*0.16,
-                              height: w*0.115,
+                              width: w * 0.16,
+                              height: w * 0.115,
                               padding: EdgeInsets.only(
                                   left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
@@ -604,40 +630,43 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: 20,
                         ),
-                        Column(
-                          children: [
-                            Container(
-                              width:w*0.16,
-                              height: w*0.115,
-                              padding: EdgeInsets.only(
-                                  left: 3, right: 3, top: 2, bottom: 2),
-                              decoration: BoxDecoration(
-                                  color: Color(0x1AFBBC04),
-
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "048",
-                                  style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: "Sarabun"),
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Task()));
+                        },
+                          child: Column(
+                            children: [
+                              Container(
+                                width: w * 0.16,
+                                height: w * 0.115,
+                                padding: EdgeInsets.only(
+                                    left: 3, right: 3, top: 2, bottom: 2),
+                                decoration: BoxDecoration(
+                                    color: Color(0x1AFBBC04),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    "048",
+                                    style: TextStyle(
+                                        color: Color(0xff000000),
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Sarabun"),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "TASKS",
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "TASKS",
+                                style: TextStyle(
+                                    color: Color(0xff000000),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Inter"),
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(
                           width: 20,
@@ -645,13 +674,12 @@ class _DashboardState extends State<Dashboard> {
                         Column(
                           children: [
                             Container(
-                              width:w*0.16,
-                              height: w*0.115,
+                              width: w * 0.16,
+                              height: w * 0.115,
                               padding: EdgeInsets.only(
                                   left: 3, right: 3, top: 2, bottom: 2),
                               decoration: BoxDecoration(
                                   color: Color(0x1A08BED0),
-
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
@@ -721,7 +749,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       drawer: Drawer(
         backgroundColor: Color(0xff8856F4),
-        width: w * 0.6,
+        width: w * 0.65,
         child: Column(
           children: [
             Expanded(
@@ -1054,11 +1082,11 @@ class _DashboardState extends State<Dashboard> {
                         color: Color(0xffFFFFFF1A).withOpacity(0.10)),
                     child: Center(
                         child: Image.asset(
-                          "assets/add.png",
-                          fit: BoxFit.contain,
-                          height: 9,
-                          width: 9,
-                        )),
+                      "assets/add.png",
+                      fit: BoxFit.contain,
+                      height: 9,
+                      width: 9,
+                    )),
                   ),
                   SizedBox(
                     width: 8,
@@ -1095,17 +1123,22 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/dashboard.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Dashboard",
-                  style:  TextStyle(
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Dashboard",
+                  style: TextStyle(
                     color: Color(0xff8856F4),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-
-                SizedBox(height: 20,),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   padding: EdgeInsets.all(4),
                   width: 32,
@@ -1115,73 +1148,133 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/msg.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Messages",
-                  style:  TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 20,),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/folder-plus.png"),
+                SizedBox(
+                  height: 4,
                 ),
-                SizedBox(height: 4,),
-                Text("To Do List",
-                  style:  TextStyle(
+                Text(
+                  "Messages",
+                  style: TextStyle(
                     color: Color(0xff6C848F),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 20,),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/Frame.png"),
+                  ),
                 ),
-                SizedBox(height: 4,),
-                Text("Projects",
-                  style:  TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 20,),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/Channel.png"),
+                SizedBox(
+                  height: 20,
                 ),
-                SizedBox(height: 4,),
-                Text("Channels",
-                  style:  TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
-                  ),),
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Todolist()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/folder-plus.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "To Do List",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 SizedBox(height: 20,),
+
+
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/Frame.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Projects",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+
+
+
+                SizedBox(
+                  height: 20,
+                ),
+
+
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Allchannels()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/Channel.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Channels",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   padding: EdgeInsets.all(4),
                   width: 32,
@@ -1191,16 +1284,22 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/calendar.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Leaves",
-                  style:  TextStyle(
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Leaves",
+                  style: TextStyle(
                     color: Color(0xff6C848F),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 20,),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   padding: EdgeInsets.all(4),
                   width: 32,
@@ -1210,18 +1309,20 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/video.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Meetings",
-                  style:  TextStyle(
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Meetings",
+                  style: TextStyle(
                     color: Color(0xff6C848F),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-
+                  ),
+                ),
                 Spacer(),
-
                 Container(
                   padding: EdgeInsets.all(4),
                   width: 32,
@@ -1231,16 +1332,22 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/Settings.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Settings",
-                  style:  TextStyle(
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Settings",
+                  style: TextStyle(
                     color: Color(0xff6C848F),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 20,),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   padding: EdgeInsets.all(4),
                   width: 32,
@@ -1250,16 +1357,22 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.circular(4)),
                   child: Image.asset("assets/logout.png"),
                 ),
-                SizedBox(height: 4,),
-                Text("Logout",
-                  style:  TextStyle(
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Logout",
+                  style: TextStyle(
                     color: Color(0xffDE350B),
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,
                     fontFamily: "Inter",
-                  ),),
-                SizedBox(height: 22,)
+                  ),
+                ),
+                SizedBox(
+                  height: 22,
+                )
               ],
             ),
           ),
