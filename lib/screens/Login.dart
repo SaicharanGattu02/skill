@@ -1,25 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:skill/screens/dashboard.dart';
 
 import '../Services/UserApi.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LogIn extends StatefulWidget {
+  const LogIn({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LogIn> createState() => _LogInState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController _nameController = TextEditingController();
+class _LogInState extends State<LogIn> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  TextEditingController _mobilenumberController = TextEditingController();
+
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
-  final FocusNode _focusNodeName = FocusNode();
-  final FocusNode _focusNodemobile = FocusNode();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _loading = false;
@@ -30,70 +29,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _focusNodeEmail.dispose();
     _focusNodePassword.dispose();
-    _focusNodeName.dispose();
-    _focusNodemobile.dispose();
+
     super.dispose();
   }
 
-  Future<void> Register() async {
-    String name = _nameController.text;
-    String email = _emailController.text;
-    String pwd = _passwordController.text;
-
+  Future<void> LoginApi() async {
     setState(() {
-      _loading = true;
+      _loading=false;
     });
+    var data = await Userapi.PostLogin(
+        _emailController.text, _passwordController.text);
+    if (data != null) {
 
-    final registerResponse = await Userapi.PostRegister(
-        name, email, pwd, _mobilenumberController.text);
-    if (registerResponse != null) {
-      setState(() {
-        if (registerResponse.status == true) {
-          _loading = false;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              "${registerResponse.message}",
-              style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Inter"),
-            ),
-            duration: Duration(seconds: 1),
-            backgroundColor: Color(0xFF32657B),
-          ));
+      if (data.settings?.success == 1) {
+        print("Login Success");
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard()));
+      } else {
+        print("Login failure");
+      }
+    } else {
 
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => LogIn()),
-          // );
-        } else {
-          // Handle login failure
-          _loading = false;
-          print("registerrr:${registerResponse.message}");
-
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              "${registerResponse.message}",
-              style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Inter"),
-            ),
-            duration: Duration(seconds: 1),
-            backgroundColor: Color(0xFF32657B),
-          ));
-        }
-      });
-    }
-    else{
-      setState(() {
-        _loading=false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "${registerResponse?.message}",
-          style: TextStyle(color: Color(0xFFFFFFFF), fontFamily: "Inter"),
-        ),
-        duration: Duration(seconds: 1),
-        backgroundColor: Color(0xFF32657B),
-      ));
-
+      print("Login >>>${data?.settings?.message}");
     }
   }
+
+
 
   @override
   void initState() {
@@ -137,61 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Full Name",
-                      style: TextStyle(
-                        color: Color(0xFF32657B),
-                        fontFamily: "Inter",
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    TextFormField(
-                      controller: _nameController,
-                      cursorColor: Colors.black,
-                      focusNode: _focusNodeName,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: "Enter your name",
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                          letterSpacing: 0,
-                          height: 1.2,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xffffffff),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(width: 1, color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(width: 1, color: Colors.red),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        if (!RegExp(r'^[a-zA-Z]').hasMatch(value)) {
-                          return 'Please enter a valid name';
-                        }
-                      },
-                    ),
                     SizedBox(height: 15),
                     Text(
                       "Email",
@@ -222,12 +127,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                              BorderSide(width: 1, color: Color(0xffCDE2FB)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                              BorderSide(width: 1, color: Color(0xffCDE2FB)),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
@@ -279,12 +184,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                              BorderSide(width: 1, color: Color(0xffCDE2FB)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                              BorderSide(width: 1, color: Color(0xffCDE2FB)),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
@@ -325,59 +230,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    TextFormField(
-                      controller: _mobilenumberController,
-                      cursorColor: Colors.black,
-                      focusNode: _focusNodemobile,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                      decoration: InputDecoration(
-                        hintText: "Enter your mobile number",
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                          letterSpacing: 0,
-                          height: 1.2,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xffffffff),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide:
-                          BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(width: 1, color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(width: 1, color: Colors.red),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your mobile number';
-                        }
-                        if (value.length < 10) {
-                          return 'Please enter a valid mobile number';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 15),
                     SizedBox(height: height * 0.1),
                     InkWell(
                       onTap: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          Register();
+                          LoginApi();
                         }
                       },
                       child: Container(
@@ -390,17 +247,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Center(
                           child: _loading
                               ? CircularProgressIndicator(
-                            color: Color(0xFFFFFFFF),
-                          )
+                                  color: Color(0xFFFFFFFF),
+                                )
                               : Text(
-                            "Register",
-                            style: TextStyle(
-                              color: Color(0xFFFFFFFF),
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20,
-                            ),
-                          ),
+                                  "Register",
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
