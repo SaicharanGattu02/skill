@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skill/screens/GroupMembers.dart';
 import 'package:skill/screens/Register.dart';
+import 'package:skill/screens/Login.dart';
+import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/dashboard.dart';
 
 void main() {
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:Register()
+        home:Splash()
     );
   }
 }

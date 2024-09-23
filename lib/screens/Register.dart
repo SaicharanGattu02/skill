@@ -17,7 +17,6 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       body: Stack(
         children: [
-          // First Container
           Column(
             children: [
               Container(
