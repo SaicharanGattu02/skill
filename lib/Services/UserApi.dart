@@ -8,8 +8,6 @@ class Userapi {
 
 
 
-
-
   static String host="http://192.168.0.56:5000";
 
   static Future<RegisterModel?> PostRegister(String name,String mail, String password) async {
