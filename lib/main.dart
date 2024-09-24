@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:Splash()
+        home:Dashboard()
     );
   }
 }

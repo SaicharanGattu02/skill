@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/screens/Projects.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
+
+import '../Model/EmployeeListModel.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -16,7 +19,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  List<Data>? employeeData = [];
   final List<Map<String, String>> items1 = [
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
@@ -42,23 +45,44 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
   ];
 
-  final List<Map<String, String>> users = [
-    {
-      "name": "Prashanth Chary",
-      "imagePath": "assets/prashanth.png",
-      'isActive': 'true'
-    },
-    {
-      "name": "Prashanth Chary",
-      "imagePath": "assets/prashanth.png",
-      'isActive': 'false'
-    },
-    {
-      "name": "Prashanth Chary",
-      "imagePath": "assets/prashanth.png",
-      'isActive': 'true'
+  // final List<Map<String, String>> users = [
+  //   {
+  //     "name": "Prashanth Chary",
+  //     "imagePath": "assets/prashanth.png",
+  //     'isActive': 'true'
+  //   },
+  //   {
+  //     "name": "Prashanth Chary",
+  //     "imagePath": "assets/prashanth.png",
+  //     'isActive': 'false'
+  //   },
+  //   {
+  //     "name": "Prashanth Chary",
+  //     "imagePath": "assets/prashanth.png",
+  //     'isActive': 'true'
+  //   }
+  // ];
+
+  @override
+  void initState() {
+    GetEmployeeData();
+
+
+    super.initState();
+  }
+  Future<void> GetEmployeeData() async {
+
+    var Res = await Userapi.GetEmployeeList();
+    if (Res != null) {
+      if (Res.data != null) {
+        print("Employee List Get SuccFully  ${Res.settings?.message}");
+      } else {
+        print("Employee List Failure  ${Res.settings?.message}");
+      }
+    } else {
+
     }
-  ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +123,13 @@ class _DashboardState extends State<Dashboard> {
               const Spacer(),
               Row(
                 children: [
-                  InkWell(onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Notifications()));
-                  },
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Notifications()));
+                    },
                     child: Container(
                       width:
                           48, // Increase this size to make the area more tappable
@@ -116,7 +144,6 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                   ),
-           
                   InkWell(
                     onTap: () {
                       _scaffoldKey.currentState?.openEndDrawer();
@@ -356,11 +383,15 @@ class _DashboardState extends State<Dashboard> {
                         height: 24.48 / 18,
                         fontFamily: "Inter"),
                   ),
-                   Spacer(),
-                  InkWell(onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
-                  },
-                     child: Text(
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProjectsScreen()));
+                    },
+                    child: Text(
                       "See all",
                       style: TextStyle(
                           color: Color(0xff8856F4),
@@ -370,8 +401,8 @@ class _DashboardState extends State<Dashboard> {
                           decoration: TextDecoration.underline,
                           decorationColor: Color(0xff8856F4),
                           fontFamily: "Inter"),
-                                       ),
-                   ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(
@@ -477,11 +508,15 @@ class _DashboardState extends State<Dashboard> {
                         fontSize: 18,
                         fontFamily: "Inter"),
                   ),
-                   Spacer(),
-                   InkWell(onTap: (){
-                     Navigator.push(context, MaterialPageRoute(builder: (context)=>Allchannels()));
-                   },
-                     child: Text(
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Allchannels()));
+                    },
+                    child: Text(
                       "See all",
                       style: TextStyle(
                           color: Color(0xff8856F4),
@@ -490,8 +525,8 @@ class _DashboardState extends State<Dashboard> {
                           decoration: TextDecoration.underline,
                           decorationColor: Color(0xff8856F4),
                           fontFamily: "Inter"),
-                                       ),
-                   ),
+                    ),
+                  ),
                 ],
               ),
 
@@ -565,9 +600,13 @@ class _DashboardState extends State<Dashboard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        InkWell(onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
-                        },
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProjectsScreen()));
+                          },
                           child: Column(
                             children: [
                               Container(
@@ -606,9 +645,13 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: w * 0.03,
                         ),
-                        InkWell(onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Todolist()));
-                        },
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Todolist()));
+                          },
                           child: Column(
                             children: [
                               Container(
@@ -647,9 +690,13 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: 20,
                         ),
-                        InkWell(onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Task()));
-                        },
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Task()));
+                          },
                           child: Column(
                             children: [
                               Container(
@@ -688,9 +735,13 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: 20,
                         ),
-                        InkWell(onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Meetings()));
-                        },
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Meetings()));
+                          },
                           child: Column(
                             children: [
                               Container(
@@ -1023,20 +1074,21 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         ListView.builder(
                           padding: EdgeInsets.only(top: 10),
-                          itemCount: users.length,
+                          itemCount: employeeData!.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            final user = users[index];
-                            final bool isActive = user['isActive'] == 'true';
+                            final user = employeeData![index];
+                            final bool isActive = user.isActive ?? false;
+                            print('Name: ${user.fullName}, Image: ${user.image}, Active: $isActive');
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Row(
                                 children: [
                                   Stack(
                                     children: [
-                                      Image.asset(
-                                        user['imagePath'] ?? '',
+                                      Image.network(
+                                        user.image ?? '', // Use the image from the API
                                         fit: BoxFit.contain,
                                         width: 43,
                                         height: 43,
@@ -1048,9 +1100,7 @@ class _DashboardState extends State<Dashboard> {
                                           width: 12,
                                           height: 12,
                                           decoration: BoxDecoration(
-                                            color: isActive
-                                                ? Colors.green
-                                                : Color(0xff8856F4),
+                                            color: isActive ? Colors.green : Color(0xff8856F4),
                                             shape: BoxShape.circle,
                                             border: Border.all(
                                                 color: Colors.white, width: 2),
@@ -1062,7 +1112,7 @@ class _DashboardState extends State<Dashboard> {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      user['name'] ?? '',
+                                      user.fullName ?? '', // Use name from API
                                       style: const TextStyle(
                                         color: Color(0xffFFFFFF),
                                         fontWeight: FontWeight.w400,
@@ -1085,6 +1135,72 @@ class _DashboardState extends State<Dashboard> {
                             );
                           },
                         ),
+
+                        // ListView.builder(
+                        //   padding: EdgeInsets.only(top: 10),
+                        //   itemCount: employeeData!.length,
+                        //   itemBuilder: (context, index) {
+                        //     final user = employeeData![index]; // Get each employee
+                        //     final bool isActive = user.isActive ?? false; // Active status
+                        //
+                        //     // Debugging the data
+                        //     print('Name: ${user.fullName}, Image: ${user.image}, Active: $isActive');
+                        //
+                        //     return Padding(
+                        //       padding: const EdgeInsets.symmetric(vertical: 8),
+                        //       child: Row(
+                        //         children: [
+                        //           Stack(
+                        //             children: [
+                        //               // Load image from network
+                        //               Image.network(
+                        //                 user.image ?? '',
+                        //                 fit: BoxFit.cover,
+                        //                 width: 43,
+                        //                 height: 43,
+                        //                 errorBuilder: (context, error, stackTrace) {
+                        //                   return Icon(Icons.person, size: 43); // Fallback if image fails
+                        //                 },
+                        //               ),
+                        //               Positioned(
+                        //                 bottom: 0,
+                        //                 right: 0,
+                        //                 child: Container(
+                        //                   width: 12,
+                        //                   height: 12,
+                        //                   decoration: BoxDecoration(
+                        //                     color: isActive ? Colors.green : Color(0xff8856F4), // Show active/inactive status
+                        //                     shape: BoxShape.circle,
+                        //                     border: Border.all(color: Colors.white, width: 2),
+                        //                   ),
+                        //                 ),
+                        //               ),
+                        //             ],
+                        //           ),
+                        //           SizedBox(width: 8),
+                        //           Expanded(
+                        //             child: Text(
+                        //               user.fullName ?? 'No Name', // Show employee name
+                        //               style: const TextStyle(
+                        //                 color: Colors.black, // Change to Colors.white if needed
+                        //                 fontWeight: FontWeight.w400,
+                        //                 fontSize: 14,
+                        //                 overflow: TextOverflow.ellipsis,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //           SizedBox(width: 8),
+                        //           Icon(Icons.notifications, color: Colors.grey), // Notification icon (optional)
+                        //         ],
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
+
+
+
+
+
                       ],
                     ),
                   ),
@@ -1185,9 +1301,11 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Todolist()));
-                },
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Todolist()));
+                  },
                   child: Container(
                     child: Column(
                       children: [
@@ -1217,12 +1335,16 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
-
-                InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
-                },
+                SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProjectsScreen()));
+                  },
                   child: Container(
                     child: Column(
                       children: [
@@ -1252,18 +1374,14 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                 ),
-
-
-
-
                 SizedBox(
                   height: 20,
                 ),
-
-
-                InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Allchannels()));
-                },
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Allchannels()));
+                  },
                   child: Container(
                     child: Column(
                       children: [
@@ -1321,9 +1439,11 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Meetings()));
-                },
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Meetings()));
+                  },
                   child: Container(
                     child: Column(
                       children: [
@@ -1353,7 +1473,6 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                 ),
-                
                 Spacer(),
                 Container(
                   padding: EdgeInsets.all(4),

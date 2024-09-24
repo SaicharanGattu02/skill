@@ -8,6 +8,7 @@ class Groupmembers extends StatefulWidget {
 }
 
 final List<Map<String, String>> items = [
+
   {'image': 'assets/prashanth.png', 'text': 'Prashanth'},
   {'image': 'assets/hrteam.png', 'text': 'Varun'},
   {'image': 'assets/pixl.png', 'text': 'Varun'},
@@ -44,6 +45,7 @@ final List<Map<String, String>> items = [
   {'image': 'assets/prashanth.png', 'text': 'Prashanth'},
   {'image': 'assets/hrteam.png', 'text': 'Varun'},
   {'image': 'assets/pixl.png', 'text': 'Varun'},
+
 ];
 
 class _GroupmembersState extends State<Groupmembers> {
@@ -76,8 +78,7 @@ class _GroupmembersState extends State<Groupmembers> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text(
-                  "Pixal Team",
+                Text("Pixal Team",
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 16,
@@ -87,8 +88,7 @@ class _GroupmembersState extends State<Groupmembers> {
                   ),
                 ),
                 SizedBox(height: 4),
-                Text(
-                  "2354 Members",
+                Text("2354 Members",
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
