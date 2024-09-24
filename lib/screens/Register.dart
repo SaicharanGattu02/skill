@@ -112,41 +112,47 @@ class _RegisterState extends State<Register> {
                       hintText: "Company Name",
                       validationMessage: 'Please enter your company name',
                       keyboardType: TextInputType.text,
+                        prefixicon: Image.asset("assets/company.png",width: 21,height: 21,fit: BoxFit.contain,)
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
                       controller: _companySizeController,
                       focusNode: _focusNodeCompanySize,
-                      hintText: "Enter Your Company Size",
+                      hintText: "Enter Company Size",
                       validationMessage: 'Please enter your company size',
+                        prefixicon: Image.asset("assets/csize.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
                       controller: _selectCategory,
                       focusNode: _focusNodeSelectCategory,
-                      hintText: "Enter Your Category",
+                      hintText: "Select Category",
                       validationMessage: 'Please enter your category',
+                        prefixicon: Image.asset("assets/categoryselect.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
                       controller: _enterCityController,
                       focusNode: _focusNodeCity,
-                      hintText: "Enter Your City",
+                      hintText: "Enter City",
                       validationMessage: 'Please select your city',
+                        prefixicon: Image.asset("assets/city.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
                       controller: _stateController,
                       focusNode: _focusNodeState,
-                      hintText: "Select Your State",
+                      hintText: "State",
                       validationMessage: 'Please select your state',
+                        prefixicon: Image.asset("assets/state.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
                       controller: _countryController,
                       focusNode: _focusNodeCountry,
-                      hintText: "Enter Your Country",
+                      hintText: "Country",
                       validationMessage: 'Please select your country',
+                        prefixicon: Image.asset("assets/country.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
                     ),
                     const SizedBox(height: 24),
                     InkWell(onTap: (){
@@ -222,6 +228,7 @@ class _RegisterState extends State<Register> {
     required String hintText,
     required String validationMessage,
     TextInputType keyboardType = TextInputType.text,
+    Widget?prefixicon
   }) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.05,
@@ -232,6 +239,9 @@ class _RegisterState extends State<Register> {
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
+          prefixIcon: Container(width: 21,height: 21,
+              padding:EdgeInsets.only(top: 12,bottom: 12,left: 10) ,
+              child: prefixicon),
           hintStyle: const TextStyle(
             fontSize: 15,
             letterSpacing: 0,

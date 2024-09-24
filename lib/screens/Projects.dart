@@ -49,6 +49,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             height: 29.05 / 24.0,
           ),
         ),
+        actions: [Padding(
+          padding: EdgeInsets.only(right: 20),
+          child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
+        )],
       ),
       body: Padding(
         padding:EdgeInsets.only(left: 16, right: 16,top: 10,bottom: 10),

@@ -9,7 +9,6 @@ class Notifications extends StatefulWidget {
 }
 
 class _NotificationsState extends State<Notifications> {
-
   final List<Map<String, String>> notifications = [
     {
       'title': 'New Project Updated',
@@ -38,15 +37,15 @@ class _NotificationsState extends State<Notifications> {
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: const Color(0xff8856F4),
-        leading: InkWell(onTap: (){
-          Navigator.pop(context);
-        },
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
           child: Icon(
             Icons.arrow_back,
             color: Color(0xffffffff),
           ),
-        )
-        ,
+        ),
         title: Text(
           "Notifications",
           textAlign: TextAlign.left,
@@ -58,6 +57,10 @@ class _NotificationsState extends State<Notifications> {
             height: 29.05 / 24.0,
           ),
         ),
+        actions: [Padding(
+          padding: EdgeInsets.only(right: 20),
+          child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
+        )],
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -123,8 +126,7 @@ class _NotificationsState extends State<Notifications> {
                   ),
                   SizedBox(width: 10),
                   GestureDetector(
-                    onTap: () {
-                    },
+                    onTap: () {},
                     child: Container(
                       padding: EdgeInsets.all(7),
                       decoration: BoxDecoration(

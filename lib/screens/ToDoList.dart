@@ -110,7 +110,6 @@ class _TodolistState extends State<Todolist> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
 
-    // Format the selected date
     final selectedDateFormatted = DateFormat('MMMM d, y').format(selectedDate);
 
     // Filter tasks for the selected date
@@ -149,7 +148,8 @@ class _TodolistState extends State<Todolist> {
           color: const Color(0xffFFFFFF), // Surrounding container color
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Column(
+        child:
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Month and year display with button to select new month and year
@@ -157,29 +157,58 @@ class _TodolistState extends State<Todolist> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat('MMMM d y').format(currentMonth),
+                  DateFormat('MMMM d, y').format(currentMonth),
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
                     color: Color(0xff000000),
+                    height: 19.36 / 16,
+                  ),
+                ),
+                // IconButton(
+                //   icon: const Icon(Icons.calendar_today, color: Color(0xff8856F4)),
+                //   onPressed: _pickMonth,
+                // ),
+
+              ],
+            ),
+             SizedBox(height: 2),
+             Row(
+              children: [
+                Text(
+                  "Today",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff8856F4),
                     height: 19.36 / 18,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today, color: Color(0xff8856F4)),
-                  onPressed: _pickMonth,
+                Spacer(),
+                Image.asset(
+                  "assets/sun.png",
+                  width: 24,
+                  height: 24,
                 ),
+                const SizedBox(width: 8),
+                Text(
+                  "Now is almost sunny",
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14.0,
+                    color: Color(0xff64748B),
+                    height: 16.94/14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Image.asset(
+                  "assets/sunn.png",
+                  width: 24,
+                  height: 24,
+                ),
+
               ],
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              "Tasks",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Color(0xff8856F4),
-                height: 19.36 / 18,
-              ),
             ),
             const SizedBox(height: 18),
             SingleChildScrollView(

@@ -1,22 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skill/screens/dashboard.dart';
+import 'package:skill/screens/LogInScreen.dart';
 
-class LogInScreen extends StatefulWidget {
-  const LogInScreen({super.key});
+import 'dashboard.dart';
+
+class Otp extends StatefulWidget {
+  const Otp({super.key});
 
   @override
-  State<LogInScreen> createState() => _LogInScreenState();
+  State<Otp> createState() => _OtpState();
 }
 
-class _LogInScreenState extends State<LogInScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _OtpState extends State<Otp> {
+  final TextEditingController _emailOtpController = TextEditingController();
+  final TextEditingController _smsOtpController = TextEditingController();
 
   final FocusNode _focusNodeEmail = FocusNode();
-  final FocusNode _focusNodePassword = FocusNode();
-
-  // Checkbox state
-  bool _rememberMe = false; // Variable to hold the checkbox state
+  final FocusNode _focusNodeSms = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,8 @@ class _LogInScreenState extends State<LogInScreen> {
                     SingleChildScrollView(
                       child: SizedBox(
                         width: 221,
-                        child: const Text(
-                          'Sign In to your Account',
+                        child: Text(
+                          'Enter OTP',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -66,19 +66,6 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Login Your Account',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: Color(0xffEEEEEE),
-                        fontWeight: FontWeight.w500,
-                        height: 16.8 / 12,
-                        letterSpacing: -0.01,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -88,7 +75,9 @@ class _LogInScreenState extends State<LogInScreen> {
             top: h * 0.35,
             left: w * 0.1,
             right: w * 0.1,
+            bottom: w * 0.1,
             child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -100,80 +89,89 @@ class _LogInScreenState extends State<LogInScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextFormField(
-                        controller: _emailController,
-                        focusNode: _focusNodeEmail,
-                        hintText: "Email Address",
-                        validationMessage: 'Please enter your category',
-                        prefixicon: Image.asset(
-                          "assets/gmail.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
-                        controller: _passwordController,
-                        focusNode: _focusNodePassword,
-                        hintText: "Password",
-
-                        validationMessage: 'Please select your city',
-                        prefixicon: Image.asset(
-                          "assets/Lock.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-
-                    const SizedBox(height: 16),
+                      controller: _emailOtpController,
+                      focusNode: _focusNodeEmail,
+                      hintText: "Enter Email Otp",
+                      validationMessage: 'Please enter your first name',
+                      keyboardType: TextInputType.text,
+                      prefixicon: Image.asset(
+                        "assets/gmail.png",
+                        width: 21,
+                        height: 21,
+                        fit: BoxFit.contain,
+                        color: Color(0xffAFAFAF),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Checkbox(
-                          value: _rememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              _rememberMe = value ?? false; // Handle null value
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 5),
-                        const Text(
-                          "Remember me",
+                        Text(
+                          'Resend',
+                          textAlign: TextAlign.right,
                           style: TextStyle(
-                            color: Color(0xff1C1C1C),
-                            fontFamily: "Inter",
+                            fontFamily: 'Inter',
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            height: 21 / 14,
-                          ),
-                        ),
-                        const Spacer(),
-                        GestureDetector(
-                          onTap: () {
-                            // Handle forgot password
-                          },
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(
-                              color: Color(0xff8856F4),
-                              fontFamily: "Inter",
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              height: 19.06 / 14,
-                            ),
+                            height: 19.6 / 14,
+                            letterSpacing: -0.01 * 16,
+                            color: Color(0xff8856F4),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
+                    _buildTextFormField(
+                      controller: _smsOtpController,
+                      focusNode: _focusNodeSms,
+                      hintText: "Enter SMS Otp",
+                      validationMessage: 'Please enter your last size',
+                      prefixicon: Image.asset(
+                        "assets/call.png",
+                        width: 21,
+                        height: 21,
+                        fit: BoxFit.contain,
+                        color: Color(0xffAFAFAF),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'OTP Resent On Phone',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 19.6 / 14,
+                            letterSpacing: -0.01 * 16,
+                            color: Color(0xff8856F4),
+                          ),
+                        ),
+                        Text(
+                          'Resend',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 19.6 / 14,
+                            letterSpacing: -0.01 * 16,
+                            color: Color(0xff8856F4),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        // Navigate to Dashboard
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Dashboard()),
-                        );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LogInScreen()));
                       },
                       child: Container(
                         width: w,
@@ -184,7 +182,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 13),
                           child: const Text(
-                            "LogIn",
+                            "Continue",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
@@ -197,39 +195,6 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don’t have an account?",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Color(0xff6C7278),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: () {
-                            // Navigate to the sign-up screen if necessary
-                          },
-                          child: const Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xff8856F4),
-                              color: Color(0xff8856F4),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -240,15 +205,16 @@ class _LogInScreenState extends State<LogInScreen> {
     );
   }
 
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-        required FocusNode focusNode,
-        bool obscureText = false,
-        required String hintText,
-        required String validationMessage,
-        TextInputType keyboardType = TextInputType.text,
-        Widget? prefixicon,
-      }) {
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    bool obscureText = false,
+    required String hintText,
+    required String validationMessage,
+    TextInputType keyboardType = TextInputType.text,
+    Widget? prefixicon,
+    Widget? sufexicon,
+  }) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.05,
       child: TextFormField(
@@ -263,7 +229,26 @@ class _LogInScreenState extends State<LogInScreen> {
               height: 21,
               padding: EdgeInsets.only(top: 12, bottom: 12, left: 10),
               child: prefixicon),
-
+          suffixIcon: Container(
+            height: 20,
+            width: 50,
+            margin: EdgeInsets.only(top: 8, bottom: 8, right: 5),
+            decoration: BoxDecoration(
+                color: Color(0xffE2FDF2), borderRadius: BorderRadius.circular(10)),
+            child: Center(
+              child: Text(
+                'Verify',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 19.2 / 12,
+                  letterSpacing: 0.14,
+                  color: Color(0xff2A9266),
+                ),
+              ),
+            ),
+          ),
           hintStyle: const TextStyle(
             fontSize: 15,
             letterSpacing: 0,

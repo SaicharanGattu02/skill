@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
+import 'package:intl/intl.dart';
 
 class Meetings extends StatefulWidget {
   const Meetings({super.key});
@@ -117,33 +118,37 @@ class _MeetingsState extends State<Meetings> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Good Morning,",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Prashanth,",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xff1E293B),
-                        ),
-                      ),
-                    ],
+                Text(
+                  DateFormat('MMMM d, y').format(currentMonth),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff000000),
+                    height: 19.36 / 16,
                   ),
                 ),
+                // IconButton(
+                //   icon: const Icon(Icons.calendar_today, color: Color(0xff8856F4)),
+                //   onPressed: _pickMonth,
+                // ),
+
+              ],
+            ),
+            SizedBox(height: 2),
+            Row(
+              children: [
+                Text(
+                  "Today",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff8856F4),
+                    height: 19.36 / 18,
+                  ),
+                ),
+                Spacer(),
                 Image.asset(
                   "assets/sun.png",
                   width: 24,
@@ -156,6 +161,7 @@ class _MeetingsState extends State<Meetings> {
                     fontFamily: 'Inter',
                     fontSize: 14.0,
                     color: Color(0xff64748B),
+                    height: 16.94/14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -165,6 +171,7 @@ class _MeetingsState extends State<Meetings> {
                   width: 24,
                   height: 24,
                 ),
+
               ],
             ),
             const SizedBox(height: 18),
@@ -307,6 +314,7 @@ class _MeetingsState extends State<Meetings> {
                                 child: Image.asset(
                                   "assets/meet.png",
                                   width: 4,height: 4,
+                                  color: Color(0xff000000),
                                   fit: BoxFit.contain,
                                 ),
                               ),

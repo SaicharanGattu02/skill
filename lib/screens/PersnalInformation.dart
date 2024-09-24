@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill/screens/Otp.dart';
 import 'package:skill/screens/dashboard.dart';
 
 class PersonalInformation extends StatefulWidget {
@@ -14,12 +15,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _pwdController = TextEditingController();
 
   // Focus nodes
   final FocusNode _focusNodeFirstName = FocusNode();
   final FocusNode _focusNodeLastName = FocusNode();
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePhone = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
 
   // Gender selection
   String? _gender; // Variable to hold selected gender
@@ -96,47 +99,86 @@ class _PersonalInformationState extends State<PersonalInformation> {
             right: w * 0.1,
             bottom: w * 0.1,
             child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: const Color(0xffFFFFFF),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextFormField(
-                      controller: _firstNameController,
-                      focusNode: _focusNodeFirstName,
-                      hintText: "Company Name",
-                      validationMessage: 'Please enter your company name',
-                      keyboardType: TextInputType.text,
-                    ),
+                        controller: _firstNameController,
+                        focusNode: _focusNodeFirstName,
+                        hintText: "First Name",
+                        validationMessage: 'Please enter your first name',
+                        keyboardType: TextInputType.text,
+                        prefixicon: Image.asset(
+                          "assets/profilep.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _lastNameController,
-                      focusNode: _focusNodeLastName,
-                      hintText: "Enter Your Company Size",
-                      validationMessage: 'Please enter your company size',
-                    ),
+                        controller: _lastNameController,
+                        focusNode: _focusNodeLastName,
+                        hintText: "Last Name",
+                        validationMessage: 'Please enter your last size',
+                        prefixicon: Image.asset(
+                          "assets/profilep.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _emailController,
-                      focusNode: _focusNodeEmail,
-                      hintText: "Enter Your Category",
-                      validationMessage: 'Please enter your category',
-                    ),
+                        controller: _emailController,
+                        focusNode: _focusNodeEmail,
+                        hintText: "Email Address",
+                        validationMessage: 'Please enter your category',
+                        prefixicon: Image.asset(
+                          "assets/gmail.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _phoneController,
-                      focusNode: _focusNodePhone,
-                      hintText: "Enter Your City",
-                      validationMessage: 'Please select your city',
-                    ),
+                        controller: _phoneController,
+                        focusNode: _focusNodePhone,
+                        hintText: "Phone Number",
+                        validationMessage: 'Please enter your phoneNumber',
+                        prefixicon: Image.asset(
+                          "assets/call.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
+                    _buildTextFormField(
+                        controller: _pwdController,
+                        focusNode: _focusNodePassword,
+                        hintText: "Password",
+                        validationMessage: 'Please select your city',
+                        prefixicon: Image.asset(
+                          "assets/Lock.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
+
+                     SizedBox(height: 16),
                     Text(
                       "Gender",
-
                       style: TextStyle(
                         color: Color(0xff1C1C1C),
                         fontFamily: "Inter",
@@ -178,9 +220,13 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard()));
-                    },
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Otp()));
+                      },
                       child: Container(
                         width: w,
                         decoration: BoxDecoration(
@@ -203,37 +249,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Already have an account?",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Color(0xff6C7278),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
-                            letterSpacing: -0.01,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
-                            color: Color(0xff8856F4),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
-                            letterSpacing: -0.01,
-                          ),
-                        )
-                      ],
-                    )
+
                   ],
                 ),
               ),
@@ -244,14 +260,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
     );
   }
 
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required FocusNode focusNode,
-    bool obscureText = false,
-    required String hintText,
-    required String validationMessage,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  Widget _buildTextFormField(
+      {required TextEditingController controller,
+      required FocusNode focusNode,
+      bool obscureText = false,
+      required String hintText,
+      required String validationMessage,
+      TextInputType keyboardType = TextInputType.text,
+      Widget? prefixicon}) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.05,
       child: TextFormField(
@@ -261,6 +277,11 @@ class _PersonalInformationState extends State<PersonalInformation> {
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
+          prefixIcon: Container(
+              width: 21,
+              height: 21,
+              padding: EdgeInsets.only(top: 12, bottom: 12, left: 10),
+              child: prefixicon),
           hintStyle: const TextStyle(
             fontSize: 15,
             letterSpacing: 0,

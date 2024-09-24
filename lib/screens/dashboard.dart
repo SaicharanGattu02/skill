@@ -356,18 +356,22 @@ class _DashboardState extends State<Dashboard> {
                         height: 24.48 / 18,
                         fontFamily: "Inter"),
                   ),
-                  const Spacer(),
-                  const Text(
-                    "See all",
-                    style: TextStyle(
-                        color: Color(0xff8856F4),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        height: 16.94 / 14,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Color(0xff8856F4),
-                        fontFamily: "Inter"),
-                  ),
+                   Spacer(),
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
+                  },
+                     child: Text(
+                      "See all",
+                      style: TextStyle(
+                          color: Color(0xff8856F4),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          height: 16.94 / 14,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xff8856F4),
+                          fontFamily: "Inter"),
+                                       ),
+                   ),
                 ],
               ),
               SizedBox(
@@ -473,17 +477,21 @@ class _DashboardState extends State<Dashboard> {
                         fontSize: 18,
                         fontFamily: "Inter"),
                   ),
-                  const Spacer(),
-                  const Text(
-                    "See all",
-                    style: TextStyle(
-                        color: Color(0xff8856F4),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Color(0xff8856F4),
-                        fontFamily: "Inter"),
-                  ),
+                   Spacer(),
+                   InkWell(onTap: (){
+                     Navigator.push(context, MaterialPageRoute(builder: (context)=>Allchannels()));
+                   },
+                     child: Text(
+                      "See all",
+                      style: TextStyle(
+                          color: Color(0xff8856F4),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xff8856F4),
+                          fontFamily: "Inter"),
+                                       ),
+                   ),
                 ],
               ),
 
