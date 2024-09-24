@@ -4,6 +4,7 @@ import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/dashboard.dart';
+import 'package:skill/screens/nutsby.dart';
 
 void main() {
   runApp(const MyApp());

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Notifications.dart';
-import 'package:skill/screens/Projetcs.dart';
+import 'package:skill/screens/Projects.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 
@@ -557,76 +557,84 @@ class _DashboardState extends State<Dashboard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          children: [
-                            Container(
-                              width: w * 0.16,
-                              height: w * 0.115,
-                              padding: EdgeInsets.only(
-                                  left: 3, right: 3, top: 2, bottom: 2),
-                              decoration: BoxDecoration(
-                                  color: Color(0x1A8856F4),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "237",
-                                  style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: "Sarabun"),
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectsScreen()));
+                        },
+                          child: Column(
+                            children: [
+                              Container(
+                                width: w * 0.16,
+                                height: w * 0.115,
+                                padding: EdgeInsets.only(
+                                    left: 3, right: 3, top: 2, bottom: 2),
+                                decoration: BoxDecoration(
+                                    color: Color(0x1A8856F4),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    "237",
+                                    style: TextStyle(
+                                        color: Color(0xff000000),
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Sarabun"),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "PROJECTS",
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "PROJECTS",
+                                style: TextStyle(
+                                    color: Color(0xff000000),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Inter"),
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(
                           width: w * 0.03,
                         ),
-                        Column(
-                          children: [
-                            Container(
-                              width: w * 0.16,
-                              height: w * 0.115,
-                              padding: EdgeInsets.only(
-                                  left: 3, right: 3, top: 2, bottom: 2),
-                              decoration: BoxDecoration(
-                                  color: Color(0xffF1FFF3),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "064",
-                                  style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: "Sarabun"),
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Todolist()));
+                        },
+                          child: Column(
+                            children: [
+                              Container(
+                                width: w * 0.16,
+                                height: w * 0.115,
+                                padding: EdgeInsets.only(
+                                    left: 3, right: 3, top: 2, bottom: 2),
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF1FFF3),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    "064",
+                                    style: TextStyle(
+                                        color: Color(0xff000000),
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Sarabun"),
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "TO DO",
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "TO DO",
+                                style: TextStyle(
+                                    color: Color(0xff000000),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Inter"),
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(
                           width: 20,
@@ -1305,28 +1313,39 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/video.png"),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Meetings",
-                  style: TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Meetings()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/video.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Meetings",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                
                 Spacer(),
                 Container(
                   padding: EdgeInsets.all(4),

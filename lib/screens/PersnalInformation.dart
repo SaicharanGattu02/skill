@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:skill/screens/PersnalInformation.dart';
+import 'package:skill/screens/dashboard.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class PersonalInformation extends StatefulWidget {
+  const PersonalInformation({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<PersonalInformation> createState() => _PersonalInformationState();
 }
 
-class _RegisterState extends State<Register> {
+class _PersonalInformationState extends State<PersonalInformation> {
   // Text Controllers
-  final TextEditingController _companyController = TextEditingController();
-  final TextEditingController _companySizeController = TextEditingController();
-  final TextEditingController _selectCategory = TextEditingController();
-  final TextEditingController _enterCityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
-  // Focus nodes (optional for managing focus state)
-  final FocusNode _focusNodeCompany = FocusNode();
-  final FocusNode _focusNodeCompanySize = FocusNode();
-  final FocusNode _focusNodeSelectCategory = FocusNode();
-  final FocusNode _focusNodeCity = FocusNode();
-  final FocusNode _focusNodeState = FocusNode();
-  final FocusNode _focusNodeCountry = FocusNode();
+  // Focus nodes
+  final FocusNode _focusNodeFirstName = FocusNode();
+  final FocusNode _focusNodeLastName = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePhone = FocusNode();
+
+  // Gender selection
+  String? _gender; // Variable to hold selected gender
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +56,7 @@ class _RegisterState extends State<Register> {
                     ),
                     const SizedBox(height: 24),
                     SingleChildScrollView(
-                      child:  SizedBox(
+                      child: SizedBox(
                         width: 221,
                         child: Text(
                           'Sign up to your Account',
@@ -75,7 +74,7 @@ class _RegisterState extends State<Register> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Company Information',
+                      'Personal information',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
@@ -97,60 +96,90 @@ class _RegisterState extends State<Register> {
             right: w * 0.1,
             bottom: w * 0.1,
             child: SingleChildScrollView(
-              // Enable scrolling when content overflows
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: const Color(0xffFFFFFF),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Column(
+                child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextFormField(
-                      controller: _companyController,
-                      focusNode: _focusNodeCompany,
+                      controller: _firstNameController,
+                      focusNode: _focusNodeFirstName,
                       hintText: "Company Name",
                       validationMessage: 'Please enter your company name',
                       keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _companySizeController,
-                      focusNode: _focusNodeCompanySize,
+                      controller: _lastNameController,
+                      focusNode: _focusNodeLastName,
                       hintText: "Enter Your Company Size",
                       validationMessage: 'Please enter your company size',
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _selectCategory,
-                      focusNode: _focusNodeSelectCategory,
+                      controller: _emailController,
+                      focusNode: _focusNodeEmail,
                       hintText: "Enter Your Category",
                       validationMessage: 'Please enter your category',
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _enterCityController,
-                      focusNode: _focusNodeCity,
+                      controller: _phoneController,
+                      focusNode: _focusNodePhone,
                       hintText: "Enter Your City",
                       validationMessage: 'Please select your city',
                     ),
                     const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _stateController,
-                      focusNode: _focusNodeState,
-                      hintText: "Select Your State",
-                      validationMessage: 'Please select your state',
+                    Text(
+                      "Gender",
+
+                      style: TextStyle(
+                        color: Color(0xff1C1C1C),
+                        fontFamily: "Inter",
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 19.36 / 16,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _countryController,
-                      focusNode: _focusNodeCountry,
-                      hintText: "Enter Your Country",
-                      validationMessage: 'Please select your country',
+                    Row(
+                      children: [
+                        Row(
+                          children: [
+                            Radio<String>(
+                              value: 'FeMale',
+                              groupValue: _gender,
+                              onChanged: (value) {
+                                setState(() {
+                                  _gender = value;
+                                });
+                              },
+                            ),
+                            const Text('FeMale'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Radio<String>(
+                              value: 'Male',
+                              groupValue: _gender,
+                              onChanged: (value) {
+                                setState(() {
+                                  _gender = value;
+                                });
+                              },
+                            ),
+                            const Text('Male'),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>PersonalInformation()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard()));
                     },
                       child: Container(
                         width: w,
@@ -160,7 +189,7 @@ class _RegisterState extends State<Register> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          child: Text(
+                          child: const Text(
                             "Continue",
                             textAlign: TextAlign.center,
                             style: TextStyle(

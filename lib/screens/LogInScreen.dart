@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:skill/screens/PersnalInformation.dart';
+import 'package:skill/screens/dashboard.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class LogIn extends StatefulWidget {
+  const LogIn({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<LogIn> createState() => _LogInState();
 }
 
-class _RegisterState extends State<Register> {
-  // Text Controllers
-  final TextEditingController _companyController = TextEditingController();
-  final TextEditingController _companySizeController = TextEditingController();
-  final TextEditingController _selectCategory = TextEditingController();
-  final TextEditingController _enterCityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+class _LogInState extends State<LogIn> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  // Focus nodes (optional for managing focus state)
-  final FocusNode _focusNodeCompany = FocusNode();
-  final FocusNode _focusNodeCompanySize = FocusNode();
-  final FocusNode _focusNodeSelectCategory = FocusNode();
-  final FocusNode _focusNodeCity = FocusNode();
-  final FocusNode _focusNodeState = FocusNode();
-  final FocusNode _focusNodeCountry = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+
+  // Checkbox state
+  bool _rememberMe = false; // Variable to hold the checkbox state
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +50,10 @@ class _RegisterState extends State<Register> {
                     ),
                     const SizedBox(height: 24),
                     SingleChildScrollView(
-                      child:  SizedBox(
+                      child: SizedBox(
                         width: 221,
-                        child: Text(
-                          'Sign up to your Account',
+                        child: const Text(
+                          'Sign In to your Account',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -74,8 +67,8 @@ class _RegisterState extends State<Register> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      'Company Information',
+                    const Text(
+                      'Login Your Account',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
@@ -95,9 +88,7 @@ class _RegisterState extends State<Register> {
             top: h * 0.35,
             left: w * 0.1,
             right: w * 0.1,
-            bottom: w * 0.1,
             child: SingleChildScrollView(
-              // Enable scrolling when content overflows
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -105,53 +96,72 @@ class _RegisterState extends State<Register> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextFormField(
-                      controller: _companyController,
-                      focusNode: _focusNodeCompany,
-                      hintText: "Company Name",
-                      validationMessage: 'Please enter your company name',
-                      keyboardType: TextInputType.text,
+                      controller: _emailController,
+                      focusNode: _focusNodeEmail,
+                      hintText: "Enter Your Email",
+                      validationMessage: 'Please enter your email',
                     ),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _companySizeController,
-                      focusNode: _focusNodeCompanySize,
-                      hintText: "Enter Your Company Size",
-                      validationMessage: 'Please enter your company size',
+                      controller: _passwordController,
+                      focusNode: _focusNodePassword,
+                      hintText: "Enter Your Password",
+                      validationMessage: 'Please enter your password',
+                      obscureText: true, // Make password obscured
                     ),
                     const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _selectCategory,
-                      focusNode: _focusNodeSelectCategory,
-                      hintText: "Enter Your Category",
-                      validationMessage: 'Please enter your category',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _enterCityController,
-                      focusNode: _focusNodeCity,
-                      hintText: "Enter Your City",
-                      validationMessage: 'Please select your city',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _stateController,
-                      focusNode: _focusNodeState,
-                      hintText: "Select Your State",
-                      validationMessage: 'Please select your state',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
-                      controller: _countryController,
-                      focusNode: _focusNodeCountry,
-                      hintText: "Enter Your Country",
-                      validationMessage: 'Please select your country',
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              _rememberMe = value ?? false; // Handle null value
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 5),
+                        const Text(
+                          "Remember me",
+                          style: TextStyle(
+                            color: Color(0xff1C1C1C),
+                            fontFamily: "Inter",
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 21 / 14,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            // Handle forgot password
+                          },
+                          child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color: Color(0xff8856F4),
+                              fontFamily: "Inter",
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              height: 19.06 / 14,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 24),
-                    InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>PersonalInformation()));
-                    },
+                    InkWell(
+                      onTap: () {
+                        // Navigate to Dashboard
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Dashboard()),
+                        );
+                      },
                       child: Container(
                         width: w,
                         decoration: BoxDecoration(
@@ -160,8 +170,8 @@ class _RegisterState extends State<Register> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          child: Text(
-                            "Continue",
+                          child: const Text(
+                            "Log In",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
@@ -186,25 +196,26 @@ class _RegisterState extends State<Register> {
                             color: Color(0xff6C7278),
                             fontWeight: FontWeight.w500,
                             height: 19.6 / 14,
-                            letterSpacing: -0.01,
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
-                            color: Color(0xff8856F4),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
-                            letterSpacing: -0.01,
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to the sign-up screen if necessary
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              decoration: TextDecoration.underline,
+                              color: Color(0xff8856F4),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         )
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

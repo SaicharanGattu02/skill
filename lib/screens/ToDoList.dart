@@ -11,14 +11,14 @@ class Todolist extends StatefulWidget {
 class _TodolistState extends State<Todolist> {
   final List<Map<String, String>> tasks = [
     {
-      'date': 'September 21, 2024',
+      'date': 'September 23, 2024',
       'title': 'PRPL Application',
       'subtitle': 'Presentation of new products and cost structure'
     },
-    {'date': 'September 20, 2024', 'title': 'Raay Project'},
-    {'date': 'September 20', 'title': 'Dotclinic Project'},
+    {'date': 'September 24, 2024', 'title': 'Raay Project'},
+    {'date': 'September 24', 'title': 'Dotclinic Project'},
     {
-      'date': 'September 21, 2024',
+      'date': 'September 23, 2024',
       'title': 'Raay Project',
       'subtitle': 'Presentation of new products and cost structure'
     },
