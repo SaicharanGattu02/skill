@@ -29,13 +29,12 @@ class _SplashState extends State<Splash> {
             ],
           ),
         ),
-        // Uncomment and modify the nextScreen logic as needed
         // nextScreen: (onboard_status == "")
         //     ? MySplashOnboard()
         //     : (token != "")
         //     ? (permissions_granted ? MyMainHome() : MyPermission())
         //     : (permissions_granted ? MySignup() : MyPermission()),
-        nextScreen: const Register(), // Change this to your desired next screen
+        nextScreen: const Login(), // Change this to your desired next screen
         splashIconSize: double.infinity,
         backgroundColor: const Color(0xff8856F4),
         splashTransition: SplashTransition.scaleTransition,

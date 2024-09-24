@@ -5,15 +5,16 @@ import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Services/UserApi.dart';
+import '../utils/Preferances.dart';
 
-class LogIn extends StatefulWidget {
-  const LogIn({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<LogIn> createState() => _LogInState();
+  State<Login> createState() => _LogInState();
 }
 
-class _LogInState extends State<LogIn> {
+class _LogInState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
@@ -41,16 +42,14 @@ class _LogInState extends State<LogIn> {
     var data = await Userapi.PostLogin(
         _emailController.text, _passwordController.text);
     if (data != null) {
-
       if (data.settings?.success == 1) {
-        print("Login Success");
+        PreferenceService().saveString("token",data.data?.access??"");
         CustomSnackBar.show(context, "${data.settings?.message}");
         Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard()));
       } else {
         print("Login failure");
       }
     } else {
-
       print("Login >>>${data?.settings?.message}");
       CustomSnackBar.show(context, "${data?.settings?.message}");
     }
