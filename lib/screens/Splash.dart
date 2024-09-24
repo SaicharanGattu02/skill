@@ -23,9 +23,10 @@ class _SplashState extends State<Splash> {
   }
 
   fetchDetails() async {
-    var Token = PreferenceService().getString('token');
+    final Token = await PreferenceService().getString("token") ?? "";
+    print("Token>>>${Token}");
     setState(() {
-      token = Token as String;
+      token = Token;
     });
   }
 

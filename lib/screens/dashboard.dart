@@ -44,43 +44,22 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
   ];
-
-  // final List<Map<String, String>> users = [
-  //   {
-  //     "name": "Prashanth Chary",
-  //     "imagePath": "assets/prashanth.png",
-  //     'isActive': 'true'
-  //   },
-  //   {
-  //     "name": "Prashanth Chary",
-  //     "imagePath": "assets/prashanth.png",
-  //     'isActive': 'false'
-  //   },
-  //   {
-  //     "name": "Prashanth Chary",
-  //     "imagePath": "assets/prashanth.png",
-  //     'isActive': 'true'
-  //   }
-  // ];
-
   @override
   void initState() {
     GetEmployeeData();
 
-
     super.initState();
   }
-  Future<void> GetEmployeeData() async {
 
+  Future<void> GetEmployeeData() async {
     var Res = await Userapi.GetEmployeeList();
     if (Res != null) {
       if (Res.data != null) {
+        employeeData = Res.data;
         print("Employee List Get SuccFully  ${Res.settings?.message}");
       } else {
         print("Employee List Failure  ${Res.settings?.message}");
       }
-    } else {
-
     }
   }
 
@@ -1079,19 +1058,31 @@ class _DashboardState extends State<Dashboard> {
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             final user = employeeData![index];
-                            final bool isActive = user.isActive ?? false;
-                            print('Name: ${user.fullName}, Image: ${user.image}, Active: $isActive');
+
+                            // Checking if the employee is active
+                            // final bool isActive = user.isActive ?? false;
+                            // print("Status>>>${isActive}");
+
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Row(
                                 children: [
                                   Stack(
                                     children: [
-                                      Image.network(
-                                        user.image ?? '', // Use the image from the API
-                                        fit: BoxFit.contain,
-                                        width: 43,
-                                        height: 43,
+                                      ClipOval(
+                                        child: Image.network(
+                                          user.image ?? '',
+                                          fit: BoxFit.cover,
+                                          width: 43,
+                                          height: 43,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return ClipOval(
+                                              child:
+                                                  Icon(Icons.person, size: 43),
+                                            ); // Fallback if image fails
+                                          },
+                                        ),
                                       ),
                                       Positioned(
                                         bottom: 0,
@@ -1100,7 +1091,9 @@ class _DashboardState extends State<Dashboard> {
                                           width: 12,
                                           height: 12,
                                           decoration: BoxDecoration(
-                                            color: isActive ? Colors.green : Color(0xff8856F4),
+                                            color: user.isActive ?? true
+                                                ? Colors.green
+                                                : Color(0xff8856F4),
                                             shape: BoxShape.circle,
                                             border: Border.all(
                                                 color: Colors.white, width: 2),
@@ -1112,7 +1105,7 @@ class _DashboardState extends State<Dashboard> {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      user.fullName ?? '', // Use name from API
+                                      user.fullName ?? 'No Name',
                                       style: const TextStyle(
                                         color: Color(0xffFFFFFF),
                                         fontWeight: FontWeight.w400,
@@ -1134,73 +1127,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             );
                           },
-                        ),
-
-                        // ListView.builder(
-                        //   padding: EdgeInsets.only(top: 10),
-                        //   itemCount: employeeData!.length,
-                        //   itemBuilder: (context, index) {
-                        //     final user = employeeData![index]; // Get each employee
-                        //     final bool isActive = user.isActive ?? false; // Active status
-                        //
-                        //     // Debugging the data
-                        //     print('Name: ${user.fullName}, Image: ${user.image}, Active: $isActive');
-                        //
-                        //     return Padding(
-                        //       padding: const EdgeInsets.symmetric(vertical: 8),
-                        //       child: Row(
-                        //         children: [
-                        //           Stack(
-                        //             children: [
-                        //               // Load image from network
-                        //               Image.network(
-                        //                 user.image ?? '',
-                        //                 fit: BoxFit.cover,
-                        //                 width: 43,
-                        //                 height: 43,
-                        //                 errorBuilder: (context, error, stackTrace) {
-                        //                   return Icon(Icons.person, size: 43); // Fallback if image fails
-                        //                 },
-                        //               ),
-                        //               Positioned(
-                        //                 bottom: 0,
-                        //                 right: 0,
-                        //                 child: Container(
-                        //                   width: 12,
-                        //                   height: 12,
-                        //                   decoration: BoxDecoration(
-                        //                     color: isActive ? Colors.green : Color(0xff8856F4), // Show active/inactive status
-                        //                     shape: BoxShape.circle,
-                        //                     border: Border.all(color: Colors.white, width: 2),
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //             ],
-                        //           ),
-                        //           SizedBox(width: 8),
-                        //           Expanded(
-                        //             child: Text(
-                        //               user.fullName ?? 'No Name', // Show employee name
-                        //               style: const TextStyle(
-                        //                 color: Colors.black, // Change to Colors.white if needed
-                        //                 fontWeight: FontWeight.w400,
-                        //                 fontSize: 14,
-                        //                 overflow: TextOverflow.ellipsis,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           SizedBox(width: 8),
-                        //           Icon(Icons.notifications, color: Colors.grey), // Notification icon (optional)
-                        //         ],
-                        //       ),
-                        //     );
-                        //   },
-                        // ),
-
-
-
-
-
+                        )
                       ],
                     ),
                   ),

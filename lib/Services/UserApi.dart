@@ -71,7 +71,7 @@ class Userapi {
   static Future<EmployeeListModel?> GetEmployeeList() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("http://192.168.0.56:5000/chat/get_members");
+      final url = Uri.parse("${host}/chat/get_members");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetEmployeeDetailsApi Response:${res.body}");
