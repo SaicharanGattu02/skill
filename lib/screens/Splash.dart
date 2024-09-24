@@ -2,6 +2,8 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Register.dart';
+import 'package:skill/screens/dashboard.dart';
+import 'package:skill/utils/Preferances.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -11,6 +13,22 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+  String token = "";
+
+  @override
+  void initState() {
+    fetchDetails();
+
+    super.initState();
+  }
+
+  fetchDetails() async {
+    var Token = PreferenceService().getString('token');
+    setState(() {
+      token = Token as String;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +47,11 @@ class _SplashState extends State<Splash> {
             ],
           ),
         ),
-        // nextScreen: (onboard_status == "")
-        //     ? MySplashOnboard()
-        //     : (token != "")
-        //     ? (permissions_granted ? MyMainHome() : MyPermission())
-        //     : (permissions_granted ? MySignup() : MyPermission()),
-        nextScreen: const Login(), // Change this to your desired next screen
+
+        nextScreen: (token == "") ? Login() : Dashboard(),
+        // ? (permissions_granted ? MyMainHome() : MyPermission())
+        // : (permissions_granted ? MySignup() : MyPermission()),
+        // nextScreen: const Login(), // Change this to your desired next screen
         splashIconSize: double.infinity,
         backgroundColor: const Color(0xff8856F4),
         splashTransition: SplashTransition.scaleTransition,

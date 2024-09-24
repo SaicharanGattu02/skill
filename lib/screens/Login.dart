@@ -68,6 +68,7 @@ class _LogInState extends State<Login> {
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.blueAccent,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -76,7 +77,7 @@ class _LogInState extends State<Login> {
               width: width,
               child: Center(
                 child: Image.asset(
-                  "assets/logo.png",
+                  "assets/skillLogo.png",
                   height: 100,
                   width: 200,
                 ),
