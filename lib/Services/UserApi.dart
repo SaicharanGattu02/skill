@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:skill/Model/ProjectsModel.dart';
 
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
@@ -85,4 +86,24 @@ class Userapi {
       return null;
     }
   }
+
+  static Future<ProjectsModel?> GetProjectsList() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("http://192.168.0.56:5000/api/projects/on_going");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsList Response:${res.body}");
+        return ProjectsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
 }
