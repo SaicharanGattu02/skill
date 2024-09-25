@@ -46,5 +46,9 @@ const aadhaarRegex = "[0-9]{12}";
 
 const staticImage = "https://picsum.photos/250?image=9";
 
+/////////Colors
+
+
+
 
 var notification_val=0;

@@ -25,7 +25,7 @@ class Data {
   Data();
 
   Data.fromJson(Map<String, dynamic> json) {
-    // Initialize properties from json if necessary
+
   }
 
   Map<String, dynamic> toJson() {
