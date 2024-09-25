@@ -21,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Data>? employeeData = [];
   final List<Map<String, String>> items1 = [
+
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
@@ -29,9 +30,11 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
+
   ];
 
   final List<Map<String, String>> items = [
+
     {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
     {'image': 'assets/hrteam.png', 'text': '# Designers'},
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
@@ -43,6 +46,7 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
+
   ];
   @override
   void initState() {
@@ -53,29 +57,40 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> GetEmployeeData() async {
     var Res = await Userapi.GetEmployeeList();
-    if (Res != null) {
-      if (Res.data != null) {
-        employeeData = Res.data;
-        print("Employee List Get SuccFully  ${Res.settings?.message}");
-      } else {
-        print("Employee List Failure  ${Res.settings?.message}");
+    setState(() {
+      if (Res != null) {
+        if (Res.data != null) {
+
+          employeeData = Res.data;
+
+          print("Employee List Get Succesfully  ${Res.settings?.message}");
+
+
+        } else {
+
+          print("Employee List Failure  ${Res.settings?.message}");
+
+        }
       }
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xffF3ECFB),
+
       appBar: AppBar(
+
         automaticallyImplyLeading: false,
         leading: null, // Hides the leading icon (for drawer)
         actions: <Widget>[
           Container()
-        ], // this will hide endDrawer hamburger icon
+        ],
         toolbarHeight: 58,
         backgroundColor: const Color(0xff8856F4),
         title: Padding(

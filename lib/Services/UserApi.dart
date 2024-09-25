@@ -90,7 +90,7 @@ class Userapi {
   static Future<ProjectsModel?> GetProjectsList() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("http://192.168.0.56:5000/api/projects/on_going");
+      final url = Uri.parse("${host}/api/projects/on_going");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetProjectsList Response:${res.body}");

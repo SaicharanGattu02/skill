@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/ProjectsModel.dart';
+import '../Services/UserApi.dart';
+
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
 
@@ -20,6 +23,27 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
   ];
+
+
+  @override
+  void initState() {
+    GetProjectsData();
+    super.initState();
+  }
+  List<Data> projectsData = [];
+  Future<void> GetProjectsData() async {
+    var Res = await Userapi.GetProjectsList();
+    setState(() {
+      if (Res != null) {
+        if (Res.data != null) {
+          projectsData = Res.data??[];
+          print("projectsData List Get SuccFully  ${projectsData[0].name}");
+        } else {
+          print("Employee List Failure  ${Res.settings?.message}");
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +111,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             SizedBox(height: w * 0.02),
             Expanded(
               child: GridView.builder(
-                itemCount: items1.length,
+                itemCount: projectsData.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, // Two items per row
                   childAspectRatio: 1, // Adjust for better layout
@@ -95,6 +119,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   crossAxisSpacing: 10, // Space between items horizontally
                 ),
                 itemBuilder: (context, index) {
+                  final data=projectsData[index];
                   return Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -105,16 +130,15 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ClipOval(
-                          child:Image.asset(
-                            items1[index]['image']!,
+                          child:Image.network(
+                            data.icon??"",
                             width: 48,
                             height: 48,
                             fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          items1[index]['text']!,
+                        Text(data.name??"",
                           style: const TextStyle(
                               color: Color(0xff4F3A84),
                               fontWeight: FontWeight.w500,
@@ -136,7 +160,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                                   fontFamily: "Inter"),
                             ),
                             Text(
-                              "${(double.parse(items1[index]['value']!) * 100).toInt()}%",
+                              "${data.total_percent??""}%",
                               style: const TextStyle(
                                   color: Color(0xff000000),
                                   fontWeight: FontWeight.w400,
@@ -147,7 +171,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         ),
                         const SizedBox(height: 4),
                         LinearProgressIndicator(
-                          value: double.parse(items1[index]['value']!),
+                          value:5,
                           minHeight: 7,
                           backgroundColor: const Color(0xffE0E0E0),
                           borderRadius: BorderRadius.circular(20),

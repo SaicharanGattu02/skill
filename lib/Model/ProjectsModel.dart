@@ -34,6 +34,7 @@ class Data {
   String? icon;
   String? status;
   String? startDate;
+  Null? total_percent;
   Null? endDate;
 
   Data(
@@ -42,6 +43,7 @@ class Data {
         this.icon,
         this.status,
         this.startDate,
+        this.total_percent,
         this.endDate});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class Data {
     status = json['status'];
     startDate = json['start_date'];
     endDate = json['end_date'];
+    total_percent = json['total_percent'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +64,7 @@ class Data {
     data['status'] = this.status;
     data['start_date'] = this.startDate;
     data['end_date'] = this.endDate;
+    data['total_percent'] = this.total_percent;
     return data;
   }
 }
