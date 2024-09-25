@@ -118,60 +118,55 @@ class _MeetingsState extends State<Meetings> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  DateFormat('MMMM d, y').format(currentMonth),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff000000),
-                    height: 19.36 / 16,
-                  ),
-                ),
-                // IconButton(
-                //   icon: const Icon(Icons.calendar_today, color: Color(0xff8856F4)),
-                //   onPressed: _pickMonth,
-                // ),
-
-              ],
-            ),
-            SizedBox(height: 2),
-            Row(
-              children: [
-                Text(
-                  "Today",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff8856F4),
-                    height: 19.36 / 18,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Today",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff8856F4),
+                        height: 19.36 / 16,
+                      ),
+                    ),
+                    Text(
+                      DateFormat('MMMM d, y').format(currentMonth),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff000000),
+                        fontFamily: "Inter",
+                        height: 19.36 / 14,
+                      ),
+                    ),
+                  ],
                 ),
                 Spacer(),
                 Image.asset(
                   "assets/sun.png",
-                  width: 24,
-                  height: 24,
+                  width: w * 0.05,
+                  height: w * 0.04,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Text(
                   "Now is almost sunny",
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 14.0,
+                    fontSize: 10,
                     color: Color(0xff64748B),
-                    height: 16.94/14,
+                    height: 16.94 / 10,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Image.asset(
                   "assets/sunn.png",
                   width: 24,
                   height: 24,
                 ),
-
               ],
             ),
             const SizedBox(height: 18),
@@ -284,8 +279,8 @@ class _MeetingsState extends State<Meetings> {
                           children: [
                             ClipOval(
                                 child: Container(
-                                  width: 12,
-                                  height: 12,
+                                  width: 10,
+                                  height: 10,
                                   decoration: BoxDecoration(
                                       color: Color(0xff3B82F6),
                                       borderRadius: BorderRadius.circular(100)),
@@ -296,10 +291,10 @@ class _MeetingsState extends State<Meetings> {
                                 Text(
                                   task["time"]!,
                                   style: const TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     height: 16 / 12,
                                     color: Color(0xff4A4A4A),
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
 
@@ -325,10 +320,10 @@ class _MeetingsState extends State<Meetings> {
                         Text(
                           task["title"]!,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: Color(0xff141516),
-                            height: 16 / 21,
+                            height: 16 / 12,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -344,6 +339,8 @@ class _MeetingsState extends State<Meetings> {
                             color: Color(0xffDE350B),
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        Container(decoration: BoxDecoration(color: Color(0xff2FB035),borderRadius: BorderRadius.circular(100)),)
                       ],
                     ),
                   );

@@ -48,13 +48,14 @@ class _TodolistState extends State<Todolist> {
 
   void _scrollToSelectedDate() {
     final index = dates.indexWhere((date) =>
-    date.day == selectedDate.day &&
+        date.day == selectedDate.day &&
         date.month == selectedDate.month &&
         date.year == selectedDate.year);
 
     if (index != -1) {
       // Scroll to the selected date with some offset to keep it centered
-      final double offset = index * 55.0; // Adjust the 55.0 based on the item width
+      final double offset =
+          index * 55.0; // Adjust the 55.0 based on the item width
       _scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 300),
@@ -65,12 +66,13 @@ class _TodolistState extends State<Todolist> {
 
   void _generateDates() {
     final startOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
-    final endOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0); // Last day of the month
+    final endOfMonth = DateTime(
+        currentMonth.year, currentMonth.month + 1, 0); // Last day of the month
 
     setState(() {
       dates = List.generate(
         endOfMonth.day,
-            (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+        (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
       ); // Generate all dates in the current month
     });
   }
@@ -86,9 +88,11 @@ class _TodolistState extends State<Todolist> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            primaryColor: const Color(0xff8856F4), // Change the color of the header
-            colorScheme:
-            ColorScheme.light(primary: const Color(0xff8856F4)), // Change color of selected date
+            primaryColor:
+                const Color(0xff8856F4), // Change the color of the header
+            colorScheme: ColorScheme.light(
+                primary:
+                    const Color(0xff8856F4)), // Change color of selected date
             buttonTheme: const ButtonThemeData(
                 textTheme: ButtonTextTheme.primary), // Change button color
           ),
@@ -101,7 +105,8 @@ class _TodolistState extends State<Todolist> {
       setState(() {
         currentMonth = DateTime(picked.year, picked.month, picked.day);
         _generateDates();
-        selectedDate = currentMonth; // Set the selected date to the first of the new month
+        selectedDate =
+            currentMonth; // Set the selected date to the first of the new month
       });
     }
   }
@@ -113,7 +118,8 @@ class _TodolistState extends State<Todolist> {
     final selectedDateFormatted = DateFormat('MMMM d, y').format(selectedDate);
 
     // Filter tasks for the selected date
-    final selectedTasks = tasks.where((task) => task['date'] == selectedDateFormatted).toList();
+    final selectedTasks =
+        tasks.where((task) => task['date'] == selectedDateFormatted).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
@@ -148,69 +154,62 @@ class _TodolistState extends State<Todolist> {
           color: const Color(0xffFFFFFF), // Surrounding container color
           borderRadius: BorderRadius.circular(20),
         ),
-        child:
-        Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Month and year display with button to select new month and year
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  DateFormat('MMMM d, y').format(currentMonth),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff000000),
-                    height: 19.36 / 16,
-                  ),
-                ),
-                // IconButton(
-                //   icon: const Icon(Icons.calendar_today, color: Color(0xff8856F4)),
-                //   onPressed: _pickMonth,
-                // ),
-
-              ],
-            ),
-             SizedBox(height: 2),
-             Row(
-              children: [
-                Text(
-                  "Today",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff8856F4),
-                    height: 19.36 / 18,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Today",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff8856F4),
+                        height: 19.36 / 16,
+                      ),
+                    ),
+                    Text(
+                      DateFormat('MMMM d, y').format(currentMonth),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff000000),
+                        fontFamily: "Inter",
+                        height: 19.36 / 14,
+                      ),
+                    ),
+                  ],
                 ),
                 Spacer(),
                 Image.asset(
                   "assets/sun.png",
-                  width: 24,
-                  height: 24,
+                  width: w * 0.05,
+                  height: w * 0.04,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Text(
                   "Now is almost sunny",
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 14.0,
+                    fontSize: 10,
                     color: Color(0xff64748B),
-                    height: 16.94/14,
+                    height: 16.94 / 10,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Image.asset(
                   "assets/sunn.png",
                   width: 24,
                   height: 24,
                 ),
-
               ],
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: 18),
             SingleChildScrollView(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
@@ -230,7 +229,7 @@ class _TodolistState extends State<Todolist> {
                     child: ClipRect(
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        width: 55, // Adjust width to fit more dates
+                        width: 55,
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xffF0EAFF)
@@ -246,7 +245,8 @@ class _TodolistState extends State<Todolist> {
                                 fontSize: 16,
                                 color: isSelected
                                     ? const Color(0xff8856F4)
-                                    : const Color(0xff000000), // Change color for selected date
+                                    : const Color(
+                                        0xff000000), // Change color for selected date
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -268,7 +268,6 @@ class _TodolistState extends State<Todolist> {
                 }),
               ),
             ),
-
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
@@ -281,24 +280,31 @@ class _TodolistState extends State<Todolist> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Icon or image on the left
                             Image.asset(
                               "assets/More-vertical.png",
                               fit: BoxFit.contain,
-                              width: 24,
-                              height: 24,
+                              width: 20,
+                              height: 20,
                             ),
                             const SizedBox(width: 10),
+
+                            // Red circular indicator
                             ClipOval(
                               child: Container(
-                                width: 20,
-                                height: 20,
+                                width: w * 0.045,
+                                height: w * 0.045,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(
-                                        color: const Color(0xffDE350B), width: 3)),
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                    color: const Color(0xffDE350B),
+                                    width: 3,
+                                  ),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
+
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,53 +314,75 @@ class _TodolistState extends State<Todolist> {
                                     style: const TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w500,
-                                      fontSize: 14.0,
-                                      color: Color(0xff000000),
-                                      height: 16.94 / 14.0,
+                                      fontSize: 13,
+                                      color: Color(0xff141516),
+                                      height: 16.94 / 13,
                                     ),
                                   ),
                                   const SizedBox(height: 5),
-                                  Text(
-                                    selectedTasks[index]['subtitle'] ?? "",
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12.0,
-                                      color: Color(0xff475569),
-                                      height: 14.52 / 12.0,
+                                  SizedBox(
+                                    width: w * 0.5,
+                                    child: Text(
+                                      selectedTasks[index]['subtitle'] ?? "",
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12.0,
+                                        color: Color(0xff475569),
+                                        height: 14.52 / 12.0,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Task date row
                                   Row(
                                     children: [
                                       const Icon(
                                         Icons.calendar_today_outlined,
                                         color: Color(0xff2FB035),
-                                        size: 18,
+                                        size: 16,
                                       ),
-                                      SizedBox(
-                                        width: w * 0.01,
-                                      ),
+                                      SizedBox(width: w * 0.01),
                                       const Text(
                                         "Today",
                                         style: TextStyle(
                                           color: Color(0xff2FB035),
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                           fontFamily: "Inter",
-                                          height: 20 / 16,
+                                          height: 20 / 14,
                                         ),
-                                      )
+                                      ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
+                            ),
+
+                            Container(
+                              width: w * 0.04,
+                              height: w * 0.04,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: const Color(0xff8856F4),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Center(
+                                  child: Image.asset(
+                                "assets/crossblue.png",
+                                fit: BoxFit.contain,
+                                width: 5,
+                                height: 5,color: Color(0xff8856F4),
+                              )),
                             ),
                           ],
                         ),
                       ),
+
+                      // Divider
                       Divider(
                         thickness: 1,
                         color: const Color(0xff94A3B8).withOpacity(0.3),

@@ -5,6 +5,7 @@ import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
+import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/screens/Projects.dart';
 import 'package:skill/screens/Task.dart';
@@ -24,7 +25,6 @@ class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Data>? employeeData = [];
   final List<Map<String, String>> items1 = [
-
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
@@ -33,11 +33,9 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-
   ];
 
   final List<Map<String, String>> items = [
-
     {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
     {'image': 'assets/hrteam.png', 'text': '# Designers'},
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
@@ -49,7 +47,6 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
-
   ];
   @override
   void initState() {
@@ -63,16 +60,11 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       if (Res != null) {
         if (Res.data != null) {
-
           employeeData = Res.data;
 
           print("Employee List Get Succesfully  ${Res.settings?.message}");
-
-
         } else {
-
           print("Employee List Failure  ${Res.settings?.message}");
-
         }
       }
     });
@@ -86,14 +78,10 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xffF3ECFB),
-
       appBar: AppBar(
-
         automaticallyImplyLeading: false,
         leading: null, // Hides the leading icon (for drawer)
-        actions: <Widget>[
-          Container()
-        ],
+        actions: <Widget>[Container()],
         toolbarHeight: 58,
         backgroundColor: const Color(0xff8856F4),
         title: Padding(
@@ -228,10 +216,35 @@ class _DashboardState extends State<Dashboard> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Container(
+                                padding: const EdgeInsets.only(left: 4,right: 4,top: 2,bottom: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffFFFFFF),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "Skil ID - o2",
+                                      style: TextStyle(
+                                          color: Color(0xff8856F4),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 10,
+                                          height: 12.1/10,
+                                          letterSpacing: 0.14,
+                                          overflow: TextOverflow.ellipsis,
+                                          fontFamily: "Nunito"),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
+                                    child:
+                                    Text(
                                       "Prashanth Chary",
                                       style: const TextStyle(
                                           color: Color(0xffFFFFFF),
@@ -240,13 +253,6 @@ class _DashboardState extends State<Dashboard> {
                                           overflow: TextOverflow.ellipsis,
                                           fontFamily: "Inter"),
                                     ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Image.asset(
-                                    "assets/edit.png",
-                                    width: 18,
-                                    height: 18,
-                                    fit: BoxFit.cover,
                                   ),
                                   const SizedBox(width: 15),
                                   Container(
@@ -266,6 +272,13 @@ class _DashboardState extends State<Dashboard> {
                                           fontFamily: "Nunito"),
                                     ),
                                   ),
+                                  const SizedBox(width: 15),
+                                  Image.asset(
+                                    "assets/edit.png",
+                                    width: 18,
+                                    height: 18,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -279,13 +292,13 @@ class _DashboardState extends State<Dashboard> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "UX/UI Designer",
+                                          "UX/UI Designer at PIXL Since 2024",
                                           style: TextStyle(
                                               color: const Color(0xffFFFFFF)
                                                   .withOpacity(0.7),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14,
-                                              height: 1.21,
+                                              height: 16.21/14,
                                               letterSpacing: 0.14,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: "Inter"),
@@ -321,41 +334,7 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                   const SizedBox(width: 15),
                                   // Performance Container
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffFFFFFF),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          "79.65%",
-                                          style: TextStyle(
-                                              color: Color(0xff2FB035),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                              height: 1.21,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Nunito"),
-                                        ),
-                                        Text(
-                                          "Performance",
-                                          style: TextStyle(
-                                              color: Color(0xff8856F4),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12,
-                                              height: 1.2,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Nunito"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+
                                 ],
                               ),
                             ],
@@ -1221,26 +1200,36 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/msg.png"),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Messages",
-                  style: TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Messages()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/msg.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Messages",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -1444,10 +1433,12 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                InkWell(onTap: (){
-                  PreferenceService().remove("token");
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
-                },
+                InkWell(
+                  onTap: () {
+                    PreferenceService().remove("token");
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  },
                   child: Container(
                     child: Column(
                       children: [
