@@ -34,8 +34,8 @@ class Data {
   String? icon;
   String? status;
   String? startDate;
-  Null? total_percent;
-  Null? endDate;
+  int? total_percent;
+  int? endDate;
 
   Data(
       {this.name,

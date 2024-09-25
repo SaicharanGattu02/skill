@@ -171,12 +171,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                         ),
                         const SizedBox(height: 4),
                         LinearProgressIndicator(
-                          value:5,
+                          value: (data.total_percent?.toDouble() ?? 0) / 100.0, // converting percent to a fraction (0.21 for 21%)
                           minHeight: 7,
                           backgroundColor: const Color(0xffE0E0E0),
                           borderRadius: BorderRadius.circular(20),
                           color: const Color(0xff2FB035),
                         ),
+
+
                       ],
                     ),
                   );
