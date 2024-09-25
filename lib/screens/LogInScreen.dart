@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill/screens/ForgotPassword.dart';
 import 'package:skill/screens/dashboard.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -39,25 +40,28 @@ class _LogInScreenState extends State<LogInScreen> {
                   color: Color(0xff8856F4),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: w * 0.20,
+                    ),
                     Image.asset(
                       "assets/skillLogo.png",
                       height: h * 0.06,
                       fit: BoxFit.contain,
                       alignment: Alignment.topCenter,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
                     SingleChildScrollView(
                       child: SizedBox(
                         width: 221,
-                        child: const Text(
-                          'Sign In to your Account',
+                        child: Text(
+                          'Sign up to your Account',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 32,
+                            fontSize: 25,
                             color: Color(0xffEEEEEE),
                             fontWeight: FontWeight.w700,
                             height: 38.4 / 32,
@@ -66,16 +70,16 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
+                    const SizedBox(height: 8),
+                    Text(
                       'Login Your Account',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: 12,
+                        fontSize: 10,
                         color: Color(0xffEEEEEE),
                         fontWeight: FontWeight.w500,
-                        height: 16.8 / 12,
+                        height: 16.8 / 10,
                         letterSpacing: -0.01,
                       ),
                     ),
@@ -85,15 +89,16 @@ class _LogInScreenState extends State<LogInScreen> {
             ],
           ),
           Positioned(
-            top: h * 0.35,
-            left: w * 0.1,
-            right: w * 0.1,
+            top: h * 0.36,
+            left: w * 0.08,
+            right: w * 0.08,
+            bottom: w * 0.08,
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: const Color(0xffFFFFFF),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(7),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -116,7 +121,6 @@ class _LogInScreenState extends State<LogInScreen> {
                         controller: _passwordController,
                         focusNode: _focusNodePassword,
                         hintText: "Password",
-
                         validationMessage: 'Please select your city',
                         prefixicon: Image.asset(
                           "assets/Lock.png",
@@ -125,51 +129,68 @@ class _LogInScreenState extends State<LogInScreen> {
                           fit: BoxFit.contain,
                           color: Color(0xffAFAFAF),
                         )),
-
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Checkbox(
-                          value: _rememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              _rememberMe = value ?? false; // Handle null value
-                            });
-                          },
+                        Container(
+                          width: w * 0.038,
+                          height: w * 0.038,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              border: Border.all(
+                                color: Color(0xff9AADB6),
+                                width: 1.3,
+                              )),
                         ),
-                        const SizedBox(width: 5),
-                        const Text(
+                        SizedBox(
+                          width: w * 0.02,
+                        ),
+                        Text(
                           "Remember me",
                           style: TextStyle(
-                            color: Color(0xff1C1C1C),
+                            color: Color(0xff70778B),
                             fontFamily: "Inter",
-                            fontSize: 14,
+                            fontSize: 12,
+                            letterSpacing: -0.01,
                             fontWeight: FontWeight.w500,
                             height: 21 / 14,
                           ),
                         ),
                         const Spacer(),
-                        GestureDetector(
+                        InkWell(
                           onTap: () {
-                            // Handle forgot password
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPassword()));
                           },
-                          child: const Text(
+                          child: Text(
                             "Forgot Password?",
                             style: TextStyle(
-                              color: Color(0xff8856F4),
-                              fontFamily: "Inter",
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              height: 19.06 / 14,
-                            ),
+                                color: Color(0xff8856F4),
+                                fontFamily: "Inter",
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                height: 19.06 / 12,
+                                letterSpacing: -0.01),
                           ),
                         ),
                       ],
                     ),
+                    SizedBox(height: 16),
+                    Center(
+                      child: Text(
+                        "Login With OTP",
+                        style: TextStyle(
+                            color: Color(0xff8856F4),
+                            fontFamily: "Inter",
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            height: 19.06 / 12,
+                            letterSpacing: -0.01),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        // Navigate to Dashboard
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Dashboard()),
@@ -177,15 +198,14 @@ class _LogInScreenState extends State<LogInScreen> {
                       },
                       child: Container(
                         width: w,
+                        height: w * 0.1,
                         decoration: BoxDecoration(
                           color: const Color(0xff8856F4),
                           borderRadius: BorderRadius.circular(7),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                          child: const Text(
-                            "LogIn",
-                            textAlign: TextAlign.center,
+                        child: Center(
+                          child: Text(
+                            "Continue",
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
@@ -197,19 +217,19 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
                           "Don’t have an account?",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Color(0xff6C7278),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              color: Color(0xff6C7278),
+                              fontWeight: FontWeight.w400,
+                              height: 19.6 / 12,
+                              letterSpacing: -0.01),
                         ),
                         const SizedBox(width: 6),
                         GestureDetector(
@@ -219,13 +239,14 @@ class _LogInScreenState extends State<LogInScreen> {
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xff8856F4),
-                              color: Color(0xff8856F4),
-                              fontWeight: FontWeight.w500,
-                            ),
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color(0xff8856F4),
+                                color: Color(0xff8856F4),
+                                height: 19.6 / 12,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: -0.01),
                           ),
                         )
                       ],
@@ -242,15 +263,14 @@ class _LogInScreenState extends State<LogInScreen> {
 
   Widget _buildTextFormField(
       {required TextEditingController controller,
-        required FocusNode focusNode,
-        bool obscureText = false,
-        required String hintText,
-        required String validationMessage,
-        TextInputType keyboardType = TextInputType.text,
-        Widget? prefixicon,
-      }) {
+      required FocusNode focusNode,
+      bool obscureText = false,
+      required String hintText,
+      required String validationMessage,
+      TextInputType keyboardType = TextInputType.text,
+      Widget? prefixicon}) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
+      height: MediaQuery.of(context).size.height * 0.045,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
@@ -261,15 +281,14 @@ class _LogInScreenState extends State<LogInScreen> {
           prefixIcon: Container(
               width: 21,
               height: 21,
-              padding: EdgeInsets.only(top: 12, bottom: 12, left: 10),
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
               child: prefixicon),
-
           hintStyle: const TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             letterSpacing: 0,
-            height: 1.2,
+            height: 19.36 / 14,
             color: Color(0xffAFAFAF),
-            fontFamily: 'Poppins',
+            fontFamily: 'Inter',
             fontWeight: FontWeight.w400,
           ),
           filled: true,

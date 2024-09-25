@@ -46,25 +46,28 @@ class _RegisterState extends State<Register> {
                   color: Color(0xff8856F4),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: w * 0.20,
+                    ),
                     Image.asset(
                       "assets/skillLogo.png",
                       height: h * 0.06,
                       fit: BoxFit.contain,
                       alignment: Alignment.topCenter,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
                     SingleChildScrollView(
-                      child:  SizedBox(
+                      child: SizedBox(
                         width: 221,
                         child: Text(
                           'Sign up to your Account',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 32,
+                            fontSize: 25,
                             color: Color(0xffEEEEEE),
                             fontWeight: FontWeight.w700,
                             height: 38.4 / 32,
@@ -73,16 +76,16 @@ class _RegisterState extends State<Register> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
                       'Company Information',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: 12,
+                        fontSize: 10,
                         color: Color(0xffEEEEEE),
                         fontWeight: FontWeight.w500,
-                        height: 16.8 / 12,
+                        height: 16.8 / 10,
                         letterSpacing: -0.01,
                       ),
                     ),
@@ -92,89 +95,121 @@ class _RegisterState extends State<Register> {
             ],
           ),
           Positioned(
-            top: h * 0.35,
-            left: w * 0.1,
-            right: w * 0.1,
-            bottom: w * 0.1,
+            top: h * 0.36,
+            left: w * 0.08,
+            right: w * 0.08,
+            bottom: w * 0.08,
             child: SingleChildScrollView(
               // Enable scrolling when content overflows
               child: Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: const Color(0xffFFFFFF),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(7),
                 ),
                 child: Column(
                   children: [
                     _buildTextFormField(
-                      controller: _companyController,
-                      focusNode: _focusNodeCompany,
-                      hintText: "Company Name",
-                      validationMessage: 'Please enter your company name',
-                      keyboardType: TextInputType.text,
-                        prefixicon: Image.asset("assets/company.png",width: 21,height: 21,fit: BoxFit.contain,)
-                    ),
+                        controller: _companyController,
+                        focusNode: _focusNodeCompany,
+                        hintText: "Company Name",
+                        validationMessage: 'Please enter your company name',
+                        keyboardType: TextInputType.text,
+                        prefixicon: Image.asset(
+                          "assets/company.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _companySizeController,
-                      focusNode: _focusNodeCompanySize,
-                      hintText: "Enter Company Size",
-                      validationMessage: 'Please enter your company size',
-                        prefixicon: Image.asset("assets/csize.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
-                    ),
+                        controller: _companySizeController,
+                        focusNode: _focusNodeCompanySize,
+                        hintText: "Enter Company Size",
+                        validationMessage: 'Please enter your company size',
+                        prefixicon: Image.asset(
+                          "assets/csize.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _selectCategory,
-                      focusNode: _focusNodeSelectCategory,
-                      hintText: "Select Category",
-                      validationMessage: 'Please enter your category',
-                        prefixicon: Image.asset("assets/categoryselect.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
-                    ),
+                        controller: _selectCategory,
+                        focusNode: _focusNodeSelectCategory,
+                        hintText: "Select Category",
+                        validationMessage: 'Please enter your category',
+                        prefixicon: Image.asset(
+                          "assets/categoryselect.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _enterCityController,
-                      focusNode: _focusNodeCity,
-                      hintText: "Enter City",
-                      validationMessage: 'Please select your city',
-                        prefixicon: Image.asset("assets/city.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
-                    ),
+                        controller: _enterCityController,
+                        focusNode: _focusNodeCity,
+                        hintText: "Enter City",
+                        validationMessage: 'Please select your city',
+                        prefixicon: Image.asset(
+                          "assets/city.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _stateController,
-                      focusNode: _focusNodeState,
-                      hintText: "State",
-                      validationMessage: 'Please select your state',
-                        prefixicon: Image.asset("assets/state.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
-                    ),
+                        controller: _stateController,
+                        focusNode: _focusNodeState,
+                        hintText: "State",
+                        validationMessage: 'Please select your state',
+                        prefixicon: Image.asset(
+                          "assets/state.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 16),
                     _buildTextFormField(
-                      controller: _countryController,
-                      focusNode: _focusNodeCountry,
-                      hintText: "Country",
-                      validationMessage: 'Please select your country',
-                        prefixicon: Image.asset("assets/country.png",width: 21,height: 21,fit: BoxFit.contain,color: Color(0xffAFAFAF),)
-                    ),
+                        controller: _countryController,
+                        focusNode: _focusNodeCountry,
+                        hintText: "Country",
+                        validationMessage: 'Please select your country',
+                        prefixicon: Image.asset(
+                          "assets/country.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        )),
                     const SizedBox(height: 24),
-                    InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>PersonalInformation()));
-                    },
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PersonalInformation()));
+                      },
                       child: Container(
                         width: w,
+                        height: w * 0.1,
                         decoration: BoxDecoration(
                           color: const Color(0xff8856F4),
                           borderRadius: BorderRadius.circular(7),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 13),
+                        child: Center(
                           child: Text(
                             "Continue",
-                            textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
                               fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              height: 20 / 16,
+                              fontSize: 14,
+                              height: 20 / 14,
                             ),
                           ),
                         ),
@@ -188,9 +223,9 @@ class _RegisterState extends State<Register> {
                           "Already have an account?",
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Color(0xff6C7278),
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                             height: 19.6 / 14,
                             letterSpacing: -0.01,
                           ),
@@ -200,12 +235,12 @@ class _RegisterState extends State<Register> {
                           "Login",
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 14,
+                            fontSize: 12,
                             decoration: TextDecoration.underline,
                             decorationColor: Color(0xff8856F4),
                             color: Color(0xff8856F4),
-                            fontWeight: FontWeight.w500,
-                            height: 19.6 / 14,
+                            fontWeight: FontWeight.w600,
+                            height: 19.6 / 12,
                             letterSpacing: -0.01,
                           ),
                         )
@@ -221,17 +256,16 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required FocusNode focusNode,
-    bool obscureText = false,
-    required String hintText,
-    required String validationMessage,
-    TextInputType keyboardType = TextInputType.text,
-    Widget?prefixicon
-  }) {
+  Widget _buildTextFormField(
+      {required TextEditingController controller,
+      required FocusNode focusNode,
+      bool obscureText = false,
+      required String hintText,
+      required String validationMessage,
+      TextInputType keyboardType = TextInputType.text,
+      Widget? prefixicon}) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
+      height: MediaQuery.of(context).size.height * 0.045,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
@@ -239,8 +273,10 @@ class _RegisterState extends State<Register> {
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
-          prefixIcon: Container(width: 21,height: 21,
-              padding:EdgeInsets.only(top: 12,bottom: 12,left: 10) ,
+          prefixIcon: Container(
+              width: 21,
+              height: 21,
+              padding: EdgeInsets.only(top: 8, bottom: 8, left: 6),
               child: prefixicon),
           hintStyle: const TextStyle(
             fontSize: 15,

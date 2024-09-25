@@ -48,16 +48,19 @@ class _PersonalInformationState extends State<PersonalInformation> {
                   color: Color(0xff8856F4),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: w * 0.20,
+                    ),
                     Image.asset(
                       "assets/skillLogo.png",
                       height: h * 0.06,
                       fit: BoxFit.contain,
                       alignment: Alignment.topCenter,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
                     SingleChildScrollView(
                       child: SizedBox(
                         width: 221,
@@ -66,7 +69,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 32,
+                            fontSize: 25,
                             color: Color(0xffEEEEEE),
                             fontWeight: FontWeight.w700,
                             height: 38.4 / 32,
@@ -75,16 +78,16 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
                       'Personal information',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: 12,
+                        fontSize: 10,
                         color: Color(0xffEEEEEE),
                         fontWeight: FontWeight.w500,
-                        height: 16.8 / 12,
+                        height: 16.8 / 10,
                         letterSpacing: -0.01,
                       ),
                     ),
@@ -94,17 +97,17 @@ class _PersonalInformationState extends State<PersonalInformation> {
             ],
           ),
           Positioned(
-            top: h * 0.35,
-            left: w * 0.1,
-            right: w * 0.1,
-            bottom: w * 0.1,
+            top: h * 0.36,
+            left: w * 0.08,
+            right: w * 0.08,
+            bottom: w * 0.08,
             child: SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
               child: Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: const Color(0xffFFFFFF),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(7),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -144,8 +147,8 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         validationMessage: 'Please enter your category',
                         prefixicon: Image.asset(
                           "assets/gmail.png",
-                          width: 21,
-                          height: 21,
+                          width: 18,
+                          height: 18,
                           fit: BoxFit.contain,
                           color: Color(0xffAFAFAF),
                         )),
@@ -182,44 +185,56 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       style: TextStyle(
                         color: Color(0xff1C1C1C),
                         fontFamily: "Inter",
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        height: 19.36 / 16,
+                        height: 19.36 / 12,
                       ),
                     ),
-                    Row(
+                    Row(mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Radio<String>(
-                              value: 'FeMale',
-                              groupValue: _gender,
-                              onChanged: (value) {
-                                setState(() {
-                                  _gender = value;
-                                });
-                              },
-                            ),
-                            const Text('FeMale'),
+                            Transform.scale(
+                              scale: 0.9,
+                              child: Radio<String>(
+                                value: 'Female',
+                                groupValue: _gender,
+                                activeColor: Color(0xff8856F4), // Change the active color
+                                onChanged: (value) {
+                                  setState(() {
+                                    _gender = value;
+                                  });
+                                },
+                              ),
+                            ), // Decrease the space between the Radio and the Text
+                             Text('Female'),
                           ],
                         ),
                         Row(
                           children: [
-                            Radio<String>(
-                              value: 'Male',
-                              groupValue: _gender,
-                              onChanged: (value) {
-                                setState(() {
-                                  _gender = value;
-                                });
-                              },
+                            Transform.scale(
+                              scale: 0.9, // Adjust the scale to decrease the size
+                              child: Radio<String>(
+                                value: 'Male',
+                                groupValue: _gender,
+                                activeColor: Color(0xff8856F4), // Change the active color
+                                onChanged: (value) {
+                                  setState(() {
+                                    _gender = value;
+                                  });
+                                },
+                              ),
                             ),
+                            // Decrease the space between the Radio and the Text
                             const Text('Male'),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+
+
+                    const SizedBox(height: 8),
                     InkWell(
                       onTap: () {
                         Navigator.push(
@@ -229,15 +244,15 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       },
                       child: Container(
                         width: w,
+                        height: w*0.1,
                         decoration: BoxDecoration(
                           color: const Color(0xff8856F4),
                           borderRadius: BorderRadius.circular(7),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                          child: const Text(
+                        child:  Center(
+                          child: Text(
                             "Continue",
-                            textAlign: TextAlign.center,
+
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
@@ -262,14 +277,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
 
   Widget _buildTextFormField(
       {required TextEditingController controller,
-      required FocusNode focusNode,
-      bool obscureText = false,
-      required String hintText,
-      required String validationMessage,
-      TextInputType keyboardType = TextInputType.text,
-      Widget? prefixicon}) {
+        required FocusNode focusNode,
+        bool obscureText = false,
+        required String hintText,
+        required String validationMessage,
+        TextInputType keyboardType = TextInputType.text,
+        Widget? prefixicon}) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
+      height: MediaQuery.of(context).size.height * 0.045,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
@@ -278,9 +293,9 @@ class _PersonalInformationState extends State<PersonalInformation> {
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon: Container(
-              width: 21,
-              height: 21,
-              padding: EdgeInsets.only(top: 12, bottom: 12, left: 10),
+              width: 20,
+              height: 20,
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
               child: prefixicon),
           hintStyle: const TextStyle(
             fontSize: 15,

@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
+import 'package:skill/screens/LogInScreen.dart';
+import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/screens/Projects.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
+import 'package:skill/utils/Preferances.dart';
 
 import '../Model/EmployeeListModel.dart';
 
@@ -1441,26 +1444,37 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/logout.png"),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Logout",
-                  style: TextStyle(
-                    color: Color(0xffDE350B),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
+                InkWell(onTap: (){
+                  PreferenceService().remove("token");
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/logout.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Logout",
+                          style: TextStyle(
+                            color: Color(0xffDE350B),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(

@@ -49,10 +49,10 @@ class _SplashState extends State<Splash> {
           ),
         ),
 
-        nextScreen: (token == "") ? Login() : Dashboard(),
+        // nextScreen: (token == "") ? Login() : Dashboard(),
         // ? (permissions_granted ? MyMainHome() : MyPermission())
         // : (permissions_granted ? MySignup() : MyPermission()),
-        // nextScreen: const Login(), // Change this to your desired next screen
+        nextScreen:  Register(), // Change this to your desired next screen
         splashIconSize: double.infinity,
         backgroundColor: const Color(0xff8856F4),
         splashTransition: SplashTransition.scaleTransition,

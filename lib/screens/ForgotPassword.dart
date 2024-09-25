@@ -1,22 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skill/screens/LogInScreen.dart';
+import 'package:flutter/services.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:skill/screens/ResetPassword.dart';
 
-import 'dashboard.dart';
-
-class Otp extends StatefulWidget {
-  const Otp({super.key});
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({super.key});
 
   @override
-  State<Otp> createState() => _OtpState();
+  State<ForgotPassword> createState() => _ForgotPasswordState();
 }
 
-class _OtpState extends State<Otp> {
-  final TextEditingController _emailOtpController = TextEditingController();
-  final TextEditingController _smsOtpController = TextEditingController();
+class _ForgotPasswordState extends State<ForgotPassword> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController otpController = TextEditingController();
 
   final FocusNode _focusNodeEmail = FocusNode();
-  final FocusNode _focusNodeSms = FocusNode();
+  final FocusNode focusNodeOTP = FocusNode();
+
+  bool _isOtpVisible = false; // To control OTP field visibility
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +56,9 @@ class _OtpState extends State<Otp> {
                     const SizedBox(height: 18),
                     SingleChildScrollView(
                       child: SizedBox(
-                        width: 221,
+                        width: 150,
                         child: Text(
-                          'Enter OTP',
+                          'Forgot Password',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -67,6 +69,19 @@ class _OtpState extends State<Otp> {
                             letterSpacing: -0.02,
                           ),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Personal information',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 10,
+                        color: Color(0xffEEEEEE),
+                        fontWeight: FontWeight.w500,
+                        height: 16.8 / 10,
+                        letterSpacing: -0.01,
                       ),
                     ),
                   ],
@@ -80,7 +95,6 @@ class _OtpState extends State<Otp> {
             right: w * 0.08,
             bottom: w * 0.08,
             child: SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -92,11 +106,10 @@ class _OtpState extends State<Otp> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTextFormField(
-                      controller: _emailOtpController,
+                      controller: _emailController,
                       focusNode: _focusNodeEmail,
-                      hintText: "Enter Email Otp",
-                      validationMessage: 'Please enter your first name',
-                      keyboardType: TextInputType.text,
+                      hintText: "Email Address",
+                      validationMessage: 'Please enter your email',
                       prefixicon: Image.asset(
                         "assets/gmail.png",
                         width: 21,
@@ -105,75 +118,61 @@ class _OtpState extends State<Otp> {
                         color: Color(0xffAFAFAF),
                       ),
                     ),
-                     SizedBox(height: w*0.004),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Resend',
-                          textAlign: TextAlign.right,
+                    const SizedBox(height: 24),
+                    if (_isOtpVisible) ...[
+                      Center(
+                        child: Text(
+                          "Enter OTP",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
+                            color: Color(0xff1C1D22),
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w400,
-                            height: 19.6 / 12,
-                            letterSpacing: -0.01 * 16,
-                            color: Color(0xff8856F4),
+                            fontSize: 14,
+                            height: 19.36 / 14,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _buildTextFormField(
-                      controller: _smsOtpController,
-                      focusNode: _focusNodeSms,
-                      hintText: "Enter SMS Otp",
-                      validationMessage: 'Please enter your last size',
-                      prefixicon: Image.asset(
-                        "assets/call.png",
-                        width: 21,
-                        height: 21,
-                        fit: BoxFit.contain,
-                        color: Color(0xffAFAFAF),
                       ),
-                    ),
-                     SizedBox(height: w*0.004),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'OTP Resent On Phone',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            height: 19.6 / 12,
-                            letterSpacing: -0.01 * 16,
-                            color: Color(0xff8856F4),
-                          ),
+                      const SizedBox(height: 24),
+                      PinCodeTextField(
+                        appContext: context,
+                        length: 5,
+                        focusNode: focusNodeOTP,
+                        controller: otpController,
+                        autoFocus: true,
+
+                        pinTheme: PinTheme(
+                          shape: PinCodeFieldShape.box,
+                          borderRadius: BorderRadius.circular(7),
+                          fieldHeight: 40,
+                          fieldWidth: 40,
+                          activeFillColor: Color(0xFFD0CBDB),
+                          inactiveFillColor: Color(0xFFD0CBDB),
+                          selectedFillColor:Color(0xFFD0CBDB),
                         ),
-                        Text(
-                          'Resend',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            height: 19.6 / 12,
-                            letterSpacing: -0.01,
-                            color: Color(0xff8856F4),
-                          ),
+                        textStyle: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                        cursorColor: Color(0xff8856F4),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
+                    ],
+                    SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LogInScreen()));
+                        setState(() {
+                          if (_isOtpVisible) {
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ResetPassword()));
+
+                          } else {
+                            _isOtpVisible = true;
+
+                          }
+                        });
                       },
                       child: Container(
                         width: w,
@@ -182,10 +181,9 @@ class _OtpState extends State<Otp> {
                           color: const Color(0xff8856F4),
                           borderRadius: BorderRadius.circular(7),
                         ),
-                        child:  Center(
+                        child: Center(
                           child: Text(
-                            "Continue",
-
+                            _isOtpVisible ? "Reset Password" : "Send Otp",
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
@@ -215,10 +213,9 @@ class _OtpState extends State<Otp> {
     required String validationMessage,
     TextInputType keyboardType = TextInputType.text,
     Widget? prefixicon,
-    Widget? sufexicon,
   }) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.045,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.05,
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
@@ -226,35 +223,18 @@ class _OtpState extends State<Otp> {
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
-          prefixIcon: Container(
-              width: 21,
-              height: 21,
-              padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-              child: prefixicon),
-          suffixIcon: Container(
-            height: 20,
-            width: 50,
-            margin: EdgeInsets.only(top: 8, bottom: 8, right: 5),
-            decoration: BoxDecoration(
-                color: Color(0xffE2FDF2), borderRadius: BorderRadius.circular(10)),
-            child: Center(
-              child: Text(
-                'Verify',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                  height: 19.2 / 10,
-                  letterSpacing: 0.14,
-                  color: Color(0xff2A9266),
-                ),
-              ),
-            ),
-          ),
+          prefixIcon: prefixicon != null
+              ? Container(
+            width: 21,
+            height: 21,
+            padding: EdgeInsets.only(top: 12, bottom: 12, left: 10),
+            child: prefixicon,
+          )
+              : null,
           hintStyle: const TextStyle(
-            fontSize: 12,
+            fontSize: 15,
             letterSpacing: 0,
-            height: 19.36/12,
+            height: 1.2,
             color: Color(0xffAFAFAF),
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w400,
