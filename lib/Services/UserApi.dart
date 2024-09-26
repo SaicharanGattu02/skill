@@ -9,6 +9,7 @@ import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/RegisterModel.dart';
+import '../Model/TasklistModel.dart';
 import 'otherservices.dart';
 
 
@@ -114,6 +115,23 @@ class Userapi {
       if (res != null) {
         print("GetMeeting Response:${res.body}");
         return MeetingModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+  static Future<TasklistModel?> GetProjecttaskslist() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/api/projects/tasks");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsList Response:${res.body}");
+        return TasklistModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

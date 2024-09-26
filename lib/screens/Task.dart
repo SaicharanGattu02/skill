@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
+
+import '../Model/TasklistModel.dart';
+import '../Services/UserApi.dart';
 
 class Task extends StatefulWidget {
   const Task({super.key});
@@ -11,6 +13,9 @@ class Task extends StatefulWidget {
 
 class _TaskState extends State<Task> {
   final List<String> daysOfWeek = ['Mo', 'Tu', 'Wed', 'Th', 'Fr', 'Sa', 'Su'];
+
+
+
   List<DateTime> dates = [];
   DateTime selectedDate = DateTime.now();
   DateTime currentMonth = DateTime.now();
@@ -47,6 +52,7 @@ class _TaskState extends State<Task> {
 
   @override
   void initState() {
+    GetProjectTasks();
     super.initState();
     _scrollController = ScrollController();
     _generateDates();
@@ -54,7 +60,19 @@ class _TaskState extends State<Task> {
       _scrollToSelectedDate();
     });
   }
-
+  List<Data> data=[];
+  Future<void> GetProjectTasks() async {
+    var Res = await Userapi.GetProjecttaskslist();
+    setState(() {
+      if (Res != null) {
+        if (Res.data != null) {
+          data = Res.data??[];
+        } else {
+          print("Employee List Failure  ${Res.settings?.message}");
+        }
+      }
+    });
+  }
   @override
   void dispose() {
     _scrollController.dispose();
