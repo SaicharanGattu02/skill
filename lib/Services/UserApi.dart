@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
+
+import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/RegisterModel.dart';
@@ -131,6 +133,24 @@ class Userapi {
       if (res != null) {
         print("GetProjectsList Response:${res.body}");
         return TasklistModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<CreateRoomModel?> CreateChatRoomAPi(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/chat/check-room/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("CreateChatRoomAPi Response:${res.body}");
+        return CreateRoomModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;
