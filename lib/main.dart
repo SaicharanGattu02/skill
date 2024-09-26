@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:projectStatus(percentage: 20,progressColor: Colors.blue,taskDetail: AutofillHints.telephoneNumber,)
+        home:Splash()
     );
   }
 }
