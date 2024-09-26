@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
-
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/RegisterModel.dart';
@@ -124,10 +123,10 @@ class Userapi {
       return null;
     }
   }
-  static Future<TasklistModel?> GetProjecttaskslist() async {
+  static Future<TasklistModel?> GetTask() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/api/projects/tasks");
+      final url = Uri.parse("${host}/todo/tasks");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetProjectsList Response:${res.body}");
@@ -141,6 +140,5 @@ class Userapi {
       return null;
     }
   }
-
 
 }

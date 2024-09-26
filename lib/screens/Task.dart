@@ -21,25 +21,25 @@ class _TaskState extends State<Task> {
   DateTime currentMonth = DateTime.now();
   late ScrollController _scrollController;
 
-  // Sample task data
-  final List<Map<String, String>> tasks = [
-    {
-      "title": "Plan and conduct user research and competitor analysis.",
-      "subtitle":
-          "Brainstorming brings team members' diverse experience into play.",
-      "collaborators": "+6 Collaborators",
-      "startDate": "10-09-2024",
-      "endDate": "10-09-2024",
-    },
-    {
-      "title": "Interpret data and qualitative feedback.",
-      "subtitle":
-          "Brainstorming brings team members' diverse experience into play.",
-      "collaborators": "+6 Collaborators",
-      "startDate": "10-09-2024",
-      "endDate": "10-09-2024",
-    },
-  ];
+
+  // final List<Map<String, String>> tasks = [
+  //   {
+  //     "title": "Plan and conduct user research and competitor analysis.",
+  //     "subtitle":
+  //         "Brainstorming brings team members' diverse experience into play.",
+  //     "collaborators": "+6 Collaborators",
+  //     "startDate": "10-09-2024",
+  //     "endDate": "10-09-2024",
+  //   },
+  //   {
+  //     "title": "Interpret data and qualitative feedback.",
+  //     "subtitle":
+  //         "Brainstorming brings team members' diverse experience into play.",
+  //     "collaborators": "+6 Collaborators",
+  //     "startDate": "10-09-2024",
+  //     "endDate": "10-09-2024",
+  //   },
+  // ];
 
   // List of image assets for collaborators
   final List<String> imageList = [
@@ -62,13 +62,13 @@ class _TaskState extends State<Task> {
   }
   List<Data> data=[];
   Future<void> GetProjectTasks() async {
-    var Res = await Userapi.GetProjecttaskslist();
+    var Res = await Userapi.GetTask();
     setState(() {
       if (Res != null) {
         if (Res.data != null) {
           data = Res.data??[];
         } else {
-          print("Employee List Failure  ${Res.settings?.message}");
+          print("Task Failure  ${Res.settings?.message}");
         }
       }
     });
@@ -257,9 +257,9 @@ class _TaskState extends State<Task> {
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
-                itemCount: tasks.length,
+                itemCount: data.length,
                 itemBuilder: (context, index) {
-                  final task = tasks[index];
+                  final task = data[index];
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.all(16),
@@ -268,14 +268,14 @@ class _TaskState extends State<Task> {
                           Border.all(color: const Color(0xffD0CBDB), width: 1),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.grey.withOpacity(0.2),
+                      //     spreadRadius: 1,
+                      //     blurRadius: 5,
+                      //     offset: const Offset(0, 3),
+                      //   ),
+                      // ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +314,7 @@ class _TaskState extends State<Task> {
                           height: 6,
                         ),
                         Text(
-                          task["title"]!,
+                          task.taskName ?? "",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -324,7 +324,7 @@ class _TaskState extends State<Task> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task["subtitle"]!,
+                          task.description ?? "",
                           style: const TextStyle(
                             fontSize: 12,
                             height: 16 / 12,
@@ -350,7 +350,7 @@ class _TaskState extends State<Task> {
                             }),
                             const SizedBox(width: 4),
                             Text(
-                              task["collaborators"]!,
+                              "+6 Collaborators",
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xff64748B),
@@ -371,7 +371,7 @@ class _TaskState extends State<Task> {
                               ),
                             ),
                             Text(
-                              "${task["startDate"]!}",
+                              task.dateTime ?? "",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -388,7 +388,7 @@ class _TaskState extends State<Task> {
                               ),
                             ),
                             Text(
-                              "${task["endDate"]!}",
+                              task.dateTime ?? "",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,

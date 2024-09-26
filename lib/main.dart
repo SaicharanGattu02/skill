@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:skill/screens/Alertscreen1.dart';
 import 'package:skill/screens/Alertscreen2.dart';
 import 'package:skill/screens/GroupMembers.dart';
+import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Splash.dart';
+import 'package:skill/screens/TabBar.dart';
+import 'package:skill/screens/TaskList.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/screens/nutsby.dart';
 import 'package:skill/screens/projectStatus.dart';
@@ -62,7 +65,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:Splash()
+        home:TaskList()
     );
   }
 }
