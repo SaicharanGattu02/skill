@@ -48,6 +48,7 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
   ];
+  bool _isLoading=false;
   @override
   void initState() {
     GetEmployeeData();
@@ -68,6 +69,12 @@ class _DashboardState extends State<Dashboard> {
         }
       }
     });
+  }
+
+ Future<void> _refreshItems() async{
+   await Future.delayed(Duration(seconds: 2));
+
+
   }
 
   @override
@@ -153,645 +160,701 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child: Padding(
-          padding:
-              const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
-          child: Column(
-            children: [
-              // Search Container
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      "assets/search.png",
-                      width: 24,
-                      height: 24,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      "Search",
-                      style: TextStyle(
-                          color: Color(0xff9E7BCA),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          fontFamily: "Nunito"),
-                    ),
-                  ],
+      body: RefreshIndicator(
+          color: Color(0xff9E7BCA),
+          backgroundColor: Colors.white,
+          displacement: 50,
+          onRefresh: _refreshItems,
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+            child: Column(
+              children: [
+                // Search Container
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "assets/search.png",
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Search",
+                        style: TextStyle(
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            fontFamily: "Nunito"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: w * 0.03,
-              ),
-              // User Info Container
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: const Color(0xff8856F4),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Center(
-                            child: Image.asset(
-                              "assets/pic.jpeg",
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
+                SizedBox(
+                  height: w * 0.03,
+                ),
+                // User Info Container
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: const Color(0xff8856F4),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          ClipOval(
+                            child: Center(
+                              child: Image.asset(
+                                "assets/pic.jpeg",
+                                width: 70,
+                                height: 70,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        // User Info and Performance
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(left: 4,right: 4,top: 2,bottom: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffFFFFFF),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: const [
-                                    Text(
-                                      "Skil ID - o2",
-                                      style: TextStyle(
-                                          color: Color(0xff8856F4),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 10,
-                                          height: 12.1/10,
-                                          letterSpacing: 0.14,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: "Nunito"),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child:
-                                    Text(
-                                      "Prashanth Chary",
-                                      style: const TextStyle(
-                                          color: Color(0xffFFFFFF),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: "Inter"),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xff2FB035),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: const Text(
-                                      "Active",
-                                      style: TextStyle(
-                                          color: Color(0xffFFFFFF),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 15,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: "Nunito"),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Image.asset(
-                                    "assets/edit.png",
-                                    width: 18,
-                                    height: 18,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // UX/UI and Performance in a Row
-                              Row(
-                                children: [
-                                  // UX/UI and Contact Details
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "UX/UI Designer at PIXL Since 2024",
-                                          style: TextStyle(
-                                              color: const Color(0xffFFFFFF)
-                                                  .withOpacity(0.7),
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 14,
-                                              height: 16.21/14,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Inter"),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "prashanth@pixl.in",
-                                          style: TextStyle(
-                                              color: const Color(0xffFFFFFF)
-                                                  .withOpacity(0.7),
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 14,
-                                              height: 1.21,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Inter"),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "96541 25641",
-                                          style: TextStyle(
-                                              color: const Color(0xffFFFFFF)
-                                                  .withOpacity(0.7),
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 14,
-                                              height: 1.21,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Inter"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  // Performance Container
-
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: w * 0.04,
-              ),
-              Row(
-                children: [
-                  const Text(
-                    "Projects",
-                    style: TextStyle(
-                        color: Color(0xff16192C),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
-                        height: 24.48 / 18,
-                        fontFamily: "Inter"),
-                  ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProjectsScreen()));
-                    },
-                    child: Text(
-                      "See all",
-                      style: TextStyle(
-                          color: Color(0xff8856F4),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          height: 16.94 / 14,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0xff8856F4),
-                          fontFamily: "Inter"),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: w * 0.02,
-              ),
-              SizedBox(
-                height: w * 0.37,
-                child: GridView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: items1.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1, // Two items per row
-                    childAspectRatio:
-                        0.76, // Adjust this ratio to fit your design
-                    mainAxisSpacing: 2, // Space between items horizontally
-                  ),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                            left: 16, right: 16, top: 10, bottom: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF7F4FC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Center Image
-                            Image.asset(
-                              items1[index]['image']!,
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(height: 8),
-                            // Bottom Text
-                            Text(
-                              items1[index]['text']!,
-                              style: const TextStyle(
-                                  color: Color(0xff4F3A84),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  height: 19.36 / 16,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontFamily: "Nunito"),
-                            ),
-                            const SizedBox(height: 10),
-                            Column(
+                          const SizedBox(width: 10),
+                          // User Info and Performance
+                          Expanded(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 4, right: 4, top: 2, bottom: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffFFFFFF),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        "Skil ID - 02",
+                                        style: TextStyle(
+                                            color: Color(0xff8856F4),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 10,
+                                            height: 12.1 / 10,
+                                            letterSpacing: 0.14,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: "Nunito"),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      "Progress",
-                                      style: TextStyle(
-                                          color: Color(0xff000000),
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12,
-                                          height: 14.52 / 12,
-                                          fontFamily: "Inter"),
+                                    Expanded(
+                                      child: Text(
+                                        "Prashanth Chary",
+                                        style: const TextStyle(
+                                            color: Color(0xffFFFFFF),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: "Inter"),
+                                      ),
                                     ),
-                                    Text(
-                                      "35%",
-                                      style: TextStyle(
-                                          color: Color(0xff000000),
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12,
-                                          fontFamily: "Inter"),
+                                     SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff2FB035),
+                                        borderRadius: BorderRadius.circular(100),
+                                      ),
+                                      child: const Text(
+                                        "Active",
+                                        style: TextStyle(
+                                            color: Color(0xffFFFFFF),
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12,
+                                            height: 16.36/12,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: "Nunito"),
+                                      ),
+                                    ),
+                                     SizedBox(width: 15),
+                                    Image.asset(
+                                      "assets/edit.png",
+                                      width: 18,
+                                      height: 18,
+                                      fit: BoxFit.cover,
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 4),
-                                LinearProgressIndicator(
-                                  value: double.parse(items1[index]['value']!),
-                                  minHeight: 7,
-                                  backgroundColor: const Color(0xffE0E0E0),
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: const Color(0xff2FB035),
+                                const SizedBox(height: 8),
+                                // UX/UI and Performance in a Row
+                                Row(
+                                  children: [
+                                    // UX/UI and Contact Details
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "UX/UI Designer at PIXL Since 2024",
+                                            style: TextStyle(
+                                                color: const Color(0xffFFFFFF)
+                                                    .withOpacity(0.7),
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12,
+                                                height: 16.21 / 12,
+                                                letterSpacing: 0.14,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: "Inter"),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.only(
+                                                    left: 4,
+                                                    right: 4,
+                                                    top: 3,
+                                                    bottom: 3),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(6),
+                                                    color: Color(0xffFFFFFF)
+                                                        .withOpacity(0.25)),
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/call.png",
+                                                      fit: BoxFit.contain,
+                                                      width: 12,
+                                                      color: Color(0xffffffff),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 4,
+                                                    ),
+                                                    Text(
+                                                      "96541 25641",
+                                                      style: TextStyle(
+                                                          color: const Color(
+                                                                  0xffFFFFFF),
+
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 11,
+                                                          height: 13.41/11,
+                                                          letterSpacing: 0.14,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          fontFamily: "Inter"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: w * 0.015),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  color: Color(0xffFFFFFF).withOpacity(0.25),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      "assets/gmail.png",
+                                                      fit: BoxFit.contain,
+                                                      width: 12,
+                                                      color: Color(0xffffffff),
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      "prashanth@pixl.in",
+                                                      style: TextStyle(
+                                                        color: const Color(0xffFFFFFF),
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 11,
+                                                        height: 13.41 / 11,
+                                                        letterSpacing: 0.14,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        fontFamily: "Inter",
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    // Performance Container
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(
-                height: w * 0.04,
-              ),
-              Row(
-                children: [
-                  const Text(
-                    "Channels",
-                    style: TextStyle(
-                        color: Color(0xff16192C),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
-                        fontFamily: "Inter"),
+                    ],
                   ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Allchannels()));
-                    },
-                    child: Text(
-                      "See all",
+                ),
+                SizedBox(
+                  height: w * 0.04,
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      "Projects",
                       style: TextStyle(
-                          color: Color(0xff8856F4),
+                          color: Color(0xff16192C),
                           fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0xff8856F4),
+                          fontSize: 18,
+                          height: 24.48 / 18,
                           fontFamily: "Inter"),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(
-                height: w * 0.02,
-              ),
-              SizedBox(
-                height: w * 0.3,
-                child: GridView.builder(
-                  scrollDirection:
-                      Axis.horizontal, // Changed to vertical to display in rows
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 2,
-                    childAspectRatio:
-                        0.28, // Adjust this ratio to fit your design
-                  ),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF7F4FC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            // Center Image
-                            Image.asset(
-                              items[index]['image']!,
-                              width: 32,
-                              height: 32,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(width: 8),
-                            // Bottom Text
-                            Text(
-                              items[index]['text']!,
-                              style: const TextStyle(
-                                color: Color(0xff27272E),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                height: 16.94 / 14,
-                                overflow: TextOverflow.ellipsis,
-                                fontFamily: "Inter",
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              SizedBox(
-                height: w * 0.05,
-              ),
-
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                    color: Color(0xffFFFFFF),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ProjectsScreen()));
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                width: w * 0.16,
-                                height: w * 0.115,
-                                padding: EdgeInsets.only(
-                                    left: 3, right: 3, top: 2, bottom: 2),
-                                decoration: BoxDecoration(
-                                    color: Color(0x1A8856F4),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    "237",
-                                    style: TextStyle(
-                                        color: Color(0xff000000),
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "Sarabun"),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                "PROJECTS",
-                                style: TextStyle(
-                                    color: Color(0xff000000),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Inter"),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: w * 0.03,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Todolist()));
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                width: w * 0.16,
-                                height: w * 0.115,
-                                padding: EdgeInsets.only(
-                                    left: 3, right: 3, top: 2, bottom: 2),
-                                decoration: BoxDecoration(
-                                    color: Color(0xffF1FFF3),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    "064",
-                                    style: TextStyle(
-                                        color: Color(0xff000000),
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "Sarabun"),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                "TO DO",
-                                style: TextStyle(
-                                    color: Color(0xff000000),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Inter"),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Task()));
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                width: w * 0.16,
-                                height: w * 0.115,
-                                padding: EdgeInsets.only(
-                                    left: 3, right: 3, top: 2, bottom: 2),
-                                decoration: BoxDecoration(
-                                    color: Color(0x1AFBBC04),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    "048",
-                                    style: TextStyle(
-                                        color: Color(0xff000000),
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "Sarabun"),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                "TASKS",
-                                style: TextStyle(
-                                    color: Color(0xff000000),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Inter"),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Meetings()));
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                width: w * 0.16,
-                                height: w * 0.115,
-                                padding: EdgeInsets.only(
-                                    left: 3, right: 3, top: 2, bottom: 2),
-                                decoration: BoxDecoration(
-                                    color: Color(0x1A08BED0),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    "014",
-                                    style: TextStyle(
-                                        color: Color(0xff000000),
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "Sarabun"),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                "MEETINGS",
-                                style: TextStyle(
-                                    color: Color(0xff000000),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Inter"),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(top: 8, bottom: 8),
-                      width: w,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Color(0xff8856F4),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Punch In",
-                            style: TextStyle(
-                                color: Color(0xffffffff),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: "Inter"),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Image.asset(
-                            "assets/fingerPrint.png",
-                            fit: BoxFit.contain,
-                          )
-                        ],
+                    Spacer(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProjectsScreen()));
+                      },
+                      child: Text(
+                        "See all",
+                        style: TextStyle(
+                            color: Color(0xff8856F4),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            height: 16.94 / 14,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color(0xff8856F4),
+                            fontFamily: "Inter"),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: w * 0.02,
+                ),
+                SizedBox(
+                  height: w * 0.37,
+                  child: GridView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: items1.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1, // Two items per row
+                      childAspectRatio:
+                          0.76, // Adjust this ratio to fit your design
+                      mainAxisSpacing: 2, // Space between items horizontally
+                    ),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 10, bottom: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffF7F4FC),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Center Image
+                              Image.asset(
+                                items1[index]['image']!,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(height: 8),
+                              // Bottom Text
+                              Text(
+                                items1[index]['text']!,
+                                style: const TextStyle(
+                                    color: Color(0xff4F3A84),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    height: 19.36 / 16,
+                                    overflow: TextOverflow.ellipsis,
+                                    fontFamily: "Nunito"),
+                              ),
+                              const SizedBox(height: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Progress",
+                                        style: TextStyle(
+                                            color: Color(0xff000000),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            height: 14.52 / 12,
+                                            fontFamily: "Inter"),
+                                      ),
+                                      Text(
+                                        "35%",
+                                        style: TextStyle(
+                                            color: Color(0xff000000),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12,
+                                            fontFamily: "Inter"),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  LinearProgressIndicator(
+                                    value: double.parse(items1[index]['value']!),
+                                    minHeight: 7,
+                                    backgroundColor: const Color(0xffE0E0E0),
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: const Color(0xff2FB035),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: w * 0.04,
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      "Channels",
+                      style: TextStyle(
+                          color: Color(0xff16192C),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          fontFamily: "Inter"),
+                    ),
+                    Spacer(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Allchannels()));
+                      },
+                      child: Text(
+                        "See all",
+                        style: TextStyle(
+                            color: Color(0xff8856F4),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color(0xff8856F4),
+                            fontFamily: "Inter"),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: w * 0.02,
+                ),
+                SizedBox(
+                  height: w * 0.3,
+                  child: GridView.builder(
+                    scrollDirection:
+                        Axis.horizontal, // Changed to vertical to display in rows
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 2,
+                      childAspectRatio:
+                          0.28, // Adjust this ratio to fit your design
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffF7F4FC),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              // Center Image
+                              Image.asset(
+                                items[index]['image']!,
+                                width: 32,
+                                height: 32,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(width: 8),
+                              // Bottom Text
+                              Text(
+                                items[index]['text']!,
+                                style: const TextStyle(
+                                  color: Color(0xff27272E),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                  height: 16.94 / 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                SizedBox(
+                  height: w * 0.05,
+                ),
+
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                      color: Color(0xffFFFFFF),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProjectsScreen()));
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: w * 0.16,
+                                  height: w * 0.115,
+                                  padding: EdgeInsets.only(
+                                      left: 3, right: 3, top: 2, bottom: 2),
+                                  decoration: BoxDecoration(
+                                      color: Color(0x1A8856F4),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Center(
+                                    child: Text(
+                                      "237",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Sarabun"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "PROJECTS",
+                                  style: TextStyle(
+                                      color: Color(0xff000000),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: "Inter"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: w * 0.03,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Todolist()));
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: w * 0.16,
+                                  height: w * 0.115,
+                                  padding: EdgeInsets.only(
+                                      left: 3, right: 3, top: 2, bottom: 2),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffF1FFF3),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Center(
+                                    child: Text(
+                                      "064",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Sarabun"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "TO DO",
+                                  style: TextStyle(
+                                      color: Color(0xff000000),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: "Inter"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Task()));
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: w * 0.16,
+                                  height: w * 0.115,
+                                  padding: EdgeInsets.only(
+                                      left: 3, right: 3, top: 2, bottom: 2),
+                                  decoration: BoxDecoration(
+                                      color: Color(0x1AFBBC04),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Center(
+                                    child: Text(
+                                      "048",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Sarabun"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "TASKS",
+                                  style: TextStyle(
+                                      color: Color(0xff000000),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: "Inter"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Meetings()));
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: w * 0.16,
+                                  height: w * 0.115,
+                                  padding: EdgeInsets.only(
+                                      left: 3, right: 3, top: 2, bottom: 2),
+                                  decoration: BoxDecoration(
+                                      color: Color(0x1A08BED0),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Center(
+                                    child: Text(
+                                      "014",
+                                      style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Sarabun"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "MEETINGS",
+                                  style: TextStyle(
+                                      color: Color(0xff000000),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: "Inter"),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        width: w,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Color(0xff8856F4),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Punch In",
+                              style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: "Inter"),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Image.asset(
+                              "assets/fingerPrint.png",
+                              fit: BoxFit.contain,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1088,7 +1151,7 @@ class _DashboardState extends State<Dashboard> {
                                           width: 12,
                                           height: 12,
                                           decoration: BoxDecoration(
-                                            color: user.isActive ?? true
+                                            color: user.status == 'Active'
                                                 ? Colors.green
                                                 : Color(0xff8856F4),
                                             shape: BoxShape.circle,
@@ -1200,9 +1263,11 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Messages()));
-                },
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Messages()));
+                  },
                   child: Container(
                     child: Column(
                       children: [

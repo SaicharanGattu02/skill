@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
+import 'package:skill/Services/UserApi.dart';
+
+import '../Model/MeetingModel.dart';
 
 class Meetings extends StatefulWidget {
   const Meetings({super.key});
@@ -16,25 +19,6 @@ class _MeetingsState extends State<Meetings> {
   DateTime currentMonth = DateTime.now();
   late ScrollController _scrollController;
 
-  // Sample task data
-  final List<Map<String, String>> tasks = [
-    {
-      "date": "2/28/2024",
-      "time": "8:30–9:00 AM",
-      "title": "Presentation of new products and cost structure.",
-      "link": "https://zoom.us/i/1983475281",
-    },
-  ];
-
-  // List of image assets for collaborators
-  final List<String> imageList = [
-    "assets/prashanth.png",
-    "assets/prashanth.png",
-    "assets/prashanth.png",
-    "assets/prashanth.png",
-    "assets/prashanth.png",
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -42,6 +26,22 @@ class _MeetingsState extends State<Meetings> {
     _generateDates();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
+
+      getMeeting();
+    });
+  }
+  List<Data> meetings = [];
+  Future<void> getMeeting() async {
+    var res=await Userapi.GetMeeting();
+    setState(() {
+      if(res!=null){
+        if(res.data!=null){
+          meetings = res.data??[];
+          print("projectsData List Get SuccFully  ${res.settings!.message}");
+        } else {
+          print("Employee List Failure  ${res.settings?.message}");
+        }
+      }
     });
   }
 
@@ -53,12 +53,13 @@ class _MeetingsState extends State<Meetings> {
 
   void _scrollToSelectedDate() {
     final index = dates.indexWhere((date) =>
-    date.day == selectedDate.day &&
+        date.day == selectedDate.day &&
         date.month == selectedDate.month &&
         date.year == selectedDate.year);
 
     if (index != -1) {
-      final double offset = index * 55.0; // Adjust the 55.0 based on the item width
+      final double offset =
+          index * 55.0; // Adjust the 55.0 based on the item width
       _scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 300),
@@ -74,7 +75,7 @@ class _MeetingsState extends State<Meetings> {
     setState(() {
       dates = List.generate(
         endOfMonth.day,
-            (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+        (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
       );
     });
   }
@@ -228,14 +229,15 @@ class _MeetingsState extends State<Meetings> {
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
-                itemCount: tasks.length,
+                itemCount: meetings.length,
                 itemBuilder: (context, index) {
-                  final task = tasks[index];
+                  final task = meetings[index];
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xffD0CBDB), width: 1),
+                      border:
+                          Border.all(color: const Color(0xffD0CBDB), width: 1),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
@@ -263,7 +265,7 @@ class _MeetingsState extends State<Meetings> {
                             ),
                             SizedBox(width: w * 0.009),
                             Text(
-                              task["date"]!,
+                              task.startDate ?? "",
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
@@ -279,17 +281,17 @@ class _MeetingsState extends State<Meetings> {
                           children: [
                             ClipOval(
                                 child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xff3B82F6),
-                                      borderRadius: BorderRadius.circular(100)),
-                                )),
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                  color: Color(0xff3B82F6),
+                                  borderRadius: BorderRadius.circular(100)),
+                            )),
                             SizedBox(width: w * 0.008),
                             Column(
                               children: [
                                 Text(
-                                  task["time"]!,
+                                  task.startDate ?? "",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     height: 16 / 12,
@@ -297,18 +299,21 @@ class _MeetingsState extends State<Meetings> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-
                               ],
                             ),
                             SizedBox(width: w * 0.008),
                             ClipOval(
-                              child: Container( width: 12,
+                              child: Container(
+                                width: 12,
                                 height: 12,
-                                padding:EdgeInsets.all(2),
-                                decoration:BoxDecoration(color: Color(0xffF0EAFF),borderRadius: BorderRadius.circular(100)),
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF0EAFF),
+                                    borderRadius: BorderRadius.circular(100)),
                                 child: Image.asset(
                                   "assets/meet.png",
-                                  width: 4,height: 4,
+                                  width: 4,
+                                  height: 4,
                                   color: Color(0xff000000),
                                   fit: BoxFit.contain,
                                 ),
@@ -318,7 +323,7 @@ class _MeetingsState extends State<Meetings> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task["title"]!,
+                          task.title ?? "",
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -328,19 +333,36 @@ class _MeetingsState extends State<Meetings> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task["link"]!,
+                          task.meetingLink ?? "",
                           style: const TextStyle(
                             fontSize: 14,
                             fontFamily: "Inter",
                             height: 16 / 14,
-                            decoration:TextDecoration.underline,
+                            decoration: TextDecoration.underline,
                             decorationColor: Color(0xffDE350B),
                             fontWeight: FontWeight.w400,
                             color: Color(0xffDE350B),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Container(decoration: BoxDecoration(color: Color(0xff2FB035),borderRadius: BorderRadius.circular(100)),)
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 8, right: 8, top: 1, bottom: 1),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: Color(0xff2FB035)),
+                          child: Text(
+                            task.meetingLink ?? "",
+                            style: TextStyle(
+                                color: const Color(0xffffffff),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                height: 19.41 / 12,
+                                letterSpacing: 0.14,
+                                overflow: TextOverflow.ellipsis,
+                                fontFamily: "Inter"),
+                          ),
+                        ),
                       ],
                     ),
                   );

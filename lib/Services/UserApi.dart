@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 
 import '../Model/EmployeeListModel.dart';
@@ -13,7 +14,7 @@ import 'otherservices.dart';
 
 class Userapi {
 
-  static String host="http://192.168.0.56:5000";
+  static String host="http://192.168.0.56:8000";
 
   static Future<RegisterModel?> PostRegister(String name,String mail, String password) async {
     try {
@@ -72,7 +73,7 @@ class Userapi {
   static Future<EmployeeListModel?> GetEmployeeList() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/chat/get_members");
+      final url = Uri.parse('${host}/chat/users');
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetEmployeeDetailsApi Response:${res.body}");
@@ -90,11 +91,29 @@ class Userapi {
   static Future<ProjectsModel?> GetProjectsList() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/api/projects/on_going");
+      final url = Uri.parse("${host}/project/projects/on_going");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetProjectsList Response:${res.body}");
         return ProjectsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<MeetingModel?> GetMeeting() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/meeting/meetings");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetMeeting Response:${res.body}");
+        return MeetingModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

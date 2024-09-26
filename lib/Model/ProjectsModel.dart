@@ -29,42 +29,29 @@ class ProjectsModel {
 }
 
 class Data {
+  String? id;
   String? name;
   String? description;
   String? icon;
-  String? status;
-  String? startDate;
-  int? total_percent;
-  int? endDate;
+  int? totalPercent;
 
-  Data(
-      {this.name,
-        this.description,
-        this.icon,
-        this.status,
-        this.startDate,
-        this.total_percent,
-        this.endDate});
+  Data({this.id, this.name, this.description, this.icon, this.totalPercent});
 
   Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     description = json['description'];
     icon = json['icon'];
-    status = json['status'];
-    startDate = json['start_date'];
-    endDate = json['end_date'];
-    total_percent = json['total_percent'];
+    totalPercent = json['total_percent'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
     data['name'] = this.name;
     data['description'] = this.description;
     data['icon'] = this.icon;
-    data['status'] = this.status;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['total_percent'] = this.total_percent;
+    data['total_percent'] = this.totalPercent;
     return data;
   }
 }

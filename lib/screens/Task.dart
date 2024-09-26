@@ -20,14 +20,16 @@ class _TaskState extends State<Task> {
   final List<Map<String, String>> tasks = [
     {
       "title": "Plan and conduct user research and competitor analysis.",
-      "subtitle": "Brainstorming brings team members' diverse experience into play.",
+      "subtitle":
+          "Brainstorming brings team members' diverse experience into play.",
       "collaborators": "+6 Collaborators",
       "startDate": "10-09-2024",
       "endDate": "10-09-2024",
     },
     {
       "title": "Interpret data and qualitative feedback.",
-      "subtitle": "Brainstorming brings team members' diverse experience into play.",
+      "subtitle":
+          "Brainstorming brings team members' diverse experience into play.",
       "collaborators": "+6 Collaborators",
       "startDate": "10-09-2024",
       "endDate": "10-09-2024",
@@ -61,12 +63,13 @@ class _TaskState extends State<Task> {
 
   void _scrollToSelectedDate() {
     final index = dates.indexWhere((date) =>
-    date.day == selectedDate.day &&
+        date.day == selectedDate.day &&
         date.month == selectedDate.month &&
         date.year == selectedDate.year);
 
     if (index != -1) {
-      final double offset = index * 55.0; // Adjust the 55.0 based on the item width
+      final double offset =
+          index * 55.0; // Adjust the 55.0 based on the item width
       _scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 300),
@@ -82,7 +85,7 @@ class _TaskState extends State<Task> {
     setState(() {
       dates = List.generate(
         endOfMonth.day,
-            (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+        (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
       );
     });
   }
@@ -243,7 +246,8 @@ class _TaskState extends State<Task> {
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xffD0CBDB), width: 1),
+                      border:
+                          Border.all(color: const Color(0xffD0CBDB), width: 1),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
@@ -258,13 +262,46 @@ class _TaskState extends State<Task> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: 8, right: 8, top: 1, bottom: 1),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: Color(0xffFFAB00).withOpacity(0.10)),
+                              child: Text(
+                                "In Progress",
+                                style: TextStyle(
+                                    color: const Color(0xffFFAB00),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12,
+                                    height: 19.41 / 12,
+                                    letterSpacing: 0.14,
+                                    overflow: TextOverflow.ellipsis,
+                                    fontFamily: "Inter"),
+                              ),
+                            ),
+                            Spacer(),
+                            Image.asset(
+                              "assets/more.png",
+                              fit: BoxFit.contain,
+                              width: w*0.025,
+                              height:w*0.03,
+                              color: Color(0xff000000),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
                         Text(
                           task["title"]!,
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
                             color: Color(0xff1D1C1D),
-                            height: 21 / 18,
+                            height: 21 / 16,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -316,7 +353,7 @@ class _TaskState extends State<Task> {
                               ),
                             ),
                             Text(
-                             "${task["startDate"]!}",
+                              "${task["startDate"]!}",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,

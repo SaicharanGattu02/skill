@@ -29,38 +29,38 @@ class EmployeeListModel {
 }
 
 class Data {
-  int? id;
-  String? uuid;
+  String? id;
   String? fullName;
   String? image;
-  bool? isActive;
+  String? email;
   String? status;
+  String? mobile;
 
   Data(
       {this.id,
-        this.uuid,
         this.fullName,
         this.image,
-        this.isActive,
-        this.status});
+        this.email,
+        this.status,
+        this.mobile});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    uuid = json['uuid'];
     fullName = json['full_name'];
     image = json['image'];
-    isActive = json['is_active'];
+    email = json['email'];
     status = json['status'];
+    mobile = json['mobile'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['uuid'] = this.uuid;
     data['full_name'] = this.fullName;
     data['image'] = this.image;
-    data['is_active'] = this.isActive;
+    data['email'] = this.email;
     data['status'] = this.status;
+    data['mobile'] = this.mobile;
     return data;
   }
 }
