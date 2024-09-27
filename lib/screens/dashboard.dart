@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
-import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
@@ -12,7 +13,9 @@ import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/Preferances.dart';
 
+import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
+import 'OneToOneChatPage.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -24,6 +27,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Data>? employeeData = [];
+  late GoogleMapController mapController;
   final List<Map<String, String>> items1 = [
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
@@ -52,8 +56,19 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     GetEmployeeData();
-
+    _requestLocationPermission();
     super.initState();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.location.request();
+    if (status.isDenied) {
+      // Handle the case when the user denies the permission
+      // Optionally, show a dialog or a snackbar
+    } else {
+      // Permission granted, you can proceed
+      setState(() {});
+    }
   }
 
   Future<void> GetEmployeeData() async {
@@ -729,10 +744,6 @@ class _DashboardState extends State<Dashboard> {
                             width: 20,
                           ),
 
-
-
-
-
                           InkWell(
                             onTap: () {
                               Navigator.push(
@@ -825,34 +836,39 @@ class _DashboardState extends State<Dashboard> {
                       SizedBox(
                         height: 20,
                       ),
-                      Container(
-                        padding: EdgeInsets.only(top: 8, bottom: 8),
-                        width: w,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Color(0xff8856F4),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Punch In",
-                              style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: "Inter"),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Image.asset(
-                              "assets/fingerPrint.png",
-                              fit: BoxFit.contain,
-                            )
-                          ],
+                      InkResponse(
+                        onTap: (){
+                          showCustomDialog(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(top: 8, bottom: 8),
+                          width: w,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Punch In",
+                                style: TextStyle(
+                                    color: Color(0xffffffff),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Inter"),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Image.asset(
+                                "assets/fingerPrint.png",
+                                fit: BoxFit.contain,
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -1123,72 +1139,73 @@ class _DashboardState extends State<Dashboard> {
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             final user = employeeData![index];
-
-                            // Checking if the employee is active
-                            // final bool isActive = user.isActive ?? false;
-                            // print("Status>>>${isActive}");
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      ClipOval(
-                                        child: Image.network(
-                                          user.image ?? '',
-                                          fit: BoxFit.cover,
-                                          width: 43,
-                                          height: 43,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return ClipOval(
-                                              child:
-                                                  Icon(Icons.person, size: 43),
-                                            ); // Fallback if image fails
-                                          },
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child: Container(
-                                          width: 12,
-                                          height: 12,
-                                          decoration: BoxDecoration(
-                                            color: user.status == 'Active'
-                                                ? Colors.green
-                                                : Color(0xff8856F4),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: Colors.white, width: 2),
+                            return InkResponse(
+                              onTap: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => WebRTCChatPage(roomId: user.id!)));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Row(
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        ClipOval(
+                                          child: Image.network(
+                                            user.image ?? '',
+                                            fit: BoxFit.cover,
+                                            width: 43,
+                                            height: 43,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return ClipOval(
+                                                child:
+                                                    Icon(Icons.person, size: 43),
+                                              ); // Fallback if image fails
+                                            },
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      user.fullName ?? 'No Name',
-                                      style: const TextStyle(
-                                        color: Color(0xffFFFFFF),
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontFamily: "Inter",
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 12,
+                                            height: 12,
+                                            decoration: BoxDecoration(
+                                              color: user.status == 'Active'
+                                                  ? Colors.green
+                                                  : Color(0xff8856F4),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Colors.white, width: 2),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        user.fullName ?? 'No Name',
+                                        style: const TextStyle(
+                                          color: Color(0xffFFFFFF),
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          overflow: TextOverflow.ellipsis,
+                                          fontFamily: "Inter",
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Image.asset(
-                                    "assets/notify.png",
-                                    fit: BoxFit.contain,
-                                    width: 24,
-                                    height: 24,
-                                    color: Color(0xffFFFFFF).withOpacity(0.7),
-                                  ),
-                                ],
+                                    SizedBox(width: 8),
+                                    Image.asset(
+                                      "assets/notify.png",
+                                      fit: BoxFit.contain,
+                                      width: 24,
+                                      height: 24,
+                                      color: Color(0xffFFFFFF).withOpacity(0.7),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -1478,14 +1495,20 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 Spacer(),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/Settings.png"),
+                InkResponse(
+                  onTap: (){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyHomePage(title: "Demo chat bubble",)));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                        color: Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Image.asset("assets/Settings.png"),
+                  ),
                 ),
                 SizedBox(
                   height: 4,
@@ -1546,6 +1569,58 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+    );
+  }
+  void showCustomDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return  AlertDialog(
+          content: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                height: 400,
+                width: double.infinity,
+                child: GoogleMap(
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(37.7749, -122.4194),
+                    zoom: 10,
+                  ),
+                  myLocationEnabled: true,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle Punch In action
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Punch In'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle Cancel action
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
