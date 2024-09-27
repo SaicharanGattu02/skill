@@ -89,28 +89,111 @@ class _CommentsState extends State<Comments> {
                 height: 5,
               ),
               Container(
-                height: w * 0.5,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 45, vertical: 30),
+                width: w,
                 decoration: BoxDecoration(
-                  color: const Color(0xffF5F8FF),
-                  borderRadius: BorderRadius.circular(7),
-                ),
+                    color: Color(0xffffffff),
+                    borderRadius: BorderRadius.circular(7)),
                 child: DottedBorder(
                   color: Color(0xffB1BFD0), // Color of the dotted border
                   strokeWidth: 1,
                   dashPattern: [6, 3], // Dotted pattern
                   borderType: BorderType.RRect, // Rounded rectangle
                   radius: Radius.circular(8),
-                  padding: EdgeInsets.all(10.0), // Padding around the Row
-                  child: Row(
-                    children: [
+                  padding: EdgeInsets.all(10.0),
+                  // Padding around the Row
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            "assets/Outline.png",
+                            width: w * 0.3,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
 
-
-                    ],
+                          Text(
+                            'Comments',
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                                height: 18.36 / 14,
+                                fontFamily: "Inter"),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(7)),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          "assets/prashanth.png",
+                          height: 36,
+                          width: 36,
+                        ),
+                        SizedBox(width: 8,),
+                        Text(
+                          "Vissu",
+                          style: TextStyle(
+                              color: Color(0xff000000),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              height: 15 / 16,
+                              fontFamily: "Inter"),
+                        ),
+                        Spacer(),
+                       Icon(Icons.remove_red_eye,color: Color(0xff969DB2),),
+                        SizedBox(width: 18,),
+                      Image.asset("assets/delete.png",height: 18,width: 18,color: Color(0xffDE350B),),
+                        SizedBox(width: 18,),
+                        Image.asset("assets/download.png",height: 18,width: 18,)
+                      ],
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40.0),
+                      child: Text("specific information about a project, such as the tasks to be completed.",style: TextStyle(color: Color(0xff969DB2)),),
+                    ),
+                    SizedBox(height: 20,),
+                    Row(
+                      children: [
+
+                        Padding(
+                          padding: const EdgeInsets.only(left: 35),
+                          child: Image.asset("assets/imageframe1.png",width: 32,height: 32,),
+                        ),
+             SizedBox(width: 20,),
+                        Text(
+                          "Vissu",
+                          style: TextStyle(
+                              color: Color(0xff000000),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              height: 15 / 16,
+                              fontFamily: "Inter"),
+                        ),
+                      ],
+                    ),
+
+
+                  ],
+                ),
+              )
             ],
           ),
         ),

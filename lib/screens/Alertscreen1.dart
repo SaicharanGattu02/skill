@@ -59,8 +59,7 @@ class AlertDialogScreen extends StatelessWidget {
                               ],
                             ),
                             SizedBox(height: 40), // Gap of 40px
-                        
-                            // Text "Create Channel" and Text Fields
+
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

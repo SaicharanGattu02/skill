@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:skill/screens/Alertscreen1.dart';
 import 'package:skill/screens/Alertscreen2.dart';
+import 'package:skill/screens/Comments.dart';
 import 'package:skill/screens/GroupMembers.dart';
 import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/Register.dart';
@@ -234,7 +235,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:Splash()
+        home:Comments()
     );
   }
 }
