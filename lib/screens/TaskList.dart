@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
+import 'package:skill/utils/CustomAppBar.dart';
 
 class TaskList extends StatefulWidget {
   const TaskList({super.key});
@@ -35,38 +36,18 @@ class _TaskListState extends State<TaskList> {
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: Color(0xffffffff),
-          ),
-        ),
-        title: const Text(
-          "Task List",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 24.0,
-            color: Color(0xffffffff),
-            fontWeight: FontWeight.w500,
-            height: 29.05 / 24.0,
-          ),
-        ),
+      appBar: CustomAppBar(
+        title: "TaskList",
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.only(right: 20),
             child: Image.asset(
               "assets/Plus square.png",
-              width: 28,
-              height: 28,
+              width: 24,
+              height: 24,
               fit: BoxFit.contain,
             ),
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -74,7 +55,7 @@ class _TaskListState extends State<TaskList> {
           padding: const EdgeInsets.all(16),
           child: Column(children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
               decoration: BoxDecoration(
                 color: const Color(0xffffffff),
                 borderRadius: BorderRadius.circular(8),
@@ -112,11 +93,13 @@ class _TaskListState extends State<TaskList> {
                 final date = task['date'] ?? "Unknown Date";
                 final app = task['app'] ?? "Unknown App";
                 final name = task['name'] ?? "Unknown Name";
-                final percentage = task['percentage'] ?? 0; // Default to 0 if null
+                final percentage =
+                    task['percentage'] ?? 0; // Default to 0 if null
 
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(7),
@@ -169,7 +152,7 @@ class _TaskListState extends State<TaskList> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       Text(
                         "ID : 322",
                         style: const TextStyle(
@@ -179,7 +162,7 @@ class _TaskListState extends State<TaskList> {
                           height: 19.36 / 12,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       Text(
                         app,
                         style: const TextStyle(
@@ -212,15 +195,16 @@ class _TaskListState extends State<TaskList> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12.05),
+                      SizedBox(height: 10),
                       LinearProgressIndicator(
-                        value: percentage / 100.0, // Converting percentage to a fraction (0.30 for 30%)
+                        value: percentage /
+                            100.0, // Converting percentage to a fraction (0.30 for 30%)
                         minHeight: 7,
                         backgroundColor: const Color(0xffE0E0E0),
                         borderRadius: BorderRadius.circular(20),
                         color: const Color(0xff2FB035),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -243,24 +227,25 @@ class _TaskListState extends State<TaskList> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 8),
                       Divider(
                         thickness: 1,
                         color: const Color(0xff94A3B8).withOpacity(0.3),
                       ),
-                      SizedBox(height: 16),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           FlutterImageStack(
                             imageList: _images,
                             totalCount: _images.length,
                             showTotalCount: true,
-                            extraCountTextStyle:TextStyle(  fontFamily: 'Inter',
+                            extraCountTextStyle: TextStyle(
+                              fontFamily: 'Inter',
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               height: 1.21,
-                              ) ,
-
+                            ),
                             itemBorderWidth: 1,
                             itemRadius: 20,
                             itemCount: 3,
@@ -271,19 +256,18 @@ class _TaskListState extends State<TaskList> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
                                 color: Color(0x19DE350B)),
-                            child: Text("10-12-2024",
+                            child: Text(
+                              "10-12-2024",
                               style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 10,
                                   fontWeight: FontWeight.w400,
                                   height: 14.52 / 10,
-                                  color: Color(0xffDE350B)
-
-                              ),),
+                                  color: Color(0xffDE350B)),
+                            ),
                           )
                         ],
                       ),
-
                     ],
                   ),
                 );
