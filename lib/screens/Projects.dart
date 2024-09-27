@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shimmer/shimmer.dart';
 import '../Model/ProjectsModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/Mywidgets.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -12,43 +13,31 @@ class ProjectsScreen extends StatefulWidget {
 }
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
-  final List<Map<String, String>> items1 = [
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/dicnic.png', 'text': 'Dotclinic', 'value': '0.48'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-  ];
-
+  List<Data> projectsData = [];
+  bool isLoading = true; // Track loading state
 
   @override
   void initState() {
-    GetProjectsData();
     super.initState();
+    GetProjectsData();
   }
-  List<Data> projectsData = [];
+
   Future<void> GetProjectsData() async {
     var Res = await Userapi.GetProjectsList();
     setState(() {
-      if (Res != null) {
-        if (Res.data != null) {
-          projectsData = Res.data??[];
-          print("projectsData List Get SuccFully  ${projectsData[0].name}");
-        } else {
-          print("Employee List Failure  ${Res.settings?.message}");
-        }
+      if (Res != null && Res.data != null) {
+        projectsData = Res.data ?? [];
+        print("projectsData List Get Successfully  ${projectsData[0].name}");
+      } else {
+        // print("Employee List Failure  ${Res.settings?.message}");
       }
+      isLoading = false; // Set loading to false after data is fetched
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
@@ -73,21 +62,23 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             height: 29.05 / 24.0,
           ),
         ),
-        actions: [Padding(
-          padding: EdgeInsets.only(right: 20),
-          child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
-        )],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Image.asset("assets/Plus square.png", width: 28, height: 28, fit: BoxFit.contain),
+          )
+        ],
       ),
       body: Padding(
-        padding:EdgeInsets.only(left: 16, right: 16,top: 10,bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
             Container(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                  color: const Color(0xffffffff),
-                  borderRadius: BorderRadius.circular(8)),
+                color: const Color(0xffffffff),
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Row(
                 children: [
                   Image.asset(
@@ -100,94 +91,140 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   const Text(
                     "Search",
                     style: TextStyle(
-                        color: Color(0xff9E7BCA),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        fontFamily: "Nunito"),
+                      color: Color(0xff9E7BCA),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      fontFamily: "Nunito",
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: w * 0.02),
+            const SizedBox(height: 10),
             Expanded(
-              child: GridView.builder(
-                itemCount: projectsData.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Two items per row
-                  childAspectRatio: 1, // Adjust for better layout
-                  mainAxisSpacing: 10, // Space between items vertically
-                  crossAxisSpacing: 10, // Space between items horizontally
-                ),
-                itemBuilder: (context, index) {
-                  final data=projectsData[index];
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffF7F4FC),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ClipOval(
-                          child:Image.network(
-                            data.icon??"",
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(data.name??"",
-                          style: const TextStyle(
-                              color: Color(0xff4F3A84),
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              height: 19.36 / 16,
-                              overflow: TextOverflow.ellipsis,
-                              fontFamily: "Nunito"),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Progress",
-                              style: TextStyle(
-                                  color: Color(0xff000000),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  fontFamily: "Inter"),
-                            ),
-                            Text(
-                              "${data.totalPercent??""}%",
-                              style: const TextStyle(
-                                  color: Color(0xff000000),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(
-                          value: (data.totalPercent?.toDouble() ?? 0) / 100.0, // converting percent to a fraction (0.21 for 21%)
-                          minHeight: 7,
-                          backgroundColor: const Color(0xffE0E0E0),
-                          borderRadius: BorderRadius.circular(20),
-                          color: const Color(0xff2FB035),
-                        ),
-
-
-                      ],
-                    ),
-                  );
-                },
-              ),
+              child: isLoading ? _buildShimmerGrid(w) : _buildProjectGrid(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildShimmerGrid(double width) {
+    return GridView.builder(
+      itemCount: 8, // Number of shimmer placeholders
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              shimmerCircle(48), // Shimmer for the circular image
+              const SizedBox(height: 8),
+              shimmerText(100,16), // Shimmer for title text
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  shimmerText(50,12), // Shimmer for progress label
+                  shimmerText(30,12), // Shimmer for percentage text
+                ],
+              ),
+              const SizedBox(height: 4),
+              shimmerLinearProgress(7), // Shimmer for progress indicator
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProjectGrid() {
+    return GridView.builder(
+      itemCount: projectsData.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemBuilder: (context, index) {
+        final data = projectsData[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xffF7F4FC),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipOval(
+                child: Image.network(
+                  data.icon ?? "",
+                  width: 48,
+                  height: 48,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                data.name ?? "",
+                style: const TextStyle(
+                  color: Color(0xff4F3A84),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  height: 19.36 / 16,
+                  overflow: TextOverflow.ellipsis,
+                  fontFamily: "Nunito",
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Progress",
+                    style: TextStyle(
+                      color: Color(0xff000000),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Text(
+                    "${data.totalPercent ?? ""}%",
+                    style: const TextStyle(
+                      color: Color(0xff000000),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              LinearProgressIndicator(
+                value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
+                minHeight: 7,
+                backgroundColor: const Color(0xffE0E0E0),
+                borderRadius: BorderRadius.circular(20),
+                color: const Color(0xff2FB035),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

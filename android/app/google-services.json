@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "710798644357",
+    "project_id": "skil-f765f",
+    "storage_bucket": "skil-f765f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710798644357:android:9c8595bf181be70423c5ec",
+        "android_client_info": {
+          "package_name": "com.pixl.skil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
