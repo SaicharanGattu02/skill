@@ -7,7 +7,6 @@ import '../Services/UserApi.dart';
 class EncryptedChatPage extends StatefulWidget {
   final String roomId;
   EncryptedChatPage({required this.roomId});
-
   @override
   _EncryptedChatPageState createState() => _EncryptedChatPageState();
 }
