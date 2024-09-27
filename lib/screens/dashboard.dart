@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
+import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
@@ -1435,26 +1436,36 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/calendar.png"),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Leaves",
-                  style: TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Leave()));
+                },
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Image.asset("assets/calendar.png"),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          "Leaves",
+                          style: TextStyle(
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(

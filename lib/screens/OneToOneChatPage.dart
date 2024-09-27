@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -16,12 +15,9 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
   late WebSocketChannel _socket;
   TextEditingController _messageController = TextEditingController();
   List<Map<String, dynamic>> _messages = [];
-  Timer? _pingTimer;
-  int _reconnectAttempts = 0;
-  final int _maxReconnectAttempts = 5;
 
   final _secretKey = encrypt.Key.fromBase16(
-      '21a288673f1daa503e0f540f1d02145c20fe122ec0c8fea359947253654553cd');
+      '21a288673f1daa503e0f540f1d02145c20fe122ec0c8fea359947253654553cd'); // AES with 256-bit key
   final _iv = encrypt.IV.allZerosOfLength(16); // Fixed IV in Hex format
 
   @override
@@ -38,6 +34,7 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
         if (res.settings?.success == 1) {
           print('Room created successfully: ${res.data?.room}');
           _initializeWebSocket(res.data?.room ?? "");
+          print("Decode>>>:${res.data?.room}");
         } else {
           print('Failed to create room');
         }
@@ -52,96 +49,70 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
     print('Disposing WebSocket and cleaning up resources...');
     _socket.sink.close();
     _messageController.dispose();
-    _pingTimer?.cancel();
     super.dispose();
   }
 
   void _initializeWebSocket(String room) {
     print('Attempting to connect to WebSocket...');
-    try {
-      _socket = WebSocketChannel.connect(
-        Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'),
-      );
-      print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/$room');
-      _startPing();
+    _socket = WebSocketChannel.connect(
+      Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'),
+    );
+    print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/$room');
 
-      _socket.stream.listen(
-            (message) {
-          print('Raw message received: $message');
-          _handleIncomingMessage(message);
-        },
-        onError: (error) {
-          print('WebSocket error: $error');
-          _reconnectWebSocket(room);
-        },
-        onDone: () {
-          print('WebSocket connection closed. Trying to reconnect...');
-          _reconnectWebSocket(room);
-        },
-      );
-    } catch (e) {
-      print('Error connecting to WebSocket: $e');
-      _reconnectWebSocket(room);
-    }
-  }
+    _socket.stream.listen(
+          (message) {
+        print('Raw message received: $message');
+        try {
+          final decodedMessage = jsonDecode(message);
+          print('Decoded JSON message: $decodedMessage');
 
-  void _startPing() {
-    // Send a ping every 30 seconds to keep the connection alive
-    _pingTimer = Timer.periodic(Duration(seconds: 30), (timer) {
-      _socket.sink.add(jsonEncode({"type": "ping"}));
-      print('Sent ping to WebSocket to keep connection alive.');
-    });
-  }
+          if (decodedMessage['type'] == 'new_message') {
+            final msgData = decodedMessage['data'];
+            final encryptedMsg = msgData['msg'];
 
-  void _handleIncomingMessage(String message) {
-    try {
-      final decodedMessage = jsonDecode(message);
-      print('Decoded JSON message: $decodedMessage');
+            // Decrypt the message
+            final decryptedMessage = _decryptMessage(encryptedMsg);
+            print('Decrypted message: $decryptedMessage');
 
-      if (decodedMessage['type'] == 'new_message') {
-        final msgData = decodedMessage['data'];
-        final encryptedMsg = msgData['msg'];
-
-        // Decrypt the message
-        final decryptedMessage = _decryptMessage(encryptedMsg);
-        print('Decrypted message: $decryptedMessage');
-
-        setState(() {
-          _messages.add({
-            'sender': 'remote',
-            'message': decryptedMessage,
-            'timestamp': msgData['last_updated'] ?? DateTime.now().toString(),
-          });
-        });
-      }
-    } catch (e) {
-      print('Error processing message: $e');
-    }
+            setState(() {
+              _messages.add({
+                'sender': 'remote',
+                'message': decryptedMessage,
+                'timestamp': msgData['last_updated'] ?? DateTime.now().toString(),
+              });
+            });
+          }
+        } catch (e) {
+          print('Error processing message: $e');
+        }
+      },
+      onError: (error) {
+        print('WebSocket error: $error');
+      },
+      onDone: () {
+        print('WebSocket connection closed. Trying to reconnect...');
+        _reconnectWebSocket(room);
+      },
+    );
   }
 
   void _reconnectWebSocket(String room) {
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
-      print('Max reconnect attempts reached. Stopping reconnection.');
-      return;
-    }
-
     Future.delayed(Duration(seconds: 5), () {
-      _reconnectAttempts++;
-      print('Reconnecting to WebSocket... Attempt $_reconnectAttempts');
+      print('Reconnecting to WebSocket...');
       _initializeWebSocket(room);
     });
   }
 
-  // Encrypt message before sending
+  // Encrypt message before sending (AES-256, CBC, PKCS7)
   String _encryptMessage(String message) {
     print('Encrypting message: $message');
     final encrypter = encrypt.Encrypter(encrypt.AES(_secretKey));
     final encrypted = encrypter.encrypt(message, iv: _iv);
     print('Encrypted message: ${encrypted.base64}');
-    return encrypted.base64;
+    return encrypted.base64; // Base64 encoded string for transmission
   }
 
-  // Decrypt received message
+  // Decrypt received message (AES-256, CBC, PKCS7)
   String _decryptMessage(String encryptedMessage) {
     print('Decrypting message: $encryptedMessage');
     final encrypter = encrypt.Encrypter(encrypt.AES(_secretKey));
@@ -150,6 +121,7 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
     return decrypted;
   }
 
+  // Send an encrypted message over WebSocket
   void _sendMessage() {
     String message = _messageController.text;
     if (message.isNotEmpty) {
@@ -191,7 +163,7 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
             ),
             SizedBox(height: 5),
             Text(
-              DateTime.now().toLocal().toString().substring(11, 16),
+              DateTime.now().toLocal().toString().substring(11, 16), // Timestamp in HH:mm format
               style: TextStyle(
                 color: isMe ? Colors.white70 : Colors.black54,
                 fontSize: 10,

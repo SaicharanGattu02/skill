@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:skill/Model/GetLeaveCountModel.dart';
+import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 
@@ -13,12 +15,11 @@ import '../Model/RegisterModel.dart';
 import '../Model/TasklistModel.dart';
 import 'otherservices.dart';
 
-
 class Userapi {
+  static String host = "http://192.168.0.56:8000";
 
-  static String host="http://192.168.0.56:8000";
-
-  static Future<RegisterModel?> PostRegister(String name,String mail, String password) async {
+  static Future<RegisterModel?> PostRegister(
+      String name, String mail, String password) async {
     try {
       Map<String, String> data = {
         "full_name": name,
@@ -26,9 +27,14 @@ class Userapi {
         "password": password
       };
       final url = Uri.parse("${host}/auth/register");
-      final response = await http.post(url, headers: {HttpHeaders.contentTypeHeader: "application/json",}, body: jsonEncode(data),
+      final response = await http.post(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+        },
+        body: jsonEncode(data),
       );
-      if (response!=null) {
+      if (response != null) {
         final jsonResponse = jsonDecode(response.body);
         print("PostRegister Status:${response.body}");
         return RegisterModel.fromJson(jsonResponse);
@@ -47,7 +53,6 @@ class Userapi {
       Map<String, String> data = {
         "email": mail,
         "password": password,
-
       };
       final url = Uri.parse("${host}/auth/login");
       final response = await http.post(
@@ -57,7 +62,7 @@ class Userapi {
         },
         body: jsonEncode(data),
       );
-      if (response!=null) {
+      if (response != null) {
         final jsonResponse = jsonDecode(response.body);
         print("PostRegister Status:${response.body}");
         return LoginModel.fromJson(jsonResponse);
@@ -70,7 +75,6 @@ class Userapi {
       return null;
     }
   }
-
 
   static Future<EmployeeListModel?> GetEmployeeList() async {
     try {
@@ -125,6 +129,7 @@ class Userapi {
       return null;
     }
   }
+
   static Future<TasklistModel?> GetTask() async {
     try {
       final headers = await getheader();
@@ -161,4 +166,39 @@ class Userapi {
     }
   }
 
+  static Future<GetLeaveModel?> GetLeave() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/leave/leave");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsList Response:${res.body}");
+        return GetLeaveModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<GetLeaveCountModel?> GetLeaveCount() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/leave/leave");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsList Response:${res.body}");
+        return GetLeaveCountModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
 }

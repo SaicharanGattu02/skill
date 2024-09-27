@@ -1,5 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/Services/UserApi.dart';
+import 'package:skill/utils/CustomAppBar.dart';
+
+import '../Model/GetLeaveCountModel.dart';
+import '../Model/GetLeaveModel.dart';
+
 
 class Leave extends StatefulWidget {
   const Leave({super.key});
@@ -10,44 +16,45 @@ class Leave extends StatefulWidget {
 
 class _LeaveState extends State<Leave> {
   @override
+  void initState() {
+    super.initState();
+    getleaves();
+    getleavesCount();
+  }
+
+  List<Data>? leaves;
+  Future<void> getleaves() async {
+    var Res = await Userapi.GetLeave();
+    setState(() {
+      if (Res != null) {
+        if (Res.data != null) {
+          leaves = Res.data ?? [];
+        } else {
+          print("GetLeave Failure>>${Res.message}");
+        }
+      }
+    });
+  }
+  Count? data;
+  Future<void> getleavesCount() async {
+    var Res = await Userapi.GetLeaveCount();
+    setState(() {
+      if (Res != null) {
+        if (Res.data != null) {
+          print("GetLeave Sucess>>${Res.message}");
+        } else {
+          print("GetLeave Failure>>${Res.message}");
+        }
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: Color(0xffffffff),
-          ),
-        ),
-        title: const Text(
-          "Apply Leave",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 24.0,
-            color: Color(0xffffffff),
-            fontWeight: FontWeight.w500,
-            height: 29.05 / 24.0,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Image.asset(
-              "assets/Plus square.png",
-              width: 28,
-              height: 28,
-              fit: BoxFit.contain,
-            ),
-          )
-        ],
-      ),
+      appBar: CustomAppBar(title: "Apply Leave", actions: []),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -56,7 +63,7 @@ class _LeaveState extends State<Leave> {
             children: [
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                 decoration: BoxDecoration(
                     color: const Color(0xffffffff),
                     borderRadius: BorderRadius.circular(8)),
@@ -81,16 +88,15 @@ class _LeaveState extends State<Leave> {
                 ),
               ),
               SizedBox(
-                height: 16,
+                height: 8,
               ),
-
               Row(
                 children: [
                   Container(
-                    width: w * 0.42,
+                    width: w * 0.44,
                     padding: EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
-                      color: Color(0xff2FB0351A).withOpacity(0.10),
+                      color: Color(0xff2EB67D).withOpacity(0.10),
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Column(
@@ -98,46 +104,53 @@ class _LeaveState extends State<Leave> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: w * 0.09,
+                          height: w * 0.09,
                           decoration: BoxDecoration(
                             color: Color(0xffffffff).withOpacity(0.50),
-                            borderRadius: BorderRadius.circular(7),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Center(
                               child: Text(
-                            "16",
+                           data?.availableLeaves.toString()??"",
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              fontSize: 24,
+                              fontSize: 18,
                               color: Color(0xff2FB035),
-                              fontWeight: FontWeight.w700,
-                              height: 38.4 / 24,
+                              fontWeight: FontWeight.w600,
+                              height: 19.36 / 18,
                               letterSpacing: 0.14,
                             ),
                           )),
                         ),
-                        Text(
-                          "Available Leaves",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 20,
-                            color: Color(0xff290358),
-                            fontWeight: FontWeight.w600,
-                            height: 34.2 / 20,
-                            letterSpacing: 0.14,
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: w * 0.2,
+                          child: Text(
+                            "Available Leaves",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              color: Color(0xff000000),
+                              fontWeight: FontWeight.w500,
+                              height: 19.36 / 14,
+                              letterSpacing: 0.12,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         )
                       ],
                     ),
                   ),
-                  SizedBox(width: w*0.030),
+                  SizedBox(width: w * 0.020),
                   Container(
-                    width: w * 0.42,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 10, bottom: 10),
+                    width: w * 0.44,
                     decoration: BoxDecoration(
-                      color: Color(0xff2FB0351A).withOpacity(0.10),
+                      color: Color(0xff538DFF).withOpacity(0.10),
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Column(
@@ -145,34 +158,37 @@ class _LeaveState extends State<Leave> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: w * 0.09,
+                          height: w * 0.09,
                           decoration: BoxDecoration(
                             color: Color(0xffffffff).withOpacity(0.50),
-                            borderRadius: BorderRadius.circular(7),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Center(
                               child: Text(
-                                "16",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 24,
-                                  color: Color(0xff2FB035),
-                                  fontWeight: FontWeight.w700,
-                                  height: 38.4 / 24,
-                                  letterSpacing: 0.14,
-                                ),
-                              )),
+                            data?.unusedLeaves.toString()??"",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              color: Color(0xffEFA84E),
+                              fontWeight: FontWeight.w600,
+                              height: 19.36 / 18,
+                              letterSpacing: 0.14,
+                            ),
+                          )),
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         Text(
-                          "Available Leaves",
+                          "Previous Unused Leaves",
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 20,
-                            color: Color(0xff290358),
-                            fontWeight: FontWeight.w600,
-                            height: 34.2 / 20,
-                            letterSpacing: 0.14,
+                            fontSize: 14,
+                            color: Color(0xff000000),
+                            fontWeight: FontWeight.w500,
+                            height: 19.36 / 14,
+                            letterSpacing: 0.12,
                           ),
                           textAlign: TextAlign.center,
                         )
@@ -181,14 +197,15 @@ class _LeaveState extends State<Leave> {
                   ),
                 ],
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 10.0),
               Row(
                 children: [
                   Container(
-                    width: w * 0.42,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 10, bottom: 10),
+                    width: w * 0.44,
                     decoration: BoxDecoration(
-                      color: Color(0xff2FB0351A).withOpacity(0.10),
+                      color: Color(0x1AEFA84E).withOpacity(0.10),
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Column(
@@ -196,46 +213,49 @@ class _LeaveState extends State<Leave> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: w * 0.09,
+                          height: w * 0.09,
                           decoration: BoxDecoration(
                             color: Color(0xffffffff).withOpacity(0.50),
-                            borderRadius: BorderRadius.circular(7),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Center(
                               child: Text(
-                                "16",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 24,
-                                  color: Color(0xff2FB035),
-                                  fontWeight: FontWeight.w700,
-                                  height: 38.4 / 24,
-                                  letterSpacing: 0.14,
-                                ),
-                              )),
+                            data?.pendingLeaves.toString() ?? "",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              color: Color(0xffEFA84E),
+                              fontWeight: FontWeight.w600,
+                              height: 19.36 / 18,
+                              letterSpacing: 0.14,
+                            ),
+                          )),
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         Text(
-                          "Available Leaves",
+                          "Pending Leaves Requests",
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 20,
-                            color: Color(0xff290358),
-                            fontWeight: FontWeight.w600,
-                            height: 34.2 / 20,
-                            letterSpacing: 0.14,
+                            fontSize: 14,
+                            color: Color(0xff000000),
+                            fontWeight: FontWeight.w500,
+                            height: 19.36 / 14,
+                            letterSpacing: 0.12,
                           ),
                           textAlign: TextAlign.center,
                         )
                       ],
                     ),
                   ),
-                  SizedBox(width: w*0.030),
+                  SizedBox(width: w * 0.020),
                   Container(
-                    width: w * 0.42,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.all(10),
+                    width: w * 0.44,
                     decoration: BoxDecoration(
-                      color: Color(0xff2FB0351A).withOpacity(0.10),
+                      color: Color(0x1ADE350B).withOpacity(0.10),
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Column(
@@ -243,87 +263,202 @@ class _LeaveState extends State<Leave> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: w * 0.09,
+                          height: w * 0.09,
                           decoration: BoxDecoration(
                             color: Color(0xffffffff).withOpacity(0.50),
-                            borderRadius: BorderRadius.circular(7),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Center(
                               child: Text(
-                                "16",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 24,
-                                  color: Color(0xff2FB035),
-                                  fontWeight: FontWeight.w700,
-                                  height: 38.4 / 24,
-                                  letterSpacing: 0.14,
-                                ),
-                              )),
+                            data?.rejectedLeaves.toString()??"",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              color: Color(0xffDE350B),
+                              fontWeight: FontWeight.w600,
+                              height: 19.36 / 18,
+                              letterSpacing: 0.14,
+                            ),
+                          )),
                         ),
-                        Text(
-                          "Available Leaves",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 20,
-                            color: Color(0xff290358),
-                            fontWeight: FontWeight.w600,
-                            height: 34.2 / 20,
-                            letterSpacing: 0.14,
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: w * 0.25,
+                          child: Text(
+                            "Rejected Leaves",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              color: Color(0xff000000),
+                              fontWeight: FontWeight.w500,
+                              height: 19.36 / 14,
+                              letterSpacing: 0.12,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         )
                       ],
                     ),
                   ),
                 ],
               ),
-
-
+              SizedBox(
+                height: 40,
+              ),
               Row(
                 children: [
                   Text('Leaves List',
-                      style:
-                          TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w500,
+                          height: 19.36 / 16,
+                          color: Color(0xff16192C))),
                   Spacer(),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle "Apply Leaves" action
-                      },
-                      child: Text('Apply Leaves'),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                    decoration: BoxDecoration(
+                      color: Color(0xff8856F4),
+                      borderRadius: BorderRadius.circular(7),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x4D5089C4),
+                          offset: Offset(0, 4),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Apply Leave",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            color: Color(0xffffffff),
+                            fontWeight: FontWeight.w500,
+                            height: 19.36 / 14,
+                            letterSpacing: 0.12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-
                 ],
               ),
-
-              SizedBox(height: 16.0),
-
-              // Wrapping ListView.builder in a SizedBox to manage height
-              SizedBox(
-                height:
-                    300.0, // Set an appropriate height based on the list size
-                child: ListView.builder(
-                  itemCount: 4, // Replace with actual number of leave requests
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        title: Text('Maternity Leave'),
-                        subtitle: Text('19 July 2024 - 01:00 PM (4 Hours)'),
-                        trailing: Chip(label: Text('Pending')),
+              SizedBox(height: 12),
+              ListView.builder(
+                itemCount: leaves?.length ?? 0,
+                shrinkWrap: true,
+                physics:
+                    const NeverScrollableScrollPhysics(), // Disable scrolling for ListView
+                itemBuilder: (context, index) {
+                  final leave = leaves?[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Container(
+                      width: w,
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffFFFFFF),
+                        borderRadius: BorderRadius.circular(7),
                       ),
-                    );
-                  },
-                ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                leave?.leaveType ?? "",
+                                style: const TextStyle(
+                                  color: Color(0xff1D1C1D),
+                                  fontSize: 18,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(8, 1, 8, 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0x1A13925D),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Text(
+                                  leave?.status ?? "",
+                                  style: TextStyle(
+                                    color: leave?.status == 'Approved'
+                                        ? const Color(0xff13925D)
+                                        : leave?.status == 'Pending'
+                                            ? const Color(0xffEFA84E)
+                                            : const Color(0xffDE350B),
+                                    fontSize: 12,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            leave?.reason ?? "",
+                            style: const TextStyle(
+                              color: Color(0xff787486),
+                              fontSize: 12,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "${leave?.dayCount ?? ""} Days",
+                            style: const TextStyle(
+                              color: Color(0xff1D1C1D),
+                              fontSize: 12,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  color: Color(0xff5F6368), size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                "From: ${leave?.fromDate ?? 0}",
+                                style: const TextStyle(
+                                  color: Color(0xff371F41),
+                                  fontSize: 12,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              const Icon(Icons.calendar_today,
+                                  color: Color(0xff5F6368), size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                "To: ${leave?.toDate ?? 0}",
+                                style: const TextStyle(
+                                  color: Color(0xff371F41),
+                                  fontSize: 12,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-
-              // Add space between list and the button
-              SizedBox(height: 16.0),
-
-              // Centered "Apply Leaves" button
-
             ],
           ),
         ),
