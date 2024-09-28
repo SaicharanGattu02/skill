@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class projectStatus extends StatelessWidget {
   late final double percentage; // To pass the percentage dynamically
@@ -11,6 +14,21 @@ class projectStatus extends StatelessWidget {
     required this.progressColor,
     required this.taskDetail,
   });
+
+  final gradientList = <List<Color>>[
+      [
+        Color.fromRGBO(223, 250, 92, 1), // Gradient from yellow to green
+        Color.fromRGBO(129, 250, 112, 1),
+      ],
+      [
+        Color.fromRGBO(129, 182, 205, 1), // Gradient from blue to cyan
+        Color.fromRGBO(91, 253, 199, 1),
+      ],
+      [
+        Color.fromRGBO(175, 63, 62, 1.0), // Gradient from red to orange
+        Color.fromRGBO(254, 154, 92, 1),
+      ],
+    ];
 
   @override
   Widget build(BuildContext context) {
@@ -130,64 +148,39 @@ class projectStatus extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // Big Circle Progress Bar 2 with Percentage Inside
-                    Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            // Stack to place the percentage inside the circle
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 120,
-                                  height: 120,
-                                  child: CircularProgressIndicator(
-                                    value: percentage / 100, // Convert percentage to 0-1 range
-                                    backgroundColor: Colors.grey[300],
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      progressColor,
-                                    ),
-                                    strokeWidth: 15, // Thicker stroke for bigger circle
-                                  ),
-                                ),
-                                // Text at the center of the circle
-                                Text(
-                                  '${percentage.toInt()}%', // Display percentage as integer
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 350,
+                          height: 150,
+                          child: PieChart(
+                            dataMap: {
+                              "Progress": percentage,
+                              "Remaining": 100 - percentage,
+                            },
+                            animationDuration: Duration(milliseconds: 800),
+                            chartType: ChartType.ring, // Circular ring-style chart
+                            ringStrokeWidth: 15,
+                            gradientList: gradientList, // Apply gradient to the chart
+                            emptyColorGradient: [
+                              Color(0xff6c5ce7), // Gradient for remaining empty part
+                              Colors.blue,
+                            ],
+                            chartValuesOptions: ChartValuesOptions(
+                              showChartValuesOutside: true, // Show values outside the chart
+                              showChartValuesInPercentage: true, // Display values as percentages
+                              decimalPlaces: 1,
                             ),
-                            SizedBox(width: 20),
-                            // Details next to the big circle progress
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Task Details',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(taskDetail),
-                                ],
-                              ),
-                            ),
-                          ],
+                            totalValue: 100, // Total value for the chart
+                          ),
                         ),
-                      ),
+                        // Display the percentage in the center
+
+                      ],
                     ),
+
                   ],
                 ),
               ),

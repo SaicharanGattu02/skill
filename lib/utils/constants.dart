@@ -20,7 +20,8 @@ var PhonePeMerchantId="";//PGTESTPAYUAT
 // var PhonePeSaltKey="70508497-24ec-4372-bb9f-f7ea4b451f7d";//Production Key
 var PhonePeSaltKey="";  //099eb0cd-02cf-4e2a-8aca-3e6c6aff0399
 var PhonePeSaltIndex="1";
-var AppId="ddeca623b5d548a486c0fcd062479880";//cce1254412334734990aa88f6a382b4a
+var AppId="ddeca623b5d548a486c0fcd062479880";
+//cce1254412334734990aa88f6a382b4a
 
 // var PhonePeMerchantId="SVINDOONLINE";//production
 // var PhonePeSaltKey="78a4f850-4cb2-467d-a5ca-fd8f04420518";//production
@@ -44,13 +45,8 @@ const vehicleNumberRegex =
     "^[a-zA-Z]{2}[0-9]{1,2}(?:[a-zA-Z])?(?:[a-zA-Z]*)?[0-9]{4}";
 const panNumberRegex = "[A-Z]{5}[0-9]{4}[A-Z]{1}";
 const aadhaarRegex = "[0-9]{12}";
-
 const staticImage = "https://picsum.photos/250?image=9";
 
 /////////Colors
-
-
-
-
 var notification_val=0;
 

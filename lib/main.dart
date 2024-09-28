@@ -235,7 +235,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:Comments()
+        home:projectStatus(percentage: 70, progressColor: Colors.black, taskDetail: AutofillHints.birthdayYear)
     );
   }
 }
