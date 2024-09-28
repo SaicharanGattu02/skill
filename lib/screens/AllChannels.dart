@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
+import 'package:skill/screens/Alertscreen2.dart';
+import 'package:skill/utils/CustomAppBar.dart';
+
+import 'Alertscreen1.dart';
 
 class Allchannels extends StatefulWidget {
   const Allchannels({super.key});
@@ -61,33 +65,9 @@ class _AllchannelsState extends State<Allchannels> {
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: Color(0xffffffff),
-          ),
-        ),
-        title: const Text(
-          "All Channels",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 24.0,
-            color: Color(0xffffffff),
-            fontWeight: FontWeight.w500,
-            height: 29.05 / 24.0,
-          ),
-        ),
-        actions: [Padding(
-          padding: EdgeInsets.only(right: 20),
-          child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
-        )],
-      ),
+      appBar: CustomAppBar(title: "All Channels", actions: [],onPlusTap: (){
+        Navigator.push(context, MaterialPageRoute(builder:(context)=>AlertDialogScreen()));
+      },),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
@@ -159,7 +139,8 @@ class _AllchannelsState extends State<Allchannels> {
                                   ),
                                 ),
                                 const SizedBox(
-                                    height: 5), // Space between title and subtitle
+                                    height:
+                                        5), // Space between title and subtitle
                                 Text(
                                   items1[index]['subtitle']!,
                                   style: const TextStyle(

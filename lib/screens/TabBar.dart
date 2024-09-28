@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:skill/utils/CustomAppBar.dart';
 
 class MyTabBar extends StatefulWidget {
+  final String titile;
+  const MyTabBar({super.key, required this.titile});
+
   @override
   _MyTabBarState createState() => _MyTabBarState();
 }
 
-class _MyTabBarState extends State<MyTabBar> with SingleTickerProviderStateMixin {
+class _MyTabBarState extends State<MyTabBar>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late PageController _pageController;
 
@@ -37,28 +42,53 @@ class _MyTabBarState extends State<MyTabBar> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        bottom:
-
-        TabBar(
+        backgroundColor: const Color(0xff8856F4),
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            color: Color(0xffffffff),
+          ),
+        ),
+        title: Text(
+          widget.titile,
+          textAlign: TextAlign.left,
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 20.0,
+            color: Color(0xffffffff),
+            fontWeight: FontWeight.w500,
+            height: 26.05 / 20.0,
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(color: Color(0xffffffff)),
+        child: TabBar(
+          dividerColor: Colors.transparent,
           padding: EdgeInsets.zero, // Remove padding from TabBar itself
           controller: _tabController,
           isScrollable: true,
           indicatorColor: Color(0xff8856F4), // Custom color for indicator
-          indicatorWeight: 2.0, // Custom weight for the indicator
-          indicatorPadding: EdgeInsets.zero, // Remove default padding
-          labelPadding: EdgeInsets.symmetric(horizontal: 10), // Fine-tune label padding
+          indicatorWeight: 1.0,
+          // indicatorPadding: EdgeInsets.zero,
+          tabAlignment: TabAlignment.start,
+          labelPadding: EdgeInsets.symmetric(horizontal: 10),
           labelStyle: TextStyle(
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w400,
+            fontSize: 13,
             height: 1.6,
             color: Color(0xff8856F4),
             letterSpacing: 0.15,
           ),
           unselectedLabelStyle: TextStyle(
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.w500,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w400,
             color: Color(0xff6C848F),
             fontSize: 12,
             height: 1.6,
@@ -114,16 +144,6 @@ class _MyTabBarState extends State<MyTabBar> with SingleTickerProviderStateMixin
               ),
             ),
           ],
-        ),
-      ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          _tabController.animateTo(index); // Change the tab when a page is swiped
-        },
-        children: List.generate(
-          8,
-              (index) => Center(child: Text('Content of Tab ${index + 1}')),
         ),
       ),
     );

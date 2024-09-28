@@ -35,15 +35,16 @@ class _LeaveState extends State<Leave> {
       }
     });
   }
-  Count? data;
+  Count data= Count();
   Future<void> getleavesCount() async {
     var Res = await Userapi.GetLeaveCount();
     setState(() {
       if (Res != null) {
         if (Res.data != null) {
-          print("GetLeave Sucess>>${Res.message}");
+          data=Res.data!;
+          print("getleavesCount res>>${Res}");
         } else {
-          print("GetLeave Failure>>${Res.message}");
+          print("getleavesCount Failure>>${Res}");
         }
       }
     });
@@ -112,7 +113,7 @@ class _LeaveState extends State<Leave> {
                           ),
                           child: Center(
                               child: Text(
-                           data?.availableLeaves.toString()??"",
+                                data?.availableLeaves.toString()??"N/A",
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
@@ -166,7 +167,7 @@ class _LeaveState extends State<Leave> {
                           ),
                           child: Center(
                               child: Text(
-                            data?.unusedLeaves.toString()??"",
+                            data?.unusedLeaves.toString()??"N/A",
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
@@ -221,7 +222,7 @@ class _LeaveState extends State<Leave> {
                           ),
                           child: Center(
                               child: Text(
-                            data?.pendingLeaves.toString() ?? "",
+                            data?.pendingLeaves.toString() ?? "N/A",
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
@@ -271,7 +272,7 @@ class _LeaveState extends State<Leave> {
                           ),
                           child: Center(
                               child: Text(
-                            data?.rejectedLeaves.toString()??"",
+                            data?.rejectedLeaves.toString()??"N/A",
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
@@ -430,7 +431,7 @@ class _LeaveState extends State<Leave> {
                                   color: Color(0xff5F6368), size: 12),
                               const SizedBox(width: 4),
                               Text(
-                                "From: ${leave?.fromDate ?? 0}",
+                                "From: ${leave?.fromDate.toString()??""}",
                                 style: const TextStyle(
                                   color: Color(0xff371F41),
                                   fontSize: 12,

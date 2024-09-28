@@ -19,7 +19,6 @@ import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/TabBar.dart';
 import 'package:skill/screens/TaskList.dart';
 import 'package:skill/screens/dashboard.dart';
-import 'package:skill/screens/nutsby.dart';
 import 'package:skill/screens/projectStatus.dart';
 import 'package:skill/utils/Preferances.dart';
 const AndroidNotificationChannel channel = AndroidNotificationChannel(

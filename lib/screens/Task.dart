@@ -371,7 +371,8 @@ class _TaskState extends State<Task> {
                               ),
                             ),
                             Text(
-                              task.dateTime ?? "",
+                              // task.dateTime ?? "",
+                              "25/09/2024",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -388,7 +389,8 @@ class _TaskState extends State<Task> {
                               ),
                             ),
                             Text(
-                              task.dateTime ?? "",
+                              // task.dateTime ?? "",
+                              "25/09/2024",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/PersnalInformation.dart';
 
 class Register extends StatefulWidget {
@@ -231,19 +232,23 @@ class _RegisterState extends State<Register> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
-                            color: Color(0xff8856F4),
-                            fontWeight: FontWeight.w600,
-                            height: 19.6 / 12,
-                            letterSpacing: -0.01,
-                          ),
-                        )
+                         InkWell(onTap: (){
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>LogInScreen()));
+                         },
+                           child: Text(
+                            "Login",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xff8856F4),
+                              color: Color(0xff8856F4),
+                              fontWeight: FontWeight.w600,
+                              height: 19.6 / 12,
+                              letterSpacing: -0.01,
+                            ),
+                                                   ),
+                         )
                       ],
                     )
                   ],

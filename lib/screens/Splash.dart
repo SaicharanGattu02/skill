@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/dashboard.dart';
@@ -49,11 +50,11 @@ class _SplashState extends State<Splash> {
           ),
         ),
 
-        nextScreen: (token == "") ? Login() : Dashboard(),
+        nextScreen: (token == "") ? LogInScreen() : Dashboard(),
         // ? (permissions_granted ? MyMainHome() : MyPermission())
         // : (permissions_granted ? MySignup() : MyPermission()),
         // nextScreen:  Register(), // Change this to your desired next screen
-        splashIconSize: double.infinity,
+        // splashIconSize: double.infinity,
         backgroundColor: const Color(0xff8856F4),
         splashTransition: SplashTransition.scaleTransition,
       ),

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:skill/screens/ForgotPassword.dart';
 import 'package:skill/screens/dashboard.dart';
 
+import '../Services/UserApi.dart';
+import '../utils/CustomSnackBar.dart';
+import '../utils/Preferances.dart';
+
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
 
@@ -15,9 +19,45 @@ class _LogInScreenState extends State<LogInScreen> {
 
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _loading = false;
+  bool _isPasswordVisible = false;
+  // String token="";
 
-  // Checkbox state
-  bool _rememberMe = false; // Variable to hold the checkbox state
+  @override
+  void dispose() {
+    _focusNodeEmail.dispose();
+    _focusNodePassword.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> LoginApi() async {
+    setState(() {
+      _loading = false;
+    });
+    var data = await Userapi.PostLogin(
+        _emailController.text, _passwordController.text);
+    if (data != null) {
+      if (data.settings?.success == 1) {
+        PreferenceService().saveString("token", data.data?.access ?? "");
+
+        CustomSnackBar.show(context, "${data.settings?.message}");
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Dashboard()));
+      } else {
+        print("Login failure");
+      }
+    } else {
+      print("Login >>>${data?.settings?.message}");
+      CustomSnackBar.show(context, "${data?.settings?.message}");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +200,10 @@ class _LogInScreenState extends State<LogInScreen> {
                         const Spacer(),
                         InkWell(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPassword()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ForgotPassword()));
                           },
                           child: Text(
                             "Forgot Password?",
@@ -191,10 +234,9 @@ class _LogInScreenState extends State<LogInScreen> {
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Dashboard()),
-                        );
+                        {
+                          LoginApi();
+                        }
                       },
                       child: Container(
                         width: w,
@@ -204,7 +246,11 @@ class _LogInScreenState extends State<LogInScreen> {
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Center(
-                          child: Text(
+                          child:
+                              // _loading?CircularProgressIndicator(
+                              //
+                              // ):
+                              Text(
                             "Continue",
                             style: TextStyle(
                               color: Color(0xffFFFFFF),

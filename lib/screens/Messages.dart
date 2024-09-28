@@ -40,7 +40,8 @@ class _MessagesState extends State<Messages> {
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
+      appBar:
+      AppBar(
         backgroundColor: const Color(0xff8856F4),
         leading: InkWell(
           onTap: () {

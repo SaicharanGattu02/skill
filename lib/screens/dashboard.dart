@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Leave.dart';
+import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
@@ -1541,7 +1542,7 @@ class _DashboardState extends State<Dashboard> {
                   onTap: () {
                     PreferenceService().remove("token");
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Login()));
+                        MaterialPageRoute(builder: (context) => LogInScreen()));
                   },
                   child: Container(
                     child: Column(

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget> actions;
+  final VoidCallback? onPlusTap;  // Callback for handling the Plus square tap
 
   const CustomAppBar({
     Key? key,
     required this.title,
     required this.actions,
+    this.onPlusTap, // Optional callback for navigation or any other action
   }) : super(key: key);
 
   @override
@@ -39,11 +41,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           : [
         Padding(
           padding: const EdgeInsets.only(right: 20),
-          child: Image.asset(
-            "assets/Plus square.png",
-            width: 20,
-            height: 20,
-            fit: BoxFit.contain,
+          child: InkWell(
+            onTap: onPlusTap ?? () {},
+            child: Image.asset(
+              "assets/Plus square.png",
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
+            ),
           ),
         )
       ],

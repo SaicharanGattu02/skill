@@ -186,11 +186,12 @@ class Userapi {
 
   static Future<GetLeaveCountModel?> GetLeaveCount() async {
     try {
+
       final headers = await getheader();
-      final url = Uri.parse("${host}/leave/leave");
+      final url = Uri.parse("${host}/leave/leave-count");
       final res = await get(url, headers: headers);
       if (res != null) {
-        print("GetProjectsList Response:${res.body}");
+        print("GetLeaveCount Response:${res.body}");
         return GetLeaveCountModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
