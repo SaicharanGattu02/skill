@@ -19,7 +19,6 @@ import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/TabBar.dart';
 import 'package:skill/screens/TaskList.dart';
 import 'package:skill/screens/dashboard.dart';
-import 'package:skill/screens/projectStatus.dart';
 import 'package:skill/utils/Preferances.dart';
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
@@ -234,7 +233,7 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(background: Colors.white)
               .copyWith(background: Colors.white),
         ),
-        home:projectStatus(percentage: 70, progressColor: Colors.black, taskDetail: AutofillHints.birthdayYear)
+        home:Splash()
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 
+import 'ProjectOverView.dart';
+
 class MyTabBar extends StatefulWidget {
   final String titile;
   const MyTabBar({super.key, required this.titile});
@@ -66,85 +68,100 @@ class _MyTabBarState extends State<MyTabBar>
           ),
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(color: Color(0xffffffff)),
-        child: TabBar(
-          dividerColor: Colors.transparent,
-          padding: EdgeInsets.zero, // Remove padding from TabBar itself
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: Color(0xff8856F4), // Custom color for indicator
-          indicatorWeight: 1.0,
-          // indicatorPadding: EdgeInsets.zero,
-          tabAlignment: TabAlignment.start,
-          labelPadding: EdgeInsets.symmetric(horizontal: 10),
-          labelStyle: TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-            fontSize: 13,
-            height: 1.6,
-            color: Color(0xff8856F4),
-            letterSpacing: 0.15,
+      body: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(color: Color(0xffffffff)),
+            child: TabBar(
+              dividerColor: Colors.transparent,
+              padding: EdgeInsets.zero, // Remove padding from TabBar itself
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: Color(0xff8856F4), // Custom color for indicator
+              indicatorWeight: 1.0,
+              // indicatorPadding: EdgeInsets.zero,
+              tabAlignment: TabAlignment.start,
+              labelPadding: EdgeInsets.symmetric(horizontal: 10),
+              labelStyle: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+                fontSize: 13,
+                height: 1.6,
+                color: Color(0xff8856F4),
+                letterSpacing: 0.15,
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+                color: Color(0xff6C848F),
+                fontSize: 12,
+                height: 1.6,
+                letterSpacing: 0.15,
+              ),
+              tabs: [
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Overview'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Task List'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Task Kanban'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Milestones'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Notes'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Files'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Timesheets'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Comments'),
+                  ),
+                ),
+              ],
+            ),
           ),
-          unselectedLabelStyle: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w400,
-            color: Color(0xff6C848F),
-            fontSize: 12,
-            height: 1.6,
-            letterSpacing: 0.15,
-          ),
-          tabs: [
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Overview'),
-              ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                _tabController.animateTo(index); // Sync TabBar with PageView
+              },
+              children:  [
+                OverView()
+              ],
             ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Task List'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Task Kanban'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Milestones'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Notes'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Files'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Timesheets'),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Comments'),
-              ),
-            ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
