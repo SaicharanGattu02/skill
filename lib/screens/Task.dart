@@ -52,7 +52,7 @@ class _TaskState extends State<Task> {
 
   @override
   void initState() {
-    GetProjectTasks();
+    // GetProjectTasks();
     super.initState();
     _scrollController = ScrollController();
     _generateDates();
@@ -61,18 +61,18 @@ class _TaskState extends State<Task> {
     });
   }
   List<Data> data=[];
-  Future<void> GetProjectTasks() async {
-    var Res = await Userapi.GetTask();
-    setState(() {
-      if (Res != null) {
-        if (Res.data != null) {
-          data = Res.data??[];
-        } else {
-          print("Task Failure  ${Res.settings?.message}");
-        }
-      }
-    });
-  }
+  // Future<void> GetProjectTasks() async {
+  //   var Res = await Userapi.GetTask();
+  //   setState(() {
+  //     if (Res != null) {
+  //       if (Res.data != null) {
+  //         data = Res.data??[];
+  //       } else {
+  //         print("Task Failure  ${Res.settings?.message}");
+  //       }
+  //     }
+  //   });
+  // }
   @override
   void dispose() {
     _scrollController.dispose();
@@ -314,7 +314,7 @@ class _TaskState extends State<Task> {
                           height: 6,
                         ),
                         Text(
-                          task.taskName ?? "",
+                          task.title ?? "",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -324,7 +324,7 @@ class _TaskState extends State<Task> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task.description ?? "",
+                          task.title ?? "",
                           style: const TextStyle(
                             fontSize: 12,
                             height: 16 / 12,

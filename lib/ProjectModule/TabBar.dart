@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:skill/ProjectModule/Projects.dart';
+import 'package:skill/ProjectModule/TaskKanBan.dart';
+import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 
 import 'ProjectOverView.dart';
 
 class MyTabBar extends StatefulWidget {
   final String titile;
-  const MyTabBar({super.key, required this.titile});
+  final String id;
+  const MyTabBar({super.key, required this.titile, required this.id});
 
   @override
   _MyTabBarState createState() => _MyTabBarState();
@@ -15,16 +19,22 @@ class _MyTabBarState extends State<MyTabBar>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late PageController _pageController;
+  int _selectedTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
+
+    print("idd>>>${widget.id}");
     _tabController = TabController(length: 8, vsync: this); // 8 tabs
     _pageController = PageController(); // Controller for PageView
 
     // Sync TabController with PageView
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
+        setState(() {
+          _selectedTabIndex = _tabController.index;
+        });
         _pageController.animateToPage(
           _tabController.index,
           duration: Duration(milliseconds: 300),
@@ -46,28 +56,70 @@ class _MyTabBarState extends State<MyTabBar>
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: Color(0xffffffff),
+          backgroundColor: const Color(0xff8856F4),
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              color: Color(0xffffffff),
+            ),
           ),
-        ),
-        title: Text(
-          widget.titile,
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 20.0,
-            color: Color(0xffffffff),
-            fontWeight: FontWeight.w500,
-            height: 26.05 / 20.0,
+          title: Text(
+            widget.titile,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 20.0,
+              color: Color(0xffffffff),
+              fontWeight: FontWeight.w500,
+              height: 26.05 / 20.0,
+            ),
           ),
-        ),
-      ),
+          actions: (_selectedTabIndex == 1 ||
+                  _selectedTabIndex == 2 ||
+                  _selectedTabIndex == 3)
+              ? [
+                  Row(
+                    children: [
+                      Image.asset(
+                        "assets/tasktime.png",
+                        width: 19,
+                        height: 19,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(width: 10),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProjectsScreen()));
+                        },
+                        child: Image.asset(
+                          "assets/taskclockhistory.png",
+                          width: 22,
+                          height: 22,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      if (_selectedTabIndex != 3)
+                        InkWell(
+                          onTap: () {},
+                          child: Image.asset(
+                            "assets/filter.png",
+                            width: 20,
+                            height: 20,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      SizedBox(width: 16),
+                    ],
+                  )
+                ]
+              : null),
       body: Column(
         children: [
           Container(
@@ -156,8 +208,12 @@ class _MyTabBarState extends State<MyTabBar>
               onPageChanged: (index) {
                 _tabController.animateTo(index); // Sync TabBar with PageView
               },
-              children:  [
-                OverView()
+              children: [
+                OverView(),
+                TaskList(
+                  id1: '${widget.id}',
+                ),
+                TaskKanBan(),
               ],
             ),
           )

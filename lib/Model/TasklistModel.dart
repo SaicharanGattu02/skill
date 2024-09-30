@@ -29,42 +29,84 @@ class TasklistModel {
 }
 
 class Data {
-  String? uid;
-  String? taskName;
+  String? id;
+  String? title;
   String? description;
-  String? dateTime;
-  String? priority;
-  String? labelName;
-  String? labelColor;
+  String? startDate;
+  String? endDate;
+  String? milestone;
+  String? assignedTo;
+  String? assignedToImage;
+  List<Collaborators>? collaborators;
+  String? status;
 
   Data(
-      {this.uid,
-        this.taskName,
+      {this.id,
+        this.title,
         this.description,
-        this.dateTime,
-        this.priority,
-        this.labelName,
-        this.labelColor});
+        this.startDate,
+        this.endDate,
+        this.milestone,
+        this.assignedTo,
+        this.assignedToImage,
+        this.collaborators,
+        this.status});
 
   Data.fromJson(Map<String, dynamic> json) {
-    uid = json['uid'];
-    taskName = json['task_name'];
+    id = json['id'];
+    title = json['title'];
     description = json['description'];
-    dateTime = json['date_time'];
-    priority = json['priority'];
-    labelName = json['label_name'];
-    labelColor = json['label_color'];
+    startDate = json['start_date'];
+    endDate = json['end_date'];
+    milestone = json['milestone'];
+    assignedTo = json['assigned_to'];
+    assignedToImage = json['assigned_to_image'];
+    if (json['collaborators'] != null) {
+      collaborators = <Collaborators>[];
+      json['collaborators'].forEach((v) {
+        collaborators!.add(new Collaborators.fromJson(v));
+      });
+    }
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uid'] = this.uid;
-    data['task_name'] = this.taskName;
+    data['id'] = this.id;
+    data['title'] = this.title;
     data['description'] = this.description;
-    data['date_time'] = this.dateTime;
-    data['priority'] = this.priority;
-    data['label_name'] = this.labelName;
-    data['label_color'] = this.labelColor;
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
+    data['milestone'] = this.milestone;
+    data['assigned_to'] = this.assignedTo;
+    data['assigned_to_image'] = this.assignedToImage;
+    if (this.collaborators != null) {
+      data['collaborators'] =
+          this.collaborators!.map((v) => v.toJson()).toList();
+    }
+    data['status'] = this.status;
+    return data;
+  }
+}
+
+class Collaborators {
+  String? id;
+  String? fullName;
+  String? image;
+
+  Collaborators({this.id, this.fullName, this.image});
+
+  Collaborators.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    fullName = json['full_name'];
+    image = json['image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['full_name'] = this.fullName;
+    data['image'] = this.image;
     return data;
   }
 }
@@ -73,13 +115,25 @@ class Settings {
   int? success;
   String? message;
   int? status;
+  int? page;
+  bool? nextPage;
+  bool? prevPage;
 
-  Settings({this.success, this.message, this.status});
+  Settings(
+      {this.success,
+        this.message,
+        this.status,
+        this.page,
+        this.nextPage,
+        this.prevPage});
 
   Settings.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     status = json['status'];
+    page = json['page'];
+    nextPage = json['next_page'];
+    prevPage = json['prev_page'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +141,9 @@ class Settings {
     data['success'] = this.success;
     data['message'] = this.message;
     data['status'] = this.status;
+    data['page'] = this.page;
+    data['next_page'] = this.nextPage;
+    data['prev_page'] = this.prevPage;
     return data;
   }
 }

@@ -1,23 +1,16 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:skill/ProjectModule/TabBar.dart';
-import 'package:skill/utils/CustomAppBar.dart';
-import '../Model/ProjectsModel.dart';
-import '../Services/UserApi.dart';
-import '../utils/Mywidgets.dart';
+import 'package:skill/utils/CustomAppBar.dart'; // Assuming your CustomAppBar is in utils
 
-class ProjectsScreen extends StatefulWidget {
-  const ProjectsScreen({super.key});
+class TaskKanBan extends StatefulWidget {
+  const TaskKanBan({super.key});
 
   @override
-  State<ProjectsScreen> createState() => _ProjectsScreenState();
+  State<TaskKanBan> createState() => _TaskKanBanState();
 }
 
-class _ProjectsScreenState extends State<ProjectsScreen> {
-  List<Data> projectsData = [];
-  bool isLoading = true; // Track loading state
-
+class _TaskKanBanState extends State<TaskKanBan> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _mileStoneController = TextEditingController();
@@ -54,81 +47,208 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    GetProjectsData();
-  }
-
-  Future<void> GetProjectsData() async {
-    var Res = await Userapi.GetProjectsList();
-    setState(() {
-      if (Res != null && Res.data != null) {
-        projectsData = Res.data ?? [];
-        print("projectsData List Get Successfully  ${projectsData[0].name}");
-      } else {
-        // Handle failure case here
-      }
-      isLoading = false; // Set loading to false after data is fetched
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(
-        title: 'All Projects',
-        actions: [],
-        onPlusTap: () {
-          // Show the bottom sheet on plus icon tap
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            // isDismissible: false,
-
-            builder: (BuildContext context) {
-              return _bottomSheet(context);
-            },
-          );
-        },
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xffffffff),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
+      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Image.asset(
-                    "assets/search.png",
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.contain,
+                  Container(
+                    width: w * 0.63,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/search.png",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          "Search",
+                          style: TextStyle(
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            fontFamily: "Nunito",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Search",
-                    style: TextStyle(
-                      color: Color(0xff9E7BCA),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      fontFamily: "Nunito",
+                  Spacer(),
+                  SizedBox(
+                    height: w * 0.09,
+                    child: InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          // isDismissible: false,
+
+                          builder: (BuildContext context) {
+                            return _bottomSheet(context);
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/circleadd.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.045,
+                              height: w * 0.05,
+                              color: Color(0xffffffff),
+                            ),
+                            SizedBox(
+                              width: w * 0.01,
+                            ),
+                            Text(
+                              "Add Task",
+                              style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  fontFamily: "Inter",
+                                  height: 16.94 / 12,
+                                  letterSpacing: 0.59),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: isLoading ? _buildShimmerGrid(w) : _buildProjectGrid(),
-            ),
-          ],
+              SizedBox(height: 8),
+              ListView.builder(
+                shrinkWrap: true,
+                physics:
+                    NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
+                itemCount: 1,
+                itemBuilder: (context, index) {
+                  // final task = data[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: DottedBorder(
+                      color: Color(0xffCFB9FF),
+                      strokeWidth: 1,
+                      dashPattern: [5, 3],
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(7),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color(0xffEFE2FF),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  "assets/box.png",
+                                  fit: BoxFit.contain,
+                                  width: w * 0.045,
+                                  height: w * 0.05,
+                                  color: Color(0xff000000),
+                                ),
+                                SizedBox(
+                                  width: w * 0.02,
+                                ),
+                                Text(
+                                  "To Do ",
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    height: 24.48 / 16,
+                                    color: Color(0xff16192C),
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(left:10,right: 10,top: 16,bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Updated search filters",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          height: 19.36/ 14,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                      SizedBox(height: 8,),
+                                      Image.asset(
+                                        "assets/save.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.055,
+                                        height: w * 0.06,
+                                        color: Color(0xffDE350B),
+                                      ),
+                                      Spacer(),
+                                      Image.asset(
+                                        "assets/More-vertical.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.045,
+                                        height: w * 0.06,
+                                        color: Color(0xff6C848F),
+                                      ),
+
+
+
+
+                                    ],
+                                  ),
+                                  SizedBox(height: 8,),
+                                  Image.asset(
+                                    "assets/calendar.png",
+                                    fit: BoxFit.contain,
+                                    width: w * 0.045,
+                                    height: w * 0.06,
+                                    color: Color(0xff6C848F),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -165,7 +285,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           Row(
             children: [
               Text(
-                "Add Project",
+                "Add Task",
                 style: TextStyle(
                     color: Color(0xff1C1D22),
                     fontWeight: FontWeight.w500,
@@ -416,142 +536,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     );
   }
 
-  Widget _buildShimmerGrid(double width) {
-    return GridView.builder(
-      itemCount: 8, // Number of shimmer placeholders
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              shimmerCircle(48), // Shimmer for the circular image
-              const SizedBox(height: 8),
-              shimmerText(100, 16), // Shimmer for title text
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  shimmerText(50, 12), // Shimmer for progress label
-                  shimmerText(30, 12), // Shimmer for percentage text
-                ],
-              ),
-              const SizedBox(height: 4),
-              shimmerLinearProgress(7), // Shimmer for progress indicator
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildProjectGrid() {
-    return GridView.builder(
-      itemCount: projectsData.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-      ),
-      itemBuilder: (context, index) {
-        final data = projectsData[index];
-        return
-          InkWell(onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}')));
-            print('idd>>${data.id}');
-          },
-            child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xffF7F4FC),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipOval(
-                  child: Image.network(
-                    data.icon ?? "",
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  data.name ?? "",
-                  style: const TextStyle(
-                    color: Color(0xff4F3A84),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                    height: 19.36 / 16,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Nunito",
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Progress",
-                      style: TextStyle(
-                        color: Color(0xff000000),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                    Text(
-                      "${data.totalPercent ?? ""}%",
-                      style: const TextStyle(
-                        color: Color(0xff000000),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                LinearProgressIndicator(
-                  value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
-                  minHeight: 7,
-                  backgroundColor: const Color(0xffE0E0E0),
-                  borderRadius: BorderRadius.circular(20),
-                  color: const Color(0xff2FB035),
-                ),
-              ],
-            ),
-                    ),
-          );
-      },
-    );
-  }
-
-  Widget _label({
-    required String text,
-  }) {
-    return Text(text,
-        style: TextStyle(
-            color: Color(0xff141516),
-            fontFamily: 'Inter',
-            fontSize: 14,
-            height: 16.36 / 14,
-            fontWeight: FontWeight.w400));
-  }
-
   Widget _buildTextFormField(
       {required TextEditingController controller,
       required FocusNode focusNode,
@@ -660,5 +644,17 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         ),
       ],
     );
+  }
+
+  Widget _label({
+    required String text,
+  }) {
+    return Text(text,
+        style: TextStyle(
+            color: Color(0xff141516),
+            fontFamily: 'Inter',
+            fontSize: 14,
+            height: 16.36 / 14,
+            fontWeight: FontWeight.w400));
   }
 }
