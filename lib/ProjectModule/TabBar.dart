@@ -209,7 +209,7 @@ class _MyTabBarState extends State<MyTabBar>
                 _tabController.animateTo(index); // Sync TabBar with PageView
               },
               children: [
-                OverView(),
+                OverView(id:widget.id,),
                 TaskList(id1: '${widget.id}',),
                 TaskKanBan(id: '${widget.id}',),
               ],

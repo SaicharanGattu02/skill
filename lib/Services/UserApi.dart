@@ -11,6 +11,7 @@ import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
+import '../Model/ProjectOverviewModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
@@ -206,7 +207,6 @@ class Userapi {
   }
   static Future<GetTaskKanBanModel?> GetTaskKanBan(String id) async {
     try {
-
       final headers = await getheader();
       final url = Uri.parse("${host}/project-tasks-kanban?project_id=${id}&status=to_do");
       final res = await get(url, headers: headers);
@@ -223,4 +223,21 @@ class Userapi {
     }
   }
 
+  static Future<ProjectOverviewModel?> GetProjectsOverviewApi(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-overview/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsList Response:${res.body}");
+        return ProjectOverviewModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
 }
