@@ -95,7 +95,8 @@ class _TaskListState extends State<TaskList> {
                       color: const Color(0xffffffff),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Row(
+                    child:
+                    Row(
                       children: [
                         Image.asset(
                           "assets/search.png",

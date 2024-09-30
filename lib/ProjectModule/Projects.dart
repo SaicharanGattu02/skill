@@ -466,9 +466,10 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       ),
       itemBuilder: (context, index) {
         final data = projectsData[index];
+
         return
           InkWell(onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}')));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}',)));
             print('idd>>${data.id}');
           },
             child: Container(

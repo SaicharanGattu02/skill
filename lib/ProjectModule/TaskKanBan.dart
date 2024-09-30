@@ -1,10 +1,13 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
-import 'package:skill/utils/CustomAppBar.dart'; // Assuming your CustomAppBar is in utils
+import 'package:skill/Services/UserApi.dart';
+import '../Model/TaskKanBanModel.dart';
 
 class TaskKanBan extends StatefulWidget {
-  const TaskKanBan({super.key});
+  final String id;
+  const TaskKanBan({super.key,required this.id});
 
   @override
   State<TaskKanBan> createState() => _TaskKanBanState();
@@ -32,6 +35,13 @@ class _TaskKanBanState extends State<TaskKanBan> {
   final FocusNode _focusNodestartDate = FocusNode();
   final FocusNode _focusNodedeadline = FocusNode();
 
+  final List<String> _images = [
+    'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2250&q=80',
+    'https://images.unsplash.com/photo-1612594305265-86300a9a5b5b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
+    'https://images.unsplash.com/photo-1612626256634-991e6e977fc1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1712&q=80',
+    'https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
+  ];
+
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime? pickedDate = await showDatePicker(
@@ -44,6 +54,28 @@ class _TaskKanBanState extends State<TaskKanBan> {
       controller.text =
           DateFormat('yyyy-MM-dd').format(pickedDate); // Format the date
     }
+  }
+  @override
+  void initState() {
+  GetKanBan();
+    super.initState();
+  }
+  List<Data>? data;
+  List<Collaborators>?collaborators;
+
+
+  Future<void> GetKanBan() async{
+    var res= await Userapi.GetTaskKanBan(widget.id);
+    setState(() {
+      if (res != null) {
+        if (res.data != null) {
+          data = res.data ?? [];
+
+        } else {
+          print("Task KanBAn Failuree ${res.settings?.message}");
+        }
+      }
+    });
   }
 
   @override
@@ -141,9 +173,10 @@ class _TaskKanBanState extends State<TaskKanBan> {
                 shrinkWrap: true,
                 physics:
                     NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                itemCount: 1,
+                itemCount: data?.length,
                 itemBuilder: (context, index) {
-                  // final task = data[index];
+                  final kanBan = data?[index];
+                  final collabaroters=kanBan?.collaborators?[index];
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: DottedBorder(
@@ -172,7 +205,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                   width: w * 0.02,
                                 ),
                                 Text(
-                                  "To Do ",
+                                  kanBan?.status ?? "",
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 16,
@@ -198,7 +231,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                   Row(
                                     children: [
                                       Text(
-                                        "Updated search filters",
+                                        kanBan?.title ?? "",
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,
@@ -207,7 +240,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                           color: Color(0xff000000),
                                         ),
                                       ),
-                                      SizedBox(height: 8,),
+                                      SizedBox(width: 8,),
                                       Image.asset(
                                         "assets/save.png",
                                         fit: BoxFit.contain,
@@ -230,12 +263,60 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                     ],
                                   ),
                                   SizedBox(height: 8,),
-                                  Image.asset(
-                                    "assets/calendar.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.045,
-                                    height: w * 0.06,
-                                    color: Color(0xff6C848F),
+                                  Row(
+                                    children: [
+                                      Image.asset(
+                                        "assets/calendar.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.045,
+                                        height: w * 0.06,
+                                        color: Color(0xff6C848F),
+                                      ),
+                                      SizedBox(width: 8,),
+                                      Text(
+                                        kanBan?.startDate ?? "",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          height: 20/ 14,
+                                          color: Color(0xff6C848F),
+                                        ),
+                                      ),
+                                      SizedBox(width: 15,),
+                                      Image.asset(
+                                        "assets/tasktime.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.045,
+                                        height: w * 0.06,
+                                        color: Color(0xff6C848F),
+                                      ),
+                                      SizedBox(width: 8,),
+                                      Text(
+                                        kanBan?.startDate ?? "",
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          height: 20/ 14,
+                                          color: Color(0xff6C848F),
+                                        ),
+                                      ),
+
+
+                                    ],
+                                  ),
+                                  SizedBox(height: 8,),
+                                  FlutterImageStack(
+                                    imageList: _images,
+                                    totalCount: _images.length,
+                                    showTotalCount: true,
+                                    itemBorderWidth: 1,
+                                    itemRadius: 27, // Radius of each image
+                                    extraCountTextStyle: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),

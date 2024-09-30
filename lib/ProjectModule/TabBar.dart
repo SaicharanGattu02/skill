@@ -210,10 +210,8 @@ class _MyTabBarState extends State<MyTabBar>
               },
               children: [
                 OverView(),
-                TaskList(
-                  id1: '${widget.id}',
-                ),
-                TaskKanBan(),
+                TaskList(id1: '${widget.id}',),
+                TaskKanBan(id: '${widget.id}',),
               ],
             ),
           )

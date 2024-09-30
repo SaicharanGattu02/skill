@@ -12,6 +12,7 @@ import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/RegisterModel.dart';
+import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import 'otherservices.dart';
 
@@ -203,4 +204,23 @@ class Userapi {
       return null;
     }
   }
+  static Future<GetTaskKanBanModel?> GetTaskKanBan(String id) async {
+    try {
+
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project-tasks-kanban?project_id=${id}&status=to_do");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetTaskKanBan Response:${res.body}");
+        return GetTaskKanBanModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
 }

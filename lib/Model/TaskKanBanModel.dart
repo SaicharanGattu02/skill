@@ -1,21 +1,23 @@
-class TasklistModel {
+class GetTaskKanBanModel {
   List<Data>? data;
   Settings? settings;
 
-  TasklistModel({this.data, this.settings});
+  GetTaskKanBanModel({this.data, this.settings});
 
-  TasklistModel.fromJson(Map<String, dynamic> json) {
+  GetTaskKanBanModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
-    settings = json['settings'] != null ? Settings.fromJson(json['settings']) : null;
+    settings = json['settings'] != null
+        ? new Settings.fromJson(json['settings'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -29,7 +31,6 @@ class TasklistModel {
 class Data {
   String? id;
   String? title;
-  String? description;
   String? startDate;
   String? endDate;
   String? milestone;
@@ -41,7 +42,6 @@ class Data {
   Data(
       {this.id,
         this.title,
-        this.description,
         this.startDate,
         this.endDate,
         this.milestone,
@@ -53,7 +53,6 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
-    description = json['description'];
     startDate = json['start_date'];
     endDate = json['end_date'];
     milestone = json['milestone'];
@@ -62,26 +61,26 @@ class Data {
     if (json['collaborators'] != null) {
       collaborators = <Collaborators>[];
       json['collaborators'].forEach((v) {
-        collaborators!.add(Collaborators.fromJson(v));
+        collaborators!.add(new Collaborators.fromJson(v));
       });
     }
     status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['id'] = id;
-    data['title'] = title;
-    data['description'] = description;
-    data['start_date'] = startDate;
-    data['end_date'] = endDate;
-    data['milestone'] = milestone;
-    data['assigned_to'] = assignedTo;
-    data['assigned_to_image'] = assignedToImage;
-    if (collaborators != null) {
-      data['collaborators'] = collaborators!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['title'] = this.title;
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
+    data['milestone'] = this.milestone;
+    data['assigned_to'] = this.assignedTo;
+    data['assigned_to_image'] = this.assignedToImage;
+    if (this.collaborators != null) {
+      data['collaborators'] =
+          this.collaborators!.map((v) => v.toJson()).toList();
     }
-    data['status'] = status;
+    data['status'] = this.status;
     return data;
   }
 }
@@ -100,10 +99,10 @@ class Collaborators {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['id'] = id;
-    data['full_name'] = fullName;
-    data['image'] = image;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['full_name'] = this.fullName;
+    data['image'] = this.image;
     return data;
   }
 }
@@ -112,29 +111,20 @@ class Settings {
   int? success;
   String? message;
   int? status;
-  int? page;
-  bool? nextPage;
-  bool? prevPage;
 
-  Settings({this.success, this.message, this.status, this.page, this.nextPage, this.prevPage});
+  Settings({this.success, this.message, this.status});
 
   Settings.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     status = json['status'];
-    page = json['page'];
-    nextPage = json['next_page'];
-    prevPage = json['prev_page'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['success'] = success;
-    data['message'] = message;
-    data['status'] = status;
-    data['page'] = page;
-    data['next_page'] = nextPage;
-    data['prev_page'] = prevPage;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['status'] = this.status;
     return data;
   }
 }
