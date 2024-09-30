@@ -16,7 +16,7 @@ import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Splash.dart';
-import 'package:skill/screens/TabBar.dart';
+import 'package:skill/ProjectModule/TabBar.dart';
 import 'package:skill/screens/TaskList.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';

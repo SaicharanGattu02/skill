@@ -10,7 +10,7 @@ import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
-import 'package:skill/screens/Projects.dart';
+import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/Preferances.dart';

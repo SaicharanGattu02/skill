@@ -1,7 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:skill/screens/TabBar.dart';
+import 'package:skill/ProjectModule/TabBar.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 import '../Model/ProjectsModel.dart';
 import '../Services/UserApi.dart';
