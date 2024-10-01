@@ -1,14 +1,14 @@
-class GetMileStoneModel {
-  List<Milestones>? data;
+class ProjectActivityModel {
+  List<Activity>? data;
   Settings? settings;
 
-  GetMileStoneModel({this.data, this.settings});
+  ProjectActivityModel({this.data, this.settings});
 
-  GetMileStoneModel.fromJson(Map<String, dynamic> json) {
+  ProjectActivityModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Milestones>[];
+      data = <Activity>[];
       json['data'].forEach((v) {
-        data!.add(new Milestones.fromJson(v));
+        data!.add(new Activity.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,39 +28,39 @@ class GetMileStoneModel {
   }
 }
 
-class Milestones {
-  String? id;
-  String? title;
+class Activity {
+  String? userName;
+  String? userImage;
   String? description;
-  String? dueDate;
-  int? totalTasks;
-  int? tasksDone;
+  String? action;
+  String? projectName;
+  String? createdTime;
 
-  Milestones(
-      {this.id,
-        this.title,
+  Activity(
+      {this.userName,
+        this.userImage,
         this.description,
-        this.dueDate,
-        this.totalTasks,
-        this.tasksDone});
+        this.action,
+        this.projectName,
+        this.createdTime});
 
-  Milestones.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = json['title'];
+  Activity.fromJson(Map<String, dynamic> json) {
+    userName = json['user_name'];
+    userImage = json['user_image'];
     description = json['description'];
-    dueDate = json['due_date'];
-    totalTasks = json['total_tasks'];
-    tasksDone = json['tasks_done'];
+    action = json['action'];
+    projectName = json['project_name'];
+    createdTime = json['created_time'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
+    data['user_name'] = this.userName;
+    data['user_image'] = this.userImage;
     data['description'] = this.description;
-    data['due_date'] = this.dueDate;
-    data['total_tasks'] = this.totalTasks;
-    data['tasks_done'] = this.tasksDone;
+    data['action'] = this.action;
+    data['project_name'] = this.projectName;
+    data['created_time'] = this.createdTime;
     return data;
   }
 }

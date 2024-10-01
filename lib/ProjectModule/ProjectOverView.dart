@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
+import '../Model/ProjectActivityModel.dart';
 
 class OverView extends StatefulWidget {
   final String id;
@@ -26,6 +27,7 @@ class _OverViewState extends State<OverView> {
       });
     });
     GetProjectsOverviewData();
+    GetProjectsActivityData();
   }
   Data? data = Data();
   List<Members> members=[];
@@ -37,6 +39,16 @@ class _OverViewState extends State<OverView> {
         data = res.data;
         members = data?.members ?? [];
         _updatePieChartData();
+      }
+    });
+  }
+
+  List<Activity> activitydata=[];
+  Future<void> GetProjectsActivityData() async {
+    var res = await Userapi.GetProjectsActivityApi(widget.id);
+    setState(() {
+      if (res != null && res.data != null) {
+        activitydata = res.data??[];
       }
     });
   }
@@ -451,16 +463,16 @@ class _OverViewState extends State<OverView> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: 10, // Example member count
+            itemCount: members.length, // Example member count
             itemBuilder: (context, index) {
               return Column(
                 children: [
                   MemberCard(
-                      name: 'Member $index',
-                      profession: 'Profession $index'
+                      name: members[index].fullName??"",
+                      profile_image:  members[index].image??"",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < 9) Padding(
+                  if (index < members.length-1) Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Divider(height: 10, thickness: 0.5,color: Color(0xffeff0fa),),
                   ),
@@ -485,8 +497,12 @@ class _OverViewState extends State<OverView> {
               return Column(
                 children: [
                   ActivityCard(
-                      name: 'Member $index',
-                      profession: 'Profession $index'
+                      name: activitydata[index].userName??"",
+                      user_img: activitydata[index].userImage??"",
+                      time: activitydata[index].createdTime??"",
+                      action: activitydata[index].action??"",
+                      desc: activitydata[index].description??"",
+                      project_name: activitydata[index].projectName??"",
                   ),
                   // Add a Divider if it's not the last item
                   if (index < 9) Padding(

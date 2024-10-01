@@ -1,7 +1,11 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../ProjectModule/TaskForm.dart';
 
 FadeShimmer_circle(size) {
   return Container(
@@ -138,9 +142,9 @@ class RoundedProgressPainter extends CustomPainter {
 
 class MemberCard extends StatelessWidget {
   final String name;
-  final String profession;
+  final String profile_image;
 
-  const MemberCard({Key? key, required this.name, required this.profession})
+  const MemberCard({Key? key, required this.name, required this.profile_image})
       : super(key: key);
 
   @override
@@ -149,14 +153,17 @@ class MemberCard extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.blue,
-            child: Text(
-              name[0],
-              style: TextStyle(color: Colors.white, fontSize: 24),
-            ),
-          ),
+          ClipOval(
+              child: Image.network(
+            profile_image,
+            width: 60,
+            height: 60,
+          )
+              // Text(
+              //   name[0],
+              //   style: TextStyle(color: Colors.white, fontSize: 24),
+              // ),
+              ),
           SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -164,16 +171,16 @@ class MemberCard extends StatelessWidget {
               children: [
                 Text(name,
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w500,
                         fontFamily: "Inter",
                         color: Colors.black)),
-                Text(profession,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: "Inter",
-                        color: Color(0xff6c848f))),
+                // Text(profession,
+                //     style: TextStyle(
+                //         fontSize: 16,
+                //         fontWeight: FontWeight.w400,
+                //         fontFamily: "Inter",
+                //         color: Color(0xff6c848f))),
               ],
             ),
           ),
@@ -206,10 +213,21 @@ class MemberCard extends StatelessWidget {
 
 class ActivityCard extends StatelessWidget {
   final String name;
-  final String profession;
+  final String user_img;
+  final String time;
+  final String action;
+  final String desc;
+  final String project_name;
 
-  const ActivityCard({Key? key, required this.name, required this.profession})
-      : super(key: key);
+  const ActivityCard({
+    Key? key,
+    required this.name,
+    required this.user_img,
+    required this.time,
+    required this.action,
+    required this.desc,
+    required this.project_name,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -217,18 +235,17 @@ class ActivityCard extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Row(
         children: [
-          ClipRect(
-            clipBehavior: Clip.antiAlias,
-            child: Container(
-              width: 36, // Set the desired width for your rectangle
-              height: 36, // Set the desired height for your rectangle
-              child: Image(
-                image: AssetImage("assets/prashanth.png"),
-                fit: BoxFit.cover, // Adjust how the image fits in the rectangle
-              ),
+          Container(
+            width: 36, // Set the desired width for your rectangle
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18)
+            ),// Set the desired height for your rectangle
+            child: Image(
+              image: NetworkImage(user_img),
+              fit: BoxFit.cover, // Adjust how the image fits in the rectangle
             ),
           ),
-
           SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -242,8 +259,10 @@ class ActivityCard extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             fontFamily: "Inter",
                             color: Colors.black)),
-                    SizedBox(width: 10,),
-                    Text("4:49 pm",
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(time,
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -252,21 +271,21 @@ class ActivityCard extends StatelessWidget {
                     Spacer(),
                     Container(
                       decoration: BoxDecoration(
-                        color: Color(0xff2fb035),
-                        borderRadius: BorderRadius.circular(10)
+                          color: Color(0xff2fb035),
+                          borderRadius: BorderRadius.circular(10)),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      child: Text(
+                        action,
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            fontSize: 12,
+                            color: Colors.white),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 3),
-                      child: Text("Added",
-                      style: TextStyle(
-                        fontFamily: "Inter",
-                        fontSize: 12,
-                        color: Colors.white
-                      ),),
                     )
-
                   ],
                 ),
-                Text("Task:# ${profession}",
+                Text("${desc}",
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -277,6 +296,24 @@ class ActivityCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TaskBottomSheet {
+  static void show(BuildContext context,String project_id) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TaskForm(projectId: project_id),
+        );
+      },
     );
   }
 }

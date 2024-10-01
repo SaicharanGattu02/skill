@@ -1,14 +1,14 @@
-class GetMileStoneModel {
-  List<Milestones>? data;
+class ProjectStatusModel {
+  List<Statuses>? data;
   Settings? settings;
 
-  GetMileStoneModel({this.data, this.settings});
+  ProjectStatusModel({this.data, this.settings});
 
-  GetMileStoneModel.fromJson(Map<String, dynamic> json) {
+  ProjectStatusModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Milestones>[];
+      data = <Statuses>[];
       json['data'].forEach((v) {
-        data!.add(new Milestones.fromJson(v));
+        data!.add(new Statuses.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,39 +28,21 @@ class GetMileStoneModel {
   }
 }
 
-class Milestones {
-  String? id;
-  String? title;
-  String? description;
-  String? dueDate;
-  int? totalTasks;
-  int? tasksDone;
+class Statuses {
+  String? statusKey;
+  String? statusValue;
 
-  Milestones(
-      {this.id,
-        this.title,
-        this.description,
-        this.dueDate,
-        this.totalTasks,
-        this.tasksDone});
+  Statuses({this.statusKey, this.statusValue});
 
-  Milestones.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = json['title'];
-    description = json['description'];
-    dueDate = json['due_date'];
-    totalTasks = json['total_tasks'];
-    tasksDone = json['tasks_done'];
+  Statuses.fromJson(Map<String, dynamic> json) {
+    statusKey = json['status_key'];
+    statusValue = json['status_value'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['due_date'] = this.dueDate;
-    data['total_tasks'] = this.totalTasks;
-    data['tasks_done'] = this.tasksDone;
+    data['status_key'] = this.statusKey;
+    data['status_value'] = this.statusValue;
     return data;
   }
 }

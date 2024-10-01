@@ -42,10 +42,9 @@ class _MileStoneState extends State<MileStone> {
     super.initState();
   }
 
-  List<Data> data = [];
+  List<Milestones> data = [];
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
-
     setState(() {
       if (res != null) {
         if (res.data != null) {

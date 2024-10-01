@@ -8,18 +8,10 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:skill/screens/Alertscreen1.dart';
-import 'package:skill/screens/Alertscreen2.dart';
-import 'package:skill/screens/Comments.dart';
-import 'package:skill/screens/GroupMembers.dart';
-import 'package:skill/screens/Leave.dart';
-import 'package:skill/screens/Register.dart';
-import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Splash.dart';
-import 'package:skill/ProjectModule/TabBar.dart';
-import 'package:skill/ProjectModule/TaskList.dart';
-import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
+
+
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -39,7 +31,7 @@ Future<void> main() async {
   Platform.isAndroid
       ? await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yM",
+      apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI",
       appId: "1:710798644357:android:9c8595bf181be70423c5ec",
       messagingSenderId: "710798644357",
       projectId: "skil-f765f",
@@ -79,7 +71,7 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     FirebaseMessaging.instance.getToken().then((value) {
       String? token = value;
-      print("Androidfbstoken:{$token}");
+      print("Androidfbstoken:{$token} ");
       PreferenceService().saveString("fbstoken", token!);
       // toast(BuildContext , token);
     });

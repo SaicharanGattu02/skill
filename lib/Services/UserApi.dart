@@ -6,6 +6,8 @@ import 'package:http/http.dart';
 import 'package:skill/Model/GetLeaveCountModel.dart';
 import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
+import 'package:skill/Model/ProjectActivityModel.dart';
+import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 
 import '../Model/CreateRoomModel.dart';
@@ -15,6 +17,7 @@ import '../Model/MileStoneModel.dart';
 import '../Model/ProjectFileModel.dart';
 import '../Model/ProjectNoteModel.dart';
 import '../Model/ProjectOverviewModel.dart';
+import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
@@ -253,6 +256,60 @@ class Userapi {
       if (res != null) {
         print("GetMileStone Response:${res.body}");
         return GetMileStoneModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<ProjectActivityModel?> GetProjectsActivityApi(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-activity/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsActivityApi Response:${res.body}");
+        return ProjectActivityModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<ProjectStatusModel?> GetProjectsStatusesApi() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-task-statuses");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsStatusesApi Response:${res.body}");
+        return ProjectStatusModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<ProjectPrioritiesModel?> GetProjectsPrioritiesApi() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-task-priorities");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsPrioritiesApi Response:${res.body}");
+        return ProjectPrioritiesModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;
