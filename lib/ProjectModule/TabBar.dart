@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skill/ProjectModule/MileStone.dart';
 import 'package:skill/ProjectModule/ProjectFile.dart';
+import 'package:skill/ProjectModule/ProjectTimeSheet.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/ProjectModule/TaskKanBan.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
@@ -218,6 +219,7 @@ class _MyTabBarState extends State<MyTabBar>
                 MileStone(id: '${widget.id}',),
                 ProjectNotes(id: '${widget.id}',),
                 ProjectFile(id: '${widget.id}',),
+                TimeSheet(id: '${widget.id}',),
               ],
             ),
           )
