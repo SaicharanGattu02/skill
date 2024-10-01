@@ -7,7 +7,7 @@ import '../Model/TaskKanBanModel.dart';
 
 class TaskKanBan extends StatefulWidget {
   final String id;
-  const TaskKanBan({super.key,required this.id});
+  const TaskKanBan({super.key, required this.id});
 
   @override
   State<TaskKanBan> createState() => _TaskKanBanState();
@@ -55,17 +55,21 @@ class _TaskKanBanState extends State<TaskKanBan> {
           DateFormat('yyyy-MM-dd').format(pickedDate); // Format the date
     }
   }
+
   @override
   void initState() {
-  GetKanBan();
+    GetKanBan();
     super.initState();
   }
-  List<Data>? data;
-  List<Collaborators>?collaborators;
+
+  List<Data> data =[];
+  List<Collaborators> collaborators=[];
 
 
   Future<void> GetKanBan() async{
     var res= await Userapi.GetTaskKanBan(widget.id);
+
+    print("id>>>${widget.id}");
     setState(() {
       if (res != null) {
         if (res.data != null) {
@@ -83,7 +87,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -171,12 +176,12 @@ class _TaskKanBanState extends State<TaskKanBan> {
               SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
-                physics:
-                    NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                itemCount: data?.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: data.length,
                 itemBuilder: (context, index) {
-                  final kanBan = data?[index];
-                  final collabaroters=kanBan?.collaborators?[index];
+                  final kanBan = data[index];
+                  // final collabaroters=kanBan?.collaborators?[index];
+                  // final colabarators =kanBan.collaborators?.length;
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: DottedBorder(
@@ -205,7 +210,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                   width: w * 0.02,
                                 ),
                                 Text(
-                                  kanBan?.status ?? "",
+                                  kanBan.status ?? "",
+
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 16,
@@ -220,7 +226,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
                               height: 8,
                             ),
                             Container(
-                              padding: const EdgeInsets.only(left:10,right: 10,top: 16,bottom: 20),
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, top: 16, bottom: 20),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(7),
@@ -231,16 +238,19 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                   Row(
                                     children: [
                                       Text(
-                                        kanBan?.title ?? "",
+                                        kanBan.title ?? "",
+
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
-                                          height: 19.36/ 14,
+                                          height: 19.36 / 14,
                                           color: Color(0xff000000),
                                         ),
                                       ),
-                                      SizedBox(width: 8,),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
                                       Image.asset(
                                         "assets/save.png",
                                         fit: BoxFit.contain,
@@ -256,13 +266,11 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         height: w * 0.06,
                                         color: Color(0xff6C848F),
                                       ),
-
-
-
-
                                     ],
                                   ),
-                                  SizedBox(height: 8,),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
                                   Row(
                                     children: [
                                       Image.asset(
@@ -272,18 +280,23 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         height: w * 0.06,
                                         color: Color(0xff6C848F),
                                       ),
-                                      SizedBox(width: 8,),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
                                       Text(
-                                        kanBan?.startDate ?? "",
+                                        // kanBan?.startDate ?? "",
+                                        "01/01/0000",
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
-                                          height: 20/ 14,
+                                          height: 20 / 14,
                                           color: Color(0xff6C848F),
                                         ),
                                       ),
-                                      SizedBox(width: 15,),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
                                       Image.asset(
                                         "assets/tasktime.png",
                                         fit: BoxFit.contain,
@@ -291,22 +304,25 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         height: w * 0.06,
                                         color: Color(0xff6C848F),
                                       ),
-                                      SizedBox(width: 8,),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
                                       Text(
-                                        kanBan?.startDate ?? "",
+                                        // kanBan?.startDate ?? "",
+                                        "01/010/20000",
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
-                                          height: 20/ 14,
+                                          height: 20 / 14,
                                           color: Color(0xff6C848F),
                                         ),
                                       ),
-
-
                                     ],
                                   ),
-                                  SizedBox(height: 8,),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
                                   FlutterImageStack(
                                     imageList: _images,
                                     totalCount: _images.length,

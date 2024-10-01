@@ -31,6 +31,7 @@ class GetTaskKanBanModel {
 class Data {
   String? id;
   String? title;
+  String? description;
   String? startDate;
   String? endDate;
   String? milestone;
@@ -42,6 +43,7 @@ class Data {
   Data(
       {this.id,
         this.title,
+        this.description,
         this.startDate,
         this.endDate,
         this.milestone,
@@ -53,6 +55,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
+    description = json['description'];
     startDate = json['start_date'];
     endDate = json['end_date'];
     milestone = json['milestone'];
@@ -71,6 +74,7 @@ class Data {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['title'] = this.title;
+    data['description'] = this.description;
     data['start_date'] = this.startDate;
     data['end_date'] = this.endDate;
     data['milestone'] = this.milestone;

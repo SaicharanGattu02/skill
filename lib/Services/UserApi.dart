@@ -11,6 +11,7 @@ import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
+import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/TaskKanBanModel.dart';
@@ -208,10 +209,11 @@ class Userapi {
   static Future<GetTaskKanBanModel?> GetTaskKanBan(String id) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project-tasks-kanban?project_id=${id}&status=to_do");
+      final url = Uri.parse("${host}/project/project-tasks-kanban?project_id=${id}&status=to_do");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetTaskKanBan Response:${res.body}");
+
         return GetTaskKanBanModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
@@ -231,6 +233,24 @@ class Userapi {
       if (res != null) {
         print("GetProjectsList Response:${res.body}");
         return ProjectOverviewModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<GetMileStoneModel?> GetMileStoneApi(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-milestones?project_id=${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetMileStone Response:${res.body}");
+        return GetMileStoneModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

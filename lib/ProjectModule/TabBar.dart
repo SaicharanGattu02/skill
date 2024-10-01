@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:skill/ProjectModule/MileStone.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/ProjectModule/TaskKanBan.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 
+import 'ProjectNotes.dart';
 import 'ProjectOverView.dart';
 
 class MyTabBar extends StatefulWidget {
@@ -212,6 +214,8 @@ class _MyTabBarState extends State<MyTabBar>
                 OverView(id:widget.id,),
                 TaskList(id1: '${widget.id}',),
                 TaskKanBan(id: '${widget.id}',),
+                MileStone(id: '${widget.id}',),
+                ProjectNotes(id: '${widget.id}',),
               ],
             ),
           )
