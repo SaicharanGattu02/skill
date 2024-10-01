@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
-import '../Model/ProjectNoteModel.dart';
+import '../Model/ProjectFileModel.dart';
 import '../Services/UserApi.dart';
 
-class ProjectNotes extends StatefulWidget {
+class ProjectFile extends StatefulWidget {
   final String id;
-  const ProjectNotes({super.key, required this.id});
+  const ProjectFile({super.key, required this.id});
 
   @override
-  State<ProjectNotes> createState() => _ProjectNotesState();
+  State<ProjectFile> createState() => _ProjectFileState();
 }
 
-class _ProjectNotesState extends State<ProjectNotes> {
-  @override
+class _ProjectFileState extends State<ProjectFile> {
   void initState() {
-    GetNote();
+    GetFile();
     super.initState();
   }
 
-  List<Data> data =[];
-  Future<void> GetNote() async {
-    var res = await Userapi.GetProjectNote(widget.id);
+  List<Data> data = [];
+  Future<void> GetFile() async {
+    var res = await Userapi.GetProjectFile(widget.id);
 
     setState(() {
       if (res != null) {
         if (res.data != null) {
-          data=res.data??[];
+          data = res.data ?? [];
 
           print("sucsesss");
         } else {
@@ -108,7 +107,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               width: w * 0.01,
                             ),
                             Text(
-                              "Add Notes",
+                              "Add Files",
                               style: TextStyle(
                                   color: Color(0xffffffff),
                                   fontWeight: FontWeight.w500,
@@ -130,12 +129,11 @@ class _ProjectNotesState extends State<ProjectNotes> {
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: data.length,
                 itemBuilder: (context, index) {
-                  final note = data[index];
+                  final projectfile = data[index];
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -151,7 +149,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               height: w * 0.05,
                               color: Color(0xff6C848F),
                             ),
-                            SizedBox(width: w*0.004,),
+                            SizedBox(
+                              width: w * 0.004,
+                            ),
                             Text(
                               // note.createdTime?? "",
                               "01/01/0000",
@@ -166,27 +166,17 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             ),
                             Spacer(),
                             Image.asset(
-                              "assets/edit.png",
-                              fit: BoxFit.contain,
-                              width: w * 0.06,
-                              height: w * 0.05,
-                              color: Color(0xff8856F4),
-                            ),
-                            SizedBox(
-                              width: w * 0.02,
-                            ),
-                            Image.asset(
-                              "assets/eye.png",
-                              fit: BoxFit.contain,
-                              width: w * 0.06,
-                              height: w * 0.05,
-                              color: Color(0xff8856F4),
-                            ),
-                            SizedBox(
-                              width: w * 0.02,
-                            ),
-                            Image.asset(
                               "assets/download.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.06,
+                              height: w * 0.05,
+                              color: Color(0xff8856F4),
+                            ),
+                            SizedBox(
+                              width: w * 0.025,
+                            ),
+                            Image.asset(
+                              "assets/edit.png",
                               fit: BoxFit.contain,
                               width: w * 0.06,
                               height: w * 0.05,
@@ -194,41 +184,81 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          note.title ?? "",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            height: 16 / 18,
-                            color: Color(0xff1D1C1D),
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Inter',
-                          ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 30,
+                              width: 30,
+                              padding: EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: Color(0xffF5E6FE),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Image.asset(
+                                "assets/gallery.png",
+                                fit: BoxFit.contain,
+                                color: Color(0xffBE63F9),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  projectfile.fileName ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    height: 21.78 / 15,
+                                    color: Color(0xff1D1C1D),
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  projectfile.category ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    height: 16 / 14,
+                                    color: Color(0xff1D1C1D),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Image.network(
+                                        projectfile.fileUrl ?? "",
+                                        fit: BoxFit.contain,
+                                        width: 20,
+                                        color: Color(0xff8856F4),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: w * 0.01,
+                                    ),
+                                    Text(
+                                      projectfile.uploadedBy ?? "",
+                                      style: TextStyle(
+                                        color: Color(0xff371F41),
+                                        fontFamily: 'Inter',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        height: 18.36 / 14,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          note.description ?? "",
-                          style: const TextStyle(
-                            fontSize: 15,
-                            height: 18.15 / 15,
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "Remove",
-                          style: TextStyle(
-                            color: Color(0xff8856F4),
-                            fontFamily: 'Inter',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            height: 19.36 / 15,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
-                          ),
-                        )
                       ],
                     ),
                   );

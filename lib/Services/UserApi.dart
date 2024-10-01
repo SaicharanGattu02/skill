@@ -12,6 +12,8 @@ import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/MileStoneModel.dart';
+import '../Model/ProjectFileModel.dart';
+import '../Model/ProjectNoteModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/TaskKanBanModel.dart';
@@ -260,4 +262,40 @@ class Userapi {
       return null;
     }
   }
+  static Future<NoteModel?> GetProjectNote(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-notes?project_id=${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectNote Response:${res.body}");
+        return NoteModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<FileModel?> GetProjectFile(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-files?project_id=${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectNote Response:${res.body}");
+        return FileModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
 }

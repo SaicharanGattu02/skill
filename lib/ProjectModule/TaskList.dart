@@ -177,7 +177,6 @@ class _TaskListState extends State<TaskList> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xffD0CBDB), width: 1),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(7),
                     ),

@@ -159,7 +159,7 @@ class _MileStoneState extends State<MileStone> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xffD0CBDB), width: 1),
+
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -196,14 +196,14 @@ class _MileStoneState extends State<MileStone> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 20),
                         Text(
                           milestone.title ?? "",
                           style: const TextStyle(
-                            fontSize: 18,
-                            height: 16 / 18,
+                            fontSize: 16,
+                            height: 19.36 / 16,
                             color: Color(0xff1D1C1D),
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             fontFamily: 'Inter',
                           ),
                         ),
@@ -211,8 +211,8 @@ class _MileStoneState extends State<MileStone> {
                         Text(
                           milestone.description ?? "",
                           style: const TextStyle(
-                            fontSize: 15,
-                            height: 18.15 / 15,
+                            fontSize: 14,
+                            height: 18.15 / 14,
                             color: Color(0xff6C848F),
                             fontWeight: FontWeight.w400,
                             fontFamily: 'Inter',
@@ -220,10 +220,13 @@ class _MileStoneState extends State<MileStone> {
                         ),
                         const SizedBox(height: 10),
                         LinearProgressIndicator(
-                          value: ((milestone.tasksDone ?? 0)/
-                              (milestone.totalTasks ?? 1)),
-                          minHeight: 9,
+                          value: (milestone.totalTasks != 0)
+                              ? (milestone.tasksDone ?? 0) /
+                                  (milestone.totalTasks ?? 1)
+                              : 0.0, // If totalTasks is 0, set progress to 0
+                          minHeight: 8,
                           backgroundColor: const Color(0xffE0E0E0),
+                          borderRadius: BorderRadius.circular(20),
                           color: const Color(0xff2FB035),
                         ),
                         const SizedBox(height: 4),
@@ -240,7 +243,7 @@ class _MileStoneState extends State<MileStone> {
                               ),
                             ),
                             Text(
-                             "50",
+                              "${(((milestone.totalTasks != 0) ? (milestone.tasksDone ?? 0) / (milestone.totalTasks ?? 1) : 0.0) * 100).toStringAsFixed(0)}%", // Round to nearest integer
                               style: const TextStyle(
                                 color: Color(0xff6C848F),
                                 fontWeight: FontWeight.w400,
