@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:mime/mime.dart';
 import 'package:skill/Model/GetLeaveCountModel.dart';
 import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
@@ -19,6 +21,7 @@ import '../Model/ProjectNoteModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/RegisterModel.dart';
+import '../Model/TaskAddmodel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import 'otherservices.dart';
@@ -354,5 +357,81 @@ class Userapi {
       return null;
     }
   }
+
+  static Future<TaskAddmodel?> CreateTask(
+      String projectId,
+      String title,
+      String desc,
+      String milestone,
+      String assignedTo,
+      String status,
+      String priority,
+      String startDate,
+      String endDate,
+      List<String> collaborators, // Change type from String to List<String>
+      File image,
+      ) async {
+    try {
+      // Check if the file is an image
+      String? mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null; // Return null for invalid image
+      }
+      final url = Uri.parse("${host}/project/project-tasks");
+      Map<String, String> body = {
+        "project_id": projectId,
+        "title": title,
+        "description": desc,
+        "points": '3', // Update as needed
+        "milestone": milestone,
+        "assign_to": assignedTo,
+        "status": status,
+        "priority": priority,
+        "start_date": startDate,
+        "end_date": endDate,
+      };
+      print("CreateTask:${body}");
+      print("Image : ${image}");
+      final headers = await getheader();
+      // Create a multipart request
+      var req = http.MultipartRequest('POST', url)
+        ..headers.addAll(headers)
+        ..fields.addAll(body);
+
+      // Add collaborators as a separate field
+      for (String collaborator in collaborators) {
+        req.fields['collaborators[]'] = collaborator; // Use array notation
+      }
+
+      // Add the image file to the request
+      req.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+          contentType: MediaType.parse(mimeType),
+        ),
+      );
+
+      // Send the request
+      var res = await req.send();
+
+      // Read the response body
+      var responseBody = await res.stream.bytesToString();
+
+      if (res.statusCode == 200) {
+        print("Response: $responseBody");
+        return TaskAddmodel.fromJson(jsonDecode(responseBody));
+      } else {
+        print('Error: ${res.statusCode}, Response: $responseBody');
+        return null; // Return null for an unsuccessful response
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return null; // Handle error case by returning null
+    }
+  }
+
+
 
 }

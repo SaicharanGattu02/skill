@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
@@ -11,7 +18,9 @@ import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
+import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart'; // For date formatting
+import 'package:path/path.dart' as p; // Import the path package
 
 class TaskForm extends StatefulWidget {
   final String projectId; // Explicitly define the type
@@ -65,6 +74,7 @@ class _TaskFormState extends State<TaskForm> {
   String _validatePriority = "";
   String _validateStartDate = "";
   String _validateDeadline = "";
+  String _validatefile = "";
 
   bool _isLoading = false;
   @override
@@ -122,10 +132,16 @@ class _TaskFormState extends State<TaskForm> {
     GetMileStone();
   }
 
+  String milestoneid="";
+  String assignedid="";
+  String statusid="";
+  String priorityid="";
+
   // List<DropdownItem<User>> items = [];
   var items;
   Data? data = Data();
   List<Members> members = [];
+  List<String> selectedIds = []; // List to store selected user IDs
 
   Future<void> GetProjectsOverviewData() async {
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
@@ -175,7 +191,7 @@ class _TaskFormState extends State<TaskForm> {
       if (res != null) {
         if (res.data != null) {
           milestones = res.data ?? [];
-          print("sucsesss");
+          print(milestones);
         } else {
           print("Task Failure  ${res.settings?.message}");
         }
@@ -195,7 +211,7 @@ class _TaskFormState extends State<TaskForm> {
       _validateAssignedTo =
           _assignedToController.text.isEmpty ? "Please assign to someone" : "";
       _validateCollaborators =
-          _colloratorsController.text.isEmpty ? "Please add collaborators" : "";
+          selectedIds.isEmpty ? "Please add collaborators" : "";
       _validateStatus =
           _statusController.text.isEmpty ? "Please set a status" : "";
       _validatePriority =
@@ -204,6 +220,7 @@ class _TaskFormState extends State<TaskForm> {
           _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
           _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
+      _validatefile = _imageFile==null ? "Please choose file." : "";
 
       _isLoading = _validateTitle.isEmpty &&
           _validateDescription.isEmpty &&
@@ -215,8 +232,72 @@ class _TaskFormState extends State<TaskForm> {
           _validateStartDate.isEmpty &&
           _validateDeadline.isEmpty;
 
-      if (_isLoading) {}
+      if (_isLoading) {
+        CreateTaskApi();
+      }
     });
+  }
+
+  Future<void> CreateTaskApi() async {
+    var data = await Userapi.CreateTask(
+        widget.projectId,
+        _titleController.text,
+        _descriptionController.text,
+        milestoneid,
+        assignedid,
+        statusid,
+        priorityid,
+        _startDateController.text,
+        _deadlineController.text,
+        selectedIds,
+        File(_imageFile!.path));
+    if (data != null) {
+      if(data.settings.success==1){
+        Navigator.pop(context,true);
+        CustomSnackBar.show(context, "${data.settings?.message}");
+      }else{
+        CustomSnackBar.show(context, "${data?.settings?.message}");
+      }
+    } else {
+
+    }
+  }
+
+  XFile? _imageFile;
+  File? filepath;
+  String filename = "";
+
+  Future<void> _pickImage(ImageSource source) async {
+    // Check and request camera/gallery permissions
+    if (source == ImageSource.camera) {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        await Permission.camera.request();
+      }
+    } else if (source == ImageSource.gallery) {
+      var status = await Permission.photos.status;
+      if (!status.isGranted) {
+        await Permission.photos.request();
+      }
+    }
+    // After permissions are handled, proceed to pick an image
+    final ImagePicker picker = ImagePicker();
+    XFile? selected = await picker.pickImage(source: source);
+
+    setState(() {
+      _imageFile = selected;
+    });
+
+    if (selected != null) {
+      // Get the file path and filename
+      setState(() {
+        filepath = File(selected.path);
+        filename = p.basename(selected.path);
+      });
+      print("Selected Image: ${selected.path}");
+    } else {
+      print('User canceled the file picking');
+    }
   }
 
   @override
@@ -224,13 +305,18 @@ class _TaskFormState extends State<TaskForm> {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
     return Scaffold(
-      // backgroundColor: const Color(0xffF3ECFB),
+      backgroundColor: const Color(0xffF3ECFB),
+      resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
         title: 'Add Task',
         actions: [Container()],
       ),
       body: Container(
         padding: EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(7))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -240,6 +326,9 @@ class _TaskFormState extends State<TaskForm> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(
+                      height: 10,
+                    ),
                     _label(text: 'Title'),
                     SizedBox(height: 6),
                     _buildTextFormField(
@@ -259,8 +348,37 @@ class _TaskFormState extends State<TaskForm> {
                       child: Row(
                         children: [
                           InkWell(
-                            onTap: () {},
-                            child: Container(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SafeArea(
+                                    child: Wrap(
+                                      children: <Widget>[
+                                        ListTile(
+                                          leading: Icon(Icons.camera_alt),
+                                          title: Text('Take a photo'),
+                                          onTap: () {
+                                            _pickImage(ImageSource.camera);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(Icons.photo_library),
+                                          title: Text('Choose from gallery'),
+                                          onTap: () {
+                                            _pickImage(ImageSource.gallery);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child:
+                            Container(
                               height: 35,
                               width: w * 0.35,
                               decoration: BoxDecoration(
@@ -287,7 +405,7 @@ class _TaskFormState extends State<TaskForm> {
                           SizedBox(width: 16),
                           Center(
                             child: Text(
-                              'No File Chosen',
+                              (filename != "") ? filename : 'No File Chosen',
                               style: TextStyle(
                                 color: Color(0xff3C3C3C),
                                 fontSize: 14,
@@ -299,98 +417,179 @@ class _TaskFormState extends State<TaskForm> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    if (_validatefile.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validatefile,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
                     _label(text: 'Description'),
                     SizedBox(height: 4),
-                    _buildTextFormField(
-                      controller: _descriptionController,
-                      focusNode: _focusNodedescription,
-                      hintText: 'Type Description',
-                      validationMessage: _validateDescription,
-                    ),
-                    SizedBox(height: 10),
-                    _label(text: 'Milestone'),
-                    SizedBox(height: 4),
-                    TypeAheadField<Milestones>(
-                      builder: (context, _mileStoneController, focusNode) {
-                        return TextField(
-                          controller: _mileStoneController,
-                          focusNode: focusNode,
-                          autofocus: true,
-                          onTap: () {
-                            setState(() {
-                              _validateMileStone = "";
-                            });
-                          },
-                          onChanged: (v) {
-                            setState(() {
-                              _validateMileStone = "";
-                            });
-                          },
-                          style: TextStyle(
-                            fontSize: 16,
+                    Container(
+                      height: h * 0.13,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Color(0xffE8ECFF))),
+                      child: TextFormField(
+                        cursorColor: Color(0xff8856F4),
+                        scrollPadding: const EdgeInsets.only(top: 5),
+                        controller: _descriptionController,
+                        textInputAction: TextInputAction.done,
+                        maxLines: 100,
+                        decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.only(left: 10, top: 10),
+                          hintText: "Type Description",
+                          hintStyle: TextStyle(
+                            fontSize: 15,
                             letterSpacing: 0,
                             height: 1.2,
-                            color: Colors.black,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                           ),
-                          decoration: InputDecoration(
-                            hintText: "Enter your status",
-                            hintStyle: TextStyle(
-                              fontSize: 15,
+                          filled: true,
+                          fillColor: Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide:
+                                BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide:
+                                BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validateDescription.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateDescription,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                    _label(text: 'Milestone'),
+                    SizedBox(height: 4),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.050,
+                      child: TypeAheadField<Milestones>(
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            controller: _mileStoneController,
+                            focusNode: focusNode,
+                            autofocus: true,
+                            onTap: () {
+                              setState(() {
+                                _validateMileStone = "";
+                              });
+                            },
+                            onChanged: (v) {
+                              setState(() {
+                                _validateMileStone = "";
+                              });
+                            },
+                            style: TextStyle(
+                              fontSize: 16,
                               letterSpacing: 0,
                               height: 1.2,
-                              color: Color(0xFF004AADF).withOpacity(0.30),
-                              fontFamily: 'Poppins',
+                              color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
-                            filled: true,
-                            fillColor: Color(0xffffffff),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                            decoration: InputDecoration(
+                              hintText: "Select your milestone",
+                              hintStyle: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0,
+                                height: 1.2,
+                                color: Color(0xffAFAFAF),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                              ),
+                              filled: true,
+                              fillColor: Color(0xffFCFAFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                          );
+                        },
+                        suggestionsCallback: (pattern) {
+                          return milestones
+                              .where((item) => item.title!
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(
+                              suggestion.title!,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      suggestionsCallback: (pattern) {
-                        return milestones
-                            .where((item) => item.title!
-                                .toLowerCase()
-                                .contains(pattern.toLowerCase()))
-                            .toList();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return ListTile(
-                          title: Text(
-                            suggestion.title!,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        );
-                      },
-                      onSelected: (suggestion) {
-                        setState(() {
-                          _mileStoneController.text = suggestion.title!;
-                          // You can use suggestion.statusKey to send to the server
-                          String selectedKey = suggestion.id!;
-                          // Call your API with the selected key here if needed
-                          _validateMileStone = "";
-                        });
-                      },
+                          );
+                        },
+                        onSelected: (suggestion) {
+                          setState(() {
+                            _mileStoneController.text = suggestion.title!;
+                            // You can use suggestion.statusKey to send to the server
+                             milestoneid = suggestion.id!;
+                            // Call your API with the selected key here if needed
+                            _validateMileStone = "";
+                          });
+                        },
+                      ),
                     ),
                     if (_validateMileStone.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
                         child: ShakeWidget(
                           key: Key("value"),
                           duration: Duration(milliseconds: 700),
@@ -407,91 +606,94 @@ class _TaskFormState extends State<TaskForm> {
                       ),
                     ] else ...[
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                     ],
                     _label(text: 'Assign to'),
                     SizedBox(height: 4),
-                    TypeAheadField<Members>(
-                      builder: (context, _assignedToController, focusNode) {
-                        return TextField(
-                          focusNode: focusNode,
-                          autofocus: true,
-                          controller: _assignedToController,
-                          onTap: () {
-                            setState(() {
-                              _validateAssignedTo = "";
-                            });
-                          },
-                          onChanged: (v) {
-                            setState(() {
-                              _validateAssignedTo = "";
-                            });
-                          },
-                          style: TextStyle(
-                            fontSize: 16,
-                            letterSpacing: 0,
-                            height: 1.2,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Select assigned to person",
-                            hintStyle: TextStyle(
-                              fontSize: 15,
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.050,
+                      child: TypeAheadField<Members>(
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            focusNode: focusNode,
+                            controller: _assignedToController,
+                            onTap: () {
+                              setState(() {
+                                _validateAssignedTo = "";
+                              });
+                            },
+                            onChanged: (v) {
+                              setState(() {
+                                _validateAssignedTo = "";
+                              });
+                            },
+                            style: TextStyle(
+                              fontSize: 16,
                               letterSpacing: 0,
                               height: 1.2,
-                              color: Color(0xFF004AADF).withOpacity(0.30),
-                              fontFamily: 'Poppins',
+                              color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
-                            filled: true,
-                            fillColor: Color(0xffffffff),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                            decoration: InputDecoration(
+                              hintText: "Select assigned to person",
+                              hintStyle: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0,
+                                height: 1.2,
+                                color: Color(0xffAFAFAF),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                              ),
+                              filled: true,
+                              fillColor: Color(0xffFCFAFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                          );
+                        },
+                        suggestionsCallback: (pattern) {
+                          return members
+                              .where((item) => item.fullName!
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(
+                              suggestion.fullName!,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      suggestionsCallback: (pattern) {
-                        return members
-                            .where((item) => item.fullName!
-                                .toLowerCase()
-                                .contains(pattern.toLowerCase()))
-                            .toList();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return ListTile(
-                          title: Text(
-                            suggestion.fullName!,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        );
-                      },
-                      onSelected: (suggestion) {
-                        setState(() {
-                          _assignedToController.text = suggestion.fullName!;
-                          // You can use suggestion.statusKey to send to the server
-                          String selectedKey = suggestion.id!;
-                          // Call your API with the selected key here if needed
-                          _validateAssignedTo = "";
-                        });
-                      },
+                          );
+                        },
+                        onSelected: (suggestion) {
+                          setState(() {
+                            _assignedToController.text = suggestion.fullName!;
+                            // You can use suggestion.statusKey to send to the server
+                            assignedid = suggestion.id!;
+                            // Call your API with the selected key here if needed
+                            _validateAssignedTo = "";
+                          });
+                        },
+                      ),
                     ),
                     if (_validateAssignedTo.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
                         child: ShakeWidget(
                           key: Key("value"),
                           duration: Duration(milliseconds: 700),
@@ -508,10 +710,9 @@ class _TaskFormState extends State<TaskForm> {
                       ),
                     ] else ...[
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                     ],
-                    SizedBox(height: 10),
                     _label(text: 'Collaborators'),
                     SizedBox(height: 4),
                     MultiDropdown<User>(
@@ -520,22 +721,30 @@ class _TaskFormState extends State<TaskForm> {
                       enabled: true,
                       searchEnabled: true,
                       chipDecoration: const ChipDecoration(
-                        backgroundColor: Colors.yellow,
-                        wrap: true,
-                        runSpacing: 2,
-                        spacing: 10,
-                      ),
+                          backgroundColor: Color(0xffE8E4EF),
+                          wrap: true,
+                          runSpacing: 2,
+                          spacing: 10,
+                          borderRadius: BorderRadius.all(Radius.circular(7))),
                       fieldDecoration: FieldDecoration(
                         hintText: 'Collaborators',
-                        hintStyle: const TextStyle(color: Colors.black87),
-                        prefixIcon: const Icon(CupertinoIcons.flag),
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          letterSpacing: 0,
+                          height: 1.2,
+                          color: Color(0xffAFAFAF),
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                        ),
                         showClearIcon: false,
+                        backgroundColor: Color(0xfffcfaff),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide:
+                              const BorderSide(color: Color(0xffd0cbdb)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(7),
                           borderSide: const BorderSide(
                             color: Colors.black87,
                           ),
@@ -550,111 +759,139 @@ class _TaskFormState extends State<TaskForm> {
                             'Select members from the list',
                             textAlign: TextAlign.start,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: "Inter"),
                           ),
                         ),
                       ),
                       dropdownItemDecoration: DropdownItemDecoration(
-                        selectedIcon:
-                            const Icon(Icons.check_box, color: Colors.green),
+                        selectedIcon: const Icon(Icons.check_box,
+                            color: Color(0xff8856F4)),
                         disabledIcon:
                             Icon(Icons.lock, color: Colors.grey.shade300),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a member';
-                        }
-                        return null;
-                      },
+                      // onSelectionChange: (selectedItems) {
+                      //   debugPrint("OnSelectionChange: $selectedItems");
+                      // },
                       onSelectionChange: (selectedItems) {
-                        debugPrint("OnSelectionChange: $selectedItems");
+                        setState(() {
+                          // Extract only the IDs and store them in selectedIds
+                          selectedIds = selectedItems.map((user) => user.id).toList();
+                          _validateCollaborators="";
+                        });
+                        debugPrint("Selected IDs: $selectedIds");
                       },
                     ),
-                    SizedBox(height: 10),
+                    if (_validateCollaborators.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateCollaborators,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
                     _label(text: 'Status'),
                     SizedBox(height: 4),
-                    TypeAheadField<Statuses>(
-                      builder: (context, controller, focusNode) {
-                        return TextField(
-                          focusNode: focusNode,
-                          autofocus: true,
-                          controller: _statusController,
-                          onTap: () {
-                            setState(() {
-                              _validateStatus = "";
-                            });
-                          },
-                          onChanged: (v) {
-                            setState(() {
-                              _validateStatus = "";
-                            });
-                          },
-                          style: TextStyle(
-                            fontSize: 16,
-                            letterSpacing: 0,
-                            height: 1.2,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Enter your status",
-                            hintStyle: TextStyle(
-                              fontSize: 15,
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.050,
+                      child: TypeAheadField<Statuses>(
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            focusNode: focusNode,
+                            autofocus: true,
+                            controller: _statusController,
+                            onTap: () {
+                              setState(() {
+                                _validateStatus = "";
+                              });
+                            },
+                            onChanged: (v) {
+                              setState(() {
+                                _validateStatus = "";
+                              });
+                            },
+                            style: TextStyle(
+                              fontSize: 16,
                               letterSpacing: 0,
                               height: 1.2,
-                              color: Color(0xFF004AADF).withOpacity(0.30),
-                              fontFamily: 'Poppins',
+                              color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
-                            filled: true,
-                            fillColor: Color(0xffffffff),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                            decoration: InputDecoration(
+                              hintText: "Enter your status",
+                              hintStyle: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0,
+                                height: 1.2,
+                                color: Color(0xffAFAFAF),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                              ),
+                              filled: true,
+                              fillColor: Color(0xffFCFAFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                          );
+                        },
+                        suggestionsCallback: (pattern) {
+                          return statuses
+                              .where((item) => item.statusValue!
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(
+                              suggestion.statusValue!,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      suggestionsCallback: (pattern) {
-                        return statuses
-                            .where((item) => item.statusValue!
-                                .toLowerCase()
-                                .contains(pattern.toLowerCase()))
-                            .toList();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return ListTile(
-                          title: Text(
-                            suggestion.statusValue!,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        );
-                      },
-                      onSelected: (suggestion) {
-                        setState(() {
-                          _statusController.text = suggestion.statusValue!;
-                          // You can use suggestion.statusKey to send to the server
-                          String selectedKey = suggestion.statusKey!;
-                          // Call your API with the selected key here if needed
-                          _validateStatus = "";
-                        });
-                      },
+                          );
+                        },
+                        onSelected: (suggestion) {
+                          setState(() {
+                            _statusController.text = suggestion.statusValue!;
+                            // You can use suggestion.statusKey to send to the server
+                            statusid = suggestion.statusKey!;
+                            // Call your API with the selected key here if needed
+                            _validateStatus = "";
+                          });
+                        },
+                      ),
                     ),
                     if (_validateStatus.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
                         child: ShakeWidget(
                           key: Key("value"),
                           duration: Duration(milliseconds: 700),
@@ -671,91 +908,95 @@ class _TaskFormState extends State<TaskForm> {
                       ),
                     ] else ...[
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                     ],
                     _label(text: 'Priority'),
                     SizedBox(height: 4),
-                    TypeAheadField<Priorities>(
-                      builder: (context, controller, focusNode) {
-                        return TextField(
-                          focusNode: focusNode,
-                          autofocus: true,
-                          controller: _priorityController,
-                          onTap: () {
-                            setState(() {
-                              _validatePriority = "";
-                            });
-                          },
-                          onChanged: (v) {
-                            setState(() {
-                              _validatePriority = "";
-                            });
-                          },
-                          style: TextStyle(
-                            fontSize: 16,
-                            letterSpacing: 0,
-                            height: 1.2,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Select priority",
-                            hintStyle: TextStyle(
-                              fontSize: 15,
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.050,
+                      child: TypeAheadField<Priorities>(
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            focusNode: focusNode,
+                            controller: _priorityController,
+                            onTap: () {
+                              setState(() {
+                                _validatePriority = "";
+                              });
+                            },
+                            onChanged: (v) {
+                              setState(() {
+                                _validatePriority = "";
+                              });
+                            },
+                            style: TextStyle(
+                              fontSize: 16,
                               letterSpacing: 0,
                               height: 1.2,
-                              color: Color(0xFF004AADF).withOpacity(0.30),
-                              fontFamily: 'Poppins',
+                              color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
-                            filled: true,
-                            fillColor: Color(0xffffffff),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                            decoration: InputDecoration(
+                              hintText: "Select priority",
+                              hintStyle: TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 0,
+                                height: 1.2,
+                                color: Color(0xffAFAFAF),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                              ),
+                              filled: true,
+                              fillColor: Color(0xffFCFAFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                                borderSide: BorderSide(
+                                    width: 1, color: Color(0xffD0CBDB)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffCDE2FB)),
+                          );
+                        },
+                        suggestionsCallback: (pattern) {
+                          return priorities
+                              .where((item) => item.priorityValue!
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(
+                              suggestion.priorityValue!,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      suggestionsCallback: (pattern) {
-                        return priorities
-                            .where((item) => item.priorityValue!
-                                .toLowerCase()
-                                .contains(pattern.toLowerCase()))
-                            .toList();
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return ListTile(
-                          title: Text(
-                            suggestion.priorityValue!,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        );
-                      },
-                      onSelected: (suggestion) {
-                        setState(() {
-                          _priorityController.text = suggestion.priorityValue!;
-                          // You can use suggestion.statusKey to send to the server
-                          String selectedKey = suggestion.priorityKey!;
-                          // Call your API with the selected key here if needed
-                          _validatePriority = "";
-                        });
-                      },
+                          );
+                        },
+                        onSelected: (suggestion) {
+                          setState(() {
+                            _priorityController.text =
+                                suggestion.priorityValue!;
+                            // You can use suggestion.statusKey to send to the server
+                            priorityid = suggestion.priorityKey!;
+                            // Call your API with the selected key here if needed
+                            _validatePriority = "";
+                          });
+                        },
+                      ),
                     ),
                     if (_validatePriority.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
                         child: ShakeWidget(
                           key: Key("value"),
                           duration: Duration(milliseconds: 700),
@@ -772,7 +1013,7 @@ class _TaskFormState extends State<TaskForm> {
                       ),
                     ] else ...[
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                     ],
                     _label(text: 'Start Date'),
@@ -780,72 +1021,121 @@ class _TaskFormState extends State<TaskForm> {
                     _buildDateField(
                       _startDateController,
                     ),
-                    SizedBox(height: 10),
+                    if (_validateStartDate.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validatePriority,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
                     _label(text: 'Deadline'),
                     SizedBox(height: 4),
                     _buildDateField(
                       _deadlineController,
                     ),
+                    if (_validateDeadline.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateDeadline,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
                     SizedBox(height: 30),
                   ],
                 ),
               ),
             ),
-            Row(
-              children: [
-                Container(
-                  height: 40,
-                  width: w * 0.43,
-                  decoration: BoxDecoration(
-                    color: Color(0xffF8FCFF),
-                    border: Border.all(
-                      color: Color(0xff8856F4),
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(7),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(18),
+        decoration: BoxDecoration(color: Colors.white),
+        child: Row(
+          children: [
+            Container(
+              height: 40,
+              width: w * 0.43,
+              decoration: BoxDecoration(
+                color: Color(0xffF8FCFF),
+                border: Border.all(
+                  color: Color(0xff8856F4),
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Center(
+                child: Text(
+                  'Close',
+                  style: TextStyle(
+                    color: Color(0xff8856F4),
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Inter',
                   ),
-                  child: Center(
-                    child: Text(
-                      'Close',
-                      style: TextStyle(
-                        color: Color(0xff8856F4),
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Inter',
-                      ),
+                ),
+              ),
+            ),
+            Spacer(),
+            InkResponse(
+              onTap: () {
+                _validateFields();
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xff8856F4),
+                  border: Border.all(
+                    color: Color(0xff8856F4),
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Color(0xffffffff),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ),
-                Spacer(),
-                InkResponse(
-                  onTap: () {
-                    _validateFields();
-                  },
-                  child: Container(
-                    height: 40,
-                    width: w * 0.43,
-                    decoration: BoxDecoration(
-                      color: Color(0xff8856F4),
-                      border: Border.all(
-                        color: Color(0xff8856F4),
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          color: Color(0xffffffff),
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -894,20 +1184,22 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide:
-                    const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide:
-                    const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
-                borderSide: const BorderSide(width: 1, color: Colors.red),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
-                borderSide: const BorderSide(width: 1, color: Colors.red),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
               ),
             ),
           ),
@@ -945,9 +1237,7 @@ class _TaskFormState extends State<TaskForm> {
         GestureDetector(
           onTap: () {
             _selectDate(context, controller);
-            setState(() {
-              // _validateDob="";
-            });
+            setState(() {});
           },
           child: AbsorbPointer(
             child: Container(
@@ -977,11 +1267,11 @@ class _TaskFormState extends State<TaskForm> {
                   fillColor: Color(0xffFCFAFF),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
                   ),
                 ),
               ),

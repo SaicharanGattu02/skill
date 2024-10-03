@@ -99,17 +99,18 @@ class RoundedProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    print("Progress :${progress}");
     final Paint paintBackground = Paint()
       ..color = Color(0xffE0C6FD)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
-      ..strokeCap = StrokeCap.round; // Rounded ends
+      ..strokeCap = StrokeCap.round;
 
     final Paint paintForeground = Paint()
       ..color = Color(0xff682FA3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
-      ..strokeCap = StrokeCap.round; // Rounded ends
+      ..strokeCap = StrokeCap.round;
 
     final double radius = size.width / 2;
 
@@ -121,12 +122,12 @@ class RoundedProgressPainter extends CustomPainter {
     );
 
     // Draw foreground arc
-    final double sweepAngle =
-        2 * 3.141592653589793 * progress; // Full circle in radians
+    final double sweepAngle = 2 * 3.141592653589793 * progress; // Full circle in radians
     canvas.drawArc(
       Rect.fromCircle(
-          center: Offset(radius, radius),
-          radius: radius - paintForeground.strokeWidth / 2),
+        center: Offset(radius, radius),
+        radius: radius - paintForeground.strokeWidth / 2,
+      ),
       -3.141592653589793 / 2, // Start angle (top)
       sweepAngle,
       false,
@@ -135,8 +136,8 @@ class RoundedProgressPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(RoundedProgressPainter oldDelegate) {
-    return oldDelegate.progress != progress;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true; // Repaint when progress changes
   }
 }
 

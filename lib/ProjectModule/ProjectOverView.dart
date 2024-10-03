@@ -179,7 +179,7 @@ class _OverViewState extends State<OverView> {
         children: [
           CustomPaint(
             size: Size(136, 136),
-            painter: RoundedProgressPainter(0.75),
+            painter: RoundedProgressPainter(data?.totalPercent?.roundToDouble()??0.0),
           ),
           Text(
             '${(data?.totalPercent??0 * 100).round()}%',

@@ -60,6 +60,8 @@ dependencies:
   fl_chart: ^0.69.0
   multi_dropdown: ^3.0.1
   flutter_typeahead: ^5.2.0
+  image_picker: ^1.1.2
+  mime: ^1.0.5
 
 dev_dependencies:
   flutter_test:

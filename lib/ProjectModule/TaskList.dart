@@ -80,8 +80,13 @@ class _TaskListState extends State<TaskList> {
                   ),
                   Spacer(),
                   SizedBox(height: w*0.09,
-                    child: InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder:(context) => TaskForm(projectId: widget.id1),));
+                    child: InkWell(onTap: () async {
+                      var res= await Navigator.push(context, MaterialPageRoute(builder:(context) => TaskForm(projectId: widget.id1),));
+                      if(res==true){
+                        setState(() {
+                          GetProjectTasks();
+                        });
+                      }
                     },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
