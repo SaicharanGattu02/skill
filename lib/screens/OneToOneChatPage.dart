@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import '../Model/CreateRoomModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/CustomAppBar.dart';
 import '../utils/Preferances.dart';
 
 class ChatPage extends StatefulWidget {
-  final String roomId;
-  ChatPage({required this.roomId});
+  final String userId;
+  ChatPage({required this.userId});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -16,24 +18,30 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   late IOWebSocketChannel _socket; // WebSocket channel
   TextEditingController _messageController = TextEditingController();
-  List<Map<String, dynamic>> _messages = [];
+  ScrollController _scrollController = ScrollController(); // Add this
   bool _isConnected = false; // Track connection status
-  String user_id="";
-  String user_type="";
+  String user_id = "";
+  String user_type = "";
 
   @override
   void initState() {
     super.initState();
     createRoom();
+    print(widget.userId);
   }
+
+  List<Messages> _messages = [];
+  OtherUser? otherUser;
 
   Future<void> createRoom() async {
     user_id = await PreferenceService().getString("user_id") ?? "";
     print('Creating room for chat...');
-    print('user_id:${user_id}');
-    var res = await Userapi.CreateChatRoomAPi(widget.roomId);
+    print('user_id: $user_id');
+    var res = await Userapi.CreateChatRoomAPi(widget.userId);
     if (res != null && res.settings?.success == 1) {
       print('Room created successfully: ${res.data?.room}');
+      _messages = res.data?.messages ?? [];
+      otherUser = res.data?.otherUser;
       _initializeWebSocket(res.data?.room ?? "");
     } else {
       print('Failed to create room');
@@ -45,6 +53,7 @@ class _ChatPageState extends State<ChatPage> {
     print('Disposing WebSocket and cleaning up resources...');
     _socket.sink.close();
     _messageController.dispose();
+    _scrollController.dispose(); // Dispose of the ScrollController
     super.dispose();
   }
 
@@ -60,25 +69,19 @@ class _ChatPageState extends State<ChatPage> {
           (message) {
         print('Message received: $message');
         try {
-          // Decode the JSON string into a Map
           final decodedMessage = jsonDecode(message);
           print('Decoded message: $decodedMessage');
+
+          Messages newMessage = Messages.fromJson(decodedMessage['data']);
+
           setState(() {
-            if(decodedMessage['data']['sent_user']==user_id){
-              user_type="you";
-              _messages.add({
-                'sender': user_type,
-                'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
-                'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
-              });
-            }else{
-              user_type="remote";
-              _messages.add({
-                'sender': user_type,
-                'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
-                'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
-              });
+            if (newMessage.sentUser == user_id) {
+              user_type = "you";
+            } else {
+              user_type = "remote";
             }
+            _messages.add(newMessage);
+            _scrollToBottom(); // Scroll to bottom when a new message is added
           });
         } catch (e) {
           print('Error processing message: $e');
@@ -100,6 +103,12 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
+  }
+
   void _reconnectWebSocket(String room) {
     Future.delayed(Duration(seconds: 5), () {
       print('Reconnecting to WebSocket...');
@@ -113,10 +122,9 @@ class _ChatPageState extends State<ChatPage> {
       print('Sending message: $message');
 
       try {
-        // Create the payload as specified
         final payload = jsonEncode({
           'command': 'new_message',
-          'message': message, // Use the actual message text
+          'message': message,
           'user': user_id
         });
         _socket.sink.add(payload);
@@ -129,16 +137,16 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-
   Widget _buildMessageBubble(String message, String sender) {
     bool isMe = sender == 'you';
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.75,
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isMe ? Colors.blueAccent : Colors.grey.shade300,
+          color: isMe ? Color(0xffEAE1FF) : Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -146,13 +154,13 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             Text(
               message,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black),
+              style: TextStyle(color: Colors.black),
             ),
             SizedBox(height: 5),
             Text(
-              DateTime.now().toLocal().toString().substring(11, 16), // Timestamp in HH:mm format
+              DateTime.now().toLocal().toString().substring(11, 16),
               style: TextStyle(
-                color: isMe ? Colors.white70 : Colors.black54,
+                color: Colors.black54,
                 fontSize: 10,
               ),
             ),
@@ -165,18 +173,75 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        title: Text('WebSocket Chat'),
+        backgroundColor: Color(0xff8856F4),
+        leadingWidth: 25,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Icon(
+              Icons.arrow_back,
+              color: Color(0xffffffff),
+            ),
+          ),
+        ),
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(otherUser?.image ?? ""),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                otherUser?.fullName ?? "",
+                maxLines: 2,
+                style: TextStyle(
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                  fontSize: 16,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Image(image: AssetImage("assets/video.png"), color: Colors.white, width: 22, height: 20),
+            onPressed: () {
+              // Handle video call action
+            },
+          ),
+          IconButton(
+            icon: Image(image: AssetImage("assets/call.png"), width: 22, height: 20),
+            onPressed: () {
+              // Handle phone call action
+            },
+          ),
+          IconButton(
+            icon: Image(image: AssetImage("assets/more.png"), width: 22, height: 20),
+            onPressed: () {
+              // Handle more actions
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController, // Use the ScrollController here
               itemCount: _messages.length,
               itemBuilder: (context, index) {
-                final message = _messages[index]['message'];
-                final sender = _messages[index]['sender'];
-                return _buildMessageBubble(message, sender);
+                final message = _messages[index].msg;
+                final sender = _messages[index].sentUser == user_id ? "you" : "remote";
+                return _buildMessageBubble(message ?? "", sender);
               },
             ),
           ),
@@ -204,3 +269,4 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
+
