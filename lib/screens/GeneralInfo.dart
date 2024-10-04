@@ -258,7 +258,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         ),
                       ),
                     ),
-
                     // Save Button (Filled with Icon)
                     ElevatedButton.icon(
                       onPressed: () {
