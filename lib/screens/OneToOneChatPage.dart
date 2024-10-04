@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/CreateRoomModel.dart';
+import '../Model/FetchmesgsModel.dart';
 import '../Services/UserApi.dart';
-import '../utils/CustomAppBar.dart';
 import '../utils/Preferances.dart';
 
 class ChatPage extends StatefulWidget {
@@ -15,24 +15,29 @@ class ChatPage extends StatefulWidget {
   _ChatPageState createState() => _ChatPageState();
 }
 
-
 class _ChatPageState extends State<ChatPage> {
-  late IOWebSocketChannel _socket; // WebSocket channel
+  late IOWebSocketChannel _socket;
   TextEditingController _messageController = TextEditingController();
-  ScrollController _scrollController = ScrollController(); // Add this
-  bool _isConnected = false; // Track connection status
+  ScrollController _scrollController = ScrollController();
+  bool _isConnected = false;
+  bool _isLoadingMore = false; // Track loading state for more messages
   String user_id = "";
   String user_type = "";
+  int _currentPage = 0;
+  String last_msg_id="";
+  String room_id="";// Track current page for pagination
 
   @override
   void initState() {
     super.initState();
     createRoom();
+    _scrollController.addListener(_scrollListener); // Add listener for scrolling
     print(widget.userId);
   }
 
   List<Messages> _messages = [];
   OtherUser? otherUser;
+
 
   Future<void> createRoom() async {
     user_id = await PreferenceService().getString("user_id") ?? "";
@@ -42,11 +47,70 @@ class _ChatPageState extends State<ChatPage> {
     if (res != null && res.settings?.success == 1) {
       print('Room created successfully: ${res.data?.room}');
       _messages = res.data?.messages ?? [];
+      last_msg_id=_messages[0].id??"";
+      room_id=res.data?.room??"";
       otherUser = res.data?.otherUser;
       _initializeWebSocket(res.data?.room ?? "");
+
+      // Scroll to the bottom after messages are loaded
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
     } else {
       print('Failed to create room');
     }
+  }
+
+  Future<void> _fetchMessages() async {
+    print('Fetching messages for page $_currentPage...');
+    var res = await Userapi.fetchroommessages(room_id, last_msg_id);
+
+    if (res != null && res.settings?.success == 1) {
+      print('Messages fetched successfully');
+
+      // Assuming res.data is List<Message>
+      List<Message> fetchedMessages = res.data ?? []; // Ensure it's a List<Message>
+      setState(() {
+        // Convert List<Message> to List<Messages>
+        List<Messages> convertedMessages = fetchedMessages.map((msg) {
+          return Messages(
+            id: msg.id,
+            sentUser: msg.sentUser,
+            msg: msg.msg,
+            lastUpdated: msg.lastUpdated,
+            unixTimestamp: msg.unixTimestamp,
+            isRead: msg.isRead,
+          );
+        }).toList();
+
+        _messages.insertAll(0, convertedMessages); // Prepend new messages
+
+        if (_messages.isNotEmpty) {
+          last_msg_id = _messages[0].id ?? ""; // Update last_msg_id if messages exist
+        }
+      });
+    } else {
+      print('Failed to fetch messages');
+    }
+  }
+
+
+  void _scrollListener() {
+    if (_scrollController.position.atEdge && _scrollController.position.pixels == 0 && !_isLoadingMore) {
+      _loadMoreMessages(); // Load more messages when scrolled to top
+    }
+  }
+
+  Future<void> _loadMoreMessages() async {
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    await _fetchMessages(); // Fetch next page of messages
+
+    setState(() {
+      _isLoadingMore = false; // Reset loading state
+    });
   }
 
   @override
@@ -54,7 +118,7 @@ class _ChatPageState extends State<ChatPage> {
     print('Disposing WebSocket and cleaning up resources...');
     _socket.sink.close();
     _messageController.dispose();
-    _scrollController.dispose(); // Dispose of the ScrollController
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -72,17 +136,12 @@ class _ChatPageState extends State<ChatPage> {
         try {
           final decodedMessage = jsonDecode(message);
           print('Decoded message: $decodedMessage');
-
           Messages newMessage = Messages.fromJson(decodedMessage['data']);
-
           setState(() {
-            if (newMessage.sentUser == user_id) {
-              user_type = "you";
-            } else {
-              user_type = "remote";
-            }
             _messages.add(newMessage);
-            _scrollToBottom(); // Scroll to bottom when a new message is added
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToBottom(); // Keep scrolling down to latest message
+            });
           });
         } catch (e) {
           print('Error processing message: $e');
@@ -91,13 +150,13 @@ class _ChatPageState extends State<ChatPage> {
       onError: (error) {
         print('WebSocket error: $error');
         setState(() {
-          _isConnected = false; // Update connection status
+          _isConnected = false;
         });
       },
       onDone: () {
         print('WebSocket connection closed. Trying to reconnect...');
         setState(() {
-          _isConnected = false; // Update connection status
+          _isConnected = false;
         });
         _reconnectWebSocket(room);
       },
@@ -237,9 +296,19 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController, // Use the ScrollController here
-              itemCount: _messages.length,
+              controller: _scrollController,
+              // In the ListView.builder
+              itemCount: _messages.length + (_isLoadingMore ? 1 : 0), // Add 1 for the loader
               itemBuilder: (context, index) {
+                if (index == _messages.length && _isLoadingMore) {
+                  // Show a loading indicator only when loading more messages
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
                 final message = _messages[index].msg;
                 final sender = _messages[index].sentUser == user_id ? "you" : "remote";
                 return _buildMessageBubble(message ?? "", sender);
@@ -270,4 +339,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
+
+
 

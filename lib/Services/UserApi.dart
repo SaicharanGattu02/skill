@@ -14,6 +14,7 @@ import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
+import '../Model/FetchmesgsModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectFileModel.dart';
@@ -170,6 +171,25 @@ class Userapi {
       if (res != null) {
         print("CreateChatRoomAPi Response:${res.body}");
         return CreateRoomModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<FetchmesgsModel?>fetchroommessages(String rommid,String lats_msg_id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/chat/room-messages/$rommid/$lats_msg_id");
+      print("URL:${url}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("fetchroommessages Response:${res.body}");
+        return FetchmesgsModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;
