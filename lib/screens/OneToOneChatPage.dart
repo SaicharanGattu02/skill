@@ -1,24 +1,22 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:web_socket_channel/io.dart';
 import '../Services/UserApi.dart';
+import '../Services/EncryptionService.dart'; // Import the EncryptionService
 
-class EncryptedChatPage extends StatefulWidget {
+class ChatPage extends StatefulWidget {
   final String roomId;
-  EncryptedChatPage({required this.roomId});
+  ChatPage({required this.roomId});
+
   @override
-  _EncryptedChatPageState createState() => _EncryptedChatPageState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _EncryptedChatPageState extends State<EncryptedChatPage> {
-  late WebSocketChannel _socket;
+class _ChatPageState extends State<ChatPage> {
+  late IOWebSocketChannel _socket; // WebSocket channel
   TextEditingController _messageController = TextEditingController();
   List<Map<String, dynamic>> _messages = [];
-
-  final _secretKey = encrypt.Key.fromBase16(
-      '21a288673f1daa503e0f540f1d02145c20fe122ec0c8fea359947253654553cd'); // AES with 256-bit key
-  final _iv = encrypt.IV.allZerosOfLength(16); // Fixed IV in Hex format
+  final EncryptionService _encryptionService = EncryptionService(); // Initialize EncryptionService
 
   @override
   void initState() {
@@ -30,16 +28,11 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
     print('Creating room for chat...');
     var res = await Userapi.CreateChatRoomAPi(widget.roomId);
     setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          print('Room created successfully: ${res.data?.room}');
-          _initializeWebSocket(res.data?.room ?? "");
-          print("Decode>>>:${res.data?.room}");
-        } else {
-          print('Failed to create room');
-        }
+      if (res != null && res.settings?.success == 1) {
+        print('Room created successfully: ${res.data?.room}');
+        _initializeWebSocket(res.data?.room ?? "");
       } else {
-        print('Room creation API returned null.');
+        print('Failed to create room');
       }
     });
   }
@@ -54,34 +47,28 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
 
   void _initializeWebSocket(String room) {
     print('Attempting to connect to WebSocket...');
-    _socket = WebSocketChannel.connect(
-      Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'),
-    );
+    _socket = IOWebSocketChannel.connect(Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'));
     print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/$room');
 
     _socket.stream.listen(
           (message) {
-        print('Raw message received: $message');
+        print('Message received: $message');
         try {
           final decodedMessage = jsonDecode(message);
-          print('Decoded JSON message: $decodedMessage');
+          print('Decoded message: $decodedMessage');
 
-          if (decodedMessage['type'] == 'new_message') {
-            final msgData = decodedMessage['data'];
-            final encryptedMsg = msgData['msg'];
+          // Decrypt the received message
+          final encryptedMessage = decodedMessage['data']['msg'] ?? '';
+          print("encryptedMessage :${encryptedMessage}");
+          final decryptedMessage = _encryptionService.decrypt(encryptedMessage);
 
-            // Decrypt the message
-            final decryptedMessage = _decryptMessage(encryptedMsg);
-            print('Decrypted message: $decryptedMessage');
-
-            setState(() {
-              _messages.add({
-                'sender': 'remote',
-                'message': decryptedMessage,
-                'timestamp': msgData['last_updated'] ?? DateTime.now().toString(),
-              });
+          setState(() {
+            _messages.add({
+              'sender': 'remote',
+              'message': decryptedMessage.isNotEmpty ? decryptedMessage : 'Decryption failed',
+              'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
             });
-          }
+          });
         } catch (e) {
           print('Error processing message: $e');
         }
@@ -103,38 +90,20 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
     });
   }
 
-  // Encrypt message before sending (AES-256, CBC, PKCS7)
-  String _encryptMessage(String message) {
-    print('Encrypting message: $message');
-    final encrypter = encrypt.Encrypter(encrypt.AES(_secretKey));
-    final encrypted = encrypter.encrypt(message, iv: _iv);
-    print('Encrypted message: ${encrypted.base64}');
-    return encrypted.base64; // Base64 encoded string for transmission
-  }
-
-  // Decrypt received message (AES-256, CBC, PKCS7)
-  String _decryptMessage(String encryptedMessage) {
-    print('Decrypting message: $encryptedMessage');
-    final encrypter = encrypt.Encrypter(encrypt.AES(_secretKey));
-    final decrypted = encrypter.decrypt64(encryptedMessage, iv: _iv);
-    print('Decrypted message: $decrypted');
-    return decrypted;
-  }
-
-  // Send an encrypted message over WebSocket
   void _sendMessage() {
     String message = _messageController.text;
     if (message.isNotEmpty) {
-      print('Sending message: $message');
-      final encryptedMessage = _encryptMessage(message);
-      _socket.sink.add(encryptedMessage); // Send encrypted message
-      print('Encrypted message sent to WebSocket.');
+      // Encrypt the message before sending
+      String encryptedMessage = _encryptionService.encrypt(message);
+      print('Sending encrypted message: $encryptedMessage');
+      _socket.sink.add(jsonEncode({'msg': encryptedMessage})); // Send encrypted message as JSON
 
       setState(() {
         _messages.add({
           'sender': 'you',
           'message': message,
           'timestamp': DateTime.now().toString(),
+          'status': 'sending', // Initial status for message
         });
       });
 
@@ -142,7 +111,6 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
     }
   }
 
-  // Build each chat message bubble
   Widget _buildMessageBubble(String message, String sender) {
     bool isMe = sender == 'you';
     return Align(
@@ -179,7 +147,7 @@ class _EncryptedChatPageState extends State<EncryptedChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Encrypted WebSocket Chat'),
+        title: Text('WebSocket Chat'),
       ),
       body: Column(
         children: [

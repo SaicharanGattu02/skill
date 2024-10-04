@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skill/screens/ForgotPassword.dart';
+import 'package:skill/screens/PersnalInformation.dart';
+import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/dashboard.dart';
 
 import '../Services/UserApi.dart';
@@ -280,7 +282,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         const SizedBox(width: 6),
                         GestureDetector(
                           onTap: () {
-                            // Navigate to the sign-up screen if necessary
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => PersonalInformation()));
                           },
                           child: const Text(
                             "Sign Up",

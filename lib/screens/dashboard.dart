@@ -1144,7 +1144,7 @@ class _DashboardState extends State<Dashboard> {
                             return InkResponse(
                               onTap: (){
                                 Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => EncryptedChatPage(roomId: user.id!)));
+                                    MaterialPageRoute(builder: (context) => ChatPage(roomId: user.id!)));
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8),
