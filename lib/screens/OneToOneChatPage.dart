@@ -29,6 +29,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> createRoom() async {
     user_id = await PreferenceService().getString("user_id") ?? "";
     print('Creating room for chat...');
+    print('user_id:${user_id}');
     var res = await Userapi.CreateChatRoomAPi(widget.roomId);
     if (res != null && res.settings?.success == 1) {
       print('Room created successfully: ${res.data?.room}');
@@ -58,7 +59,8 @@ class _ChatPageState extends State<ChatPage> {
           (message) {
         print('Message received: $message');
         try {
-          final decodedMessage = message;
+          // Decode the JSON string into a Map
+          final decodedMessage = jsonDecode(message);
           print('Decoded message: $decodedMessage');
 
           setState(() {
