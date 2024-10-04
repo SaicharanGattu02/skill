@@ -9,7 +9,7 @@ class ProjectFile extends StatefulWidget {
   @override
   State<ProjectFile> createState() => _ProjectFileState();
 }
-
+bool _loading =true;
 class _ProjectFileState extends State<ProjectFile> {
   bool isFilesSelected = true;
 
@@ -24,6 +24,7 @@ class _ProjectFileState extends State<ProjectFile> {
 
     setState(() {
       if (res != null) {
+        _loading=false;
         if (res.data != null) {
           data = res.data ?? [];
 
@@ -41,6 +42,7 @@ class _ProjectFileState extends State<ProjectFile> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),

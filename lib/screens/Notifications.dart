@@ -30,7 +30,7 @@ class _NotificationsState extends State<Notifications> {
     },
     // Add more items as needed
   ];
-
+  bool _loading= false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +62,10 @@ class _NotificationsState extends State<Notifications> {
           child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
         )],
       ),
-      body: Padding(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+
+      Padding(
         padding: EdgeInsets.all(16),
         child: ListView.builder(
           itemCount: notifications.length,

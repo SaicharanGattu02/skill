@@ -7,6 +7,7 @@ import 'package:skill/utils/CustomAppBar.dart';
 import 'Alertscreen1.dart';
 
 class Allchannels extends StatefulWidget {
+
   const Allchannels({super.key});
 
   @override
@@ -57,7 +58,7 @@ final List<String> _images = [
   'https://images.unsplash.com/photo-1612626256634-991e6e977fc1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1712&q=80',
   'https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
 ];
-
+bool _loading =false;
 class _AllchannelsState extends State<Allchannels> {
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,9 @@ class _AllchannelsState extends State<Allchannels> {
       appBar: CustomAppBar(title: "All Channels", actions: [],onPlusTap: (){
         Navigator.push(context, MaterialPageRoute(builder:(context)=>AlertDialogScreen()));
       },),
-      body: Padding(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [

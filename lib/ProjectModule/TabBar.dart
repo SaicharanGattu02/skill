@@ -20,7 +20,7 @@ class MyTabBar extends StatefulWidget {
   @override
   _MyTabBarState createState() => _MyTabBarState();
 }
-
+bool _loading =true;
 class _MyTabBarState extends State<MyTabBar>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
@@ -126,7 +126,9 @@ class _MyTabBarState extends State<MyTabBar>
                   )
                 ]
               : null),
-      body: Column(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Column(
         children: [
           Container(
             decoration: BoxDecoration(color: Color(0xffffffff)),

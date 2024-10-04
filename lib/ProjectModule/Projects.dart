@@ -17,7 +17,7 @@ class ProjectsScreen extends StatefulWidget {
 class _ProjectsScreenState extends State<ProjectsScreen> {
   List<Data> projectsData = [];
   bool isLoading = true; // Track loading state
-
+  bool _loading =true;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _mileStoneController = TextEditingController();
@@ -63,6 +63,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     var Res = await Userapi.GetProjectsList();
     setState(() {
       if (Res != null && Res.data != null) {
+        _loading=false;
         projectsData = Res.data ?? [];
         print("projectsData List Get Successfully  ${projectsData[0].name}");
       } else {
@@ -93,7 +94,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           );
         },
       ),
-      body: Padding(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [

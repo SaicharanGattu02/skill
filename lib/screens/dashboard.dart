@@ -18,6 +18,7 @@ import 'package:skill/utils/Preferances.dart';
 import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
 import '../ProjectModule/UserDetailsModel.dart';
+import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 
 class Dashboard extends StatefulWidget {
@@ -109,7 +110,7 @@ class _DashboardState extends State<Dashboard> {
 
 
   }
-
+  bool _loading =false;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -193,7 +194,12 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      body: RefreshIndicator(
+      body:
+
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+
+      RefreshIndicator(
+
           color: Color(0xff9E7BCA),
           backgroundColor: Colors.white,
           displacement: 50,
@@ -1454,7 +1460,7 @@ class _DashboardState extends State<Dashboard> {
                   height: 20,
                 ),
                 InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Leave()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>GeneralInfo()));
                 },
                   child: Container(
                     child: Column(

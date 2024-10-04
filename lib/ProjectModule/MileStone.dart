@@ -21,6 +21,7 @@ class _MileStoneState extends State<MileStone> {
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
   final FocusNode _focusNodedeadline = FocusNode();
+  bool _loading =true;
 
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -47,6 +48,7 @@ class _MileStoneState extends State<MileStone> {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
       if (res != null) {
+        _loading=false;
         if (res.data != null) {
           data = res.data ?? [];
           print("sucsesss");
@@ -62,7 +64,9 @@ class _MileStoneState extends State<MileStone> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: SingleChildScrollView(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

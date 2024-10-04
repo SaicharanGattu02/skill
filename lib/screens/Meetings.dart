@@ -18,6 +18,7 @@ class _MeetingsState extends State<Meetings> {
   DateTime selectedDate = DateTime.now();
   DateTime currentMonth = DateTime.now();
   late ScrollController _scrollController;
+  bool _loading= true;
 
   @override
   void initState() {
@@ -34,8 +35,11 @@ class _MeetingsState extends State<Meetings> {
   Future<void> getMeeting() async {
     var res=await Userapi.GetMeeting();
     setState(() {
+
       if(res!=null){
+        _loading=false;
         if(res.data!=null){
+
           meetings = res.data??[];
           print("projectsData List Get SuccFully  ${res.settings!.message}");
         } else {
@@ -107,7 +111,9 @@ class _MeetingsState extends State<Meetings> {
           ),
         ),
       ),
-      body: Container(
+      body:
+
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):Container(
         width: w,
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(16),

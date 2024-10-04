@@ -32,7 +32,7 @@ final List<Map<String, String>> items1 = [
 ];
 
 bool isSelected =false;
-
+bool _loading =false;
 class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,11 @@ class _MessagesState extends State<Messages> {
           ),
         ),
       ),
-      body: Padding(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+
+
+      Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart'; // Import the dotted border package
 
 class AlertDialogScreen2 extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

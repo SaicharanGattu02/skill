@@ -12,7 +12,8 @@ class TaskKanBan extends StatefulWidget {
   @override
   State<TaskKanBan> createState() => _TaskKanBanState();
 }
-
+bool _loading =true;
+bool _isLoading = true;
 class _TaskKanBanState extends State<TaskKanBan> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -71,7 +72,9 @@ class _TaskKanBanState extends State<TaskKanBan> {
     print("id>>>${widget.id}");
     setState(() {
       if (res != null) {
+        bool _loading =false;
         if (res.data != null) {
+          bool _loading =false;
           data = res.data ?? [];
 
         } else {
@@ -87,6 +90,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),

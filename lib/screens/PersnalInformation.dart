@@ -3,6 +3,7 @@ import 'package:skill/screens/Otp.dart';
 import 'package:skill/screens/dashboard.dart';
 
 class PersonalInformation extends StatefulWidget {
+
   const PersonalInformation({super.key});
 
   @override
@@ -26,7 +27,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
 
   // Gender selection
   String? _gender; // Variable to hold selected gender
-
+  bool _loading= false;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -35,7 +36,12 @@ class _PersonalInformationState extends State<PersonalInformation> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
-      body: Stack(
+      body:
+
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Stack(
+
+
         fit: StackFit.expand,
         children: [
           Column(

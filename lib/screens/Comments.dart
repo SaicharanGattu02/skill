@@ -10,6 +10,7 @@ class Comments extends StatefulWidget {
   @override
   State<Comments> createState() => _CommentsState();
 }
+bool _loading =false;
 
 class _CommentsState extends State<Comments> {
   @override
@@ -18,7 +19,9 @@ class _CommentsState extends State<Comments> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: 'Comments', actions: []),
-      body: SingleChildScrollView(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

@@ -14,8 +14,9 @@ class TaskList extends StatefulWidget {
   @override
   State<TaskList> createState() => _TaskListState();
 }
-
+bool _loading =true;
 class _TaskListState extends State<TaskList> {
+
   List<Data> data = [];
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _TaskListState extends State<TaskList> {
     var Res = await Userapi.GetTask(widget.id1);
     setState(() {
       if (Res != null) {
+        bool _loading =false;
         if (Res.data != null) {
           data = Res.data ?? [];
         } else {
@@ -35,13 +37,17 @@ class _TaskListState extends State<TaskList> {
       }
     });
   }
-
+  bool _loading =true;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body: SingleChildScrollView(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+
+
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

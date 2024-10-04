@@ -29,7 +29,7 @@ class UserData {
   String? image;
   String? email;
   String? status;
-  Null? mobile;
+  String? mobile;
 
   UserData(
       {this.id,

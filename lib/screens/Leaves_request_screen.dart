@@ -6,7 +6,7 @@ class Leave extends StatefulWidget {
   @override
   State<Leave> createState() => _LeaveState();
 }
-
+  bool _loading =false;
 class _LeaveState extends State<Leave> {
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,11 @@ class _LeaveState extends State<Leave> {
           )
         ],
       ),
-      body: SingleChildScrollView(
+      body:
+
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+
+      SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(

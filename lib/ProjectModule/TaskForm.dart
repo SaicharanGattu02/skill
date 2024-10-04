@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
@@ -22,6 +19,7 @@ import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart'; // For date formatting
 import 'package:path/path.dart' as p; // Import the path package
 
+
 class TaskForm extends StatefulWidget {
   final String projectId; // Explicitly define the type
 
@@ -31,7 +29,7 @@ class TaskForm extends StatefulWidget {
   @override
   _TaskFormState createState() => _TaskFormState();
 }
-
+bool _loading =true;
 class User {
   final String name;
   final String id;
@@ -147,6 +145,8 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
     setState(() {
       if (res != null && res.data != null) {
+
+        _loading=false;
         data = res.data;
         members = data?.members ?? [];
         print("members:${members}");
@@ -311,7 +311,9 @@ class _TaskFormState extends State<TaskForm> {
         title: 'Add Task',
         actions: [Container()],
       ),
-      body: Container(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Container(
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.all(16),
         decoration: BoxDecoration(

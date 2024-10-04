@@ -15,6 +15,7 @@ class Leave extends StatefulWidget {
 }
 
 class _LeaveState extends State<Leave> {
+  bool _loading =true;
   @override
   void initState() {
     super.initState();
@@ -26,7 +27,9 @@ class _LeaveState extends State<Leave> {
   Future<void> getleaves() async {
     var Res = await Userapi.GetLeave();
     setState(() {
+
       if (Res != null) {
+        _loading=false;
         if (Res.data != null) {
           leaves = Res.data ?? [];
         } else {
@@ -41,6 +44,7 @@ class _LeaveState extends State<Leave> {
     setState(() {
       if (Res != null) {
         if (Res.data != null) {
+          _loading=false;
           data=Res.data!;
           print("getleavesCount res>>${Res}");
         } else {
@@ -56,7 +60,9 @@ class _LeaveState extends State<Leave> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: "Apply Leave", actions: []),
-      body: SingleChildScrollView(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(

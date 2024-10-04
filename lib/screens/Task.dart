@@ -10,7 +10,7 @@ class Task extends StatefulWidget {
   @override
   State<Task> createState() => _TaskState();
 }
-
+bool _loading= false;
 class _TaskState extends State<Task> {
   final List<String> daysOfWeek = ['Mo', 'Tu', 'Wed', 'Th', 'Fr', 'Sa', 'Su'];
 
@@ -135,7 +135,9 @@ class _TaskState extends State<Task> {
           ),
         ),
       ),
-      body: Container(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      Container(
         width: w,
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(16),

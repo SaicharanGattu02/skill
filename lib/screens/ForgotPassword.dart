@@ -19,7 +19,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final FocusNode focusNodeOTP = FocusNode();
 
   bool _isOtpVisible = false; // To control OTP field visibility
-
+  bool _loading =false;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -28,7 +28,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
-      body: Stack(
+      body:
+
+
+      Stack(
         fit: StackFit.expand,
         children: [
           Column(
@@ -182,7 +185,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Center(
-                          child: Text(
+                          child:
+                          _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+                          Text(
                             _isOtpVisible ? "Reset Password" : "Send Otp",
                             style: TextStyle(
                               color: Color(0xffFFFFFF),

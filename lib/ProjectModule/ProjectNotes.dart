@@ -9,7 +9,7 @@ class ProjectNotes extends StatefulWidget {
   @override
   State<ProjectNotes> createState() => _ProjectNotesState();
 }
-
+bool _loading =true;
 class _ProjectNotesState extends State<ProjectNotes> {
   @override
   void initState() {
@@ -23,6 +23,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
     setState(() {
       if (res != null) {
+        _loading=false;
         if (res.data != null) {
           data=res.data??[];
 
@@ -39,7 +40,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: SingleChildScrollView(
+      body:
+      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
