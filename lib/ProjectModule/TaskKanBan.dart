@@ -63,7 +63,6 @@ class _TaskKanBanState extends State<TaskKanBan> {
   }
 
   List<Data> data =[];
-  List<Collaborators> collaborators=[];
 
 
   Future<void> GetKanBan() async{
@@ -180,8 +179,10 @@ class _TaskKanBanState extends State<TaskKanBan> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final kanBan = data[index];
-                  // final collabaroters=kanBan?.collaborators?[index];
-                  // final colabarators =kanBan.collaborators?.length;
+                  // Extract collaborator images from the data
+                  // List<String> collaboratorImages = kanBan.collaborators != null
+                  //     ? kanBan.collaborators!.map((e) => e.image ?? "").toList()
+                  //     : [];
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: DottedBorder(
@@ -324,7 +325,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                     height: 8,
                                   ),
                                   FlutterImageStack(
-                                    imageList: _images,
+                                    imageList:_images,
                                     totalCount: _images.length,
                                     showTotalCount: true,
                                     itemBorderWidth: 1,

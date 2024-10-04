@@ -9,9 +9,9 @@ import 'package:skill/Model/GetLeaveCountModel.dart';
 import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectActivityModel.dart';
+import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
-
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/LoginModel.dart';
@@ -24,6 +24,7 @@ import '../Model/RegisterModel.dart';
 import '../Model/TaskAddmodel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
+import '../Model/TimeSheeetDeatilModel.dart';
 import 'otherservices.dart';
 
 class Userapi {
@@ -305,6 +306,24 @@ class Userapi {
     }
   }
 
+  static Future<TimeSheetDetailsModel?> GetProjectTimeSheetDetails(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse('${host}/project/project-timesheets/${id}');
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("TimeSheetDetails Response:${res.body}");
+        return TimeSheetDetailsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
   static Future<ProjectPrioritiesModel?> GetProjectsPrioritiesApi() async {
     try {
       final headers = await getheader();
@@ -322,6 +341,8 @@ class Userapi {
       return null;
     }
   }
+
+
   static Future<NoteModel?> GetProjectNote(String id) async {
     try {
       final headers = await getheader();
@@ -339,6 +360,26 @@ class Userapi {
       return null;
     }
   }
+
+
+  static Future<ProjectCommentsModel?> GetProjectComments(String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-comments?project_id=b2a78098d7b142e0bb69a3214c35aa8f");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectComments Response:${res.body}");
+        return ProjectCommentsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
 
   static Future<FileModel?> GetProjectFile(String id) async {
     try {

@@ -12,6 +12,7 @@ class ProjectFile extends StatefulWidget {
 
 class _ProjectFileState extends State<ProjectFile> {
   bool isFilesSelected = true;
+
   void initState() {
     GetFile();
     super.initState();
@@ -330,14 +331,19 @@ class _ProjectFileState extends State<ProjectFile> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  projectfile.fileName ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    height: 21.78 / 15,
-                                    color: Color(0xff1D1C1D),
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Inter',
+                                Container(
+                                  width:w*0.7,
+                                  child: Text(
+                                    projectfile.fileName ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      height: 21.78 / 15,
+                                      color: Color(0xff1D1C1D),
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Inter',
+
+                                    ),
+
                                   ),
                                 ),
                                 const SizedBox(height: 10),
