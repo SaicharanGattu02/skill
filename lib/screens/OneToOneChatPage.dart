@@ -19,6 +19,7 @@ class _ChatPageState extends State<ChatPage> {
   List<Map<String, dynamic>> _messages = [];
   bool _isConnected = false; // Track connection status
   String user_id="";
+  String user_type="";
 
   @override
   void initState() {
@@ -62,13 +63,22 @@ class _ChatPageState extends State<ChatPage> {
           // Decode the JSON string into a Map
           final decodedMessage = jsonDecode(message);
           print('Decoded message: $decodedMessage');
-
           setState(() {
-            _messages.add({
-              'sender': 'remote',
-              'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
-              'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
-            });
+            if(decodedMessage['data']['sent_user']==user_id){
+              user_type="you";
+              _messages.add({
+                'sender': user_type,
+                'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
+                'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
+              });
+            }else{
+              user_type="remote";
+              _messages.add({
+                'sender': user_type,
+                'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
+                'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
+              });
+            }
           });
         } catch (e) {
           print('Error processing message: $e');
@@ -109,21 +119,10 @@ class _ChatPageState extends State<ChatPage> {
           'message': message, // Use the actual message text
           'user': user_id
         });
-
         _socket.sink.add(payload);
-
-        setState(() {
-          _messages.add({
-            'sender': 'you',
-            'message': message,
-            'timestamp': DateTime.now().toString(),
-            'status': 'sending', // Initial status for message
-          });
-        });
       } catch (e) {
         print('Error sending message: $e');
       }
-
       _messageController.clear();
     } else {
       print('Socket not connected or message is empty');
