@@ -17,6 +17,7 @@ import 'package:skill/utils/Preferances.dart';
 
 import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
+import '../ProjectModule/UserDetailsModel.dart';
 import 'OneToOneChatPage.dart';
 
 class Dashboard extends StatefulWidget {
@@ -59,6 +60,7 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     GetEmployeeData();
     _requestLocationPermission();
+    GetUserDeatails();
     super.initState();
   }
 
@@ -83,6 +85,20 @@ class _DashboardState extends State<Dashboard> {
           print("Employee List Get Succesfully  ${Res.settings?.message}");
         } else {
           print("Employee List Failure  ${Res.settings?.message}");
+        }
+      }
+    });
+  }
+  UserData? userdata;
+  Future<void> GetUserDeatails() async {
+    var Res = await Userapi.GetUserdetails();
+    setState(() {
+      if (Res != null) {
+        if(Res.settings?.success==1){
+          userdata = Res.data;
+          PreferenceService().saveString("user_id", userdata?.id ?? "");
+        }else{
+
         }
       }
     });

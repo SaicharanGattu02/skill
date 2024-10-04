@@ -25,6 +25,7 @@ import '../Model/TaskAddmodel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
+import '../ProjectModule/UserDetailsModel.dart';
 import 'otherservices.dart';
 
 class Userapi {
@@ -473,6 +474,21 @@ class Userapi {
     }
   }
 
-
-
+  static Future<UserDetailsModel?> GetUserdetails() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/auth/user-detail");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetUserdetails Response:${res.body}");
+        return UserDetailsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
 }

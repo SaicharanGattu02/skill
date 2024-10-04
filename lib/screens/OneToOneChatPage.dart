@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Services/UserApi.dart';
-import '../Services/EncryptionService.dart'; // Import the EncryptionService
+import '../utils/Preferances.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
@@ -16,7 +17,8 @@ class _ChatPageState extends State<ChatPage> {
   late IOWebSocketChannel _socket; // WebSocket channel
   TextEditingController _messageController = TextEditingController();
   List<Map<String, dynamic>> _messages = [];
-  final EncryptionService _encryptionService = EncryptionService(); // Initialize EncryptionService
+  bool _isConnected = false; // Track connection status
+  String user_id="";
 
   @override
   void initState() {
@@ -25,16 +27,15 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> createRoom() async {
+    user_id = await PreferenceService().getString("user_id") ?? "";
     print('Creating room for chat...');
     var res = await Userapi.CreateChatRoomAPi(widget.roomId);
-    setState(() {
-      if (res != null && res.settings?.success == 1) {
-        print('Room created successfully: ${res.data?.room}');
-        _initializeWebSocket(res.data?.room ?? "");
-      } else {
-        print('Failed to create room');
-      }
-    });
+    if (res != null && res.settings?.success == 1) {
+      print('Room created successfully: ${res.data?.room}');
+      _initializeWebSocket(res.data?.room ?? "");
+    } else {
+      print('Failed to create room');
+    }
   }
 
   @override
@@ -49,23 +50,21 @@ class _ChatPageState extends State<ChatPage> {
     print('Attempting to connect to WebSocket...');
     _socket = IOWebSocketChannel.connect(Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'));
     print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/$room');
+    setState(() {
+      _isConnected = true;
+    });
 
     _socket.stream.listen(
           (message) {
         print('Message received: $message');
         try {
-          final decodedMessage = jsonDecode(message);
+          final decodedMessage = message;
           print('Decoded message: $decodedMessage');
-
-          // Decrypt the received message
-          final encryptedMessage = decodedMessage['data']['msg'] ?? '';
-          print("encryptedMessage :${encryptedMessage}");
-          final decryptedMessage = _encryptionService.decrypt(encryptedMessage);
 
           setState(() {
             _messages.add({
               'sender': 'remote',
-              'message': decryptedMessage.isNotEmpty ? decryptedMessage : 'Decryption failed',
+              'message': decodedMessage['data']['msg'] ?? 'Message could not be decoded',
               'timestamp': decodedMessage['data']['last_updated'] ?? DateTime.now().toString(),
             });
           });
@@ -75,9 +74,15 @@ class _ChatPageState extends State<ChatPage> {
       },
       onError: (error) {
         print('WebSocket error: $error');
+        setState(() {
+          _isConnected = false; // Update connection status
+        });
       },
       onDone: () {
         print('WebSocket connection closed. Trying to reconnect...');
+        setState(() {
+          _isConnected = false; // Update connection status
+        });
         _reconnectWebSocket(room);
       },
     );
@@ -92,24 +97,37 @@ class _ChatPageState extends State<ChatPage> {
 
   void _sendMessage() {
     String message = _messageController.text;
-    if (message.isNotEmpty) {
-      // Encrypt the message before sending
-      String encryptedMessage = _encryptionService.encrypt(message);
-      print('Sending encrypted message: $encryptedMessage');
-      _socket.sink.add(jsonEncode({'msg': encryptedMessage})); // Send encrypted message as JSON
+    if (message.isNotEmpty && _isConnected) {
+      print('Sending message: $message');
 
-      setState(() {
-        _messages.add({
-          'sender': 'you',
-          'message': message,
-          'timestamp': DateTime.now().toString(),
-          'status': 'sending', // Initial status for message
+      try {
+        // Create the payload as specified
+        final payload = jsonEncode({
+          'command': 'new_message',
+          'message': message, // Use the actual message text
+          'user': user_id
         });
-      });
+
+        _socket.sink.add(payload);
+
+        setState(() {
+          _messages.add({
+            'sender': 'you',
+            'message': message,
+            'timestamp': DateTime.now().toString(),
+            'status': 'sending', // Initial status for message
+          });
+        });
+      } catch (e) {
+        print('Error sending message: $e');
+      }
 
       _messageController.clear();
+    } else {
+      print('Socket not connected or message is empty');
     }
   }
+
 
   Widget _buildMessageBubble(String message, String sender) {
     bool isMe = sender == 'you';
