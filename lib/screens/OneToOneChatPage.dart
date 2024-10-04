@@ -15,6 +15,7 @@ class ChatPage extends StatefulWidget {
   _ChatPageState createState() => _ChatPageState();
 }
 
+
 class _ChatPageState extends State<ChatPage> {
   late IOWebSocketChannel _socket; // WebSocket channel
   TextEditingController _messageController = TextEditingController();
