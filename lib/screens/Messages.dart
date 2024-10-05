@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_stack/flutter_image_stack.dart';
 
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
-
 class Messages extends StatefulWidget {
   const Messages({super.key});
 
@@ -13,58 +11,84 @@ class Messages extends StatefulWidget {
 }
 
 class _MessagesState extends State<Messages> {
-
-
+  final TextEditingController _searchController = TextEditingController();
   final List<Map<String, String>> items1 = [
     {
       'image': 'assets/Pixl Team.png',
       'title': 'Vishwa',
       'subtitle': 'Date of appointment...',
-      'time':'33 mins'
+      'time': '33 mins'
     },
     {
       'image': 'assets/Pixl Team.png',
       'title': 'Varun',
       'subtitle': 'Date of appointment...',
-      'time':'33 mins'
+      'time': '33 mins'
     },
     {
       'image': 'assets/Pixl Team.png',
       'title': 'Karthik',
       'subtitle': 'Date of appointment...',
-      'time':'33 mins'
+      'time': '33 mins'
     },
-
   ];
-  bool isSelected =false;
-  bool _loading =false;
-  List<Rooms> rooms=[];
+
+  bool isSelected = false;
+  bool _loading = false;
+  List<Rooms> rooms = [];
+  List<Rooms> filteredRooms = []; // To store filtered messages based on the search query
+
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChanged);
     GetRoomsList();
   }
 
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> GetRoomsList() async {
+    setState(() {
+      _loading = true; // Show loading spinner while fetching data
+    });
+
     var res = await Userapi.getrommsApi();
     setState(() {
+      _loading = false; // Hide loading spinner once data is fetched
       if (res != null) {
-        if(res.settings?.success==1){
-          rooms = res.data??[];
+        if (res.settings?.success == 1) {
+          rooms = res.data ?? [];
           rooms.sort((a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
-        }else{
+          filteredRooms = rooms; // Initially, show all rooms
         }
       }
     });
   }
+
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredRooms = rooms.where((room) {
+        String otherUser = room.otherUser?.toLowerCase() ?? ''; // Handle null cases
+        String message = room.message?.toLowerCase() ?? '';
+        return otherUser.contains(query) || message.contains(query);
+      }).toList();
+      print('Filtered rooms: ${filteredRooms.length}'); // Debug log
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar:
-      AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xff8856F4),
         leading: InkWell(
           onTap: () {
@@ -87,14 +111,16 @@ class _MessagesState extends State<Messages> {
           ),
         ),
       ),
-      body:
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-      Padding(
+      body: _loading
+          ? Center(
+        child: CircularProgressIndicator(color: Color(0xff8856F4)),
+      )
+          : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
             Container(
-              height: w*0.08,
+              height: w * 0.08,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
                   color: const Color(0xffffffff),
@@ -108,19 +134,29 @@ class _MessagesState extends State<Messages> {
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 10),
-                  const Text(
-                    "Search",
-                    style: TextStyle(
-                        color: Color(0xff9E7BCA),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        height: 19.36/14,
-                        fontFamily: "Nunito"),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Search...',
+                        hintStyle: TextStyle(
+                          color: Color(0xff9E7BCA),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          height: 19.36 / 14,
+                          fontFamily: "Nunito",
+                        ),
+                      ),
+                      onChanged: (value) {
+                        print("Search input: $value"); // Debug log for search input
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20),
             Row(
               children: [
                 const Text(
@@ -152,7 +188,6 @@ class _MessagesState extends State<Messages> {
                     child: Switch(
                       value: isSelected,
                       inactiveThumbColor: const Color(0xff98A9B0),
-
                       activeColor: const Color(0xff8856F4),
                       onChanged: (bool value) {
                         setState(() {
@@ -166,31 +201,34 @@ class _MessagesState extends State<Messages> {
             ),
             SizedBox(height: w * 0.02),
             Expanded(
-              child: ListView.builder(
-                itemCount: rooms.length,
+              child: filteredRooms.isEmpty
+                  ? Center( // Show this message if no data is found
+                child: Text(
+                  "No Data Found",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              )
+                  : ListView.builder(
+                itemCount: filteredRooms.length,
                 itemBuilder: (context, index) {
-                  var data = rooms[index];
-                  String isoDate = data.messageSent ?? ""; // Fallback to empty string if null
+                  var data = filteredRooms[index];
+                  String isoDate = data.messageSent ?? "";
 
                   DateTime? dateTime;
-                  String formattedDate = ""; // Default value for null case
-                  String formattedTime = "";  // Default value for null case
+                  String formattedTime = "";
 
-                  // Check if isoDate is not empty before parsing
                   if (isoDate.isNotEmpty) {
                     try {
                       dateTime = DateTime.parse(isoDate);
-                      // Format the date and time
-                      formattedDate = "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
-                      formattedTime = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+                      formattedTime = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
                     } catch (e) {
                       print("Error parsing date: $e");
                     }
                   }
-
-                  // Debugging output
-                  print("Date: $formattedDate");
-                  print("Time: $formattedTime");
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -214,9 +252,9 @@ class _MessagesState extends State<Messages> {
                               ),
                             ],
                           ),
-                          const SizedBox(width: 10), // Space between image and text
+                          const SizedBox(width: 10),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.4, // Set a fixed width
+                            width: MediaQuery.of(context).size.width * 0.4,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -231,7 +269,7 @@ class _MessagesState extends State<Messages> {
                                     color: Color(0xff1C1C1C),
                                   ),
                                 ),
-                                const SizedBox(height: 5), // Space between title and subtitle
+                                const SizedBox(height: 5),
                                 Text(
                                   data.message ?? "",
                                   style: const TextStyle(
@@ -247,7 +285,8 @@ class _MessagesState extends State<Messages> {
                             ),
                           ),
                           const Spacer(),
-                          Text("${formattedTime}", // Display formatted time or "N/A"
+                          Text(
+                            formattedTime,
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,

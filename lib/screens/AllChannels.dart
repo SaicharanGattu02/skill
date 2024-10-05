@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
-import 'package:skill/screens/Alertscreen2.dart';
-import 'package:skill/utils/CustomAppBar.dart';
 
-import 'Alertscreen1.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_image_stack/flutter_image_stack.dart'; // Make sure to include this package
 
 class Allchannels extends StatefulWidget {
-
   const Allchannels({super.key});
 
   @override
@@ -27,28 +25,13 @@ final List<Map<String, String>> items1 = [
   },
   {
     'image': 'assets/developer.png',
-    'title': 'Pixl Team',
+    'title': 'Developer Team',
     'subtitle': 'All Pixl Developer Employees.'
   },
   {
     'image': 'assets/hrteam.png',
-    'title': 'Hr Team',
-    'subtitle': 'All Pixl Hrteam Employees.'
-  },
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Pixl Team',
-    'subtitle': 'All Pixl Company Employees.'
-  },
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Pixl Team',
-    'subtitle': 'All Pixl Company Employees.'
-  },
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Pixl Team',
-    'subtitle': 'All Pixl Company Employees.'
+    'title': 'HR Team',
+    'subtitle': 'All Pixl HR Team Employees.'
   },
 ];
 
@@ -58,20 +41,32 @@ final List<String> _images = [
   'https://images.unsplash.com/photo-1612626256634-991e6e977fc1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1712&q=80',
   'https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
 ];
-bool _loading =false;
+
 class _AllchannelsState extends State<Allchannels> {
+  List<Map<String, String>> filteredItems = items1;
+  String searchQuery = "";
+
+  void updateSearchQuery(String query) {
+    setState(() {
+      searchQuery = query;
+      // Filter based only on title
+      filteredItems = items1
+          .where((item) => item['title']!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(title: "All Channels", actions: [],onPlusTap: (){
-        Navigator.push(context, MaterialPageRoute(builder:(context)=>AlertDialogScreen()));
-      },),
-      body:
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-      Padding(
+      appBar: AppBar(
+        title: const Text("All Channels"),
+        actions: [],
+      ),
+      body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
@@ -89,21 +84,22 @@ class _AllchannelsState extends State<Allchannels> {
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 10),
-                  const Text(
-                    "Search",
-                    style: TextStyle(
-                        color: Color(0xff9E7BCA),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        fontFamily: "Nunito"),
+                  Expanded(
+                    child: TextField(
+                      onChanged: updateSearchQuery,
+                      decoration: const InputDecoration(
+                        hintText: "Search",
+                        border: InputBorder.none,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: w * 0.02),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: items1.length,
+                itemCount: filteredItems.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -117,21 +113,20 @@ class _AllchannelsState extends State<Allchannels> {
                         children: [
                           ClipOval(
                             child: Image.asset(
-                              items1[index]['image']!,
+                              filteredItems[index]['image']!,
                               width: 48,
                               height: 48,
                               fit: BoxFit.cover,
                             ),
                           ),
-                          const SizedBox(
-                              width: 10), // Space between image and text
+                          const SizedBox(width: 10),
                           SizedBox(
-                            width: w * 0.4, // Set a fixed width
+                            width: w * 0.4,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  items1[index]['title']!,
+                                  filteredItems[index]['title']!,
                                   style: const TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 16,
@@ -141,11 +136,9 @@ class _AllchannelsState extends State<Allchannels> {
                                     color: Color(0xff000000),
                                   ),
                                 ),
-                                const SizedBox(
-                                    height:
-                                        5), // Space between title and subtitle
+                                const SizedBox(height: 5),
                                 Text(
-                                  items1[index]['subtitle']!,
+                                  filteredItems[index]['subtitle']!,
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
@@ -158,13 +151,13 @@ class _AllchannelsState extends State<Allchannels> {
                               ],
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           FlutterImageStack(
                             imageList: _images,
                             totalCount: _images.length,
                             showTotalCount: true,
                             itemBorderWidth: 1,
-                            itemRadius: 27, // Radius of each image
+                            itemRadius: 27,
                             extraCountTextStyle: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -183,3 +176,5 @@ class _AllchannelsState extends State<Allchannels> {
     );
   }
 }
+
+
