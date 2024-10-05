@@ -109,18 +109,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
           }
           _showBottomSheet1(
               context, "Edit",editid ?? "",filename);
-          // if (fileUrl != null) {
-          //   if (fileUrl.endsWith(".jpg") || fileUrl.endsWith(".png")) {
-          //     _imageFile = XFile(fileUrl, mimeType: "image/*");
-          //     print(_imageFile);// Handle image files
-          //   } else if (fileUrl.endsWith(".pdf")) {
-          //     _imageFile = XFile(fileUrl,
-          //         mimeType: "application/pdf");
-          //     print(_imageFile);// Handle PDF files
-          //   } else {
-          //     print("Unsupported file format");
-          //   }
-          // }
+
           print("sucsesss:${filename}");
         } else {
           print("Task Failure  ${res.settings?.message}");

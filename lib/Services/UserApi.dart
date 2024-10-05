@@ -550,6 +550,36 @@ class Userapi {
       return null;
     }
   }
+  static Future<LoginModel?> putMileStone(String editId,
+      String title, String description, String date) async {
+    try {
+      Map<String, String> data = {
+        'title': title,
+        'description': description,
+        'due_date': date,
+      };
+      print("putMileStone ${data}");
+
+      final url = Uri.parse('${host}/project/project-milestone-detail/${editId}');
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("putMileStone Status:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
 
   static Future<LoginModel?> PostAddNote(
       // String date,
@@ -563,7 +593,6 @@ class Userapi {
       print('Selected file is not a valid image.');
       return null;
     }
-
     try {
       Map<String, String> data = {
         // 'due_date': date,
