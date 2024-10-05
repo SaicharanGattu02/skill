@@ -1553,7 +1553,7 @@ class _DashboardState extends State<Dashboard> {
                   height: 20,
                 ),
                 InkWell(onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>GeneralInfo()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Leave()));
                 },
                   child: Container(
                     child: Column(

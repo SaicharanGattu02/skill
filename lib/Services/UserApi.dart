@@ -16,6 +16,7 @@ import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/FetchmesgsModel.dart';
+import '../Model/LeaveRequestModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectFileModel.dart';
@@ -739,6 +740,39 @@ class Userapi {
       }
     } catch (e) {
       debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<LeaveRequestModel?> LeaveRequest(
+      String fromdate,
+      String todate,
+      String reason)
+  async {
+    try {
+
+      Map<String, String> body = {
+        "from_date": fromdate,
+        "to_date": todate,
+        "reason": reason,
+      };
+      final url = Uri.parse("${host}/leave/leave");
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers:headers,
+        body: jsonEncode(body),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostRegister Status:${response.body}");
+        return LeaveRequestModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
       return null;
     }
   }

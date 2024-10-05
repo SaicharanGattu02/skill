@@ -1,219 +1,301 @@
 import 'package:flutter/material.dart';
-import 'package:dotted_border/dotted_border.dart'; // Import the dotted border package
+import 'package:intl/intl.dart'; // For date formatting
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For date formatting
 
-class AlertDialogScreen2 extends StatelessWidget {
+class FullScreenLeaveForm extends StatelessWidget {
+  final TextEditingController fromDateController = TextEditingController();
+  final TextEditingController toDateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var w = MediaQuery.of(context).size.width; // Get the screen width
+
     return Scaffold(
-      backgroundColor: Colors.white, // Full screen white background
-      body: Center(
-        child: Builder(
-          builder: (context) {
-            // Showing the dialog when the screen builds
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20), // Custom radius for dialog
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          "Apply Leave",
+          style: TextStyle(
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close_rounded, color: Colors.black),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0), // Add padding around the content
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5), // Gap of 20px
+
+              // "From Date" Field with Calendar Icon
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "From Date",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
                     ),
-                    contentPadding: EdgeInsets.all(20), // Padding of 30px
-                    content: Container(
-                      width: 398,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min, // Min height for alert dialog
-                          children: [
-                            // Header Section with Back Arrow, Title, and Close Icon
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.arrow_back),
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // Close dialog
-                                      },
-                                    ),
-                                    Text(
-                                      "Add Project",
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.close_rounded),
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close dialog
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 40), // Gap of 40px
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: fromDateController,
+                    readOnly: true, // Prevent manual input
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7), // Radius 7px
+                        borderSide: BorderSide(
+                          color: Color(0xffD0CBDB), // Border color #D0CBDB
+                          width: 1, // Border width 1px
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10, // Padding top and bottom
+                        horizontal: 14, // Padding left and right
+                      ),
+                      hintText: 'Select From Date',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
+                            fromDateController.text =
+                                DateFormat('yyyy-MM-dd').format(pickedDate); // Set date in controller
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
 
-                            // Text "Create Channel" and Text Fields
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Title",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontFamily: "Inter",
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 10), // Small gap between text and text field
-                                TextFormField(
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter Topic',
-                                  ),style: TextStyle(color: Color(0xf371F41)),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 40), // Gap of 40px between text field and buttons
+              // "To Date" Field with Calendar Icon
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "To Date",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: toDateController,
+                    readOnly: true, // Prevent manual input
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7), // Radius 7px
+                        borderSide: BorderSide(
+                          color: Color(0xffD0CBDB), // Border color #D0CBDB
+                          width: 1, // Border width 1px
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10, // Padding top and bottom
+                        horizontal: 14, // Padding left and right
+                      ),
+                      hintText: 'Select To Date',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
+                            toDateController.text =
+                                DateFormat('yyyy-MM-dd').format(pickedDate); // Set date in controller
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
 
-                            // Dotted Border with File Buttons
-                            DottedBorder(
-                              color: Colors.grey, // Color of the dotted border
-                              strokeWidth: 1,
-                              dashPattern: [6, 3], // Dotted pattern
-                              borderType: BorderType.RRect, // Rounded rectangle
-                              radius: Radius.circular(8),
-                              padding: EdgeInsets.all(10.0), // Padding around the Row
-                              child: Row(
-                                children: [
-                                  // Choose File Button
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Action to pick file
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1), // Light blue background
-                                          border: Border.all(
-                                            color: Color(0xff8856F4),
-                                            style: BorderStyle.solid,
-                                            width: 1.0,
-                                          ),
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Choose File',
-                                            style: TextStyle(
-                                              color: Color(0xff8856F4),
-                                              fontSize: 16.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 16), // Spacing between buttons
+              // "Leave Type" Dropdown
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Leave Type",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7), // Radius 7px
+                        borderSide: BorderSide(
+                          color: Color(0xffD0CBDB), // Border color #D0CBDB
+                          width: 1, // Border width 1px
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10, // Padding top and bottom
+                        horizontal: 14, // Padding left and right
+                      ),
+                    ),
+                    hint: Text("Select Leave Type"),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'Sick Leave',
+                        child: Text('Sick Leave'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Casual Leave',
+                        child: Text('Casual Leave'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Annual Leave',
+                        child: Text('Annual Leave'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      // Handle dropdown value change
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
 
-                                  // No File Chosen Button
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Action if needed
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          // color: Colors.grey.withOpacity(0.1), // Light grey background
-                                          // border: Border.all(
-                                          //   color: Colors.grey,
-                                          //   style: BorderStyle.solid,
-                                          //   width: 1.0,
-                                          // ),
-                                          // borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'No File',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 16.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+              // "Reason" Field
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Reason",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7), // Radius 7px
+                        borderSide: BorderSide(
+                          color: Color(0xffD0CBDB), // Border color #D0CBDB
+                          width: 1, // Border width 1px
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10, // Padding top and bottom
+                        horizontal: 14, // Padding left and right
+                      ),
+                      hintText: 'Enter Reason',
+                    ),
+                    maxLines: 3, // Reason field with more lines for text input
+                  ),
+                ],
+              ),
+              SizedBox(height: 30), // Gap between fields and buttons
 
-                            SizedBox(height: 30), // Gap of 40px between dotted border and buttons
-
-                            // Buttons Section
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Close Button with border
-                                SizedBox(
-                                  width: 110, // Custom width
-                                  height: 42, // Custom height
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(); // Close dialog
-                                    },
-                                    child: Text("Close"),
-                                    style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(7), // Custom radius
-                                      ),
-                                      side: BorderSide(
-                                        color: Color(0xff8856F4), // Custom border color
-                                        width: 1, // Custom border width
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // Save Button with solid color
-                                SizedBox(
-                                  width: 110, // Custom width
-                                  height: 42, // Custom height
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // Handle save action
-                                    },
-                                    child: Text("Save", style: TextStyle(color: Color(0xffffffff))),
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(7), // Custom radius
-                                      ),
-                                      backgroundColor: Color(0xff8856F4), // Background color
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+              // Buttons Section
+              Row(
+                children: [
+                  // Close Button
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Handle close action
+                      },
+                      icon: Icon(Icons.close, color: Color(0xff8856F4)), // Close icon
+                      label: Text(
+                        'Close',
+                        style: TextStyle(
+                          color: Color(0xff8856F4),
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffF8FCFF), // Background color
+                        side: BorderSide(
+                          color: Color(0xff8856F4),
+                          width: 1.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
                         ),
                       ),
                     ),
-                  );
-                },
-              );
-            });
+                  ),
+                  SizedBox(width: 20), // Gap between buttons
 
-            return Container(); // Return an empty container since the dialog is the main content
-          },
+                  // Save Button
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Handle save action
+                      },
+                      icon: Image.asset("assets/container_correct.png" ,color: Colors.white), // Save icon
+                      label: Text(
+                        'Apply Leave',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff8856F4), // Background color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
