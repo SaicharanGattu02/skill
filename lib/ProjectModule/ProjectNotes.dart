@@ -105,7 +105,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
           _descriptionController.text = res.editData?.description ?? "";
           String fileUrl = res.editData?.file??"";
           if(fileUrl!=""){
-            var filename=getFileName(fileUrl);
+            filename=getFileName(fileUrl);
           }
           _showBottomSheet1(
               context, "Edit",editid ?? "",filename);
@@ -848,163 +848,13 @@ class _ProjectNotesState extends State<ProjectNotes> {
     ).whenComplete(() {
       _titleController.text="";
       _descriptionController.text="";
+      filename="";
       _validateTittle="";
       _validateDescription="";
       _validatefile="";
     });;
   }
 
-  // Widget _buildTextFormField(
-  //     {required TextEditingController controller,
-  //     required FocusNode focusNode,
-  //     bool obscureText = false,
-  //     required String hintText,
-  //     required String validationMessage,
-  //     TextInputType keyboardType = TextInputType.text,
-  //     Widget? prefixicon,
-  //     Widget? suffixicon}) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Container(
-  //         height: MediaQuery.of(context).size.height * 0.050,
-  //         child: TextFormField(
-  //           controller: controller,
-  //           focusNode: focusNode,
-  //           keyboardType: keyboardType,
-  //           obscureText: obscureText,
-  //           cursorColor: Color(0xff8856F4),
-  //           decoration: InputDecoration(
-  //             hintText: hintText,
-  //             // prefixIcon: Container(
-  //             //     width: 21,
-  //             //     height: 21,
-  //             //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-  //             //     child: prefixicon),
-  //             suffixIcon: suffixicon,
-  //             hintStyle: const TextStyle(
-  //               fontSize: 14,
-  //               letterSpacing: 0,
-  //               height: 19.36 / 14,
-  //               color: Color(0xffAFAFAF),
-  //               fontFamily: 'Inter',
-  //               fontWeight: FontWeight.w400,
-  //             ),
-  //             filled: true,
-  //             fillColor: const Color(0xffFCFAFF),
-  //             enabledBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(7),
-  //               borderSide:
-  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //             ),
-  //             focusedBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(7),
-  //               borderSide:
-  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //             ),
-  //             errorBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(7),
-  //               borderSide:
-  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //             ),
-  //             focusedErrorBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(7),
-  //               borderSide:
-  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //       if (validationMessage.isNotEmpty) ...[
-  //         Container(
-  //           alignment: Alignment.topLeft,
-  //           margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-  //           width: MediaQuery.of(context).size.width * 0.6,
-  //           child: ShakeWidget(
-  //             key: Key("value"),
-  //             duration: Duration(milliseconds: 700),
-  //             child: Text(
-  //               validationMessage,
-  //               style: TextStyle(
-  //                 fontFamily: "Poppins",
-  //                 fontSize: 12,
-  //                 color: Colors.red,
-  //                 fontWeight: FontWeight.w500,
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ] else ...[
-  //         SizedBox(height: 15),
-  //       ]
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildDateField(TextEditingController controller) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       GestureDetector(
-  //         onTap: () {
-  //           _selectDate(context, controller);
-  //           setState(() {});
-  //         },
-  //         child: AbsorbPointer(
-  //           child: Container(
-  //             height: MediaQuery.of(context).size.height * 0.05,
-  //             child: TextField(
-  //               controller: controller,
-  //               decoration: InputDecoration(
-  //                 hintText: "Select dob from date picker",
-  //                 suffixIcon: Container(
-  //                     padding: EdgeInsets.only(top: 12, bottom: 12),
-  //                     child: Image.asset(
-  //                       "assets/calendar.png",
-  //                       color: Color(0xff000000),
-  //                       width: 16,
-  //                       height: 16,
-  //                       fit: BoxFit.contain,
-  //                     )),
-  //                 hintStyle: TextStyle(
-  //                   fontSize: 14,
-  //                   letterSpacing: 0,
-  //                   height: 1.2,
-  //                   color: Color(0xffAFAFAF),
-  //                   fontFamily: 'Poppins',
-  //                   fontWeight: FontWeight.w400,
-  //                 ),
-  //                 filled: true,
-  //                 fillColor: Color(0xffFCFAFF),
-  //                 enabledBorder: OutlineInputBorder(
-  //                   borderRadius: BorderRadius.circular(7),
-  //                   borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-  //                 ),
-  //                 focusedBorder: OutlineInputBorder(
-  //                   borderRadius: BorderRadius.circular(15.0),
-  //                   borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-  //
-  // static Future<void> _selectDate(
-  //     BuildContext context, TextEditingController controller) async {
-  //   DateTime? pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2101),
-  //   );
-  //   if (pickedDate != null) {
-  //     controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-  //   }
-  // }
 
   static Widget _label({required String text}) {
     return Text(
