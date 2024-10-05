@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 
+import '../Model/RoomsModel.dart';
+import '../Services/UserApi.dart';
+
 class Messages extends StatefulWidget {
   const Messages({super.key});
 
@@ -9,31 +12,51 @@ class Messages extends StatefulWidget {
   State<Messages> createState() => _MessagesState();
 }
 
-final List<Map<String, String>> items1 = [
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Vishwa',
-    'subtitle': 'Date of appointment...',
-    'time':'33 mins'
-  },
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Varun',
-    'subtitle': 'Date of appointment...',
-    'time':'33 mins'
-  },
-  {
-    'image': 'assets/Pixl Team.png',
-    'title': 'Karthik',
-    'subtitle': 'Date of appointment...',
-    'time':'33 mins'
-  },
-
-];
-
-bool isSelected =false;
-bool _loading =false;
 class _MessagesState extends State<Messages> {
+
+
+  final List<Map<String, String>> items1 = [
+    {
+      'image': 'assets/Pixl Team.png',
+      'title': 'Vishwa',
+      'subtitle': 'Date of appointment...',
+      'time':'33 mins'
+    },
+    {
+      'image': 'assets/Pixl Team.png',
+      'title': 'Varun',
+      'subtitle': 'Date of appointment...',
+      'time':'33 mins'
+    },
+    {
+      'image': 'assets/Pixl Team.png',
+      'title': 'Karthik',
+      'subtitle': 'Date of appointment...',
+      'time':'33 mins'
+    },
+
+  ];
+  bool isSelected =false;
+  bool _loading =false;
+  List<Rooms> rooms=[];
+  @override
+  void initState() {
+    super.initState();
+    GetRoomsList();
+  }
+
+  Future<void> GetRoomsList() async {
+    var res = await Userapi.getrommsApi();
+    setState(() {
+      if (res != null) {
+        if(res.settings?.success==1){
+          rooms = res.data??[];
+          rooms.sort((a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
+        }else{
+        }
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -66,8 +89,6 @@ class _MessagesState extends State<Messages> {
       ),
       body:
       _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-
-
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
@@ -146,8 +167,31 @@ class _MessagesState extends State<Messages> {
             SizedBox(height: w * 0.02),
             Expanded(
               child: ListView.builder(
-                itemCount: items1.length,
+                itemCount: rooms.length,
                 itemBuilder: (context, index) {
+                  var data = rooms[index];
+                  String isoDate = data.messageSent ?? ""; // Fallback to empty string if null
+
+                  DateTime? dateTime;
+                  String formattedDate = ""; // Default value for null case
+                  String formattedTime = "";  // Default value for null case
+
+                  // Check if isoDate is not empty before parsing
+                  if (isoDate.isNotEmpty) {
+                    try {
+                      dateTime = DateTime.parse(isoDate);
+                      // Format the date and time
+                      formattedDate = "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
+                      formattedTime = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+                    } catch (e) {
+                      print("Error parsing date: $e");
+                    }
+                  }
+
+                  // Debugging output
+                  print("Date: $formattedDate");
+                  print("Time: $formattedTime");
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
@@ -158,53 +202,26 @@ class _MessagesState extends State<Messages> {
                       ),
                       child: Row(
                         children: [
-                          // ClipOval(
-                          //   child: Image.asset(
-                          //     items1[index]['image']!,
-                          //     width: 48,
-                          //     height: 48,
-                          //     fit: BoxFit.cover,
-                          //   ),
-                          // ),
                           Stack(
                             children: [
                               ClipOval(
-                                child: Image.asset(
-                                  items1[index]['image']!,
+                                child: Image.network(
+                                  data.otherUserImage ?? "",
                                   fit: BoxFit.contain,
                                   width: 32,
                                   height: 32,
                                 ),
                               ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    // color: items1[index]['active']
-                                    //     ? Colors.green
-                                    //     : Color(0xff8856F4),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.white, width: 2),
-                                  ),
-                                ),
-                              ),
-
                             ],
                           ),
-                          const SizedBox(
-                              width: 10), // Space between image and text
+                          const SizedBox(width: 10), // Space between image and text
                           SizedBox(
-                            width: w * 0.4, // Set a fixed width
+                            width: MediaQuery.of(context).size.width * 0.4, // Set a fixed width
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  items1[index]['title']!,
+                                  data.otherUser ?? "",
                                   style: const TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 16,
@@ -214,10 +231,9 @@ class _MessagesState extends State<Messages> {
                                     color: Color(0xff1C1C1C),
                                   ),
                                 ),
-                                const SizedBox(
-                                    height: 5), // Space between title and subtitle
+                                const SizedBox(height: 5), // Space between title and subtitle
                                 Text(
-                                  items1[index]['subtitle']!,
+                                  data.message ?? "",
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
@@ -230,9 +246,8 @@ class _MessagesState extends State<Messages> {
                               ],
                             ),
                           ),
-                          Spacer(),
-                          Text(
-                            items1[index]['time']!,
+                          const Spacer(),
+                          Text("${formattedTime}", // Display formatted time or "N/A"
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -240,9 +255,7 @@ class _MessagesState extends State<Messages> {
                               overflow: TextOverflow.ellipsis,
                               color: Color(0xff8A8A8A),
                             ),
-
                           ),
-
                         ],
                       ),
                     ),

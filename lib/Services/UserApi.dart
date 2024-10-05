@@ -23,10 +23,13 @@ import '../Model/ProjectNoteModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/RegisterModel.dart';
+import '../Model/RoomsDetailsModel.dart';
+import '../Model/RoomsModel.dart';
 import '../Model/TaskAddmodel.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
+import '../Model/ToDoListModel.dart';
 import '../ProjectModule/UserDetailsModel.dart';
 import 'otherservices.dart';
 
@@ -182,7 +185,8 @@ class Userapi {
     }
   }
 
-  static Future<FetchmesgsModel?>fetchroommessages(String rommid,String lats_msg_id) async {
+  static Future<FetchmesgsModel?> fetchroommessages(
+      String rommid, String lats_msg_id) async {
     try {
       final headers = await getheader();
       final url = Uri.parse("${host}/chat/room-messages/$rommid/$lats_msg_id");
@@ -497,7 +501,7 @@ class Userapi {
   static Future<UserDetailsModel?> GetUserdetails() async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/auth/user-detail");
+      final url = Uri.parse("${host}/dashboard/user-detail");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetUserdetails Response:${res.body}");
@@ -683,4 +687,59 @@ class Userapi {
     }
   }
 
+
+  static Future<RoomsModel?> getrommsApi() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/chat/rooms");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("getrommsApi Response:${res.body}");
+        return RoomsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<RoomsDetailsModel?> getrommsdetailsApi(String room_id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/chat/room/${room_id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("getrommsdetailsApi Response:${res.body}");
+        return RoomsDetailsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
+  static Future<ToDoListModel?> gettodolistApi() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/todo/tasks");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("gettodolistApi Response:${res.body}");
+        return ToDoListModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
 }

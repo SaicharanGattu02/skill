@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,9 +16,12 @@ import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/Preferances.dart';
+import 'package:web_socket_channel/io.dart';
 
 import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
+import '../Model/ProjectsModel.dart';
+import '../Model/RoomsModel.dart';
 import '../ProjectModule/UserDetailsModel.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
@@ -30,7 +35,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Data>? employeeData = [];
+  late IOWebSocketChannel _socket;
+  List<Employeedata>? employeeData = [];
   late GoogleMapController mapController;
   final List<Map<String, String>> items1 = [
     {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
@@ -57,12 +63,122 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
   ];
   bool _isLoading=false;
+  String userid="";
+  List<Rooms> rooms=[];
+
   @override
   void initState() {
     GetEmployeeData();
     _requestLocationPermission();
     GetUserDeatails();
+    GetRoomsList();
+    GetProjectsData();
     super.initState();
+  }
+  bool _isConnected = false;
+  void _initializeWebSocket(String userid) {
+    print('Attempting to connect to WebSocket...');
+    _socket = IOWebSocketChannel.connect(Uri.parse("ws://192.168.0.56:8000/ws/notify/${userid}"));
+    print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/notify/${userid}');
+    setState(() {
+      _isConnected = true;
+    });
+
+    _socket.stream.listen(
+          (message) {
+        print('Message received: $message');
+        try {
+          final decodedMessage = jsonDecode(message);
+          print('Decoded message: $decodedMessage');
+          final decryptedMessage = decodedMessage['data']['message'];
+          // Update rooms
+          setState(() {
+            updateRooms(decodedMessage, decryptedMessage);
+          });
+
+        } catch (e) {
+          print('Error processing message: $e');
+        }
+      },
+      onError: (error) {
+        print('WebSocket error: $error');
+        setState(() {
+          _isConnected = false;
+        });
+      },
+      onDone: () {
+        print('WebSocket connection closed. Trying to reconnect...');
+        setState(() {
+          _isConnected = false;
+        });
+        _reconnectWebSocket();
+      },
+    );
+  }
+  List<Data> projectsData = [];
+  Future<void> GetProjectsData() async {
+    var Res = await Userapi.GetProjectsList();
+    setState(() {
+      if (Res != null && Res.data != null) {
+        _loading=false;
+        projectsData = Res.data ?? [];
+      } else {
+        // Handle failure case here
+      }
+
+    });
+  }
+
+  void updateRooms(Map<String, dynamic> newMessage, String decryptedMessage) {
+    final roomId = newMessage['data']['room_id'];
+    final sentUser = newMessage['data']['sent_user'];
+    final messageTime = newMessage['data']['message_time'];
+
+    // Check if room exists
+    final roomIndex = rooms.indexWhere((room) => room.roomId == roomId);
+
+    if (roomIndex != -1) {
+      // Update existing room
+      rooms[roomIndex]
+        ..message = decryptedMessage
+        ..sentUser = sentUser
+        ..messageTime = messageTime;
+
+      // Increment the message count
+      rooms[roomIndex].messageCount++;
+    } else {
+      // Add new room with message count initialized to 1
+      rooms.add(Rooms(
+        roomId: roomId,
+        otherUserId: sentUser, // Replace with actual other user ID
+        message: decryptedMessage,
+        messageTime: messageTime,
+        messageCount: 1, // Initialize count to 1 for new room
+      ));
+    }
+
+    // Sort rooms by messageTime and update state
+    rooms.sort((a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
+  }
+
+  void _reconnectWebSocket() {
+    Future.delayed(Duration(seconds: 5), () {
+      print('Reconnecting to WebSocket...');
+      _initializeWebSocket(userid);
+    });
+  }
+
+  Future<void> GetRoomsList() async {
+    var res = await Userapi.getrommsApi();
+    setState(() {
+      if (res != null) {
+        if(res.settings?.success==1){
+          rooms = res.data??[];
+          rooms.sort((a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
+        }else{
+        }
+      }
+    });
   }
 
   Future<void> _requestLocationPermission() async {
@@ -97,6 +213,8 @@ class _DashboardState extends State<Dashboard> {
       if (Res != null) {
         if(Res.settings?.success==1){
           userdata = Res.data;
+          userid=Res.data?.id??"";
+          _initializeWebSocket(userdata?.id??"");
           PreferenceService().saveString("user_id", userdata?.id ?? "");
         }else{
 
@@ -105,11 +223,16 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+
  Future<void> _refreshItems() async{
    await Future.delayed(Duration(seconds: 2));
-
-
+   GetEmployeeData();
+   GetUserDeatails();
+   GetRoomsList();
+   GetProjectsData();
   }
+
+
   bool _loading =false;
   @override
   Widget build(BuildContext context) {
@@ -194,18 +317,14 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      body:
-
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-
+      body: _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
       RefreshIndicator(
-
-          color: Color(0xff9E7BCA),
-          backgroundColor: Colors.white,
-          displacement: 50,
-          onRefresh: _refreshItems,
+        color: Color(0xff9E7BCA),
+        backgroundColor: Colors.white,
+        displacement: 50,
+        onRefresh: _refreshItems,
         child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
+          physics: AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding:
                 const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
@@ -253,8 +372,7 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           ClipOval(
                             child: Center(
-                              child: Image.asset(
-                                "assets/pic.jpeg",
+                              child: Image.network(userdata?.image??"",
                                 width: 70,
                                 height: 70,
                                 fit: BoxFit.cover,
@@ -294,8 +412,7 @@ class _DashboardState extends State<Dashboard> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: Text(
-                                        "Prashanth Chary",
+                                      child: Text(userdata?.fullName??"",
                                         style: const TextStyle(
                                             color: Color(0xffFFFFFF),
                                             fontWeight: FontWeight.w600,
@@ -380,7 +497,7 @@ class _DashboardState extends State<Dashboard> {
                                                       width: 4,
                                                     ),
                                                     Text(
-                                                      "96541 25641",
+                                                      userdata?.mobile??"",
                                                       style: TextStyle(
                                                           color: const Color(
                                                                   0xffFFFFFF),
@@ -414,7 +531,7 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                     SizedBox(width: 4),
                                                     Text(
-                                                      "prashanth@pixl.in",
+                                                      userdata?.email??"",
                                                       style: TextStyle(
                                                         color: const Color(0xffFFFFFF),
                                                         fontWeight: FontWeight.w400,
@@ -486,17 +603,18 @@ class _DashboardState extends State<Dashboard> {
                   height: w * 0.02,
                 ),
                 SizedBox(
-                  height: w * 0.37,
+                  height: w * 0.78,
                   child: GridView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: items1.length,
+                    itemCount: projectsData.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1, // Two items per row
-                      childAspectRatio:
-                          0.76, // Adjust this ratio to fit your design
-                      mainAxisSpacing: 2, // Space between items horizontally
+                      crossAxisCount: 2, // Two items per row
+                      childAspectRatio:0.8, // Adjust this ratio to fit your design
+                      mainAxisSpacing: 2,
+                      crossAxisSpacing: 10// Space between items horizontally
                     ),
                     itemBuilder: (context, index) {
+                      var data=projectsData[index];
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: Container(
@@ -510,8 +628,7 @@ class _DashboardState extends State<Dashboard> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               // Center Image
-                              Image.asset(
-                                items1[index]['image']!,
+                              Image.network(data.icon??"",
                                 width: 48,
                                 height: 48,
                                 fit: BoxFit.contain,
@@ -519,7 +636,7 @@ class _DashboardState extends State<Dashboard> {
                               const SizedBox(height: 8),
                               // Bottom Text
                               Text(
-                                items1[index]['text']!,
+                               data.name??"",
                                 style: const TextStyle(
                                     color: Color(0xff4F3A84),
                                     fontWeight: FontWeight.w500,
@@ -546,7 +663,7 @@ class _DashboardState extends State<Dashboard> {
                                             fontFamily: "Inter"),
                                       ),
                                       Text(
-                                        "35%",
+                                        "${data.totalPercent ?? ""}%",
                                         style: TextStyle(
                                             color: Color(0xff000000),
                                             fontWeight: FontWeight.w400,
@@ -557,7 +674,7 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                   const SizedBox(height: 4),
                                   LinearProgressIndicator(
-                                    value: double.parse(items1[index]['value']!),
+                                    value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
                                     minHeight: 7,
                                     backgroundColor: const Color(0xffE0E0E0),
                                     borderRadius: BorderRadius.circular(20),
@@ -572,96 +689,96 @@ class _DashboardState extends State<Dashboard> {
                     },
                   ),
                 ),
-                SizedBox(
-                  height: w * 0.04,
-                ),
-                Row(
-                  children: [
-                    const Text(
-                      "Channels",
-                      style: TextStyle(
-                          color: Color(0xff16192C),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                          fontFamily: "Inter"),
-                    ),
-                    Spacer(),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Allchannels()));
-                      },
-                      child: Text(
-                        "See all",
-                        style: TextStyle(
-                            color: Color(0xff8856F4),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
-                            fontFamily: "Inter"),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(
-                  height: w * 0.02,
-                ),
-                SizedBox(
-                  height: w * 0.3,
-                  child: GridView.builder(
-                    scrollDirection:
-                        Axis.horizontal, // Changed to vertical to display in rows
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 2,
-                      childAspectRatio:
-                          0.28, // Adjust this ratio to fit your design
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffF7F4FC),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              // Center Image
-                              Image.asset(
-                                items[index]['image']!,
-                                width: 32,
-                                height: 32,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(width: 8),
-                              // Bottom Text
-                              Text(
-                                items[index]['text']!,
-                                style: const TextStyle(
-                                  color: Color(0xff27272E),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                  height: 16.94 / 14,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
+                // SizedBox(
+                //   height: w * 0.04,
+                // ),
+                // Row(
+                //   children: [
+                //     const Text(
+                //       "Channels",
+                //       style: TextStyle(
+                //           color: Color(0xff16192C),
+                //           fontWeight: FontWeight.w500,
+                //           fontSize: 18,
+                //           fontFamily: "Inter"),
+                //     ),
+                //     Spacer(),
+                //     InkWell(
+                //       onTap: () {
+                //         Navigator.push(
+                //             context,
+                //             MaterialPageRoute(
+                //                 builder: (context) => Allchannels()));
+                //       },
+                //       child: Text(
+                //         "See all",
+                //         style: TextStyle(
+                //             color: Color(0xff8856F4),
+                //             fontWeight: FontWeight.w500,
+                //             fontSize: 14,
+                //             decoration: TextDecoration.underline,
+                //             decorationColor: Color(0xff8856F4),
+                //             fontFamily: "Inter"),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                //
+                // SizedBox(
+                //   height: w * 0.02,
+                // ),
+                // SizedBox(
+                //   height: w * 0.3,
+                //   child: GridView.builder(
+                //     scrollDirection:
+                //         Axis.horizontal, // Changed to vertical to display in rows
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 2,
+                //       crossAxisSpacing: 10,
+                //       mainAxisSpacing: 2,
+                //       childAspectRatio:
+                //           0.28, // Adjust this ratio to fit your design
+                //     ),
+                //     itemCount: items.length,
+                //     itemBuilder: (context, index) {
+                //       return Padding(
+                //         padding: const EdgeInsets.only(right: 8),
+                //         child: Container(
+                //           padding: const EdgeInsets.all(10),
+                //           decoration: BoxDecoration(
+                //             color: const Color(0xffF7F4FC),
+                //             borderRadius: BorderRadius.circular(8),
+                //           ),
+                //           child: Row(
+                //             children: [
+                //               // Center Image
+                //               Image.asset(
+                //                 items[index]['image']!,
+                //                 width: 32,
+                //                 height: 32,
+                //                 fit: BoxFit.contain,
+                //               ),
+                //               const SizedBox(width: 8),
+                //               // Bottom Text
+                //               Text(
+                //                 items[index]['text']!,
+                //                 style: const TextStyle(
+                //                   color: Color(0xff27272E),
+                //                   fontWeight: FontWeight.w600,
+                //                   fontSize: 13,
+                //                   height: 16.94 / 14,
+                //                   overflow: TextOverflow.ellipsis,
+                //                   fontFamily: "Inter",
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+                //
                 SizedBox(
                   height: w * 0.05,
                 ),
@@ -696,7 +813,7 @@ class _DashboardState extends State<Dashboard> {
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Center(
                                     child: Text(
-                                      "237",
+                                      userdata?.projectCount.toString()??"",
                                       style: TextStyle(
                                           color: Color(0xff000000),
                                           fontSize: 25,
@@ -741,7 +858,7 @@ class _DashboardState extends State<Dashboard> {
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Center(
                                     child: Text(
-                                      "064",
+                                      userdata?.todoCount.toString()??"",
                                       style: TextStyle(
                                           color: Color(0xff000000),
                                           fontSize: 25,
@@ -787,7 +904,7 @@ class _DashboardState extends State<Dashboard> {
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Center(
                                     child: Text(
-                                      "048",
+                                      userdata?.tasksCount.toString()??"",
                                       style: TextStyle(
                                           color: Color(0xff000000),
                                           fontSize: 25,
@@ -800,7 +917,7 @@ class _DashboardState extends State<Dashboard> {
                                   height: 8,
                                 ),
                                 Text(
-                                  "TASKS",
+                                "TASKS",
                                   style: TextStyle(
                                       color: Color(0xff000000),
                                       fontSize: 10,
@@ -832,7 +949,7 @@ class _DashboardState extends State<Dashboard> {
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Center(
                                     child: Text(
-                                      "014",
+                                      userdata?.meetingCount.toString()??"",
                                       style: TextStyle(
                                           color: Color(0xff000000),
                                           fontSize: 25,
@@ -942,111 +1059,111 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Color(0xffFFC746), width: 1),
-                                  ),
-                                  child: Image.asset(
-                                    "assets/prashanth.png",
-                                    fit: BoxFit.contain,
-                                    width: 43,
-                                    height: 43,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Container(
-                                  width: 60,
-                                  child: Text(
-                                    "Prashanth",
-                                    style: const TextStyle(
-                                      color: Color(0xffFFFFFF),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: w * 0.020),
-                            Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Color(0xffFFC746), width: 1),
-                                  ),
-                                  child: Image.asset(
-                                    "assets/prashanth.png",
-                                    fit: BoxFit.contain,
-                                    width: 43,
-                                    height: 43,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Container(
-                                  width: 60,
-                                  child: Text(
-                                    "Prashanth",
-                                    style: const TextStyle(
-                                      color: Color(0xffFFFFFF),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: w * 0.020),
-                            Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Color(0xffFFC746), width: 1),
-                                  ),
-                                  child: Image.asset(
-                                    "assets/prashanth.png",
-                                    fit: BoxFit.contain,
-                                    width: 43,
-                                    height: 43,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Container(
-                                  width: 60,
-                                  child: Text(
-                                    "Prashanth",
-                                    style: const TextStyle(
-                                      color: Color(0xffFFFFFF),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     Column(
+                        //       children: [
+                        //         Container(
+                        //           padding: EdgeInsets.all(2),
+                        //           decoration: BoxDecoration(
+                        //             shape: BoxShape.circle,
+                        //             border: Border.all(
+                        //                 color: Color(0xffFFC746), width: 1),
+                        //           ),
+                        //           child: Image.asset(
+                        //             "assets/prashanth.png",
+                        //             fit: BoxFit.contain,
+                        //             width: 43,
+                        //             height: 43,
+                        //           ),
+                        //         ),
+                        //         SizedBox(height: 10),
+                        //         Container(
+                        //           width: 60,
+                        //           child: Text(
+                        //             "Prashanth",
+                        //             style: const TextStyle(
+                        //               color: Color(0xffFFFFFF),
+                        //               fontWeight: FontWeight.w400,
+                        //               fontSize: 12,
+                        //               overflow: TextOverflow.ellipsis,
+                        //               fontFamily: "Inter",
+                        //             ),
+                        //             maxLines: 1,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     SizedBox(width: w * 0.020),
+                        //     Column(
+                        //       children: [
+                        //         Container(
+                        //           padding: EdgeInsets.all(2),
+                        //           decoration: BoxDecoration(
+                        //             shape: BoxShape.circle,
+                        //             border: Border.all(
+                        //                 color: Color(0xffFFC746), width: 1),
+                        //           ),
+                        //           child: Image.asset(
+                        //             "assets/prashanth.png",
+                        //             fit: BoxFit.contain,
+                        //             width: 43,
+                        //             height: 43,
+                        //           ),
+                        //         ),
+                        //         SizedBox(height: 10),
+                        //         Container(
+                        //           width: 60,
+                        //           child: Text(
+                        //             "Prashanth",
+                        //             style: const TextStyle(
+                        //               color: Color(0xffFFFFFF),
+                        //               fontWeight: FontWeight.w400,
+                        //               fontSize: 12,
+                        //               overflow: TextOverflow.ellipsis,
+                        //               fontFamily: "Inter",
+                        //             ),
+                        //             maxLines: 1,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     SizedBox(width: w * 0.020),
+                        //     Column(
+                        //       children: [
+                        //         Container(
+                        //           padding: EdgeInsets.all(2),
+                        //           decoration: BoxDecoration(
+                        //             shape: BoxShape.circle,
+                        //             border: Border.all(
+                        //                 color: Color(0xffFFC746), width: 1),
+                        //           ),
+                        //           child: Image.asset(
+                        //             "assets/prashanth.png",
+                        //             fit: BoxFit.contain,
+                        //             width: 43,
+                        //             height: 43,
+                        //           ),
+                        //         ),
+                        //         SizedBox(height: 10),
+                        //         Container(
+                        //           width: 60,
+                        //           child: Text(
+                        //             "Prashanth",
+                        //             style: const TextStyle(
+                        //               color: Color(0xffFFFFFF),
+                        //               fontWeight: FontWeight.w400,
+                        //               fontSize: 12,
+                        //               overflow: TextOverflow.ellipsis,
+                        //               fontFamily: "Inter",
+                        //             ),
+                        //             maxLines: 1,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
@@ -1102,71 +1219,26 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          children: [
-                            Stack(
-                              children: [
-                                Image.asset(
-                                  "assets/prashanth.png",
-                                  fit: BoxFit.contain,
-                                  width: 43,
-                                  height: 43,
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          color: Colors.white, width: 2),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: Text(
-                                "Prashanth Chary",
-                                style: const TextStyle(
-                                    color: Color(0xffFFFFFF),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    overflow: TextOverflow.ellipsis,
-                                    fontFamily: "Inter"),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "you",
-                              style: TextStyle(
-                                  color: Color(0xffFFFFFF).withOpacity(0.7),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontFamily: "Inter"),
-                            ),
-                          ],
-                        ),
                         ListView.builder(
                           padding: EdgeInsets.only(top: 10),
-                          itemCount: employeeData!.length,
+                          itemCount: rooms.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            final user = employeeData![index];
+                            final room = rooms[index];
                             return InkResponse(
-                              onTap: (){
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => ChatPage(userId: user.id!)));
+                              onTap: () {
+                                // Reset message count for the specific room
+                                setState(() {
+                                  room.messageCount = 0;
+                                });
+                               // Reset message count to 0
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatPage(roomId: room.roomId),
+                                  ),
+                                );
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1176,48 +1248,69 @@ class _DashboardState extends State<Dashboard> {
                                       children: [
                                         ClipOval(
                                           child: Image.network(
-                                            user.image ?? '',
+                                            room.otherUserImage ?? '',
                                             fit: BoxFit.cover,
                                             width: 43,
                                             height: 43,
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
+                                            errorBuilder: (context, error, stackTrace) {
                                               return ClipOval(
-                                                child:
-                                                    Icon(Icons.person, size: 43),
+                                                child: Icon(Icons.person, size: 43),
                                               ); // Fallback if image fails
                                             },
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            width: 12,
-                                            height: 12,
-                                            decoration: BoxDecoration(
-                                              color: user.status == 'Active'
-                                                  ? Colors.green
-                                                  : Color(0xff8856F4),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Colors.white, width: 2),
-                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                     SizedBox(width: 8),
                                     Expanded(
-                                      child: Text(
-                                        user.fullName ?? 'No Name',
-                                        style: const TextStyle(
-                                          color: Color(0xffFFFFFF),
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: "Inter",
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            room.otherUser ?? 'No Name',
+                                            style: const TextStyle(
+                                              color: Color(0xffFFFFFF),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontFamily: "Inter",
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  room.message ?? '',
+                                                  style: const TextStyle(
+                                                    color: Color(0xffFFFFFF),
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    fontFamily: "Inter",
+                                                  ),
+                                                ),
+                                              ),
+                                              // Display message count
+                                              if (room.messageCount > 0)
+                                                Container(
+                                                  padding: EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle
+                                                  ),
+                                                  child: Text(
+                                                    '${room.messageCount}',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     SizedBox(width: 8),
@@ -1233,7 +1326,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             );
                           },
-                        )
+                        ),
                       ],
                     ),
                   ),

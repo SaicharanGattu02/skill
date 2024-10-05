@@ -1,14 +1,14 @@
-class EmployeeListModel {
-  List<Employeedata>? data;
+class ToDoListModel {
+  List<TODOList>? data;
   Settings? settings;
 
-  EmployeeListModel({this.data, this.settings});
+  ToDoListModel({this.data, this.settings});
 
-  EmployeeListModel.fromJson(Map<String, dynamic> json) {
+  ToDoListModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Employeedata>[];
+      data = <TODOList>[];
       json['data'].forEach((v) {
-        data!.add(new Employeedata.fromJson(v));
+        data!.add(new TODOList.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,39 +28,47 @@ class EmployeeListModel {
   }
 }
 
-class Employeedata {
+class TODOList {
   String? id;
-  String? fullName;
-  String? image;
-  String? email;
-  String? status;
-  String? mobile;
+  String? taskName;
+  String? description;
+  String? dateTime;
+  String? priority;
+  String? labelId;
+  String? labelName;
+  String? labelColor;
 
-  Employeedata(
+  TODOList(
       {this.id,
-        this.fullName,
-        this.image,
-        this.email,
-        this.status,
-        this.mobile});
+        this.taskName,
+        this.description,
+        this.dateTime,
+        this.priority,
+        this.labelId,
+        this.labelName,
+        this.labelColor});
 
-  Employeedata.fromJson(Map<String, dynamic> json) {
+  TODOList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullName = json['full_name'];
-    image = json['image'];
-    email = json['email'];
-    status = json['status'];
-    mobile = json['mobile'];
+    taskName = json['task_name'];
+    description = json['description'];
+    dateTime = json['date_time'];
+    priority = json['priority'];
+    labelId = json['label_id'];
+    labelName = json['label_name'];
+    labelColor = json['label_color'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['full_name'] = this.fullName;
-    data['image'] = this.image;
-    data['email'] = this.email;
-    data['status'] = this.status;
-    data['mobile'] = this.mobile;
+    data['task_name'] = this.taskName;
+    data['description'] = this.description;
+    data['date_time'] = this.dateTime;
+    data['priority'] = this.priority;
+    data['label_id'] = this.labelId;
+    data['label_name'] = this.labelName;
+    data['label_color'] = this.labelColor;
     return data;
   }
 }

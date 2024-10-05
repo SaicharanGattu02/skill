@@ -30,6 +30,11 @@ class UserData {
   String? email;
   String? status;
   String? mobile;
+  String? userNumber;
+  int? projectCount;
+  int? todoCount;
+  int? tasksCount;
+  int? meetingCount;
 
   UserData(
       {this.id,
@@ -37,7 +42,12 @@ class UserData {
         this.image,
         this.email,
         this.status,
-        this.mobile});
+        this.mobile,
+        this.userNumber,
+        this.projectCount,
+        this.todoCount,
+        this.tasksCount,
+        this.meetingCount});
 
   UserData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -46,6 +56,11 @@ class UserData {
     email = json['email'];
     status = json['status'];
     mobile = json['mobile'];
+    userNumber = json['user_number'];
+    projectCount = json['project_count'];
+    todoCount = json['todo_count'];
+    tasksCount = json['tasks_count'];
+    meetingCount = json['meeting_count'];
   }
 
   Map<String, dynamic> toJson() {
@@ -56,6 +71,11 @@ class UserData {
     data['email'] = this.email;
     data['status'] = this.status;
     data['mobile'] = this.mobile;
+    data['user_number'] = this.userNumber;
+    data['project_count'] = this.projectCount;
+    data['todo_count'] = this.todoCount;
+    data['tasks_count'] = this.tasksCount;
+    data['meeting_count'] = this.meetingCount;
     return data;
   }
 }

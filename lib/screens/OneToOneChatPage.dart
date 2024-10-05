@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:web_socket_channel/io.dart';
-import '../Model/CreateRoomModel.dart';
 import '../Model/FetchmesgsModel.dart';
+import '../Model/RoomsDetailsModel.dart';
+import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
 
 class ChatPage extends StatefulWidget {
-  final String userId;
-  ChatPage({required this.userId});
+  final String roomId;
+  ChatPage({required this.roomId});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -24,52 +26,76 @@ class _ChatPageState extends State<ChatPage> {
   String user_id = "";
   String user_type = "";
   int _currentPage = 0;
-  String last_msg_id="";
-  String room_id="";// Track current page for pagination
+  String last_msg_id = "";
+
+  String username = "";
+  String userimage = "";
 
   @override
   void initState() {
     super.initState();
-    createRoom();
-    _scrollController.addListener(_scrollListener); // Add listener for scrolling
-    print(widget.userId);
+    _initializeWebSocket();
+    RoomDetailsApi();
+    _scrollController
+        .addListener(_scrollListener); // Add listener for scrolling
+    print(widget.roomId);
   }
 
+  // Future<void> createRoom() async {
+  //   user_id = await PreferenceService().getString("user_id") ?? "";
+  //   print('Creating room for chat...');
+  //   print('user_id: $user_id');
+  //   var res = await Userapi.CreateChatRoomAPi(widget.userId);
+  //   if (res != null && res.settings?.success == 1) {
+  //     print('Room created successfully: ${res.data?.room}');
+  //     _messages = res.data?.messages ?? [];
+  //     last_msg_id=_messages[0].id??"";
+  //     room_id=res.data?.room??"";
+  //     otherUser = res.data?.otherUser;
+  //     _initializeWebSocket(res.data?.room ?? "");
+  //
+  //     // Scroll to the bottom after messages are loaded
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       _scrollToBottom();
+  //     });
+  //   } else {
+  //     print('Failed to create room');
+  //   }
+  // }
   List<Messages> _messages = [];
-  OtherUser? otherUser;
 
-
-  Future<void> createRoom() async {
+  Future<void> RoomDetailsApi() async {
     user_id = await PreferenceService().getString("user_id") ?? "";
-    print('Creating room for chat...');
     print('user_id: $user_id');
-    var res = await Userapi.CreateChatRoomAPi(widget.userId);
-    if (res != null && res.settings?.success == 1) {
-      print('Room created successfully: ${res.data?.room}');
-      _messages = res.data?.messages ?? [];
-      last_msg_id=_messages[0].id??"";
-      room_id=res.data?.room??"";
-      otherUser = res.data?.otherUser;
-      _initializeWebSocket(res.data?.room ?? "");
 
-      // Scroll to the bottom after messages are loaded
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToBottom();
-      });
-    } else {
-      print('Failed to create room');
-    }
+    var res = await Userapi.getrommsdetailsApi(widget.roomId);
+    setState(() {
+      if (res != null && res.settings?.success == 1) {
+        _messages = res.data?.messages ?? [];
+        if (_messages.isNotEmpty) {
+          last_msg_id = _messages[0].id ?? "";
+        }
+        username = res.data?.userName ?? "";
+        userimage = res.data?.userImage ?? "";
+
+        // Scroll to the bottom after messages are loaded
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
+      } else {
+        print('Failed to create room');
+      }
+    });
   }
-
   Future<void> _fetchMessages() async {
     print('Fetching messages for page $_currentPage...');
-    var res = await Userapi.fetchroommessages(room_id, last_msg_id);
+    var res = await Userapi.fetchroommessages(widget.roomId, last_msg_id);
 
     if (res != null && res.settings?.success == 1) {
       print('Messages fetched successfully');
-
       // Assuming res.data is List<Message>
-      List<Message> fetchedMessages = res.data ?? []; // Ensure it's a List<Message>
+      List<Message> fetchedMessages =
+          res.data ?? []; // Ensure it's a List<Message>
       setState(() {
         // Convert List<Message> to List<Messages>
         List<Messages> convertedMessages = fetchedMessages.map((msg) {
@@ -86,7 +112,8 @@ class _ChatPageState extends State<ChatPage> {
         _messages.insertAll(0, convertedMessages); // Prepend new messages
 
         if (_messages.isNotEmpty) {
-          last_msg_id = _messages[0].id ?? ""; // Update last_msg_id if messages exist
+          last_msg_id =
+              _messages[0].id ?? ""; // Update last_msg_id if messages exist
         }
       });
     } else {
@@ -94,9 +121,10 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-
   void _scrollListener() {
-    if (_scrollController.position.atEdge && _scrollController.position.pixels == 0 && !_isLoadingMore) {
+    if (_scrollController.position.atEdge &&
+        _scrollController.position.pixels == 0 &&
+        !_isLoadingMore) {
       _loadMoreMessages(); // Load more messages when scrolled to top
     }
   }
@@ -122,21 +150,24 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  void _initializeWebSocket(String room) {
+  void _initializeWebSocket() {
     print('Attempting to connect to WebSocket...');
-    _socket = IOWebSocketChannel.connect(Uri.parse('ws://192.168.0.56:8000/ws/chat/$room'));
-    print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/$room');
+    _socket = IOWebSocketChannel.connect(
+        Uri.parse('ws://192.168.0.56:8000/ws/chat/${widget.roomId}'));
+    print(
+        'Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/${widget.roomId}');
     setState(() {
       _isConnected = true;
     });
 
     _socket.stream.listen(
-          (message) {
+      (message) {
         print('Message received: $message');
         try {
           final decodedMessage = jsonDecode(message);
           print('Decoded message: $decodedMessage');
           Messages newMessage = Messages.fromJson(decodedMessage['data']);
+          // Reset message count for the specific room
           setState(() {
             _messages.add(newMessage);
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -158,7 +189,7 @@ class _ChatPageState extends State<ChatPage> {
         setState(() {
           _isConnected = false;
         });
-        _reconnectWebSocket(room);
+        _reconnectWebSocket();
       },
     );
   }
@@ -169,10 +200,10 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _reconnectWebSocket(String room) {
+  void _reconnectWebSocket() {
     Future.delayed(Duration(seconds: 5), () {
       print('Reconnecting to WebSocket...');
-      _initializeWebSocket(room);
+      _initializeWebSocket();
     });
   }
 
@@ -182,11 +213,8 @@ class _ChatPageState extends State<ChatPage> {
       print('Sending message: $message');
 
       try {
-        final payload = jsonEncode({
-          'command': 'new_message',
-          'message': message,
-          'user': user_id
-        });
+        final payload = jsonEncode(
+            {'command': 'new_message', 'message': message, 'user': user_id});
         _socket.sink.add(payload);
       } catch (e) {
         print('Error sending message: $e');
@@ -213,7 +241,8 @@ class _ChatPageState extends State<ChatPage> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
-          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(
               message,
@@ -239,29 +268,24 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: Color(0xff8856F4),
-        leadingWidth: 25,
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Icon(
-              Icons.arrow_back,
-              color: Color(0xffffffff),
-            ),
-          ),
-        ),
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
+            InkWell(
+                onTap: () => Navigator.pop(context, true),
+                child: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                )),
+            SizedBox(width: 10),
             CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage(otherUser?.image ?? ""),
+              backgroundImage: NetworkImage(userimage),
             ),
             SizedBox(width: 10),
             Expanded(
               child: Text(
-                otherUser?.fullName ?? "",
+                username,
                 maxLines: 2,
                 style: TextStyle(
                   fontFamily: "Inter",
@@ -276,19 +300,25 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions: [
           IconButton(
-            icon: Image(image: AssetImage("assets/video.png"), color: Colors.white, width: 22, height: 20),
+            icon: Image(
+                image: AssetImage("assets/video.png"),
+                color: Colors.white,
+                width: 22,
+                height: 20),
             onPressed: () {
               // Handle video call action
             },
           ),
           IconButton(
-            icon: Image(image: AssetImage("assets/call.png"), width: 22, height: 20),
+            icon: Image(
+                image: AssetImage("assets/call.png"), width: 22, height: 20),
             onPressed: () {
               // Handle phone call action
             },
           ),
           IconButton(
-            icon: Image(image: AssetImage("assets/more.png"), width: 22, height: 20),
+            icon: Image(
+                image: AssetImage("assets/more.png"), width: 22, height: 20),
             onPressed: () {
               // Handle more actions
             },
@@ -301,7 +331,8 @@ class _ChatPageState extends State<ChatPage> {
             child: ListView.builder(
               controller: _scrollController,
               // In the ListView.builder
-              itemCount: _messages.length + (_isLoadingMore ? 1 : 0), // Add 1 for the loader
+              itemCount: _messages.length +
+                  (_isLoadingMore ? 1 : 0), // Add 1 for the loader
               itemBuilder: (context, index) {
                 if (index == _messages.length && _isLoadingMore) {
                   // Show a loading indicator only when loading more messages
@@ -313,7 +344,8 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }
                 final message = _messages[index].msg;
-                final sender = _messages[index].sentUser == user_id ? "you" : "remote";
+                final sender =
+                    _messages[index].sentUser == user_id ? "you" : "remote";
                 return _buildMessageBubble(message ?? "", sender);
               },
             ),
@@ -342,6 +374,3 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 }
-
-
-
