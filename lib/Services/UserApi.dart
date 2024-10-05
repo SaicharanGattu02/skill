@@ -37,8 +37,8 @@ import 'otherservices.dart';
 class Userapi {
   static String host = "http://192.168.0.56:8000";
 
-  static Future<RegisterModel?> PostRegister(String name, String mail,
-      String password) async {
+  static Future<RegisterModel?> PostRegister(
+      String name, String mail, String password) async {
     try {
       Map<String, String> data = {
         "full_name": name,
@@ -284,7 +284,7 @@ class Userapi {
     try {
       final headers = await getheader();
       final url =
-      Uri.parse("${host}/project/project-milestones?project_id=${id}");
+          Uri.parse("${host}/project/project-milestones?project_id=${id}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetMileStone Response:${res.body}");
@@ -427,17 +427,19 @@ class Userapi {
     }
   }
 
-  static Future<TaskAddmodel?> CreateTask(String projectId,
-      String title,
-      String desc,
-      String milestone,
-      String assignedTo,
-      String status,
-      String priority,
-      String startDate,
-      String endDate,
-      List<String> collaborators, // Change type from String to List<String>
-      File image,) async {
+  static Future<TaskAddmodel?> CreateTask(
+    String projectId,
+    String title,
+    String desc,
+    String milestone,
+    String assignedTo,
+    String status,
+    String priority,
+    String startDate,
+    String endDate,
+    List<String> collaborators, // Change type from String to List<String>
+    File image,
+  ) async {
     try {
       // Check if the file is an image
       String? mimeType = lookupMimeType(image.path);
@@ -517,8 +519,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostMileStone(String title, String description,
-      String id, String date) async {
+  static Future<LoginModel?> PostMileStone(
+      String title, String description, String id, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -536,7 +538,6 @@ class Userapi {
         body: jsonEncode(data),
       );
       if (response != null) {
-
         final jsonResponse = jsonDecode(response.body);
         print("PostMileStone Status:${response.body}");
         return LoginModel.fromJson(jsonResponse);
@@ -550,16 +551,13 @@ class Userapi {
     }
   }
 
-
   static Future<LoginModel?> PostAddNote(
       // String date,
       String title,
       String description,
       File image,
       // String label,
-      String id
-      ) async {
-
+      String id) async {
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
       print('Selected file is not a valid image.');
@@ -572,7 +570,6 @@ class Userapi {
         'title': title,
         'description': description,
         'project_id': id,
-
       };
       print("PostMileStone ${data}");
 
@@ -584,9 +581,8 @@ class Userapi {
         body: jsonEncode(data),
       );
       if (response != null) {
-
         final jsonResponse = jsonDecode(response.body);
-        print("PostMileStone Status:${response.body}");
+        print("PostAddNote Status:${response.body}");
         return LoginModel.fromJson(jsonResponse);
       } else {
         print("Request failed with status: ${response.statusCode}");
@@ -598,7 +594,6 @@ class Userapi {
     }
   }
 
-
   static Future<LoginModel?> PutEditNote(
       String editid,
       // String date,
@@ -606,8 +601,7 @@ class Userapi {
       String description,
       File image,
       // String label,
-      String id
-      ) async {
+      String id) async {
     print("editid2>>${editid}");
 
     String? mimeType = lookupMimeType(image.path);
@@ -622,7 +616,6 @@ class Userapi {
         'title': title,
         'description': description,
         'project_id': id,
-
       };
       print("PutEditNote ${data}");
 
@@ -634,7 +627,6 @@ class Userapi {
         body: jsonEncode(data),
       );
       if (response != null) {
-
         final jsonResponse = jsonDecode(response.body);
         print("PutEditNote Status:${response.body}");
         return LoginModel.fromJson(jsonResponse);
@@ -647,8 +639,6 @@ class Userapi {
       return null;
     }
   }
-
-
 
   static Future<GetEditProjectNoteModel?> GetProjectEditNotes(editId) async {
     try {
@@ -668,9 +658,7 @@ class Userapi {
     }
   }
 
-
   static Future<LoginModel?> ProjectDelateNotes(id) async {
-
     try {
       final headers = await getheader();
       final url = Uri.parse("${host}/project/project-note-detail/${id}");
@@ -687,7 +675,6 @@ class Userapi {
       return null;
     }
   }
-
 
   static Future<RoomsModel?> getrommsApi() async {
     try {
@@ -725,7 +712,6 @@ class Userapi {
     }
   }
 
-
   static Future<ToDoListModel?> gettodolistApi() async {
     try {
       final headers = await getheader();
@@ -745,12 +731,8 @@ class Userapi {
   }
 
   static Future<LeaveRequestModel?> LeaveRequest(
-      String fromdate,
-      String todate,
-      String reason)
-  async {
+      String fromdate, String todate, String reason) async {
     try {
-
       Map<String, String> body = {
         "from_date": fromdate,
         "to_date": todate,
@@ -760,7 +742,7 @@ class Userapi {
       final headers = await getheader();
       final response = await http.post(
         url,
-        headers:headers,
+        headers: headers,
         body: jsonEncode(body),
       );
       if (response != null) {

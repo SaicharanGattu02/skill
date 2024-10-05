@@ -43,15 +43,15 @@ class _TodolistState extends State<Todolist> {
     // });
     GetToDoList();
   }
-  List<TODOList> data=[];
+
+  List<TODOList> data = [];
   Future<void> GetToDoList() async {
     var res = await Userapi.gettodolistApi();
     setState(() {
       if (res != null) {
-        if(res.settings?.success==1){
-          data=res.data??[];
-        }else{
-        }
+        if (res.settings?.success == 1) {
+          data = res.data ?? [];
+        } else {}
       }
     });
   }
@@ -61,6 +61,16 @@ class _TodolistState extends State<Todolist> {
     _scrollController.dispose();
     super.dispose();
   }
+
+  Color hexToColor(String hexColor) {
+    // Check if the hex color starts with "#", if so, remove it
+    hexColor = hexColor.replaceFirst('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF' + hexColor; // Add full opacity if not provided
+    }
+    return Color(int.parse(hexColor, radix: 16));
+  }
+
 
   // void _scrollToSelectedDate() {
   //   final index = dates.indexWhere((date) =>
@@ -286,7 +296,10 @@ class _TodolistState extends State<Todolist> {
               child: ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (context, index) {
-                  var tododata=data[index];
+                  var tododata = data[index];
+                  Color labelColor = hexToColor(tododata.labelColor??"");
+                  print("Color:${labelColor}");// Convert hex to Color
+
                   return Column(
                     children: [
                       Padding(
@@ -310,7 +323,7 @@ class _TodolistState extends State<Todolist> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
-                                    color: Color(0xffDE350B),
+                                    color: labelColor,
                                     width: 3,
                                   ),
                                 ),
@@ -322,7 +335,7 @@ class _TodolistState extends State<Todolist> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    selectedTasks[index]['title']!,
+                                    tododata.labelName ?? "",
                                     style: const TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w500,
@@ -335,7 +348,7 @@ class _TodolistState extends State<Todolist> {
                                   SizedBox(
                                     width: w * 0.5,
                                     child: Text(
-                                      selectedTasks[index]['subtitle'] ?? "",
+                                      tododata.description ?? "",
                                       style: const TextStyle(
                                         fontFamily: 'Inter',
                                         fontWeight: FontWeight.w400,
@@ -356,8 +369,8 @@ class _TodolistState extends State<Todolist> {
                                         size: 16,
                                       ),
                                       SizedBox(width: w * 0.01),
-                                      const Text(
-                                        "Today",
+                                      Text(
+                                        tododata.dateTime ?? "",
                                         style: TextStyle(
                                           color: Color(0xff2FB035),
                                           fontSize: 14,
