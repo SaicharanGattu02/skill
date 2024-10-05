@@ -5,6 +5,7 @@ import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectActivityModel.dart';
+import '../utils/ShakeWidget.dart';
 
 class OverView extends StatefulWidget {
   final String id;
@@ -13,7 +14,7 @@ class OverView extends StatefulWidget {
   @override
   State<OverView> createState() => _OverViewState();
 }
-bool _loading =true;
+bool _loading =false;
 class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
   final FocusNode searchFocusNode = FocusNode();
@@ -29,8 +30,9 @@ class _OverViewState extends State<OverView> {
     GetProjectsOverviewData();
     GetProjectsActivityData();
   }
+
   Data? data = Data();
-  List<Members> members=[];
+  List<Members> members = [];
   List<PieChartSectionData> pieChartSectionData = [];
   Future<void> GetProjectsOverviewData() async {
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
@@ -43,12 +45,12 @@ class _OverViewState extends State<OverView> {
     });
   }
 
-  List<Activity> activitydata=[];
+  List<Activity> activitydata = [];
   Future<void> GetProjectsActivityData() async {
     var res = await Userapi.GetProjectsActivityApi(widget.id);
     setState(() {
       if (res != null && res.data != null) {
-        activitydata = res.data??[];
+        activitydata = res.data ?? [];
       }
     });
   }
@@ -76,7 +78,6 @@ class _OverViewState extends State<OverView> {
     ];
   }
 
-
   @override
   void dispose() {
     searchFocusNode.dispose();
@@ -100,8 +101,7 @@ class _OverViewState extends State<OverView> {
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16,top: 16),
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -116,7 +116,7 @@ class _OverViewState extends State<OverView> {
         },
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          margin: EdgeInsets.only(left: 16, right: 16,top: 16),
+          margin: EdgeInsets.only(left: 16, right: 16, top: 16),
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -129,7 +129,8 @@ class _OverViewState extends State<OverView> {
               Expanded(
                 child: isMembersTab
                     ? _buildMembersTab(context)
-                    : _buildAcitivityTab(context), // Conditional rendering for Activity Tab
+                    : _buildAcitivityTab(
+                        context), // Conditional rendering for Activity Tab
               ),
             ],
           ),
@@ -179,10 +180,11 @@ class _OverViewState extends State<OverView> {
         children: [
           CustomPaint(
             size: Size(136, 136),
-            painter: RoundedProgressPainter(data?.totalPercent?.roundToDouble()??0.0),
+            painter: RoundedProgressPainter(
+                (data?.totalPercent?.roundToDouble() ?? 0 * 100).round() / 100),
           ),
           Text(
-            '${(data?.totalPercent??0 * 100).round()}%',
+            '${(data?.totalPercent ?? 0 * 100).round()}%',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w600,
@@ -200,15 +202,15 @@ class _OverViewState extends State<OverView> {
       children: [
         _buildProjectDetailColumn(
           title: "Start Date",
-          value: "${data?.startDate??""}",
+          value: "${data?.startDate ?? ""}",
           secondTitle: "Total Hours",
-          secondValue:"${data?.totalTimeWorked??""}",
+          secondValue: "${data?.totalTimeWorked ?? ""}",
         ),
         _buildProjectDetailColumn(
           title: "Deadline",
-          value: "${data?.endDate??""}",
+          value: "${data?.endDate ?? ""}",
           secondTitle: "Client",
-          secondValue: "${data?.client??""}",
+          secondValue: "${data?.client ?? ""}",
         ),
       ],
     );
@@ -349,8 +351,7 @@ class _OverViewState extends State<OverView> {
                 'Members',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight:
-                      isMembersTab ? FontWeight.w500 : FontWeight.w500,
+                  fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
                   color: isMembersTab ? Color(0xff8856f4) : Color(0xff3c3c43),
                 ),
               ),
@@ -359,7 +360,7 @@ class _OverViewState extends State<OverView> {
                   margin: EdgeInsets.only(top: 4),
                   height: 2,
                   width: MediaQuery.of(context).size.width * 0.3,
-                  color: Color(0xff8856f4) ,
+                  color: Color(0xff8856f4),
                 ),
             ],
           ),
@@ -376,8 +377,7 @@ class _OverViewState extends State<OverView> {
                 'Activity',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight:
-                  isMembersTab ? FontWeight.w500 : FontWeight.w500,
+                  fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
                   color: isMembersTab ? Color(0xff3c3c43) : Color(0xff8856f4),
                 ),
               ),
@@ -396,7 +396,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildMembersTab(BuildContext context) {
-    double w= MediaQuery.of(context).size.width;
+    double w = MediaQuery.of(context).size.width;
     return Column(
       children: [
         Padding(
@@ -404,10 +404,10 @@ class _OverViewState extends State<OverView> {
           child: Row(
             children: [
               Expanded(
-                child:  Container(
+                child: Container(
                   width: w * 0.8,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                   decoration: BoxDecoration(
                     color: const Color(0xfffcfaff),
                     borderRadius: BorderRadius.circular(8),
@@ -434,30 +434,31 @@ class _OverViewState extends State<OverView> {
                   ),
                 ),
               ),
-              SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  // Add member action
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Color(0xff8856F4), // Background color
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add_circle_outline, color: Colors.white), // Plus icon
-                      SizedBox(width: 8), // Space between icon and text
-                      Text(
-                        'Add Member',
-                        style: TextStyle(color: Colors.white), // Text color
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // SizedBox(width: 10),
+              // GestureDetector(
+              //   onTap: () {
+              //     // _showBottomSheet();
+              //   },
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+              //     decoration: BoxDecoration(
+              //       color: Color(0xff8856F4), // Background color
+              //       borderRadius: BorderRadius.circular(8), // Rounded corners
+              //     ),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: [
+              //         Icon(Icons.add_circle_outline,
+              //             color: Colors.white), // Plus icon
+              //         SizedBox(width: 8), // Space between icon and text
+              //         Text(
+              //           'Add Member',
+              //           style: TextStyle(color: Colors.white), // Text color
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -468,26 +469,30 @@ class _OverViewState extends State<OverView> {
               return Column(
                 children: [
                   MemberCard(
-                      name: members[index].fullName??"",
-                      profile_image:  members[index].image??"",
+                    name: members[index].fullName ?? "",
+                    profile_image: members[index].image ?? "",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < members.length-1) Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Divider(height: 10, thickness: 0.5,color: Color(0xffeff0fa),),
-                  ),
+                  if (index < members.length - 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Divider(
+                        height: 10,
+                        thickness: 0.5,
+                        color: Color(0xffeff0fa),
+                      ),
+                    ),
                 ],
               );
             },
           ),
         ),
-
       ],
     );
   }
 
   Widget _buildAcitivityTab(BuildContext context) {
-    double w= MediaQuery.of(context).size.width;
+    double w = MediaQuery.of(context).size.width;
     return Column(
       children: [
         Expanded(
@@ -497,28 +502,176 @@ class _OverViewState extends State<OverView> {
               return Column(
                 children: [
                   ActivityCard(
-                      name: activitydata[index].userName??"",
-                      user_img: activitydata[index].userImage??"",
-                      time: activitydata[index].createdTime??"",
-                      action: activitydata[index].action??"",
-                      desc: activitydata[index].description??"",
-                      project_name: activitydata[index].projectName??"",
+                    name: activitydata[index].userName ?? "",
+                    user_img: activitydata[index].userImage ?? "",
+                    time: activitydata[index].createdTime ?? "",
+                    action: activitydata[index].action ?? "",
+                    desc: activitydata[index].description ?? "",
+                    project_name: activitydata[index].projectName ?? "",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < 9) Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Divider(height: 10, thickness: 0.5,color: Color(0xffeff0fa),),
-                  ),
+                  if (index < 9)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Divider(
+                        height: 10,
+                        thickness: 0.5,
+                        color: Color(0xffeff0fa),
+                      ),
+                    ),
                 ],
               );
             },
           ),
         ),
-
       ],
     );
   }
 
+  // void _showBottomSheet() {
+  //   var h = MediaQuery.of(context).size.height;
+  //   var w = MediaQuery.of(context).size.width;
+  //   showModalBottomSheet(
+  //       isScrollControlled: true,
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Container(
+  //             padding: const EdgeInsets.all(16),
+  //             height: h * 0.3,
+  //             child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   // Title and close button
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Text(
+  //                         "Add Member",
+  //                         style: TextStyle(
+  //                           color: Color(0xff1C1D22),
+  //                           fontSize: 18.0,
+  //                           fontWeight: FontWeight.w500,
+  //                           height: 18 / 18,
+  //                           fontFamily: 'Inter',
+  //                         ),
+  //                       ),
+  //                       Container(
+  //                         width: 24,
+  //                         height: 24,
+  //                         padding: EdgeInsets.all(7),
+  //                         decoration: BoxDecoration(
+  //                           color: Color(0xffE5E5E5),
+  //                           borderRadius: BorderRadius.circular(100),
+  //                         ),
+  //                         child: Image.asset(
+  //                           "assets/crossblue.png",
+  //                           fit: BoxFit.contain,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   SizedBox(height: 24),
+  //
+  //
+  //                 ]));
+  //       });
+  // }
+
+  // static Widget _label({required String text}) {
+  //   return Text(
+  //     text,
+  //     style: TextStyle(
+  //       color: Color(0xff141516),
+  //       fontSize: 14,
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildTextFormField(
+  //     {required TextEditingController controller,
+  //     required FocusNode focusNode,
+  //     bool obscureText = false,
+  //     required String hintText,
+  //     required String validationMessage,
+  //     TextInputType keyboardType = TextInputType.text,
+  //     Widget? prefixicon,
+  //     Widget? suffixicon}) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Container(
+  //         height: MediaQuery.of(context).size.height * 0.050,
+  //         child: TextFormField(
+  //           controller: controller,
+  //           focusNode: focusNode,
+  //           keyboardType: keyboardType,
+  //           obscureText: obscureText,
+  //           cursorColor: Color(0xff8856F4),
+  //           decoration: InputDecoration(
+  //             hintText: hintText,
+  //             // prefixIcon: Container(
+  //             //     width: 21,
+  //             //     height: 21,
+  //             //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+  //             //     child: prefixicon),
+  //             suffixIcon: suffixicon,
+  //             hintStyle: const TextStyle(
+  //               fontSize: 14,
+  //               letterSpacing: 0,
+  //               height: 19.36 / 14,
+  //               color: Color(0xffAFAFAF),
+  //               fontFamily: 'Inter',
+  //               fontWeight: FontWeight.w400,
+  //             ),
+  //             filled: true,
+  //             fillColor: const Color(0xffFCFAFF),
+  //             enabledBorder: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(7),
+  //               borderSide:
+  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+  //             ),
+  //             focusedBorder: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(7),
+  //               borderSide:
+  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+  //             ),
+  //             errorBorder: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(7),
+  //               borderSide:
+  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+  //             ),
+  //             focusedErrorBorder: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(7),
+  //               borderSide:
+  //                   const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       if (validationMessage.isNotEmpty) ...[
+  //         Container(
+  //           alignment: Alignment.topLeft,
+  //           margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+  //           width: MediaQuery.of(context).size.width * 0.6,
+  //           child: ShakeWidget(
+  //             key: Key("value"),
+  //             duration: Duration(milliseconds: 700),
+  //             child: Text(
+  //               validationMessage,
+  //               style: TextStyle(
+  //                 fontFamily: "Poppins",
+  //                 fontSize: 12,
+  //                 color: Colors.red,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ] else ...[
+  //         SizedBox(height: 15),
+  //       ]
+  //     ],
+  //   );
+  // }
 }
-
-

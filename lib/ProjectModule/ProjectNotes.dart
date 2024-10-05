@@ -1,6 +1,16 @@
+import 'dart:io';
+
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/ProjectNoteModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/CustomSnackBar.dart';
+import '../utils/ShakeWidget.dart';
+import 'package:path/path.dart' as p;
 
 class ProjectNotes extends StatefulWidget {
   final String id;
@@ -11,21 +21,38 @@ class ProjectNotes extends StatefulWidget {
 }
 bool _loading =true;
 class _ProjectNotesState extends State<ProjectNotes> {
+  // final TextEditingController _createdDateController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  // final TextEditingController _labelController = TextEditingController();
+  final FocusNode _focusNodetitle = FocusNode();
+  final FocusNode _focusNodedescription = FocusNode();
+  final FocusNode _focusNodelable = FocusNode();
+
+  String _validateTittle = "";
+  String _validateDescription = "";
+  String _validatefile = "";
+
+  XFile? _imageFile;
+  File? filepath;
+  String filename = "";
+  bool _isLoading = false;
+
   @override
   void initState() {
     GetNote();
+
     super.initState();
   }
 
-  List<Data> data =[];
+  List<Data> data = [];
   Future<void> GetNote() async {
     var res = await Userapi.GetProjectNote(widget.id);
-
     setState(() {
       if (res != null) {
         _loading=false;
         if (res.data != null) {
-          data=res.data??[];
+          data = res.data ?? [];
 
           print("sucsesss");
         } else {
@@ -33,6 +60,151 @@ class _ProjectNotesState extends State<ProjectNotes> {
         }
       }
     });
+  }
+
+  void _validateFields(String mode, String editid) {
+    setState(() {
+      _validateTittle =
+          _titleController.text.isEmpty ? "Please enter a title" : "";
+      _validateDescription = _descriptionController.text.isEmpty
+          ? "Please enter a description"
+          : "";
+      _validatefile = _imageFile == null ? "Please choose file." : "";
+      _isLoading = _validateTittle.isEmpty &&
+          _validateDescription.isEmpty &&
+          _validatefile.isEmpty;
+
+      if (_isLoading) {
+        if (mode == "edit") {
+          PostAddNoteApi(editid: editid);
+          print("editid>>${editid}");
+        } else {
+          PostAddNoteApi();
+        }
+      }
+    });
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    // Check and request camera/gallery permissions
+    if (source == ImageSource.camera) {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        await Permission.camera.request();
+      }
+    } else if (source == ImageSource.gallery) {
+      var status = await Permission.photos.status;
+      if (!status.isGranted) {
+        await Permission.photos.request();
+      }
+    }
+    // After permissions are handled, proceed to pick an image
+    final ImagePicker picker = ImagePicker();
+    XFile? selected = await picker.pickImage(source: source);
+
+    setState(() {
+      _imageFile = selected;
+    });
+
+    if (selected != null) {
+      // Get the file path and filename
+      setState(() {
+        filepath = File(selected.path);
+        filename = p.basename(selected.path);
+      });
+      print("Selected Image: ${selected.path}");
+    } else {
+      print('User canceled the file picking');
+    }
+  }
+
+  Future<void> PostAddNoteApi({String? editid}) async {
+    // var res = await Userapi.PostAddNote(_titleController.text,
+    //     _descriptionController.text, File(_imageFile!.path), widget.id);
+    var res;
+    if (editid != null) {
+      print("editid1>>${editid}");
+      res = await Userapi.PutEditNote(
+        editid, // Pass the edit ID for PUT request
+        _titleController.text,
+        _descriptionController.text,
+        File(_imageFile!.path),
+        widget.id,
+      );
+      print("editid1dd>>${editid}");
+    } else {
+      res = await await Userapi.PostAddNote(_titleController.text,
+          _descriptionController.text, File(_imageFile!.path), widget.id);
+    }
+
+    if (res != null) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (res.settings?.success == 1) {
+        print("PostAddNoteApi>>${res}");
+        CustomSnackBar.show(context, "${res.settings?.message}");
+        Navigator.pop(context);
+      } else {
+        print("PostAddNoteApi");
+      }
+    } else {
+      print("PostAddNoteApi >>>${res?.settings?.message}");
+      CustomSnackBar.show(context, "${res?.settings?.message}");
+    }
+  }
+
+  EditData? editData;
+
+  Future<void> EditNoteApi(String editid) async {
+    var res = await Userapi.GetProjectEditNotes(editid);
+    setState(() {
+      if (res != null) {
+        if (res.editData != null) {
+          _titleController.text = res.editData?.title ?? "";
+          _descriptionController.text = res.editData?.description ?? "";
+          String? fileUrl = res.editData?.file;
+
+          if (fileUrl != null) {
+            if (fileUrl.endsWith(".jpg") || fileUrl.endsWith(".png")) {
+              _imageFile =
+                  XFile(fileUrl, mimeType: "image/*"); // Handle image files
+            } else if (fileUrl.endsWith(".pdf")) {
+              _imageFile = XFile(fileUrl,
+                  mimeType: "application/pdf"); // Handle PDF files
+            } else {
+              print("Unsupported file format");
+            }
+          }
+
+          print("sucsesss");
+        } else {
+          print("Task Failure  ${res.settings?.message}");
+        }
+      }
+    });
+  }
+
+  Future<void> DelateApi(String id) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var res = await Userapi.ProjectDelateNotes(id);
+
+    if (res != null) {
+      setState(() {
+        if (res.settings == 1) {
+          GetNote();
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }
+      });
+    } else {
+      print("DelateApi >>>${res?.settings?.message}");
+      CustomSnackBar.show(context, "${res?.settings?.message}");
+    }
   }
 
   @override
@@ -83,15 +255,13 @@ class _ProjectNotesState extends State<ProjectNotes> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () {
-                        // showModalBottomSheet(
-                        //   context: context,
-                        //   isScrollControlled: true,
-                        //   // isDismissible: false,
-                        //
-                        //   builder: (BuildContext context) {
-                        //     return _bottomSheet(context);
-                        //   },
-                        // );
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (BuildContext context) {
+                            return _bottomSheet(context, "Add");
+                          },
+                        );
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -138,7 +308,6 @@ class _ProjectNotesState extends State<ProjectNotes> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -154,7 +323,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               height: w * 0.05,
                               color: Color(0xff6C848F),
                             ),
-                            SizedBox(width: w*0.004,),
+                            SizedBox(
+                              width: w * 0.004,
+                            ),
                             Text(
                               // note.createdTime?? "",
                               "01/01/0000",
@@ -168,22 +339,48 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               ),
                             ),
                             Spacer(),
-                            Image.asset(
-                              "assets/edit.png",
-                              fit: BoxFit.contain,
-                              width: w * 0.06,
-                              height: w * 0.05,
-                              color: Color(0xff8856F4),
+                            InkWell(
+                              onTap: () {
+                                // EditNoteApi(note.id ?? "");
+                                PostAddNoteApi(editid: note.id);
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext context) {
+                                    return _bottomSheet(
+                                        context, "Edit", note.id);
+                                  },
+                                );
+                              },
+                              child: Image.asset(
+                                "assets/edit.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.06,
+                                height: w * 0.05,
+                                color: Color(0xff8856F4),
+                              ),
                             ),
                             SizedBox(
                               width: w * 0.02,
                             ),
-                            Image.asset(
-                              "assets/eye.png",
-                              fit: BoxFit.contain,
-                              width: w * 0.06,
-                              height: w * 0.05,
-                              color: Color(0xff8856F4),
+                            InkWell(
+                              onTap: () {
+                                // Check if note.file is not null before showing the bottom sheet
+                                if (note.file != null &&
+                                    note.file!.isNotEmpty) {
+                                  _showBottomSheet(context, note.file!);
+                                } else {
+                                  // Optionally, show a message or handle the case when the file is null
+                                  print('No file to display');
+                                }
+                              },
+                              child: Image.asset(
+                                "assets/eye.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.06,
+                                height: w * 0.05,
+                                color: Color(0xff8856F4),
+                              ),
                             ),
                             SizedBox(
                               width: w * 0.02,
@@ -220,16 +417,21 @@ class _ProjectNotesState extends State<ProjectNotes> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Text(
-                          "Remove",
-                          style: TextStyle(
-                            color: Color(0xff8856F4),
-                            fontFamily: 'Inter',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            height: 19.36 / 15,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xff8856F4),
+                        InkWell(
+                          onTap: () {
+                            DelateApi(note.id ?? "");
+                          },
+                          child: Text(
+                            "Remove",
+                            style: TextStyle(
+                              color: Color(0xff8856F4),
+                              fontFamily: 'Inter',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              height: 19.36 / 15,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xff8856F4),
+                            ),
                           ),
                         )
                       ],
@@ -243,4 +445,945 @@ class _ProjectNotesState extends State<ProjectNotes> {
       ),
     );
   }
+
+  Widget _bottomSheet(BuildContext context, [String? mode, editid]) {
+    double h = MediaQuery.of(context).size.height * 0.5;
+    double w = MediaQuery.of(context).size.width;
+    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      if (mode == 'edit' && editid != null) {
+        setState(() {
+          EditNoteApi(editid);
+        });
+      }
+      return Padding(
+        padding: EdgeInsets.only(bottom: keyboardHeight),
+        child: Container(
+          height: h,
+          padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+          decoration: BoxDecoration(
+            color: Color(0xffffffff),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: w * 0.1,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    ("${mode} Note"),
+                    style: TextStyle(
+                      color: Color(0xff1C1D22),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      fontFamily: 'Inter',
+                      height: 18 / 16,
+                    ),
+                  ),
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pop(); // Close the BottomSheet when tapped
+                    },
+                    child: Container(
+                      width: w * 0.05,
+                      height: w * 0.05,
+                      decoration: BoxDecoration(
+                        color: Color(0xffE5E5E5),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/crossblue.png",
+                          fit: BoxFit.contain,
+                          width: w * 0.023,
+                          height: w * 0.023,
+                          color: Color(0xff8856F4),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // _label(text: 'Created date'),
+                      // SizedBox(height: 4),
+                      // _buildDateField(_createdDateController),
+                      // SizedBox(height: 10),
+                      _label(text: 'Title'),
+                      SizedBox(height: 4),
+                      _buildTextFormField(
+                        controller: _titleController,
+                        focusNode: _focusNodetitle,
+                        hintText: 'Enter Project Name',
+                        validationMessage: 'please enter project name',
+                      ),
+
+                      _label(text: 'Description'),
+                      SizedBox(height: 4),
+                      Container(
+                        height: h * 0.13,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Color(0xffE8ECFF))),
+                        child: TextFormField(
+                          cursorColor: Color(0xff8856F4),
+                          scrollPadding: const EdgeInsets.only(top: 5),
+                          controller: _descriptionController,
+                          textInputAction: TextInputAction.done,
+                          maxLines: 100,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.only(left: 10, top: 10),
+                            hintText: "Type Description",
+                            hintStyle: TextStyle(
+                              fontSize: 15,
+                              letterSpacing: 0,
+                              height: 1.2,
+                              color: Color(0xffAFAFAF),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w400,
+                            ),
+                            filled: true,
+                            fillColor: Color(0xffFCFAFF),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide: BorderSide(
+                                  width: 1, color: Color(0xffD0CBDB)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7.0),
+                              borderSide: BorderSide(
+                                  width: 1, color: Color(0xffD0CBDB)),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      if (_validateDescription.isNotEmpty) ...[
+                        Container(
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.only(bottom: 5),
+                          child: ShakeWidget(
+                            key: Key("value"),
+                            duration: Duration(milliseconds: 700),
+                            child: Text(
+                              _validateDescription,
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 12,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        const SizedBox(
+                          height: 15,
+                        ),
+                      ],
+                      DottedBorder(
+                        color: Color(0xffD0CBDB),
+                        strokeWidth: 1,
+                        dashPattern: [2, 2],
+                        borderType: BorderType.RRect,
+                        radius: Radius.circular(8),
+                        padding: EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SafeArea(
+                                      child: Wrap(
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(Icons.camera_alt),
+                                            title: Text('Take a photo'),
+                                            onTap: () {
+                                              _pickImage(ImageSource.camera);
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          ListTile(
+                                            leading: Icon(Icons.photo_library),
+                                            title: Text('Choose from gallery'),
+                                            onTap: () {
+                                              _pickImage(ImageSource.gallery);
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                height: 35,
+                                width: w * 0.35,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffF8FCFF),
+                                  border: Border.all(
+                                    color: Color(0xff8856F4),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Choose File',
+                                    style: TextStyle(
+                                      color: Color(0xff8856F4),
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Center(
+                              child: Text(
+                                (filename != "") ? filename : 'No File Chosen',
+                                style: TextStyle(
+                                  color: Color(0xff3C3C3C),
+                                  fontSize: 14,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_validatefile.isNotEmpty) ...[
+                        Container(
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.only(bottom: 5),
+                          child: ShakeWidget(
+                            key: Key("value"),
+                            duration: Duration(milliseconds: 700),
+                            child: Text(
+                              _validatefile,
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 12,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        const SizedBox(
+                          height: 15,
+                        ),
+                      ],
+
+                      // _label(text: 'Labels'),
+                      // SizedBox(height: 4),
+                      // _buildTextFormField(
+                      //   controller: _labelController,
+                      //   focusNode: _focusNodelable,
+                      //   hintText: 'Enter Project Name',
+                      //   validationMessage: 'please enter project name',
+                      // ),
+                      SizedBox(height: 6),
+                    ],
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 40,
+                      width: w * 0.43,
+                      decoration: BoxDecoration(
+                        color: Color(0xffF8FCFF),
+                        border: Border.all(
+                          color: Color(0xff8856F4),
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Close',
+                          style: TextStyle(
+                            color: Color(0xff8856F4),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  InkResponse(
+                    onTap: () {
+                      _validateFields(mode!, editid);
+                    },
+                    child: Container(
+                      height: 40,
+                      width: w * 0.43,
+                      decoration: BoxDecoration(
+                        color: Color(0xff8856F4),
+                        border: Border.all(
+                          color: Color(0xff8856F4),
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildTextFormField(
+      {required TextEditingController controller,
+      required FocusNode focusNode,
+      bool obscureText = false,
+      required String hintText,
+      required String validationMessage,
+      TextInputType keyboardType = TextInputType.text,
+      Widget? prefixicon,
+      Widget? suffixicon}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.050,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            cursorColor: Color(0xff8856F4),
+            decoration: InputDecoration(
+              hintText: hintText,
+              // prefixIcon: Container(
+              //     width: 21,
+              //     height: 21,
+              //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+              //     child: prefixicon),
+              suffixIcon: suffixicon,
+              hintStyle: const TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 19.36 / 14,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: const Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+            ),
+          ),
+        ),
+        if (validationMessage.isNotEmpty) ...[
+          Container(
+            alignment: Alignment.topLeft,
+            margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: ShakeWidget(
+              key: Key("value"),
+              duration: Duration(milliseconds: 700),
+              child: Text(
+                validationMessage,
+                style: TextStyle(
+                  fontFamily: "Poppins",
+                  fontSize: 12,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ] else ...[
+          SizedBox(height: 15),
+        ]
+      ],
+    );
+  }
+
+  Widget _buildDateField(TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            _selectDate(context, controller);
+            setState(() {});
+          },
+          child: AbsorbPointer(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.05,
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: "Select dob from date picker",
+                  suffixIcon: Container(
+                      padding: EdgeInsets.only(top: 12, bottom: 12),
+                      child: Image.asset(
+                        "assets/calendar.png",
+                        color: Color(0xff000000),
+                        width: 16,
+                        height: 16,
+                        fit: BoxFit.contain,
+                      )),
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                    letterSpacing: 0,
+                    height: 1.2,
+                    color: Color(0xffAFAFAF),
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w400,
+                  ),
+                  filled: true,
+                  fillColor: Color(0xffFCFAFF),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(7),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+    }
+  }
+
+  static Widget _label({required String text}) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: Color(0xff141516),
+        fontSize: 14,
+      ),
+    );
+  }
+
+  // Widget _showDialog(BuildContext context) {
+  //   return AlertDialog(
+  //     contentPadding: EdgeInsets.all(20.0), // Optional padding
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(20.0), // Rounded corners
+  //     ),
+  //     content: Card(
+  //       elevation: 5.0,
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(15.0), // Rounded corners
+  //       ),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min, // Adjust the size to wrap content
+  //         children: [
+  //           Image.asset(
+  //             'assets/your_image.png', // Replace with your image asset path
+  //             fit: BoxFit.cover,
+  //             width: 150.0, // Set width for image
+  //             height: 150.0, // Set height for image
+  //           ),
+  //           SizedBox(height: 20.0), // Spacing between image and description
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void _showBottomSheet(
+    BuildContext context,
+    String? file,
+  ) {
+    var h = MediaQuery.of(context).size.height;
+    var w = MediaQuery.of(context).size.width;
+    String? selectedImage = file;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              height: h * 0.4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title and close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "View Images",
+                        style: TextStyle(
+                          color: Color(0xff1C1D22),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                          height: 18 / 18,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      Container(
+                        width: 24,
+                        height: 24,
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Color(0xffE5E5E5),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Image.asset(
+                          "assets/crossblue.png",
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+                  Container(
+                    width: w,
+                    height: h * 0.3,
+
+                    child: selectedImage != null
+                        ? ClipRect(
+                            child: Image.network(
+                              selectedImage,
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        : Container(), // Show empty container if no image is selected
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+  // Widget _bottomSheet1(BuildContext context) {
+  //   double h = MediaQuery.of(context).size.height * 0.5;
+  //   double w = MediaQuery.of(context).size.width;
+  //   double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+  //   return Padding(
+  //     padding: EdgeInsets.only(bottom: keyboardHeight),
+  //     child: Container(
+  //       height: h,
+  //       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+  //       decoration: BoxDecoration(
+  //         color: Color(0xffffffff),
+  //         borderRadius: BorderRadius.only(
+  //           topLeft: Radius.circular(20),
+  //           topRight: Radius.circular(20),
+  //         ),
+  //       ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Center(
+  //             child: Container(
+  //               width: w * 0.1,
+  //               height: 5,
+  //               decoration: BoxDecoration(
+  //                 color: Colors.grey[300],
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //             ),
+  //           ),
+  //           SizedBox(height: 20),
+  //           Row(
+  //             children: [
+  //               Text(
+  //                 "Edit Note",
+  //                 style: TextStyle(
+  //                   color: Color(0xff1C1D22),
+  //                   fontWeight: FontWeight.w500,
+  //                   fontSize: 16,
+  //                   fontFamily: 'Inter',
+  //                   height: 18 / 16,
+  //                 ),
+  //               ),
+  //               Spacer(),
+  //               InkWell(
+  //                 onTap: () {
+  //                   Navigator.of(context)
+  //                       .pop(); // Close the BottomSheet when tapped
+  //                 },
+  //                 child: Container(
+  //                   width: w * 0.05,
+  //                   height: w * 0.05,
+  //                   decoration: BoxDecoration(
+  //                     color: Color(0xffE5E5E5),
+  //                     borderRadius: BorderRadius.circular(100),
+  //                   ),
+  //                   child: Center(
+  //                     child: Image.asset(
+  //                       "assets/crossblue.png",
+  //                       fit: BoxFit.contain,
+  //                       width: w * 0.023,
+  //                       height: w * 0.023,
+  //                       color: Color(0xff8856F4),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(height: 16),
+  //           Expanded(
+  //             child: SingleChildScrollView(
+  //               physics: AlwaysScrollableScrollPhysics(),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   // _label(text: 'Created date'),
+  //                   // SizedBox(height: 4),
+  //                   // _buildDateField(_createdDateController),
+  //                   // SizedBox(height: 10),
+  //                   _label(text: 'Title'),
+  //                   SizedBox(height: 4),
+  //                   _buildTextFormField(
+  //                     controller: _titleController,
+  //                     focusNode: _focusNodetitle,
+  //                     hintText: 'Enter Project Name',
+  //                     validationMessage: 'please enter project name',
+  //                   ),
+  //
+  //                   _label(text: 'Description'),
+  //                   SizedBox(height: 4),
+  //                   Container(
+  //                     height: h * 0.13,
+  //                     decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(20),
+  //                         border: Border.all(color: Color(0xffE8ECFF))),
+  //                     child: TextFormField(
+  //                       cursorColor: Color(0xff8856F4),
+  //                       scrollPadding: const EdgeInsets.only(top: 5),
+  //                       controller: _descriptionController,
+  //                       textInputAction: TextInputAction.done,
+  //                       maxLines: 100,
+  //                       decoration: InputDecoration(
+  //                         contentPadding:
+  //                         const EdgeInsets.only(left: 10, top: 10),
+  //                         hintText: "Type Description",
+  //                         hintStyle: TextStyle(
+  //                           fontSize: 15,
+  //                           letterSpacing: 0,
+  //                           height: 1.2,
+  //                           color: Color(0xffAFAFAF),
+  //                           fontFamily: 'Poppins',
+  //                           fontWeight: FontWeight.w400,
+  //                         ),
+  //                         filled: true,
+  //                         fillColor: Color(0xffFCFAFF),
+  //                         enabledBorder: OutlineInputBorder(
+  //                           borderRadius: BorderRadius.circular(7),
+  //                           borderSide:
+  //                           BorderSide(width: 1, color: Color(0xffD0CBDB)),
+  //                         ),
+  //                         focusedBorder: OutlineInputBorder(
+  //                           borderRadius: BorderRadius.circular(7.0),
+  //                           borderSide:
+  //                           BorderSide(width: 1, color: Color(0xffD0CBDB)),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //
+  //                   if (_validateDescription.isNotEmpty) ...[
+  //                     Container(
+  //                       alignment: Alignment.topLeft,
+  //                       margin: EdgeInsets.only(bottom: 5),
+  //                       child: ShakeWidget(
+  //                         key: Key("value"),
+  //                         duration: Duration(milliseconds: 700),
+  //                         child: Text(
+  //                           _validateDescription,
+  //                           style: TextStyle(
+  //                             fontFamily: "Poppins",
+  //                             fontSize: 12,
+  //                             color: Colors.red,
+  //                             fontWeight: FontWeight.w500,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ] else ...[
+  //                     const SizedBox(
+  //                       height: 15,
+  //                     ),
+  //                   ],
+  //
+  //                   DottedBorder(
+  //                     color: Color(0xffD0CBDB),
+  //                     strokeWidth: 1,
+  //                     dashPattern: [2, 2],
+  //                     borderType: BorderType.RRect,
+  //                     radius: Radius.circular(8),
+  //                     padding: EdgeInsets.all(8.0),
+  //                     child: Row(
+  //                       children: [
+  //                         InkWell(
+  //                           onTap: () {
+  //                             showModalBottomSheet(
+  //                               context: context,
+  //                               builder: (BuildContext context) {
+  //                                 return SafeArea(
+  //                                   child: Wrap(
+  //                                     children: <Widget>[
+  //                                       ListTile(
+  //                                         leading: Icon(Icons.camera_alt),
+  //                                         title: Text('Take a photo'),
+  //                                         onTap: () {
+  //                                           _pickImage(ImageSource.camera);
+  //                                           Navigator.pop(context);
+  //                                         },
+  //                                       ),
+  //                                       ListTile(
+  //                                         leading: Icon(Icons.photo_library),
+  //                                         title: Text('Choose from gallery'),
+  //                                         onTap: () {
+  //                                           _pickImage(ImageSource.gallery);
+  //                                           Navigator.pop(context);
+  //                                         },
+  //                                       ),
+  //                                     ],
+  //                                   ),
+  //                                 );
+  //                               },
+  //                             );
+  //                           },
+  //                           child: Container(
+  //                             height: 35,
+  //                             width: w * 0.35,
+  //                             decoration: BoxDecoration(
+  //                               color: Color(0xffF8FCFF),
+  //                               border: Border.all(
+  //                                 color: Color(0xff8856F4),
+  //                                 width: 1.0,
+  //                               ),
+  //                               borderRadius: BorderRadius.circular(8.0),
+  //                             ),
+  //                             child: Center(
+  //                               child: Text(
+  //                                 'Choose File',
+  //                                 style: TextStyle(
+  //                                   color: Color(0xff8856F4),
+  //                                   fontSize: 16.0,
+  //                                   fontWeight: FontWeight.w500,
+  //                                   fontFamily: 'Poppins',
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         SizedBox(width: 16),
+  //                         Center(
+  //                           child: Text(
+  //                             (filename != "") ? filename : 'No File Chosen',
+  //                             style: TextStyle(
+  //                               color: Color(0xff3C3C3C),
+  //                               fontSize: 14,
+  //                               fontFamily: 'Poppins',
+  //                               fontWeight: FontWeight.w400,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   if (_validatefile.isNotEmpty) ...[
+  //                     Container(
+  //                       alignment: Alignment.topLeft,
+  //                       margin: EdgeInsets.only(bottom: 5),
+  //                       child: ShakeWidget(
+  //                         key: Key("value"),
+  //                         duration: Duration(milliseconds: 700),
+  //                         child: Text(
+  //                           _validatefile,
+  //                           style: TextStyle(
+  //                             fontFamily: "Poppins",
+  //                             fontSize: 12,
+  //                             color: Colors.red,
+  //                             fontWeight: FontWeight.w500,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ] else ...[
+  //                     const SizedBox(
+  //                       height: 15,
+  //                     ),
+  //                   ],
+  //
+  //                   // _label(text: 'Labels'),
+  //                   // SizedBox(height: 4),
+  //                   // _buildTextFormField(
+  //                   //   controller: _labelController,
+  //                   //   focusNode: _focusNodelable,
+  //                   //   hintText: 'Enter Project Name',
+  //                   //   validationMessage: 'please enter project name',
+  //                   // ),
+  //                   SizedBox(height: 6),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //           Row(
+  //             children: [
+  //               InkWell(
+  //                 onTap: () {
+  //                   Navigator.pop(context);
+  //                 },
+  //                 child: Container(
+  //                   height: 40,
+  //                   width: w * 0.43,
+  //                   decoration: BoxDecoration(
+  //                     color: Color(0xffF8FCFF),
+  //                     border: Border.all(
+  //                       color: Color(0xff8856F4),
+  //                       width: 1.0,
+  //                     ),
+  //                     borderRadius: BorderRadius.circular(7),
+  //                   ),
+  //                   child: Center(
+  //                     child: Text(
+  //                       'Close',
+  //                       style: TextStyle(
+  //                         color: Color(0xff8856F4),
+  //                         fontSize: 16.0,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontFamily: 'Inter',
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               Spacer(),
+  //               InkResponse(
+  //                 onTap: () {
+  //                   _validateFields();
+  //                 },
+  //                 child: Container(
+  //                   height: 40,
+  //                   width: w * 0.43,
+  //                   decoration: BoxDecoration(
+  //                     color: Color(0xff8856F4),
+  //                     border: Border.all(
+  //                       color: Color(0xff8856F4),
+  //                       width: 1.0,
+  //                     ),
+  //                     borderRadius: BorderRadius.circular(7),
+  //                   ),
+  //                   child: Center(
+  //                     child: Text(
+  //                       'Save',
+  //                       style: TextStyle(
+  //                         color: Color(0xffffffff),
+  //                         fontSize: 16.0,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontFamily: 'Inter',
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

@@ -48,6 +48,9 @@ class _MyTabBarState extends State<MyTabBar>
         );
       }
     });
+    setState(() {
+      _loading=false;
+    });
   }
 
   @override

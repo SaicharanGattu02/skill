@@ -356,7 +356,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                                     ),
                                     Spacer(),
 
-                                    // "Click to view" triggers a bottom sheet
                                     GestureDetector(
                                       onTap: () {
                                         _showBottomSheet(
@@ -464,7 +463,8 @@ class _ProjectCommentState extends State<ProjectComment> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return Container(
+            return
+              Container(
               padding: const EdgeInsets.all(16),
               height: h * 0.7,
               child: Column(

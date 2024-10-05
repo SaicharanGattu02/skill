@@ -14,6 +14,7 @@ import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
+import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/FetchmesgsModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/MileStoneModel.dart';
@@ -32,8 +33,8 @@ import 'otherservices.dart';
 class Userapi {
   static String host = "http://192.168.0.56:8000";
 
-  static Future<RegisterModel?> PostRegister(
-      String name, String mail, String password) async {
+  static Future<RegisterModel?> PostRegister(String name, String mail,
+      String password) async {
     try {
       Map<String, String> data = {
         "full_name": name,
@@ -220,7 +221,6 @@ class Userapi {
 
   static Future<GetLeaveCountModel?> GetLeaveCount() async {
     try {
-
       final headers = await getheader();
       final url = Uri.parse("${host}/leave/leave-count");
       final res = await get(url, headers: headers);
@@ -236,10 +236,12 @@ class Userapi {
       return null;
     }
   }
+
   static Future<GetTaskKanBanModel?> GetTaskKanBan(String id) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project/project-tasks-kanban?project_id=${id}&status=to_do");
+      final url = Uri.parse(
+          "${host}/project/project-tasks-kanban?project_id=${id}&status=to_do");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetTaskKanBan Response:${res.body}");
@@ -276,7 +278,8 @@ class Userapi {
   static Future<GetMileStoneModel?> GetMileStoneApi(String id) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project/project-milestones?project_id=${id}");
+      final url =
+      Uri.parse("${host}/project/project-milestones?project_id=${id}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetMileStone Response:${res.body}");
@@ -327,7 +330,8 @@ class Userapi {
     }
   }
 
-  static Future<TimeSheetDetailsModel?> GetProjectTimeSheetDetails(String id) async {
+  static Future<TimeSheetDetailsModel?> GetProjectTimeSheetDetails(
+      String id) async {
     try {
       final headers = await getheader();
       final url = Uri.parse('${host}/project/project-timesheets/${id}');
@@ -363,7 +367,6 @@ class Userapi {
     }
   }
 
-
   static Future<NoteModel?> GetProjectNote(String id) async {
     try {
       final headers = await getheader();
@@ -382,11 +385,11 @@ class Userapi {
     }
   }
 
-
   static Future<ProjectCommentsModel?> GetProjectComments(String id) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project/project-comments?project_id=b2a78098d7b142e0bb69a3214c35aa8f");
+      final url = Uri.parse(
+          "${host}/project/project-comments?project_id=b2a78098d7b142e0bb69a3214c35aa8f");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetProjectComments Response:${res.body}");
@@ -400,7 +403,6 @@ class Userapi {
       return null;
     }
   }
-
 
   static Future<FileModel?> GetProjectFile(String id) async {
     try {
@@ -420,8 +422,7 @@ class Userapi {
     }
   }
 
-  static Future<TaskAddmodel?> CreateTask(
-      String projectId,
+  static Future<TaskAddmodel?> CreateTask(String projectId,
       String title,
       String desc,
       String milestone,
@@ -431,8 +432,7 @@ class Userapi {
       String startDate,
       String endDate,
       List<String> collaborators, // Change type from String to List<String>
-      File image,
-      ) async {
+      File image,) async {
     try {
       // Check if the file is an image
       String? mimeType = lookupMimeType(image.path);
@@ -511,4 +511,176 @@ class Userapi {
       return null;
     }
   }
+
+  static Future<LoginModel?> PostMileStone(String title, String description,
+      String id, String date) async {
+    try {
+      Map<String, String> data = {
+        'title': title,
+        'description': description,
+        'project_id': id,
+        'due_date': date,
+      };
+      print("PostMileStone ${data}");
+
+      final url = Uri.parse('${host}/project/project-milestones');
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+
+        final jsonResponse = jsonDecode(response.body);
+        print("PostMileStone Status:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+  static Future<LoginModel?> PostAddNote(
+      // String date,
+      String title,
+      String description,
+      File image,
+      // String label,
+      String id
+      ) async {
+
+    String? mimeType = lookupMimeType(image.path);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Selected file is not a valid image.');
+      return null;
+    }
+
+    try {
+      Map<String, String> data = {
+        // 'due_date': date,
+        'title': title,
+        'description': description,
+        'project_id': id,
+
+      };
+      print("PostMileStone ${data}");
+
+      final url = Uri.parse('${host}/project/project-notes');
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+
+        final jsonResponse = jsonDecode(response.body);
+        print("PostMileStone Status:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+  static Future<LoginModel?> PutEditNote(
+      String editid,
+      // String date,
+      String title,
+      String description,
+      File image,
+      // String label,
+      String id
+      ) async {
+    print("editid2>>${editid}");
+
+    String? mimeType = lookupMimeType(image.path);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Selected file is not a valid image.');
+      return null;
+    }
+
+    try {
+      Map<String, String> data = {
+        // 'due_date': date,
+        'title': title,
+        'description': description,
+        'project_id': id,
+
+      };
+      print("PutEditNote ${data}");
+
+      final url = Uri.parse('${host}/project/project-note-detail/${editid}');
+      final headers = await getheader();
+      final response = await http.put(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+
+        final jsonResponse = jsonDecode(response.body);
+        print("PutEditNote Status:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+
+  static Future<GetEditProjectNoteModel?> GetProjectEditNotes(editId) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-note-detail/${editId}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectEditNotes Response:${res.body}");
+        return GetEditProjectNoteModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
+  static Future<LoginModel?> ProjectDelateNotes(id) async {
+
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-note-detail/${id}");
+      final res = await http.delete(url, headers: headers);
+      if (res != null) {
+        print("ProjectDelateNotes Response:${res.body}");
+        return LoginModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
 }

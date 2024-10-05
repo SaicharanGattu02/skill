@@ -64,12 +64,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     setState(() {
       if (Res != null && Res.data != null) {
         _loading=false;
-        projectsData = Res.data ?? [];
-        print("projectsData List Get Successfully  ${projectsData[0].name}");
-      } else {
-        // Handle failure case here
+        if (Res.settings?.success == 1) {
+          isLoading = false;
+          projectsData = Res.data ?? [];
+        } else {
+          isLoading = false;
+        }
       }
-      isLoading = false; // Set loading to false after data is fetched
     });
   }
 

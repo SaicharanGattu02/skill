@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/MileStoneModel.dart';
+import '../utils/CustomSnackBar.dart';
+import '../utils/ShakeWidget.dart';
 
 class MileStone extends StatefulWidget {
   final String id;
@@ -20,7 +22,11 @@ class _MileStoneState extends State<MileStone> {
 
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
-  final FocusNode _focusNodedeadline = FocusNode();
+
+  String title="";
+  String description="";
+  String deadline="";
+  bool _isLoading=false;
   bool _loading =true;
 
   void _selectDate(
@@ -37,8 +43,20 @@ class _MileStoneState extends State<MileStone> {
     }
   }
 
+
+
   @override
   void initState() {
+    _titleController.addListener(() {
+      setState(() {
+        title = "";
+      });
+    });
+    _descriptionController.addListener(() {
+      setState(() {
+        description = "";
+      });
+    });
     GetMileStone();
     super.initState();
   }
@@ -47,6 +65,7 @@ class _MileStoneState extends State<MileStone> {
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
+      _isLoading=false;
       if (res != null) {
         _loading=false;
         if (res.data != null) {
@@ -58,6 +77,44 @@ class _MileStoneState extends State<MileStone> {
       }
     });
   }
+  
+
+
+  void _validateFields() {
+    setState(() {
+      title = _titleController.text.isEmpty ? "Please enter title" : "";
+      description = _descriptionController.text.isEmpty
+          ? "Please enter a description"
+          : "";
+      deadline = _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
+
+      _isLoading = title.isEmpty && description.isEmpty && deadline.isEmpty;
+
+      if (_isLoading) {
+        PostMilestoneApi();
+      }
+    });
+  }
+  Future<void> PostMilestoneApi() async{
+    var res = await Userapi.PostMileStone(_titleController.text, _descriptionController.text, widget.id,_deadlineController.text);
+    if (res != null) {
+      setState(() {
+        _isLoading=false;
+      });
+      if (res.settings?.success == 1) {
+        print("PostMilestoneApi>>${res}");
+        CustomSnackBar.show(context, "${res.settings?.message}");
+        Navigator.pop(context);
+
+      } else {
+        print("PostMilestoneApi");
+      }
+    } else {
+      print("PostMilestoneApi >>>${res?.settings?.message}");
+      CustomSnackBar.show(context, "${res?.settings?.message}");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +167,8 @@ class _MileStoneState extends State<MileStone> {
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
-                          // isDismissible: false,
-
                           builder: (BuildContext context) {
+
                             return _bottomSheet(context);
                           },
                         );
@@ -269,219 +325,259 @@ class _MileStoneState extends State<MileStone> {
   }
 
   Widget _bottomSheet(BuildContext context) {
-    double h = MediaQuery.of(context).size.height * 0.75;
+    double h = MediaQuery.of(context).size.height * 0.55;
     double w = MediaQuery.of(context).size.width;
-
-    return Container(
-      height: h, // Set the height to 70% of the screen
-      padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-      decoration: BoxDecoration(
-        color: Color(0xffffffff),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: keyboardHeight),
+      child: Container(
+        height: h,
+        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+        decoration: BoxDecoration(
+          color: Color(0xffffffff),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: w * 0.1,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: w * 0.1,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                "Add Milestones",
-                style: TextStyle(
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  "Add Milestones",
+                  style: TextStyle(
                     color: Color(0xff1C1D22),
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     fontFamily: 'Inter',
-                    height: 18 / 16),
-              ),
-              Spacer(),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context)
-                      .pop(); // Close the BottomSheet when tapped
-                },
-                child: Container(
-                  width: w * 0.05,
-                  height: w * 0.05,
-                  decoration: BoxDecoration(
-                    color: Color(0xffE5E5E5),
-                    borderRadius: BorderRadius.circular(100),
+                    height: 18 / 16,
                   ),
-                  child: Center(
-                      child: Image.asset(
-                    "assets/crossblue.png",
-                    fit: BoxFit.contain,
-                    width: w * 0.023,
-                    height: w * 0.023,
-                    color: Color(0xff8856F4),
-                  )),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _label(text: 'Title'),
-                  SizedBox(height: 6),
-                  _buildTextFormField(
-                    controller: _titleController,
-                    focusNode: _focusNodetitle,
-                    hintText: 'Enter Project Name',
-                    validationMessage: 'please enter project name',
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop(); // Close the BottomSheet when tapped
+                  },
+                  child: Container(
+                    width: w * 0.05,
+                    height: w * 0.05,
+                    decoration: BoxDecoration(
+                      color: Color(0xffE5E5E5),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        "assets/crossblue.png",
+                        fit: BoxFit.contain,
+                        width: w * 0.023,
+                        height: w * 0.023,
+                        color: Color(0xff8856F4),
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  _label(text: 'Description'),
-                  SizedBox(height: 4),
-                  SizedBox(
-                    height: 60,
-                    child: _buildTextFormField(
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _label(text: 'Title'),
+                    SizedBox(height: 6),
+                    _buildTextFormField(
+                      controller: _titleController,
+                      focusNode: _focusNodetitle,
+                      hintText: 'Enter Project Name',
+                      validationMessage: 'please enter project name',
+                    ),
+                    SizedBox(height: 16),
+                    _label(text: 'Description'),
+                    SizedBox(height: 4),
+                    _buildTextFormField(
                       controller: _descriptionController,
                       focusNode: _focusNodedescription,
                       hintText: 'Type Description',
                       validationMessage: 'please type description',
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  _label(text: 'Deadline'),
-                  SizedBox(height: 4),
-                  _buildDateField(
-                    _deadlineController,
-                  ),
-                  SizedBox(height: 30),
-                ],
+                    SizedBox(height: 16),
+                    _label(text: 'Deadline'),
+                    SizedBox(height: 4),
+                    _buildDateField(_deadlineController),
+                    SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
-          ),
-          Row(
-            children: [
-              Container(
-                height: 40,
-                width: w * 0.43,
-                decoration: BoxDecoration(
-                  color: Color(0xffF8FCFF),
-                  border: Border.all(
-                    color: Color(0xff8856F4),
-                    width: 1.0,
+            Row(
+              children: [
+                InkWell(onTap: (){
+                  Navigator.pop(context);
+                },
+                  child: Container(
+                    height: 40,
+                    width: w * 0.43,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF8FCFF),
+                      border: Border.all(
+                        color: Color(0xff8856F4),
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Close',
+                        style: TextStyle(
+                          color: Color(0xff8856F4),
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(7),
                 ),
-                child: Center(
-                  child: Text(
-                    'Close',
-                    style: TextStyle(
+                Spacer(),
+                InkResponse(
+                  onTap: () {
+                    _validateFields();
+                  },
+                  child: Container(
+                    height: 40,
+                    width: w * 0.43,
+                    decoration: BoxDecoration(
                       color: Color(0xff8856F4),
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Inter',
+                      border: Border.all(
+                        color: Color(0xff8856F4),
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Save',
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Spacer(),
-              Container(
-                height: 40,
-                width: w * 0.43,
-                decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
-                  border: Border.all(
-                    color: Color(0xff8856F4),
-                    width: 1.0,
-                  ),
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Center(
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Color(0xffffffff),
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-      required FocusNode focusNode,
-      bool obscureText = false,
-      required String hintText,
-      required String validationMessage,
-      TextInputType keyboardType = TextInputType.text,
-      Widget? prefixicon,
-      Widget? suffixicon}) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.050,
-      child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        cursorColor: Color(0xff8856F4),
-        decoration: InputDecoration(
-          hintText: hintText,
-          // prefixIcon: Container(
-          //     width: 21,
-          //     height: 21,
-          //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-          //     child: prefixicon),
-          suffixIcon: suffixicon,
-          hintStyle: const TextStyle(
-            fontSize: 14,
-            letterSpacing: 0,
-            height: 19.36 / 14,
-            color: Color(0xffAFAFAF),
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-          filled: true,
-          fillColor: const Color(0xffFCFAFF),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
+
+
+  Widget _buildTextFormField(
+      {required TextEditingController controller,
+        required FocusNode focusNode,
+        bool obscureText = false,
+        required String hintText,
+        required String validationMessage,
+        TextInputType keyboardType = TextInputType.text,
+        Widget? prefixicon,
+        Widget? suffixicon}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.050,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            cursorColor: Color(0xff8856F4),
+            decoration: InputDecoration(
+              hintText: hintText,
+              // prefixIcon: Container(
+              //     width: 21,
+              //     height: 21,
+              //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+              //     child: prefixicon),
+              suffixIcon: suffixicon,
+              hintStyle: const TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 19.36 / 14,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: const Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide:
+                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+              ),
+            ),
+          ),
+        ),
+        if (validationMessage.isNotEmpty) ...[
+          Container(
+            alignment: Alignment.topLeft,
+            margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: ShakeWidget(
+              key: Key("value"),
+              duration: Duration(milliseconds: 700),
+              child: Text(
+                validationMessage,
+                style: TextStyle(
+                  fontFamily: "Poppins",
+                  fontSize: 12,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ] else ...[
+          SizedBox(height: 15),
+        ]
+      ],
+    );
+  }
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,9 +585,7 @@ class _MileStoneState extends State<MileStone> {
         GestureDetector(
           onTap: () {
             _selectDate(context, controller);
-            setState(() {
-              // _validateDob="";
-            });
+            setState(() {});
           },
           child: AbsorbPointer(
             child: Container(
@@ -521,11 +615,11 @@ class _MileStoneState extends State<MileStone> {
                   fillColor: Color(0xffFCFAFF),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
                   ),
                 ),
               ),

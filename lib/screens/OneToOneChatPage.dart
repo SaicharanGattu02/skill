@@ -200,7 +200,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageBubble(String message, String sender) {
     bool isMe = sender == 'you';
     return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment:
+      isMe ?
+      Alignment.centerRight
+          : Alignment.centerLeft,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.75,
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
