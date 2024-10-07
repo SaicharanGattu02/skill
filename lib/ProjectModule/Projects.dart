@@ -15,9 +15,40 @@ class ProjectsScreen extends StatefulWidget {
 }
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
+
   List<Data> projectsData = [];
-  bool isLoading = true; // Track loading state
-  bool _loading =true;
+  List<Data> filteredRooms = [];
+  bool isLoading = true;
+  bool _loading = true;
+
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredRooms = projectsData.where((room) {
+        String otherUser = room.name?.toLowerCase() ?? ''; // Handle null cases
+
+        return otherUser.contains(query) ;
+      }).toList();
+      print('Filtered rooms: ${filteredRooms.length}'); // Debug log
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+    GetProjectsData();
+  }
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _mileStoneController = TextEditingController();
@@ -27,7 +58,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   final TextEditingController _priorityController = TextEditingController();
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
-
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
   final FocusNode _focusNodemileStone = FocusNode();
@@ -53,20 +83,17 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    GetProjectsData();
-  }
 
+  bool isSelected = false;
   Future<void> GetProjectsData() async {
     var Res = await Userapi.GetProjectsList();
     setState(() {
       if (Res != null && Res.data != null) {
-        _loading=false;
+        _loading = false;
         if (Res.settings?.success == 1) {
           isLoading = false;
           projectsData = Res.data ?? [];
+          filteredRooms = projectsData; // Initialize filteredRooms with all projects
         } else {
           isLoading = false;
         }
@@ -78,6 +105,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
+
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(
         title: 'All Projects',
@@ -111,18 +139,28 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 children: [
                   Image.asset(
                     "assets/search.png",
-                    width: 20,
-                    height: 20,
+                    width: 24,
+                    height: 24,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(width: 10),
-                  const Text(
-                    "Search",
-                    style: TextStyle(
-                      color: Color(0xff9E7BCA),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      fontFamily: "Nunito",
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Search...',
+                        hintStyle: TextStyle(
+                          color: Color(0xff9E7BCA),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          height: 19.36 / 14,
+                          fontFamily: "Nunito",
+                        ),
+                      ),
+                      onChanged: (value) {
+                        print("Search input: $value"); // Debug log for search input
+                      },
                     ),
                   ),
                 ],
@@ -458,10 +496,27 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       },
     );
   }
-
   Widget _buildProjectGrid() {
+    // Check if filteredRooms is empty to determine if we need to show a message
+    if (filteredRooms.isEmpty) {
+      return Center(
+        child: Text(
+          'No results found.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black54,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      );
+    }
+
+
+
+
+
     return GridView.builder(
-      itemCount: projectsData.length,
+      itemCount: filteredRooms.length, // Use filteredRooms here
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1,
@@ -469,14 +524,22 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         crossAxisSpacing: 10,
       ),
       itemBuilder: (context, index) {
-        final data = projectsData[index];
+        final data = filteredRooms[index]; // Use filteredRooms here
 
-        return
-          InkWell(onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}',)));
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyTabBar(
+                  titile: '${data.name ?? ""}',
+                  id: '${data.id}',
+                ),
+              ),
+            );
             print('idd>>${data.id}');
           },
-            child: Container(
+          child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xffF7F4FC),
@@ -539,11 +602,97 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 ),
               ],
             ),
-                    ),
-          );
+          ),
+        );
       },
     );
   }
+
+  // Widget _buildProjectGrid() {
+  //   return GridView.builder(
+  //     itemCount: projectsData.length,
+  //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //       crossAxisCount: 2,
+  //       childAspectRatio: 1,
+  //       mainAxisSpacing: 10,
+  //       crossAxisSpacing: 10,
+  //     ),
+  //     itemBuilder: (context, index) {
+  //       final data = projectsData[index];
+  //
+  //       return
+  //         InkWell(onTap: (){
+  //           Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}',)));
+  //           print('idd>>${data.id}');
+  //         },
+  //           child: Container(
+  //           padding: const EdgeInsets.all(16),
+  //           decoration: BoxDecoration(
+  //             color: const Color(0xffF7F4FC),
+  //             borderRadius: BorderRadius.circular(8),
+  //           ),
+  //           child: Column(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               ClipOval(
+  //                 child: Image.network(
+  //                   data.icon ?? "",
+  //                   width: 48,
+  //                   height: 48,
+  //                   fit: BoxFit.contain,
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 8),
+  //               Text(
+  //                 data.name ?? "",
+  //                 style: const TextStyle(
+  //                   color: Color(0xff4F3A84),
+  //                   fontWeight: FontWeight.w500,
+  //                   fontSize: 16,
+  //                   height: 19.36 / 16,
+  //                   overflow: TextOverflow.ellipsis,
+  //                   fontFamily: "Nunito",
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   const Text(
+  //                     "Progress",
+  //                     style: TextStyle(
+  //                       color: Color(0xff000000),
+  //                       fontWeight: FontWeight.w400,
+  //                       fontSize: 12,
+  //                       fontFamily: "Inter",
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "${data.totalPercent ?? ""}%",
+  //                     style: const TextStyle(
+  //                       color: Color(0xff000000),
+  //                       fontWeight: FontWeight.w400,
+  //                       fontSize: 12,
+  //                       fontFamily: "Inter",
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBox(height: 4),
+  //               LinearProgressIndicator(
+  //                 value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
+  //                 minHeight: 7,
+  //                 backgroundColor: const Color(0xffE0E0E0),
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 color: const Color(0xff2FB035),
+  //               ),
+  //             ],
+  //           ),
+  //                   ),
+  //         );
+  //     },
+  //   );
+  // }
 
   Widget _label({
     required String text,

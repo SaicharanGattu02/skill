@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:skill/screens/AddTaskScreen.dart';
 
 import '../Model/ToDoListModel.dart';
 import '../Services/UserApi.dart';
@@ -71,7 +72,6 @@ class _TodolistState extends State<Todolist> {
     return Color(int.parse(hexColor, radix: 16));
   }
 
-
   // void _scrollToSelectedDate() {
   //   final index = dates.indexWhere((date) =>
   //       date.day == selectedDate.day &&
@@ -140,6 +140,7 @@ class _TodolistState extends State<Todolist> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
     final selectedDateFormatted = DateFormat('MMMM d, y').format(selectedDate);
     // Filter tasks for the selected date
     final selectedTasks =
@@ -150,155 +151,158 @@ class _TodolistState extends State<Todolist> {
         backgroundColor: const Color(0xff8856F4),
         leading: InkWell(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Goes back to the previous screen
           },
           child: const Icon(
             Icons.arrow_back,
             color: Color(0xffffffff),
           ),
         ),
-        title: const Text(
-          "Todo",
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 24.0,
-            color: Color(0xffffffff),
-            fontWeight: FontWeight.w500,
-            height: 29.05 / 24.0,
-          ),
+        title: Row(
+          children: [
+            Text(
+              "Todo",
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 24.0,
+                color: Color(0xffffffff),
+                fontWeight: FontWeight.w500,
+                height: 29.05 / 24.0,
+              ),
+            ),
+            Spacer(),
+            InkWell(
+              onTap: () {
+                // Navigate to AddTaskScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddTaskScreen(), // Replace with your target screen
+                  ),
+                );
+              },
+              child: Container(
+                width: w * 0.05,
+                height: w * 0.05,
+                child: Center(
+                  child: Image.asset(
+                    "assets/circleadd.png",
+                    fit: BoxFit.contain,
+                    width: w * 0.093,
+                    height: w * 0.093,
+                    color: Color(0xffffffff),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      body: Container(
-        width: w,
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xffFFFFFF), // Surrounding container color
-          borderRadius: BorderRadius.circular(20),
-        ),
+
+
+      body: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row(
-            //   children: [
-            //     Column(
-            //       mainAxisAlignment: MainAxisAlignment.start,
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         Text(
-            //           "Today",
-            //           style: TextStyle(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.w400,
-            //             color: Color(0xff8856F4),
-            //             height: 19.36 / 16,
-            //           ),
-            //         ),
-            //         Text(
-            //           DateFormat('MMMM d, y').format(currentMonth),
-            //           style: const TextStyle(
-            //             fontSize: 14,
-            //             fontWeight: FontWeight.w400,
-            //             color: Color(0xff000000),
-            //             fontFamily: "Inter",
-            //             height: 19.36 / 14,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //     Spacer(),
-            //     Image.asset(
-            //       "assets/sun.png",
-            //       width: w * 0.05,
-            //       height: w * 0.04,
-            //     ),
-            //     const SizedBox(width: 4),
-            //     Text(
-            //       "Now is almost sunny",
-            //       style: TextStyle(
-            //         fontFamily: 'Inter',
-            //         fontSize: 10,
-            //         color: Color(0xff64748B),
-            //         height: 16.94 / 10,
-            //         fontWeight: FontWeight.w400,
-            //       ),
-            //     ),
-            //     const SizedBox(width: 4),
-            //     Image.asset(
-            //       "assets/sunn.png",
-            //       width: 24,
-            //       height: 24,
-            //     ),
-            //   ],
-            // ),
-            SizedBox(height: 18),
-            // SingleChildScrollView(
-            //   controller: _scrollController,
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(
-            //     children: List.generate(dates.length, (index) {
-            //       final isSelected = dates[index].day == selectedDate.day &&
-            //           dates[index].month == selectedDate.month &&
-            //           dates[index].year == selectedDate.year;
-            //
-            //       return GestureDetector(
-            //         onTap: () {
-            //           setState(() {
-            //             selectedDate = dates[index]; // Update selected date
-            //           });
-            //           _scrollToSelectedDate(); // Scroll to selected date when tapped
-            //         },
-            //         child: ClipRect(
-            //           child: Container(
-            //             padding: const EdgeInsets.symmetric(vertical: 10),
-            //             width: 55,
-            //             decoration: BoxDecoration(
-            //               color: isSelected
-            //                   ? const Color(0xffF0EAFF)
-            //                   : Colors.transparent, // Highlight selected date
-            //               borderRadius: BorderRadius.circular(16),
-            //             ),
-            //             child: Column(
-            //               mainAxisAlignment: MainAxisAlignment.center,
-            //               children: [
-            //                 Text(
-            //                   dates[index].day.toString(),
-            //                   style: TextStyle(
-            //                     fontSize: 16,
-            //                     color: isSelected
-            //                         ? const Color(0xff8856F4)
-            //                         : const Color(
-            //                             0xff000000), // Change color for selected date
-            //                   ),
-            //                 ),
-            //                 const SizedBox(height: 2),
-            //                 Text(
-            //                   daysOfWeek[dates[index].weekday - 1],
-            //                   style: const TextStyle(
-            //                     fontWeight: FontWeight.w400,
-            //                     color: Color(0xff94A3B8),
-            //                     fontSize: 12,
-            //                     height: 26 / 12,
-            //                     letterSpacing: 0.3,
-            //                   ),
-            //                 ),
-            //               ],
-            //             ),
-            //           ),
-            //         ),
-            //       );
-            //     }),
-            //   ),
-            // ),
-            const SizedBox(height: 24),
-            Expanded(
+            // Search Bar Row
+            SizedBox(
+              height: 16,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16,right: 16),
+              child: Row(
+                children: [
+                  Container(
+                    width: w * 0.65,
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/search.png",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          "Search",
+                          style: TextStyle(
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            fontFamily: "Nunito",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Spacer(),
+                  SizedBox(
+                    height: w * 0.09,
+                    child: InkWell(
+                      onTap: () {
+                        _showAddTaskBottomSheet(context);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/circleadd.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.045,
+                              height: w * 0.05,
+                              color: Color(0xffffffff),
+                            ),
+                            SizedBox(
+                              width: w * 0.01,
+                            ),
+                            Text(
+                              "Add Label",
+                              style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  fontFamily: "Inter",
+                                  height: 16.94 / 12,
+                                  letterSpacing: 0.59),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: w,
+              height:h *0.85,
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xffFFFFFF), // Surrounding container color
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: ListView.builder(
                 itemCount: data.length,
+                shrinkWrap:
+                    true, // Allow the ListView to take only the space it needs
+                physics: AlwaysScrollableScrollPhysics(), // Disable scrolling in ListView
                 itemBuilder: (context, index) {
                   var tododata = data[index];
-                  Color labelColor = hexToColor(tododata.labelColor??"");
-                  print("Color:${labelColor}");// Convert hex to Color
+                  Color labelColor = hexToColor(tododata.labelColor ?? "");
 
                   return Column(
                     children: [
@@ -315,7 +319,7 @@ class _TodolistState extends State<Todolist> {
                               height: 20,
                             ),
                             const SizedBox(width: 10),
-                            // Red circular indicator
+                            // Circular indicator
                             ClipOval(
                               child: Container(
                                 width: w * 0.045,
@@ -359,7 +363,6 @@ class _TodolistState extends State<Todolist> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-
                                   // Task date row
                                   Row(
                                     children: [
@@ -384,7 +387,7 @@ class _TodolistState extends State<Todolist> {
                                 ],
                               ),
                             ),
-
+                            // Delete icon
                             Container(
                               width: w * 0.04,
                               height: w * 0.04,
@@ -396,18 +399,18 @@ class _TodolistState extends State<Todolist> {
                                 ),
                               ),
                               child: Center(
-                                  child: Image.asset(
-                                "assets/crossblue.png",
-                                fit: BoxFit.contain,
-                                width: 5,
-                                height: 5,
-                                color: Color(0xff8856F4),
-                              )),
+                                child: Image.asset(
+                                  "assets/crossblue.png",
+                                  fit: BoxFit.contain,
+                                  width: 5,
+                                  height: 5,
+                                  color: Color(0xff8856F4),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-
                       // Divider
                       Divider(
                         thickness: 1,
@@ -417,10 +420,101 @@ class _TodolistState extends State<Todolist> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
+
+  void _showAddTaskBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Ensures the bottom sheet is scrollable
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Handles keyboard overlap
+              left: 16.0,
+              right: 16.0,
+              top: 16.0),
+          child: SingleChildScrollView( // Wrap the content in a scrollable view
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Add Label',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+
+
+
+                    ),
+
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Label Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Priority',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: ['High', 'Medium', 'Low'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? value) {},
+                      ),
+                    ),
+
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Dismiss the bottom sheet
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Save task logic here
+                      },
+
+                      child: Text('Add Label'),
+
+
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 }

@@ -9,13 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:skill/screens/Alertscreen2.dart';
 import 'package:skill/screens/GeneralInfo.dart';
+import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
-
-
-
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id

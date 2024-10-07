@@ -19,10 +19,21 @@ class Leave extends StatefulWidget {
 
 class _LeaveState extends State<Leave> {
 
-
   bool _fromDateError = false;
   bool _toDateError = false;
   bool _reasonError = false;
+  List<Data> rooms = [];
+  List<Data> filteredRooms = [];
+  bool isSelected = false;
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
 
   void _validateAndSubmit() {
   setState(() {
@@ -39,31 +50,42 @@ class _LeaveState extends State<Leave> {
   LeaveRequests();
   }
 
-
-
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _leaveTypeController = TextEditingController();
   final TextEditingController _reasonController = TextEditingController();
-  bool _loading = false;
+  final TextEditingController _searchController = TextEditingController();
 
   FocusNode _focusNodeLeavetype = FocusNode();
   FocusNode _focusNodeReason = FocusNode();
-
   String __validateReason = "";
 
   @override
   void initState() {
     super.initState();
     getleaves();
+    _searchController.addListener(_onSearchChanged);
     getleavesCount();
   }
 
+
+
+
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredRooms = rooms.where((room) {
+        String otherUser = room.fromDate?.toLowerCase() ?? ''; // Handle null cases
+        String message = room.dayCount?.toLowerCase() ?? '';
+        return otherUser.contains(query) || message.contains(query);
+      }).toList();
+      print('Filtered rooms: ${filteredRooms.length}'); // Debug log
+    });
+  }
   Future<void> LeaveRequests() async {
     var data = await Userapi.LeaveRequest(
       _fromController.text,
       _toController.text,
-      // _leaveTypeController.text,
       _reasonController.text,
     );
     if (data != null) {
@@ -80,7 +102,6 @@ class _LeaveState extends State<Leave> {
       CustomSnackBar.show(context, "An error occurred. Please try again.");
     }
   }
-
   List<Data>? leaves;
   Future<void> getleaves() async {
     var Res = await Userapi.GetLeave();
@@ -89,6 +110,8 @@ class _LeaveState extends State<Leave> {
         _loading = false;
         if (Res.data != null) {
           leaves = Res.data ?? [];
+          rooms = leaves!; // Set the original data
+          filteredRooms = rooms; // Initially filteredRooms is the same as rooms
         } else {
           print("GetLeave Failure>>${Res.message}");
         }
@@ -128,30 +151,46 @@ class _LeaveState extends State<Leave> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 5),
-                  decoration: BoxDecoration(
-                      color: const Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/search.png",
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.contain,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Search",
-                        style: TextStyle(
-                            color: Color(0xff9E7BCA),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            fontFamily: "Nunito"),
-                      ),
-                    ],
+                InkWell(onTap: (){
+
+                },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 3),
+                    decoration: BoxDecoration(
+                        color: const Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(8)),
+
+                    child: Row(
+                  children: [
+                  Image.asset(
+                  "assets/search.png",
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                  ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Search...',
+              hintStyle: TextStyle(
+                color: Color(0xff9E7BCA),
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+                height: 19.36 / 14,
+                fontFamily: "Nunito",
+              ),
+            ),
+            onChanged: (value) {
+              print("Search input: $value"); // Debug log for search input
+            },
+          ),
+        ),
+        ],
+      ),
                   ),
                 ),
                 SizedBox(
@@ -159,6 +198,7 @@ class _LeaveState extends State<Leave> {
                 ),
                 Row(
                   children: [
+                    // Available Leaves Container
                     Container(
                       width: w * 0.44,
                       padding: EdgeInsets.symmetric(vertical: 10),
@@ -178,21 +218,22 @@ class _LeaveState extends State<Leave> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Center(
-                                child: Text(
-                              data?.availableLeaves.toString() ?? "N/A",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 18,
-                                color: Color(0xff2FB035),
-                                fontWeight: FontWeight.w600,
-                                height: 19.36 / 18,
-                                letterSpacing: 0.14,
+                              child: Text(
+                                (data?.availableLeaves != null && data!.availableLeaves.toString().isNotEmpty)
+                                    ? data.availableLeaves.toString()
+                                    : "0", // Show "0" if null or empty
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  color: Color(0xff2FB035),
+                                  fontWeight: FontWeight.w600,
+                                  height: 19.36 / 18,
+                                  letterSpacing: 0.14,
+                                ),
                               ),
-                            )),
+                            ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           SizedBox(
                             width: w * 0.2,
                             child: Text(
@@ -212,9 +253,9 @@ class _LeaveState extends State<Leave> {
                       ),
                     ),
                     SizedBox(width: w * 0.020),
+                    // Unused Leaves Container
                     Container(
-                      padding: EdgeInsets.only(
-                          left: 20, right: 20, top: 10, bottom: 10),
+                      padding: EdgeInsets.all(10),
                       width: w * 0.44,
                       decoration: BoxDecoration(
                         color: Color(0xff538DFF).withOpacity(0.10),
@@ -232,21 +273,22 @@ class _LeaveState extends State<Leave> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Center(
-                                child: Text(
-                              data?.unusedLeaves.toString() ?? "N/A",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 18,
-                                color: Color(0xffEFA84E),
-                                fontWeight: FontWeight.w600,
-                                height: 19.36 / 18,
-                                letterSpacing: 0.14,
+                              child: Text(
+                                (data?.unusedLeaves != null && data!.unusedLeaves.toString().isNotEmpty)
+                                    ? data.unusedLeaves.toString()
+                                    : "0", // Show "0" if null or empty
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  color: Color(0xffEFA84E),
+                                  fontWeight: FontWeight.w600,
+                                  height: 19.36 / 18,
+                                  letterSpacing: 0.14,
+                                ),
                               ),
-                            )),
+                            ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           Text(
                             "Previous Unused Leaves",
                             style: TextStyle(
@@ -258,7 +300,7 @@ class _LeaveState extends State<Leave> {
                               letterSpacing: 0.12,
                             ),
                             textAlign: TextAlign.center,
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -267,9 +309,9 @@ class _LeaveState extends State<Leave> {
                 SizedBox(height: 10.0),
                 Row(
                   children: [
+                    // Pending Leaves Container
                     Container(
-                      padding: EdgeInsets.only(
-                          left: 20, right: 20, top: 10, bottom: 10),
+                      padding: EdgeInsets.all(10),
                       width: w * 0.44,
                       decoration: BoxDecoration(
                         color: Color(0x1AEFA84E).withOpacity(0.10),
@@ -287,21 +329,22 @@ class _LeaveState extends State<Leave> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Center(
-                                child: Text(
-                              data?.pendingLeaves.toString() ?? "N/A",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 18,
-                                color: Color(0xffEFA84E),
-                                fontWeight: FontWeight.w600,
-                                height: 19.36 / 18,
-                                letterSpacing: 0.14,
+                              child: Text(
+                                (data?.pendingLeaves != null && data!.pendingLeaves.toString().isNotEmpty)
+                                    ? data.pendingLeaves.toString()
+                                    : "0", // Show "0" if null or empty
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  color: Color(0xffEFA84E),
+                                  fontWeight: FontWeight.w600,
+                                  height: 19.36 / 18,
+                                  letterSpacing: 0.14,
+                                ),
                               ),
-                            )),
+                            ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           Text(
                             "Pending Leaves Requests",
                             style: TextStyle(
@@ -313,11 +356,12 @@ class _LeaveState extends State<Leave> {
                               letterSpacing: 0.12,
                             ),
                             textAlign: TextAlign.center,
-                          )
+                          ),
                         ],
                       ),
                     ),
                     SizedBox(width: w * 0.020),
+                    // Rejected Leaves Container
                     Container(
                       padding: EdgeInsets.all(10),
                       width: w * 0.44,
@@ -337,21 +381,22 @@ class _LeaveState extends State<Leave> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Center(
-                                child: Text(
-                              data?.rejectedLeaves.toString() ?? "N/A",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 18,
-                                color: Color(0xffDE350B),
-                                fontWeight: FontWeight.w600,
-                                height: 19.36 / 18,
-                                letterSpacing: 0.14,
+                              child: Text(
+                                (data?.rejectedLeaves != null && data!.rejectedLeaves.toString().isNotEmpty)
+                                    ? data.rejectedLeaves.toString()
+                                    : "0", // Show "0" if null or empty
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  color: Color(0xffDE350B),
+                                  fontWeight: FontWeight.w600,
+                                  height: 19.36 / 18,
+                                  letterSpacing: 0.14,
+                                ),
                               ),
-                            )),
+                            ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           SizedBox(
                             width: w * 0.25,
                             child: Text(
@@ -366,12 +411,13 @@ class _LeaveState extends State<Leave> {
                               ),
                               textAlign: TextAlign.center,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
+
                 SizedBox(
                   height: 40,
                 ),
@@ -548,8 +594,6 @@ class _LeaveState extends State<Leave> {
           ),
     );
   }
-
-
   Widget _bottomSheet(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.6;
     double w = MediaQuery.of(context).size.width;
@@ -649,7 +693,7 @@ class _LeaveState extends State<Leave> {
                         maxLines: 100,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(left: 10, top: 10),
-                          hintText: "Type Reason",
+                          hintText: "Type Reason for Leave",
                           hintStyle: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0,
@@ -759,9 +803,6 @@ class _LeaveState extends State<Leave> {
       ),
     );
   }
-
-
-
   Widget _buildTextFormField(
       {required TextEditingController controller,
       required FocusNode focusNode,
@@ -848,7 +889,6 @@ class _LeaveState extends State<Leave> {
       ],
     );
   }
-
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -864,7 +904,7 @@ class _LeaveState extends State<Leave> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select dob from date picker",
+                  hintText: "Please Select date",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(
@@ -900,7 +940,6 @@ class _LeaveState extends State<Leave> {
       ],
     );
   }
-
   static Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime? pickedDate = await showDatePicker(
@@ -913,7 +952,6 @@ class _LeaveState extends State<Leave> {
       controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
     }
   }
-
   static Widget _label({required String text}) {
     return Text(
       text,
@@ -924,3 +962,5 @@ class _LeaveState extends State<Leave> {
     );
   }
 }
+
+
