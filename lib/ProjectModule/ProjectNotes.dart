@@ -308,16 +308,16 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                       color: Color(0xff8856F4),
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: w * 0.02,
-                                  ),
-                                  Image.asset(
-                                    "assets/download.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.06,
-                                    height: w * 0.05,
-                                    color: Color(0xff8856F4),
-                                  ),
+                                  // SizedBox(
+                                  //   width: w * 0.02,
+                                  // ),
+                                  // Image.asset(
+                                  //   "assets/download.png",
+                                  //   fit: BoxFit.contain,
+                                  //   width: w * 0.06,
+                                  //   height: w * 0.05,
+                                  //   color: Color(0xff8856F4),
+                                  // ),
                                 ],
                               ),
                               const SizedBox(height: 20),

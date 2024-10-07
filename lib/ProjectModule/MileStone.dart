@@ -94,7 +94,8 @@ class _MileStoneState extends State<MileStone> {
   Future<void> PostMilestoneApi({String? editId}) async {
     var res;
     if (editId != "") {
-      res = await Userapi.putMileStone(editId!, _titleController.text, _descriptionController.text, _deadlineController.text);
+      res = await Userapi.putMileStone(editId!, _titleController.text,
+          _descriptionController.text, _deadlineController.text);
     } else {
       res = await Userapi.PostMileStone(_titleController.text,
           _descriptionController.text, widget.id, _deadlineController.text);
@@ -165,13 +166,7 @@ class _MileStoneState extends State<MileStone> {
                           height: w * 0.09,
                           child: InkWell(
                             onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (BuildContext context) {
-                                  return _bottomSheet(context, "Add");
-                                },
-                              );
+                              return _bottomSheet(context, "Add","");
                             },
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -248,7 +243,7 @@ class _MileStoneState extends State<MileStone> {
                                   InkWell(
                                     onTap: () {
                                       _bottomSheet(
-                                          context, "Edit", milestone.id);
+                                          context, "Edit","");
                                     },
                                     child: Image.asset(
                                       "assets/edit.png",
@@ -330,7 +325,7 @@ class _MileStoneState extends State<MileStone> {
     );
   }
 
-  _bottomSheet(BuildContext context, [String? mode, editid]) {
+  _bottomSheet(BuildContext context, String mode, String id,) {
     double h = MediaQuery.of(context).size.height * 0.55;
     double w = MediaQuery.of(context).size.width;
     double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
@@ -342,7 +337,7 @@ class _MileStoneState extends State<MileStone> {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             if (mode == 'Edit') {
-              PostMilestoneApi(editId: editid);
+              PostMilestoneApi(editId: id);
             }
             return Padding(
               padding: EdgeInsets.only(bottom: keyboardHeight),
