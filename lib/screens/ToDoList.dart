@@ -270,7 +270,7 @@ class _TodolistState extends State<Todolist> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () {
-                        _showAddTaskBottomSheet(context);
+                        _showAddTaskBottomSheet(context,);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -451,13 +451,13 @@ class _TodolistState extends State<Todolist> {
 
   void _showAddTaskBottomSheet(BuildContext context) {
     // Fetch color codes when the bottom sheet is opened
-    Getcolorcodes().then((response) {
-      if (response != null) {
-        _showBottomSheetWithColors(context, response);
-      } else {
-        print('Failed to load colors');
-      }
-    });
+    // Getcolorcodes().then((response) {
+    //   if (response != null) {
+    //     _showBottomSheetWithColors(context, response);
+    //   } else {
+    //     print('Failed to load colors');
+    //   }
+    // });
   }
 
   void _showBottomSheetWithColors(BuildContext context, Get_Color_Response colorResponse) {
@@ -501,7 +501,7 @@ class _TodolistState extends State<Todolist> {
                           labelText: 'Priority',
                           border: OutlineInputBorder(),
                         ),
-                        items: colorResponse.data!.map((ColorItem colorItem) {
+                        items: colorResponse.colorItem!.map((ColorItem colorItem) {
                           return DropdownMenuItem<ColorItem>(
                             value: colorItem,
                             child: Row(
@@ -511,18 +511,16 @@ class _TodolistState extends State<Todolist> {
                                   height: 20,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color(int.parse(colorItem.colorCode.replaceAll('#', '0xff'))),
+                                    color: Color(int.parse(colorItem.colorCode ?? "")),
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                Text(colorItem.name),
                               ],
                             ),
                           );
                         }).toList(),
                         onChanged: (ColorItem? selectedColor) {
                           // Handle color selection
-                          print('Selected color: ${selectedColor?.name}');
+                          print('Selected color: ${selectedColor?.colorName??""}');
                         },
                       ),
                     ),
