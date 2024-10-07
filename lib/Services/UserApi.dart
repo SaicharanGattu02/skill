@@ -17,6 +17,7 @@ import '../Model/EmployeeListModel.dart';
 import '../Model/GetCatagoryModel.dart';
 import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/FetchmesgsModel.dart';
+import '../Model/Get_Color_Response.dart';
 import '../Model/GetMilestonedetailsModel.dart';
 import '../Model/GetFileModel.dart';
 import '../Model/LeaveRequestModel.dart';
@@ -1143,6 +1144,26 @@ class Userapi {
       if (res != null) {
         print("GetFile Response:${res.body}");
         return GetFileModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
+
+  static Future<Get_Color_Response?> Getcolorcodes() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/color-choices");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsPrioritiesApi Response:${res.body}");
+        return Get_Color_Response.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

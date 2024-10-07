@@ -51,12 +51,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       appBar: AppBar(
         title: Text('Add New Task'),
         actions: [
-          ElevatedButton(
-            onPressed: () {
-              // Add task logic
-            },
-            child: Text('Add Task'),
-          ),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     // Add task logic
+          //   },
+          //   child: Text('Add Task'),
+          // ),
         ],
       ),
       body: Padding(
@@ -162,7 +162,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     onPressed: () {
                       // Save task logic here
                     },
-                    child: Text('Save'),
+                    child: Text('Add Task'),
                   ),
                 ],
               ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:skill/Model/Get_Color_Response.dart';
 import 'package:skill/screens/AddTaskScreen.dart';
+import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/ToDoListModel.dart';
+import '../ProjectModule/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 
 class Todolist extends StatefulWidget {
@@ -43,7 +46,11 @@ class _TodolistState extends State<Todolist> {
     //   _scrollToSelectedDate();
     // });
     GetToDoList();
+    GetColorResponse();
+
   }
+
+
 
   List<TODOList> data = [];
   Future<void> GetToDoList() async {
@@ -53,6 +60,21 @@ class _TodolistState extends State<Todolist> {
         if (res.settings?.success == 1) {
           data = res.data ?? [];
         } else {}
+      }
+    });
+  }
+
+  List<ColorItem>? colorItem;
+  Future<void>GetColorResponse() async {
+    var res = await Userapi.Getcolorcodes();
+    setState(() {
+      if (res != null) {
+        if(res.colorItem!=null) {
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }else{
+          CustomSnackBar.show(context, "${res.settings?.message}");
+
+        }
       }
     });
   }
@@ -428,6 +450,17 @@ class _TodolistState extends State<Todolist> {
   }
 
   void _showAddTaskBottomSheet(BuildContext context) {
+    // Fetch color codes when the bottom sheet is opened
+    Getcolorcodes().then((response) {
+      if (response != null) {
+        _showBottomSheetWithColors(context, response);
+      } else {
+        print('Failed to load colors');
+      }
+    });
+  }
+
+  void _showBottomSheetWithColors(BuildContext context, Get_Color_Response colorResponse) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Ensures the bottom sheet is scrollable
@@ -449,11 +482,7 @@ class _TodolistState extends State<Todolist> {
                     Text(
                       'Add Label',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-
-
-
                     ),
-
                   ],
                 ),
                 SizedBox(height: 16),
@@ -464,26 +493,39 @@ class _TodolistState extends State<Todolist> {
                   ),
                 ),
                 SizedBox(height: 16),
-
-                SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: DropdownButtonFormField<ColorItem>(
                         decoration: InputDecoration(
                           labelText: 'Priority',
                           border: OutlineInputBorder(),
                         ),
-                        items: ['High', 'Medium', 'Low'].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                        items: colorResponse.data!.map((ColorItem colorItem) {
+                          return DropdownMenuItem<ColorItem>(
+                            value: colorItem,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(int.parse(colorItem.colorCode.replaceAll('#', '0xff'))),
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(colorItem.name),
+                              ],
+                            ),
                           );
                         }).toList(),
-                        onChanged: (String? value) {},
+                        onChanged: (ColorItem? selectedColor) {
+                          // Handle color selection
+                          print('Selected color: ${selectedColor?.name}');
+                        },
                       ),
                     ),
-
                   ],
                 ),
                 SizedBox(height: 16),
@@ -501,10 +543,7 @@ class _TodolistState extends State<Todolist> {
                       onPressed: () {
                         // Save task logic here
                       },
-
                       child: Text('Add Label'),
-
-
                     ),
                   ],
                 ),
@@ -515,6 +554,7 @@ class _TodolistState extends State<Todolist> {
       },
     );
   }
+
 
 
 }
