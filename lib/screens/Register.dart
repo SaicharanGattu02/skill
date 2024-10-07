@@ -26,6 +26,7 @@ class _RegisterState extends State<Register> {
   final FocusNode _focusNodeState = FocusNode();
   final FocusNode _focusNodeCountry = FocusNode();
 
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -190,10 +191,10 @@ class _RegisterState extends State<Register> {
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PersonalInformation()));
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => PersonalInformation()));
                       },
                       child: Container(
                         width: w,

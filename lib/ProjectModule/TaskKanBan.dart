@@ -4,6 +4,7 @@ import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TaskKanBanModel.dart';
+import '../utils/Mywidgets.dart';
 
 class TaskKanBan extends StatefulWidget {
   final String id;
@@ -184,6 +185,11 @@ class _TaskKanBanState extends State<TaskKanBan> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final kanBan = data[index];
+                  String isoDate =kanBan.startDate??"";
+                  String isoDate1 =kanBan.endDate??"";
+                  String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
+                  String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
+
                   // Extract collaborator images from the data
                   // List<String> collaboratorImages = kanBan.collaborators != null
                   //     ? kanBan.collaborators!.map((e) => e.image ?? "").toList()
@@ -290,8 +296,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         width: 8,
                                       ),
                                       Text(
-                                        // kanBan?.startDate ?? "",
-                                        "01/01/0000",
+                                        "${formattedDate}",
+
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,
@@ -304,7 +310,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         width: 15,
                                       ),
                                       Image.asset(
-                                        "assets/tasktime.png",
+                                        "assets/calendar.png",
                                         fit: BoxFit.contain,
                                         width: w * 0.045,
                                         height: w * 0.06,
@@ -314,8 +320,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         width: 8,
                                       ),
                                       Text(
-                                        // kanBan?.startDate ?? "",
-                                        "01/010/20000",
+                                        "${formattedDate1}",
+
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 14,

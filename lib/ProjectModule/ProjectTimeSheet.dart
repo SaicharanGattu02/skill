@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
+import '../utils/Mywidgets.dart';
 
 class TimeSheet extends StatefulWidget {
   final String id;
@@ -304,6 +305,16 @@ class _TimeSheetState extends State<TimeSheet> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final detail = data[index];
+                    String isoDate = detail.startTime ?? "";
+                    String isoDate1 = detail.endTime ?? "";
+
+                    String formattedTime = DateTimeFormatter.format(isoDate, includeDate: false, includeTime: true);
+                    String formattedTime1 = DateTimeFormatter.format(isoDate1, includeDate: false, includeTime: true);
+
+                    print("Start Time: $formattedTime");
+                    print("End Time: $formattedTime1");
+
+                    print("time>>>${formattedTime1}");
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       padding: const EdgeInsets.all(16),
@@ -352,7 +363,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                       Container(
                                         width: w * 0.3,
                                         child: Text(
-                                          detail.startTime ?? "",
+                                          "${formattedTime}",
                                           style: TextStyle(
                                             color: const Color(0xff1D1C1D),
                                             fontWeight: FontWeight.w400,
@@ -404,7 +415,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                       Container(
                                         width: w * 0.3,
                                         child: Text(
-                                          detail.endTime ?? "",
+                                          "${formattedTime1}",
                                           style: TextStyle(
                                             color: const Color(0xff1D1C1D),
                                             fontWeight: FontWeight.w400,

@@ -9,6 +9,7 @@ import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/ProjectNoteModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
+import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import 'package:path/path.dart' as p;
 
@@ -239,6 +240,11 @@ class _ProjectNotesState extends State<ProjectNotes> {
                       itemCount: data.length,
                       itemBuilder: (context, index) {
                         final note = data[index];
+
+                        String isoDate =note.createdTime??"";
+                        String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false); // Date only
+
+
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(16),
@@ -262,8 +268,8 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                     width: w * 0.004,
                                   ),
                                   Text(
-                                    // note.createdTime?? "",
-                                    "01/01/0000",
+                                 " ${formattedDate}",
+
                                     style: TextStyle(
                                       color: const Color(0xff1D1C1D),
                                       fontWeight: FontWeight.w400,

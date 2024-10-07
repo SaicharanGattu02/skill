@@ -318,3 +318,49 @@ class TaskBottomSheet {
     );
   }
 }
+
+
+
+class DateTimeFormatter {
+  // Method to format both date and time based on user choice
+  static String format(String isoDate, {bool includeDate = true, bool includeTime = false}) {
+    if (isoDate.isEmpty) {
+      return "";
+    }
+
+    try {
+      // Remove AM/PM if present to avoid parsing issues
+      String cleanedDate = isoDate.replaceAll(RegExp(r'(AM|PM)'), '').trim();
+
+      // Parse the date
+      DateTime dateTime = DateTime.parse(cleanedDate);
+
+      // Format the date and time as needed
+      String formattedDate = "";
+      if (includeDate) {
+        formattedDate = "${dateTime.year.toString().padLeft(4, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
+      }
+
+      String formattedTime = "";
+      if (includeTime) {
+        formattedTime = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+      }
+
+      // Combine date and time if both are requested
+      if (includeDate && includeTime) {
+        return "$formattedDate $formattedTime";
+      } else if (includeDate) {
+        return formattedDate;
+      } else if (includeTime) {
+        return formattedTime;
+      }
+    } catch (e) {
+      print("Error parsing date: $e");
+      return "";
+    }
+
+    return "";
+  }
+}
+
+

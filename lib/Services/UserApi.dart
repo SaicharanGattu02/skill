@@ -14,8 +14,10 @@ import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/EmployeeListModel.dart';
+import '../Model/GetCatagoryModel.dart';
 import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/FetchmesgsModel.dart';
+import '../Model/GetFileModel.dart';
 import '../Model/LeaveRequestModel.dart';
 import '../Model/LoginModel.dart';
 import '../Model/MileStoneModel.dart';
@@ -38,12 +40,14 @@ class Userapi {
   static String host = "http://192.168.0.56:8000";
 
   static Future<RegisterModel?> PostRegister(
-      String name, String mail, String password) async {
+      String fullname, String mail,String phone, String password,String gender) async {
     try {
       Map<String, String> data = {
-        "full_name": name,
+        "full_name": fullname,
         "email": mail,
-        "password": password
+        "mobile": phone,
+        "password": password,
+        "gender": gender
       };
       final url = Uri.parse("${host}/auth/register");
       final response = await http.post(
@@ -94,6 +98,9 @@ class Userapi {
       return null;
     }
   }
+
+
+
 
   static Future<EmployeeListModel?> GetEmployeeList() async {
     try {
@@ -550,8 +557,9 @@ class Userapi {
       return null;
     }
   }
-  static Future<LoginModel?> putMileStone(String editId,
-      String title, String description, String date) async {
+
+  static Future<LoginModel?> putMileStone(
+      String editId, String title, String description, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -560,7 +568,8 @@ class Userapi {
       };
       print("putMileStone ${data}");
 
-      final url = Uri.parse('${host}/project/project-milestone-detail/${editId}');
+      final url =
+          Uri.parse('${host}/project/project-milestone-detail/${editId}');
       final headers = await getheader();
       final response = await http.post(
         url,
@@ -582,36 +591,50 @@ class Userapi {
   }
 
   static Future<LoginModel?> PostAddNote(
-      // String date,
       String title,
       String description,
       File image,
-      // String label,
       String id) async {
+
+
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
       print('Selected file is not a valid image.');
       return null;
     }
-    try {
-      Map<String, String> data = {
-        // 'due_date': date,
-        'title': title,
-        'description': description,
-        'project_id': id,
-      };
-      print("PostMileStone ${data}");
 
+    try {
+      // API URL
       final url = Uri.parse('${host}/project/project-notes');
+      // Headers (make sure they include the authorization token if required)
       final headers = await getheader();
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(data),
+
+      // Create a multipart request
+      var request = http.MultipartRequest('POST', url)
+        ..headers.addAll(headers)
+        ..fields['title'] = title
+        ..fields['description'] = description
+        ..fields['project_id'] = id;
+
+      // Attach the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file', // The field name for the image, make sure it matches your API
+          image.path,
+          contentType: MediaType.parse(mimeType),
+        ),
       );
-      if (response != null) {
-        final jsonResponse = jsonDecode(response.body);
-        print("PostAddNote Status:${response.body}");
+
+      // Send the request
+      var response = await request.send();
+
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        final respStr = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(respStr);
+        print("PostAddNote Response: $jsonResponse");
+
+        // Return the parsed response as a LoginModel object
         return LoginModel.fromJson(jsonResponse);
       } else {
         print("Request failed with status: ${response.statusCode}");
@@ -623,16 +646,17 @@ class Userapi {
     }
   }
 
+
   static Future<LoginModel?> PutEditNote(
       String editid,
-      // String date,
       String title,
       String description,
       File image,
-      // String label,
       String id) async {
+
     print("editid2>>${editid}");
 
+    // Validate the file type to ensure it's an image
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
       print('Selected file is not a valid image.');
@@ -640,24 +664,37 @@ class Userapi {
     }
 
     try {
-      Map<String, String> data = {
-        // 'due_date': date,
-        'title': title,
-        'description': description,
-        'project_id': id,
-      };
-      print("PutEditNote ${data}");
-
-      final url = Uri.parse('${host}/project/project-note-detail/${editid}');
+      // API URL
+      final url = Uri.parse('${host}/project/project-note-detail/$editid');
+      // Headers (make sure they include the authorization token if required)
       final headers = await getheader();
-      final response = await http.put(
-        url,
-        headers: headers,
-        body: jsonEncode(data),
+
+      // Create a multipart request
+      var request = http.MultipartRequest('PUT', url)
+        ..headers.addAll(headers)
+        ..fields['title'] = title
+        ..fields['description'] = description
+        ..fields['project_id'] = id;
+
+      // Attach the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file', // The field name for the image, adjust it according to the API if needed
+          image.path,
+          contentType: MediaType.parse(mimeType),
+        ),
       );
-      if (response != null) {
-        final jsonResponse = jsonDecode(response.body);
-        print("PutEditNote Status:${response.body}");
+
+      // Send the request
+      var response = await request.send();
+
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        final respStr = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(respStr);
+        print("PutEditNote Response: $jsonResponse");
+
+        // Return the parsed response as a LoginModel object
         return LoginModel.fromJson(jsonResponse);
       } else {
         print("Request failed with status: ${response.statusCode}");
@@ -787,4 +824,226 @@ class Userapi {
       return null;
     }
   }
+
+  static Future<GetCatagoryModel?> GetProjectCatagory(String id) async {
+    try {
+      final headers = await getheader();
+      final url =
+          Uri.parse("${host}/project/project-file-categories?project_id=${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("getcatagory Response:${res.body}");
+        return GetCatagoryModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<LoginModel?> postProjectFile(
+      String id,
+      String category,
+      File image,
+      String description
+      ) async {
+
+    // Validate the file type to ensure it's an image
+    String? mimeType = lookupMimeType(image.path);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Selected file is not a valid image.');
+      return null;
+    }
+
+    try {
+
+      final url = Uri.parse("${host}/project/project-files");
+
+      // Headers
+      final headers = await getheader();  // Make sure this includes your authorization token
+
+      // Create multipart request
+      var request = http.MultipartRequest('POST', url)
+        ..headers.addAll(headers)
+        ..fields['project_id'] = id
+        ..fields['category_id'] = category
+        ..fields['description'] = description;
+
+      // Attach the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+          contentType: MediaType.parse(mimeType), // Set the MIME type
+        ),
+      );
+
+      // Send the request
+      var response = await request.send();
+
+      // Check for response status
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final respStr = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(respStr);
+        print("PostProjectFile: $jsonResponse");
+
+        // Return the parsed login model
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+  static Future<LoginModel?> putProjectFile(
+      String id,
+      String category,
+      File image,
+      String description
+      ) async {
+
+
+    // Validate the file type to ensure it's an image
+    String? mimeType = lookupMimeType(image.path);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Selected file is not a valid image.');
+      return null;
+    }
+
+    try {
+
+      final url = Uri.parse("${host}/project/project-file-detail/${id}");
+
+      // Headers
+      final headers = await getheader();  // Make sure this includes your authorization token
+
+      // Create multipart request
+      var request = http.MultipartRequest('PUT', url)
+        ..headers.addAll(headers)
+        ..fields['project_id'] = id
+        ..fields['category_id'] = category
+        ..fields['description'] = description;
+      print("putProjectFile>>${request}");
+      // Attach the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+          contentType: MediaType.parse(mimeType), // Set the MIME type
+        ),
+      );
+
+      // Send the request
+      var response = await request.send();
+
+      // Check for response status
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final respStr = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(respStr);
+        print("PostProjectFile: $jsonResponse");
+
+        // Return the parsed login model
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+
+
+  static Future<LoginModel?> PostProjectCategory(
+      String name, String id) async {
+    try {
+      Map<String, String> data = {
+       'name':name,
+        'project_id':id
+      };
+
+      final url = Uri.parse('${host}/project/project-file-categories');
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostProjectCategory :${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+
+  static Future<LoginModel?> PutProjectCategory(
+      String name, String id) async {
+    try {
+      Map<String, String> data = {
+        'name':name,
+      };
+      final url = Uri.parse('${host}/project/project-file-category-detail/${id}');
+      final headers = await getheader();
+      final response = await http.put(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostProjectCategory :${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+
+
+  static Future<GetFileModel?> GetEditFile(String id) async {
+    try {
+      final headers = await getheader();
+      final url =
+      Uri.parse("${host}/project/project-file-detail/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetFile Response:${res.body}");
+        return GetFileModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
 }

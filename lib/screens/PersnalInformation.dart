@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:skill/screens/Otp.dart';
 import 'package:skill/screens/dashboard.dart';
 
+import '../Services/UserApi.dart';
+import '../utils/CustomSnackBar.dart';
+import '../utils/Preferances.dart';
+import '../utils/ShakeWidget.dart';
+import 'LogInScreen.dart';
+import 'Login.dart';
+
 class PersonalInformation extends StatefulWidget {
 
   const PersonalInformation({super.key});
@@ -25,9 +32,75 @@ class _PersonalInformationState extends State<PersonalInformation> {
   final FocusNode _focusNodePhone = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
 
-  // Gender selection
-  String? _gender; // Variable to hold selected gender
+  String _validateFirstName="";
+  String _validateLastName="";
+  String _validateemail="";
+  String _validatePhone="";
+  String _validatePwd="";
+  String _validateGender="";
+
+  String get Fullname {
+    return "${_firstNameController.text} ${_lastNameController.text}".trim();
+  }
+
+
+
+  String? _gender;
   bool _loading= false;
+  void _validateFields() {
+    setState(() {
+      _validateFirstName = _firstNameController.text.isEmpty
+          ? "Please enter a firstName"
+          : "";
+      _validateLastName = _lastNameController.text.isEmpty
+          ? "Please enter a lastName"
+          : "";
+      _validateemail = _emailController.text.isEmpty
+          ? "Please enter a valid email"
+          : "";
+      _validatePhone = _phoneController.text.isEmpty
+          ? "Please enter a phonenumber"
+          : "";
+      _validatePwd = _pwdController.text.isEmpty
+          ? "Please enter a password"
+          : "";
+      _validateGender = _gender == null || _gender!.isEmpty
+          ? "Please select a gender"
+          : "";
+
+
+    });
+
+    // Check if both validations are empty (no errors)
+    if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty&&_validatePwd.isEmpty&& _validateGender.isEmpty) {
+
+      RegisterApi();
+    }
+  }
+
+  Future<void> RegisterApi() async {
+    setState(() {
+      _loading = false;
+    });
+    var data = await Userapi.PostRegister(Fullname, _emailController.text, _phoneController.text, _pwdController.text, _gender??"");
+    if (data != null) {
+      if (data.settings?.success == 1) {
+
+
+        CustomSnackBar.show(context, "${data.settings?.message}");
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LogInScreen()));
+      } else {
+        print("Register failure");
+      }
+    } else {
+      print("Register >>>${data?.settings?.message}");
+      CustomSnackBar.show(context, "${data?.settings?.message}");
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -103,12 +176,12 @@ class _PersonalInformationState extends State<PersonalInformation> {
             ],
           ),
           Positioned(
-            top: h * 0.36,
+            top: h * 0.3,
             left: w * 0.08,
             right: w * 0.08,
             bottom: w * 0.08,
             child: SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
+              // physics: NeverScrollableScrollPhysics(),
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -119,73 +192,514 @@ class _PersonalInformationState extends State<PersonalInformation> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTextFormField(
+                    // _buildTextFormField(
+                    //     controller: _firstNameController,
+                    //     focusNode: _focusNodeFirstName,
+                    //     hintText: "First Name",
+                    //     validationMessage: 'Please enter your first name',
+                    //     keyboardType: TextInputType.text,
+                    //     prefixicon: Image.asset(
+                    //       "assets/profilep.png",
+                    //       width: 21,
+                    //       height: 21,
+                    //       fit: BoxFit.contain,
+                    //       color: Color(0xffAFAFAF),
+                    //     )),
+
+                    SizedBox(height: 4),
+                    Container(
+                      height:
+                      MediaQuery.of(context).size.height * 0.055,
+                      child: TextFormField(
                         controller: _firstNameController,
                         focusNode: _focusNodeFirstName,
-                        hintText: "First Name",
-                        validationMessage: 'Please enter your first name',
                         keyboardType: TextInputType.text,
-                        prefixicon: Image.asset(
-                          "assets/profilep.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validateFirstName = "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validateFirstName = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Enter FirstName",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          prefixIcon: Container(
+                            width: 18,
+                            height: 18,
+                            padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
+                            child: Image.asset(
+                              "assets/profilep.png",
+                              width: 18,
+                              height: 18,
+                              fit: BoxFit.contain,
+                              color: Color(0xffAFAFAF),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validateFirstName.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateFirstName,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
+
+                    // _buildTextFormField(
+                    //     controller: _lastNameController,
+                    //     focusNode: _focusNodeLastName,
+                    //     hintText: "Last Name",
+                    //     validationMessage: 'Please enter your last size',
+                    //     prefixicon: Image.asset(
+                    //       "assets/profilep.png",
+                    //       width: 21,
+                    //       height: 21,
+                    //       fit: BoxFit.contain,
+                    //       color: Color(0xffAFAFAF),
+                    //     )),
+                    Container(
+                      height:
+                      MediaQuery.of(context).size.height * 0.050,
+                      child: TextFormField(
                         controller: _lastNameController,
                         focusNode: _focusNodeLastName,
-                        hintText: "Last Name",
-                        validationMessage: 'Please enter your last size',
-                        prefixicon: Image.asset(
-                          "assets/profilep.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
+                        keyboardType: TextInputType.text,
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validateLastName = "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validateLastName = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Enter Last Name",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          prefixIcon: Container(
+                            width: 21,
+                            height: 21,
+                            padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                            child: Image.asset(
+                              "assets/profilep.png",
+                              width: 21,
+                              height: 21,
+                              fit: BoxFit.contain,
+                              color: Color(0xffAFAFAF),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validateLastName.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateLastName,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
+
+                    // _buildTextFormField(
+                    //     controller: _emailController,
+                    //     focusNode: _focusNodeEmail,
+                    //     hintText: "Email Address",
+                    //     validationMessage: 'Please enter your category',
+                    //     prefixicon: Image.asset(
+                    //       "assets/gmail.png",
+                    //       width: 18,
+                    //       height: 18,
+                    //       fit: BoxFit.contain,
+                    //       color: Color(0xffAFAFAF),
+                    //     )),
+                    Container(
+                      height:
+                      MediaQuery.of(context).size.height * 0.050,
+                      child: TextFormField(
                         controller: _emailController,
                         focusNode: _focusNodeEmail,
-                        hintText: "Email Address",
-                        validationMessage: 'Please enter your category',
-                        prefixicon: Image.asset(
-                          "assets/gmail.png",
-                          width: 18,
-                          height: 18,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validateemail = "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validateemail = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Enter EmailAddress",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          prefixIcon: Container(
+                            width: 21,
+                            height: 21,
+                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                            child: Image.asset(
+                              "assets/gmail.png",
+                              width: 21,
+                              height: 21,
+                              fit: BoxFit.contain,
+                              color: Color(0xffAFAFAF),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validateemail.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateemail,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
+
+                    // _buildTextFormField(
+                    //     controller: _phoneController,
+                    //     focusNode: _focusNodePhone,
+                    //     hintText: "Phone Number",
+                    //     validationMessage: 'Please enter your phoneNumber',
+                    //     prefixicon: Image.asset(
+                    //       "assets/call.png",
+                    //       width: 21,
+                    //       height: 21,
+                    //       fit: BoxFit.contain,
+                    //       color: Color(0xffAFAFAF),
+                    //     )),
+                    Container(
+                      height:
+                      MediaQuery.of(context).size.height * 0.050,
+                      child: TextFormField(
                         controller: _phoneController,
                         focusNode: _focusNodePhone,
-                        hintText: "Phone Number",
-                        validationMessage: 'Please enter your phoneNumber',
-                        prefixicon: Image.asset(
-                          "assets/call.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
-                    const SizedBox(height: 16),
-                    _buildTextFormField(
+                        keyboardType: TextInputType.text,
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validatePhone = "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validatePhone = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Phone Number",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          prefixIcon: Container(
+                            width: 21,
+                            height: 21,
+                            padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                            child: Image.asset(
+                              "assets/call.png",
+                              width: 21,
+                              height: 21,
+                              fit: BoxFit.contain,
+                              color: Color(0xffAFAFAF),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validatePhone.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validatePhone,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
+
+                    // _buildTextFormField(
+                    //     controller: _pwdController,
+                    //     focusNode: _focusNodePassword,
+                    //     hintText: "Password",
+                    //     validationMessage: 'Please select your city',
+                    //     prefixicon: Image.asset(
+                    //       "assets/Lock.png",
+                    //       width: 21,
+                    //       height: 21,
+                    //       fit: BoxFit.contain,
+                    //       color: Color(0xffAFAFAF),
+                    //     )),
+                    Container(
+                      height:
+                      MediaQuery.of(context).size.height * 0.050,
+                      child: TextFormField(
                         controller: _pwdController,
                         focusNode: _focusNodePassword,
-                        hintText: "Password",
-                        validationMessage: 'Please select your city',
-                        prefixicon: Image.asset(
-                          "assets/Lock.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        )),
+                        keyboardType: TextInputType.text,
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validatePwd= "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validatePwd = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Enter Password",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          prefixIcon: Container(
+                            width: 21,
+                            height: 21,
+                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                            child: Image.asset(
+                              "assets/Lock.png",
+                              width: 21,
+                              height: 21,
+                              fit: BoxFit.contain,
+                              color: Color(0xffAFAFAF),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_validatePwd.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validatePwd,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
 
-                     SizedBox(height: 16),
                     Text(
                       "Gender",
                       style: TextStyle(
@@ -237,16 +751,33 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           ],
                         ),
                       ],
-                    ),
-
-
+                    ),if (_validateGender.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(
+                            left: 8, bottom: 10, top: 5),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateGender,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      SizedBox(height: 8),
+                    ],
                     const SizedBox(height: 8),
-                    InkWell(
+                    InkResponse(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Otp()));
+                        _validateFields();
                       },
                       child: Container(
                         width: w,
@@ -258,7 +789,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         child:  Center(
                           child: Text(
                             "Continue",
-
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
@@ -270,6 +800,41 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 8,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Already have an account?",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: Color(0xff6C7278),
+                            fontWeight: FontWeight.w400,
+                            height: 19.6 / 14,
+                            letterSpacing: -0.01,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        InkWell(onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LogInScreen()));
+                        },
+                          child: Text(
+                            "Login",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xff8856F4),
+                              color: Color(0xff8856F4),
+                              fontWeight: FontWeight.w600,
+                              height: 19.6 / 12,
+                              letterSpacing: -0.01,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
 
                   ],
                 ),
@@ -281,56 +846,56 @@ class _PersonalInformationState extends State<PersonalInformation> {
     );
   }
 
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-        required FocusNode focusNode,
-        bool obscureText = false,
-        required String hintText,
-        required String validationMessage,
-        TextInputType keyboardType = TextInputType.text,
-        Widget? prefixicon}) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.045,
-      child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: Container(
-              width: 20,
-              height: 20,
-              padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-              child: prefixicon),
-          hintStyle: const TextStyle(
-            fontSize: 15,
-            letterSpacing: 0,
-            height: 1.2,
-            color: Color(0xffAFAFAF),
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-          ),
-          filled: true,
-          fillColor: const Color(0xffffffff),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildTextFormField(
+  //     {required TextEditingController controller,
+  //       required FocusNode focusNode,
+  //       bool obscureText = false,
+  //       required String hintText,
+  //       required String validationMessage,
+  //       TextInputType keyboardType = TextInputType.text,
+  //       Widget? prefixicon}) {
+  //   return Container(
+  //     height: MediaQuery.of(context).size.height * 0.045,
+  //     child: TextFormField(
+  //       controller: controller,
+  //       focusNode: focusNode,
+  //       keyboardType: keyboardType,
+  //       obscureText: obscureText,
+  //       decoration: InputDecoration(
+  //         hintText: hintText,
+  //         prefixIcon: Container(
+  //             width: 20,
+  //             height: 20,
+  //             padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+  //             child: prefixicon),
+  //         hintStyle: const TextStyle(
+  //           fontSize: 15,
+  //           letterSpacing: 0,
+  //           height: 1.2,
+  //           color: Color(0xffAFAFAF),
+  //           fontFamily: 'Poppins',
+  //           fontWeight: FontWeight.w400,
+  //         ),
+  //         filled: true,
+  //         fillColor: const Color(0xffffffff),
+  //         enabledBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(7),
+  //           borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+  //         ),
+  //         focusedBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(7),
+  //           borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+  //         ),
+  //         errorBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(7),
+  //           borderSide: const BorderSide(width: 1, color: Colors.red),
+  //         ),
+  //         focusedErrorBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(7),
+  //           borderSide: const BorderSide(width: 1, color: Colors.red),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
