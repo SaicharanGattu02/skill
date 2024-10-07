@@ -22,6 +22,7 @@ import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/ProjectsModel.dart';
 import '../Model/RoomsModel.dart';
+import '../ProjectModule/TabBar.dart';
 import '../ProjectModule/UserDetailsModel.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
@@ -615,74 +616,80 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     itemBuilder: (context, index) {
                       var data=projectsData[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 16, right: 16, top: 10, bottom: 10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffF7F4FC),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Center Image
-                              Image.network(data.icon??"",
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(height: 8),
-                              // Bottom Text
-                              Text(
-                               data.name??"",
-                                style: const TextStyle(
-                                    color: Color(0xff4F3A84),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    height: 19.36 / 16,
-                                    overflow: TextOverflow.ellipsis,
-                                    fontFamily: "Nunito"),
-                              ),
-                              const SizedBox(height: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Progress",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12,
-                                            height: 14.52 / 12,
-                                            fontFamily: "Inter"),
-                                      ),
-                                      Text(
-                                        "${data.totalPercent ?? ""}%",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12,
-                                            fontFamily: "Inter"),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  LinearProgressIndicator(
-                                    value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
-                                    minHeight: 7,
-                                    backgroundColor: const Color(0xffE0E0E0),
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: const Color(0xff2FB035),
-                                  ),
-                                ],
-                              ),
-                            ],
+                      return InkResponse(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTabBar(titile: '${data.name ?? ""}',id:'${data.id}',)));
+                          print('idd>>${data.id}');
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, top: 10, bottom: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffF7F4FC),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Center Image
+                                Image.network(data.icon??"",
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 8),
+                                // Bottom Text
+                                Text(
+                                 data.name??"",
+                                  style: const TextStyle(
+                                      color: Color(0xff4F3A84),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      height: 19.36 / 16,
+                                      overflow: TextOverflow.ellipsis,
+                                      fontFamily: "Nunito"),
+                                ),
+                                const SizedBox(height: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Progress",
+                                          style: TextStyle(
+                                              color: Color(0xff000000),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              height: 14.52 / 12,
+                                              fontFamily: "Inter"),
+                                        ),
+                                        Text(
+                                          "${data.totalPercent ?? ""}%",
+                                          style: TextStyle(
+                                              color: Color(0xff000000),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              fontFamily: "Inter"),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    LinearProgressIndicator(
+                                      value: (data.totalPercent?.toDouble() ?? 0) / 100.0,
+                                      minHeight: 7,
+                                      backgroundColor: const Color(0xffE0E0E0),
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: const Color(0xff2FB035),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

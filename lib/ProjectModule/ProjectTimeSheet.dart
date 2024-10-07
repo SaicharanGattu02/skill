@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill/ProjectModule/AddLogTime.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
 import '../utils/Mywidgets.dart';
@@ -48,175 +49,175 @@ class _TimeSheetState extends State<TimeSheet> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Container(
-                width: w,
-                height: w * 0.08,
-                decoration: BoxDecoration(
-                  color: Color(0xFF9B5FFF), // Purple background
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(width: 1, color: Color(0xFF9B5FFF)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Details Button
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedTabIndex = 0; // Selecting Details
-                        });
-                      },
-                      child: Container(
-                        width: w * 0.3,
-                        height: w * 0.08,
-                        decoration: BoxDecoration(
-                          color: selectedTabIndex == 0
-                              ? Color(0xFF9B5FFF)
-                              : Colors.white,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                            topLeft: Radius.circular(50),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/detail.png",
-                              width: 16,
-                              height: 16,
-                              color: selectedTabIndex == 0
-                                  ? Colors.white
-                                  : Color(0xFF9B5FFF),
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "Details",
-                              style: TextStyle(
-                                color: selectedTabIndex == 0
-                                    ? Colors.white
-                                    : Color(
-                                        0xFF9B5FFF), // Purple text if selected, white if not
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                fontFamily: 'Inter',
-                                height: 14.52 / 12,
-                                letterSpacing: 0.59,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Summary Button
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedTabIndex = 1; // Selecting Summary
-                        });
-                      },
-                      child: Container(
-                        width: w * 0.3,
-                        height: w * 0.08,
-                        decoration: BoxDecoration(
-                          color: selectedTabIndex == 1
-                              ? Color(0xFF9B5FFF)
-                              : Colors
-                                  .white, // White background if selected, purple if not
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/summary.png",
-                              width: 16,
-                              height: 16,
-                              color: selectedTabIndex == 1
-                                  ? Colors.white
-                                  : Color(
-                                      0xFF9B5FFF), // Purple icon if selected, white if not
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "Summary",
-                              style: TextStyle(
-                                color: selectedTabIndex == 1
-                                    ? Colors.white
-                                    : Color(
-                                        0xFF9B5FFF), // Purple text if selected, white if not
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                fontFamily: 'Inter',
-                                height: 14.52 / 12,
-                                letterSpacing: 0.59,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Chart Button
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedTabIndex = 2; // Selecting Chart
-                        });
-                      },
-                      child: Container(
-                        width: w * 0.3,
-                        height: w * 0.08,
-                        decoration: BoxDecoration(
-                          color: selectedTabIndex == 2
-                              ? Color(0xFF9B5FFF)
-                              : Colors
-                                  .white, // White background if selected, purple if not
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(50),
-                            bottomRight: Radius.circular(50),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              "assets/chart.png",
-                              width: 16,
-                              height: 16,
-                              color: selectedTabIndex == 2
-                                  ? Colors.white
-                                  : Color(
-                                      0xFF9B5FFF), // Purple icon if selected, white if not
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "Chart",
-                              style: TextStyle(
-                                color: selectedTabIndex == 2
-                                    ? Colors.white
-                                    : Color(
-                                        0xFF9B5FFF), // Purple text if selected, white if not
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                fontFamily: 'Inter',
-                                height: 14.52 / 12,
-                                letterSpacing: 0.59,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
+              // Container(
+              //   width: w,
+              //   height: w * 0.08,
+              //   decoration: BoxDecoration(
+              //     color: Color(0xFF9B5FFF), // Purple background
+              //     borderRadius: BorderRadius.circular(100),
+              //     border: Border.all(width: 1, color: Color(0xFF9B5FFF)),
+              //   ),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       // Details Button
+              //       GestureDetector(
+              //         onTap: () {
+              //           setState(() {
+              //             selectedTabIndex = 0; // Selecting Details
+              //           });
+              //         },
+              //         child: Container(
+              //           width: w * 0.3,
+              //           height: w * 0.08,
+              //           decoration: BoxDecoration(
+              //             color: selectedTabIndex == 0
+              //                 ? Color(0xFF9B5FFF)
+              //                 : Colors.white,
+              //             borderRadius: BorderRadius.only(
+              //               bottomLeft: Radius.circular(50),
+              //               topLeft: Radius.circular(50),
+              //             ),
+              //           ),
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               Image.asset(
+              //                 "assets/detail.png",
+              //                 width: 16,
+              //                 height: 16,
+              //                 color: selectedTabIndex == 0
+              //                     ? Colors.white
+              //                     : Color(0xFF9B5FFF),
+              //                 fit: BoxFit.contain,
+              //               ),
+              //               SizedBox(width: 8),
+              //               Text(
+              //                 "Details",
+              //                 style: TextStyle(
+              //                   color: selectedTabIndex == 0
+              //                       ? Colors.white
+              //                       : Color(
+              //                           0xFF9B5FFF), // Purple text if selected, white if not
+              //                   fontWeight: FontWeight.w500,
+              //                   fontSize: 12,
+              //                   fontFamily: 'Inter',
+              //                   height: 14.52 / 12,
+              //                   letterSpacing: 0.59,
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //
+              //       // Summary Button
+              //       GestureDetector(
+              //         onTap: () {
+              //           setState(() {
+              //             selectedTabIndex = 1; // Selecting Summary
+              //           });
+              //         },
+              //         child: Container(
+              //           width: w * 0.3,
+              //           height: w * 0.08,
+              //           decoration: BoxDecoration(
+              //             color: selectedTabIndex == 1
+              //                 ? Color(0xFF9B5FFF)
+              //                 : Colors
+              //                     .white, // White background if selected, purple if not
+              //           ),
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               Image.asset(
+              //                 "assets/summary.png",
+              //                 width: 16,
+              //                 height: 16,
+              //                 color: selectedTabIndex == 1
+              //                     ? Colors.white
+              //                     : Color(
+              //                         0xFF9B5FFF), // Purple icon if selected, white if not
+              //                 fit: BoxFit.contain,
+              //               ),
+              //               SizedBox(width: 8),
+              //               Text(
+              //                 "Summary",
+              //                 style: TextStyle(
+              //                   color: selectedTabIndex == 1
+              //                       ? Colors.white
+              //                       : Color(
+              //                           0xFF9B5FFF), // Purple text if selected, white if not
+              //                   fontWeight: FontWeight.w500,
+              //                   fontSize: 12,
+              //                   fontFamily: 'Inter',
+              //                   height: 14.52 / 12,
+              //                   letterSpacing: 0.59,
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //
+              //       // Chart Button
+              //       GestureDetector(
+              //         onTap: () {
+              //           setState(() {
+              //             selectedTabIndex = 2; // Selecting Chart
+              //           });
+              //         },
+              //         child: Container(
+              //           width: w * 0.3,
+              //           height: w * 0.08,
+              //           decoration: BoxDecoration(
+              //             color: selectedTabIndex == 2
+              //                 ? Color(0xFF9B5FFF)
+              //                 : Colors
+              //                     .white, // White background if selected, purple if not
+              //             borderRadius: BorderRadius.only(
+              //               topRight: Radius.circular(50),
+              //               bottomRight: Radius.circular(50),
+              //             ),
+              //           ),
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               Image.asset(
+              //                 "assets/chart.png",
+              //                 width: 16,
+              //                 height: 16,
+              //                 color: selectedTabIndex == 2
+              //                     ? Colors.white
+              //                     : Color(
+              //                         0xFF9B5FFF), // Purple icon if selected, white if not
+              //                 fit: BoxFit.contain,
+              //               ),
+              //               SizedBox(width: 8),
+              //               Text(
+              //                 "Chart",
+              //                 style: TextStyle(
+              //                   color: selectedTabIndex == 2
+              //                       ? Colors.white
+              //                       : Color(
+              //                           0xFF9B5FFF), // Purple text if selected, white if not
+              //                   fontWeight: FontWeight.w500,
+              //                   fontSize: 12,
+              //                   fontFamily: 'Inter',
+              //                   height: 14.52 / 12,
+              //                   letterSpacing: 0.59,
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 16,
+              // ),
               Row(
                 children: [
                   Container(
@@ -252,16 +253,11 @@ class _TimeSheetState extends State<TimeSheet> {
                   SizedBox(
                     height: w * 0.09,
                     child: InkWell(
-                      onTap: () {
-                        // showModalBottomSheet(
-                        //   context: context,
-                        //   isScrollControlled: true,
-                        //   // isDismissible: false,
-                        //
-                        //   builder: (BuildContext context) {
-                        //     return _bottomSheet(context);
-                        //   },
-                        // );
+                      onTap: () async {
+                        var res= await Navigator.push(context,MaterialPageRoute(builder: (context) => Addlogtime(projectId: widget.id,)));
+                        if(res==true){
+                          TimeSheetDetails();
+                        }
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),

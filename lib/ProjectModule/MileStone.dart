@@ -76,22 +76,23 @@ class _MileStoneState extends State<MileStone> {
     });
   }
 
-  void _validateFields() {
+  Future<void> GetMileStoneDetails(String id) async {
+    var res = await Userapi.getmilestonedeatilsApi(id);
     setState(() {
-      title = _titleController.text.isEmpty ? "Please enter title" : "";
-      description = _descriptionController.text.isEmpty
-          ? "Please enter a description"
-          : "";
-      deadline =
-          _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
-
-      _isLoading = title.isEmpty && description.isEmpty && deadline.isEmpty;
-
-      if (_isLoading) {}
+        if (res?.data != null) {
+          if(res?.settings?.success==1){
+            _titleController.text==res?.data?.title??"";
+            _descriptionController.text==res?.data?.description??"";
+            _deadlineController.text==res?.data?.dueDate??"";
+             _bottomSheet(context,"Edit",id);
+          }
+        } else {
+        }
     });
   }
 
-  Future<void> PostMilestoneApi({String? editId}) async {
+
+  Future<void> PostMilestoneApi(String editId) async {
     var res;
     if (editId != "") {
       res = await Userapi.putMileStone(editId!, _titleController.text,
@@ -242,8 +243,7 @@ class _MileStoneState extends State<MileStone> {
                                   Spacer(),
                                   InkWell(
                                     onTap: () {
-                                      _bottomSheet(
-                                          context, "Edit","");
+                                      GetMileStoneDetails(milestone.id??"");
                                     },
                                     child: Image.asset(
                                       "assets/edit.png",
@@ -325,22 +325,16 @@ class _MileStoneState extends State<MileStone> {
     );
   }
 
-  _bottomSheet(BuildContext context, String mode, String id,) {
+  void _bottomSheet(BuildContext context, String mode, String id,) {
     double h = MediaQuery.of(context).size.height * 0.55;
     double w = MediaQuery.of(context).size.width;
-    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            if (mode == 'Edit') {
-              PostMilestoneApi(editId: id);
-            }
+          return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
             return Padding(
-              padding: EdgeInsets.only(bottom: keyboardHeight),
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Container(
                 height: h,
                 padding:
@@ -413,26 +407,169 @@ class _MileStoneState extends State<MileStone> {
                           children: [
                             _label(text: 'Title'),
                             SizedBox(height: 6),
-                            _buildTextFormField(
-                              controller: _titleController,
-                              focusNode: _focusNodetitle,
-                              hintText: 'Enter Project Name',
-                              validationMessage: 'please enter project name',
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.050,
+                              child: TextFormField(
+                                controller: _titleController,
+                                focusNode: _focusNodetitle,
+                                keyboardType: TextInputType.text,
+                                cursorColor: Color(0xff8856F4),
+                                decoration: InputDecoration(
+                                  hintText: "Enter title.",
+                                  hintStyle: const TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 0,
+                                    height: 19.36 / 14,
+                                    color: Color(0xffAFAFAF),
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xffFCFAFF),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide:
+                                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide:
+                                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide:
+                                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide:
+                                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 16),
+                            if (title.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              SizedBox(height: 15),
+                            ],
                             _label(text: 'Description'),
                             SizedBox(height: 4),
-                            _buildTextFormField(
-                              controller: _descriptionController,
-                              focusNode: _focusNodedescription,
-                              hintText: 'Type Description',
-                              validationMessage: 'please type description',
+                            Container(
+                              height: h * 0.2,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Color(0xffE8ECFF))),
+                              child: TextFormField(
+                                cursorColor: Color(0xff8856F4),
+                                scrollPadding: const EdgeInsets.only(top: 5),
+                                controller: _descriptionController,
+                                textInputAction: TextInputAction.done,
+                                maxLines: 100,
+                                onTap: () {
+                                  setState(() {
+                                    description = "";
+                                  });
+                                },
+                                onChanged: (v) {
+                                  setState(() {
+                                    description = "";
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                  const EdgeInsets.only(left: 10, top: 10),
+                                  hintText: "Type Description",
+                                  hintStyle: TextStyle(
+                                    fontSize: 15,
+                                    letterSpacing: 0,
+                                    height: 1.2,
+                                    color: Color(0xffAFAFAF),
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: true,
+                                  fillColor: Color(0xffFCFAFF),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: BorderSide(
+                                        width: 1, color: Color(0xffD0CBDB)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    borderSide: BorderSide(
+                                        width: 1, color: Color(0xffD0CBDB)),
+                                  ),
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 16),
+                            if (description.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    description,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              SizedBox(height: 15),
+                            ],
                             _label(text: 'Deadline'),
                             SizedBox(height: 4),
                             _buildDateField(_deadlineController),
-                            SizedBox(height: 30),
+                            if (deadline.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    deadline,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              SizedBox(height: 15),
+                            ],
+                            SizedBox(height: 15),
                           ],
                         ),
                       ),
@@ -470,7 +607,25 @@ class _MileStoneState extends State<MileStone> {
                         Spacer(),
                         InkResponse(
                           onTap: () {
-                            _validateFields();
+                            setState(() {
+                              title = _titleController.text.isEmpty ? "Please enter title" : "";
+                              description = _descriptionController.text.isEmpty
+                                  ? "Please enter a description"
+                                  : "";
+                              deadline =
+                              _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
+
+                              _isLoading = title.isEmpty && description.isEmpty && deadline.isEmpty;
+
+                              if (_isLoading) {
+                                if(mode=="Edit"){
+                                  PostMilestoneApi(id);
+                                }else{
+                                  PostMilestoneApi("");
+                                }
+
+                              }
+                            });
                           },
                           child: Container(
                             height: 40,
@@ -503,94 +658,14 @@ class _MileStoneState extends State<MileStone> {
               ),
             );
           });
-        });
-  }
-
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-      required FocusNode focusNode,
-      bool obscureText = false,
-      required String hintText,
-      required String validationMessage,
-      TextInputType keyboardType = TextInputType.text,
-      Widget? prefixicon,
-      Widget? suffixicon}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.050,
-          child: TextFormField(
-            controller: controller,
-            focusNode: focusNode,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            cursorColor: Color(0xff8856F4),
-            decoration: InputDecoration(
-              hintText: hintText,
-              // prefixIcon: Container(
-              //     width: 21,
-              //     height: 21,
-              //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-              //     child: prefixicon),
-              suffixIcon: suffixicon,
-              hintStyle: const TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 19.36 / 14,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-              ),
-              filled: true,
-              fillColor: const Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-            ),
-          ),
-        ),
-        if (validationMessage.isNotEmpty) ...[
-          Container(
-            alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-            width: MediaQuery.of(context).size.width * 0.6,
-            child: ShakeWidget(
-              key: Key("value"),
-              duration: Duration(milliseconds: 700),
-              child: Text(
-                validationMessage,
-                style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontSize: 12,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ] else ...[
-          SizedBox(height: 15),
-        ]
-      ],
-    );
+        }).whenComplete(() {
+      _titleController.text="";
+      _descriptionController.text="";
+      _deadlineController.text="";
+      title="";
+      description="";
+      deadline="";
+    });
   }
 
   Widget _buildDateField(TextEditingController controller) {

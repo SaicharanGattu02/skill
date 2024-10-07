@@ -17,6 +17,7 @@ import '../Model/EmployeeListModel.dart';
 import '../Model/GetCatagoryModel.dart';
 import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/FetchmesgsModel.dart';
+import '../Model/GetMilestonedetailsModel.dart';
 import '../Model/GetFileModel.dart';
 import '../Model/LeaveRequestModel.dart';
 import '../Model/LoginModel.dart';
@@ -25,6 +26,7 @@ import '../Model/ProjectFileModel.dart';
 import '../Model/ProjectNoteModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
+import '../Model/ProjectUserTasksModel.dart';
 import '../Model/RegisterModel.dart';
 import '../Model/RoomsDetailsModel.dart';
 import '../Model/RoomsModel.dart';
@@ -35,6 +37,7 @@ import '../Model/TimeSheeetDeatilModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../ProjectModule/UserDetailsModel.dart';
 import 'otherservices.dart';
+import 'package:path/path.dart' as p;
 
 class Userapi {
   static String host = "http://192.168.0.56:8000";
@@ -193,8 +196,8 @@ class Userapi {
     }
   }
 
-  static Future<FetchmesgsModel?> fetchroommessages(
-      String rommid, String lats_msg_id) async {
+  static Future<FetchmesgsModel?> fetchroommessages(String rommid,
+      String lats_msg_id) async {
     try {
       final headers = await getheader();
       final url = Uri.parse("${host}/chat/room-messages/$rommid/$lats_msg_id");
@@ -291,7 +294,7 @@ class Userapi {
     try {
       final headers = await getheader();
       final url =
-          Uri.parse("${host}/project/project-milestones?project_id=${id}");
+      Uri.parse("${host}/project/project-milestones?project_id=${id}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetMileStone Response:${res.body}");
@@ -434,19 +437,17 @@ class Userapi {
     }
   }
 
-  static Future<TaskAddmodel?> CreateTask(
-    String projectId,
-    String title,
-    String desc,
-    String milestone,
-    String assignedTo,
-    String status,
-    String priority,
-    String startDate,
-    String endDate,
-    List<String> collaborators, // Change type from String to List<String>
-    File image,
-  ) async {
+  static Future<TaskAddmodel?> CreateTask(String projectId,
+      String title,
+      String desc,
+      String milestone,
+      String assignedTo,
+      String status,
+      String priority,
+      String startDate,
+      String endDate,
+      List<String> collaborators, // Change type from String to List<String>
+      File image,) async {
     try {
       // Check if the file is an image
       String? mimeType = lookupMimeType(image.path);
@@ -526,8 +527,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostMileStone(
-      String title, String description, String id, String date) async {
+  static Future<LoginModel?> PostMileStone(String title, String description,
+      String id, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -558,8 +559,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> putMileStone(
-      String editId, String title, String description, String date) async {
+  static Future<LoginModel?> putMileStone(String editId,
+      String title, String description, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -568,8 +569,8 @@ class Userapi {
       };
       print("putMileStone ${data}");
 
-      final url =
-          Uri.parse('${host}/project/project-milestone-detail/${editId}');
+      final url = Uri.parse(
+          '${host}/project/project-milestone-detail/${editId}');
       final headers = await getheader();
       final response = await http.post(
         url,
@@ -796,8 +797,46 @@ class Userapi {
     }
   }
 
-  static Future<LeaveRequestModel?> LeaveRequest(
-      String fromdate, String todate, String reason) async {
+  static Future<GetMilestonedetailsModel?> getmilestonedeatilsApi(
+      String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-milestone-detail/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("getmilestonedeatilsApi Response:${res.body}");
+        return GetMilestonedetailsModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<ProjectUserTasksModel?> getprojectusertasksApi(
+      String id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-user-tasks/${id}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("getprojectusertasksApi Response:${res.body}");
+        return ProjectUserTasksModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<LeaveRequestModel?> LeaveRequest(String fromdate, String todate,
+      String reason) async {
     try {
       Map<String, String> body = {
         "from_date": fromdate,
@@ -824,6 +863,75 @@ class Userapi {
       return null;
     }
   }
+
+  static Future<LoginModel?> AddLogtimeApi(String start_time, String end_time,
+      String note, String task_id, String projectID) async {
+    try {
+      Map<String, String> body = {
+        "start_time": start_time,
+        "end_time": end_time,
+        "note": note,
+        "task_id": task_id,
+      };
+      print("AddLogtimeApi data: ${body}");
+      final url = Uri.parse("${host}/project/project-timesheets/${projectID}");
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("AddLogtimeApi response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
+
+  static Future<LoginModel?> sendComment(String comment, String id, List images) async {
+    var url = Uri.parse('${host}/project/project-comments');
+    final headers = await getheader();
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll(headers); // Add headers to the request
+    request.fields['project_id'] = id;
+    request.fields['comment'] = comment;
+
+    // Add all selected files
+    for (var imageFile in images) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'files',
+        imageFile.path,
+        filename: p.basename(imageFile.path),
+      ));
+    }
+
+    try {
+      var response = await request.send();
+      // Read the response body
+      final responseBody = await response.stream.bytesToString();
+
+      if (response!=null) {
+        final jsonResponse = jsonDecode(responseBody);
+        print("sendComment response: $responseBody");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print('Failed to send comment: ${response.statusCode}');
+        print('Response body: $responseBody');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return null; // Return null if there's an error or failure
+  }
+
 
   static Future<GetCatagoryModel?> GetProjectCatagory(String id) async {
     try {

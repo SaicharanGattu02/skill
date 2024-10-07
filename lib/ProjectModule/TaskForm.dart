@@ -1046,7 +1046,7 @@ class _TaskFormState extends State<TaskForm> {
                           key: Key("value"),
                           duration: Duration(milliseconds: 700),
                           child: Text(
-                            _validatePriority,
+                            _validateStartDate,
                             style: TextStyle(
                               fontFamily: "Poppins",
                               fontSize: 12,

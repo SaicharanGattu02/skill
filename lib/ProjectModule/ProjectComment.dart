@@ -1,7 +1,16 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
+import 'package:path/path.dart' as p;
+import 'package:skill/utils/CustomAppBar.dart';
+
+import '../utils/CustomSnackBar.dart';
+import '../utils/ShakeWidget.dart';
 
 class ProjectComment extends StatefulWidget {
   final String id;
@@ -15,16 +24,22 @@ class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
   bool _loading = false;
 
+  XFile? _imageFile;
+  File? filepath;
+  String filename = "";
+
   @override
   void initState() {
     GetProjectCommentsApi();
     super.initState();
   }
 
+  String validatecomment = "";
+  String _validatefile = "";
+
   List<Data> data = [];
   Future<void> GetProjectCommentsApi() async {
     var res = await Userapi.GetProjectComments(widget.id);
-
     setState(() {
       if (res != null) {
         if (res.data != null) {
@@ -39,6 +54,84 @@ class _ProjectCommentState extends State<ProjectComment> {
     });
   }
 
+  Future<void> SendComments() async {
+    var res = await Userapi.sendComment(_commentController.text,widget.id,_imageList);
+    setState(() {
+      if (res != null) {
+        if (res.data != null) {
+          CustomSnackBar.show(context,"${res.settings?.message}");
+          _imageList=[];
+          _commentController.text="";
+          GetProjectCommentsApi();
+        } else {
+          CustomSnackBar.show(context,"${res.settings?.message}");
+        }
+      } else {
+        print("not fetch");
+      }
+    });
+  }
+
+  List<XFile> _imageList = [];
+
+  Future<void> _pickImage(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        await Permission.camera.request();
+      }
+    } else if (source == ImageSource.gallery) {
+      var status = await Permission.photos.status;
+      if (!status.isGranted) {
+        await Permission.photos.request();
+      }
+    }
+
+    final ImagePicker picker = ImagePicker();
+    XFile? selectedImage = await picker.pickImage(source: source);
+
+    if (selectedImage != null) {
+      setState(() {
+        _imageList.add(selectedImage); // Append the selected image to the list
+        _validatefile = "";
+      });
+      print("Selected Image: ${selectedImage.path}");
+    } else {
+      print('User canceled the file picking');
+    }
+  }
+
+  // Future<void> _pickImage(ImageSource source) async {
+  //   if (source == ImageSource.camera) {
+  //     var status = await Permission.camera.status;
+  //     if (!status.isGranted) {
+  //       await Permission.camera.request();
+  //     }
+  //   } else if (source == ImageSource.gallery) {
+  //     var status = await Permission.photos.status;
+  //     if (!status.isGranted) {
+  //       await Permission.photos.request();
+  //     }
+  //   }
+  //   // After permissions are handled, proceed to pick an image
+  //   final ImagePicker picker = ImagePicker();
+  //   XFile? selected = await picker.pickImage(source: source);
+  //
+  //   setState(() {
+  //     _imageFile = selected;
+  //   });
+  //
+  //   if (selected != null) {
+  //     setState(() {
+  //       filepath = File(selected.path);
+  //       filename = p.basename(selected.path);
+  //       _validatefile="";
+  //     });
+  //     print("Selected Image: ${selected.path}");
+  //   } else {
+  //     print('User canceled the file picking');
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -66,53 +159,53 @@ class _ProjectCommentState extends State<ProjectComment> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            // if ( projectfile.fileUrl!= null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4.0),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  "assets/prashanth.png",
-                                  width: w * 0.15,
-                                  height: w * 0.15,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: w * 0.01,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Prashanth Chary",
-                                  style: TextStyle(
-                                    color: Color(0xff000000),
-                                    fontFamily: 'Inter',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    height: 18.36 / 16,
-                                  ),
-                                ),
-                                Text(
-                                  "Ux Designer",
-                                  style: TextStyle(
-                                    color: Color(0xff6C848F),
-                                    fontFamily: 'Inter',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    height: 14.36 / 14,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     // if ( projectfile.fileUrl!= null)
+                        //     Padding(
+                        //       padding: const EdgeInsets.only(right: 4.0),
+                        //       child: ClipOval(
+                        //         child: Image.asset(
+                        //           "assets/prashanth.png",
+                        //           width: w * 0.15,
+                        //           height: w * 0.15,
+                        //           fit: BoxFit.cover,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     SizedBox(
+                        //       width: w * 0.01,
+                        //     ),
+                        //     Column(
+                        //       mainAxisAlignment: MainAxisAlignment.start,
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text(
+                        //           "Prashanth Chary",
+                        //           style: TextStyle(
+                        //             color: Color(0xff000000),
+                        //             fontFamily: 'Inter',
+                        //             fontSize: 16,
+                        //             fontWeight: FontWeight.w500,
+                        //             height: 18.36 / 16,
+                        //           ),
+                        //         ),
+                        //         Text(
+                        //           "Ux Designer",
+                        //           style: TextStyle(
+                        //             color: Color(0xff6C848F),
+                        //             fontFamily: 'Inter',
+                        //             fontSize: 14,
+                        //             fontWeight: FontWeight.w400,
+                        //             height: 14.36 / 14,
+                        //           ),
+                        //         )
+                        //       ],
+                        //     ),
+                        //   ],
+                        // ),
                         SizedBox(
-                          height: 20,
+                          height: 10,
                         ),
                         Text(
                           "Write Comment",
@@ -139,6 +232,16 @@ class _ProjectCommentState extends State<ProjectComment> {
                             controller: _commentController,
                             textInputAction: TextInputAction.done,
                             maxLines: 100,
+                            onTap: () {
+                              setState(() {
+                                validatecomment = "";
+                              });
+                            },
+                            onChanged: (v) {
+                              setState(() {
+                                validatecomment = "";
+                              });
+                            },
                             decoration: InputDecoration(
                               contentPadding:
                                   const EdgeInsets.only(left: 10, top: 10),
@@ -166,9 +269,29 @@ class _ProjectCommentState extends State<ProjectComment> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 16,
-                        ),
+                        if (validatecomment.isNotEmpty) ...[
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.only(bottom: 5),
+                            child: ShakeWidget(
+                              key: Key("value"),
+                              duration: Duration(milliseconds: 700),
+                              child: Text(
+                                validatecomment,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 12,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          const SizedBox(
+                            height: 15,
+                          ),
+                        ],
                         DottedBorder(
                           color: Color(0xffD0CBDB),
                           strokeWidth: 1,
@@ -190,8 +313,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                                               leading: Icon(Icons.camera_alt),
                                               title: Text('Upload File'),
                                               onTap: () {
-                                                // _pickImage(ImageSource.camera);
-                                                // Navigator.pop(context);
+                                                _pickImage(ImageSource.camera);
+                                                Navigator.pop(context);
                                               },
                                             ),
                                             ListTile(
@@ -200,8 +323,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                                               title:
                                                   Text('Choose from gallery'),
                                               onTap: () {
-                                                // _pickImage(ImageSource.gallery);
-                                                // Navigator.pop(context);
+                                                _pickImage(ImageSource.gallery);
+                                                Navigator.pop(context);
                                               },
                                             ),
                                           ],
@@ -235,22 +358,110 @@ class _ProjectCommentState extends State<ProjectComment> {
                                 ),
                               ),
                               SizedBox(width: 16),
-                              Center(
-                                child: Text(
-                                  // (filename != "") ? filename :
-                                  'No File Chosen',
-
-                                  style: TextStyle(
-                                    color: Color(0xff3C3C3C),
-                                    fontSize: 14,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w400,
+                              if (_imageList.isNotEmpty) ...[
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 5),
+                                        for (int i = 0;
+                                            i < _imageList.length;
+                                            i++)
+                                          Stack(
+                                            children: [
+                                              Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                elevation: 0,
+                                                child: Container(
+                                                  width: 40,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    image: DecorationImage(
+                                                      image: FileImage(File(
+                                                          _imageList[i].path)),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: InkWell(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _imageList.removeAt(i);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Color(
+                                                                0xFFE8ECFF),
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        20))),
+                                                        padding:
+                                                            EdgeInsets.all(2.0),
+                                                        child: Icon(Icons.clear,
+                                                            size: 15,
+                                                            color: Color(
+                                                                0xff6977C2)))),
+                                              ),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ]else...[
+                                Center(
+                                  child: Text(
+                                    'No File Chosen',
+                                    style: TextStyle(
+                                      color: Color(0xff3C3C3C),
+                                      fontSize: 14,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ],
+
                             ],
                           ),
                         ),
+                        if (_validatefile.isNotEmpty) ...[
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.only(bottom: 5),
+                            child: ShakeWidget(
+                              key: Key("value"),
+                              duration: Duration(milliseconds: 700),
+                              child: Text(
+                                _validatefile,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 12,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          const SizedBox(
+                            height: 15,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -355,7 +566,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                                       ),
                                     ),
                                     Spacer(),
-
                                     GestureDetector(
                                       onTap: () {
                                         _showBottomSheet(
@@ -419,7 +629,19 @@ class _ProjectCommentState extends State<ProjectComment> {
             Spacer(),
             InkResponse(
               onTap: () {
-                // _validateFields();
+                setState(() {
+                  validatecomment = _commentController.text.isEmpty
+                      ? "Please enter comment"
+                      : "";
+                  _validatefile = _imageList.length == 0 ? "Please select a file" : "";
+                  var _isLoading =
+                      validatecomment.isEmpty && _validatefile.isEmpty;
+                  if (_isLoading) {
+                    SendComments();
+                  } else {
+
+                  }
+                });
               },
               child: Container(
                 height: 40,
@@ -463,8 +685,7 @@ class _ProjectCommentState extends State<ProjectComment> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return
-              Container(
+            return Container(
               padding: const EdgeInsets.all(16),
               height: h * 0.7,
               child: Column(
@@ -485,17 +706,22 @@ class _ProjectCommentState extends State<ProjectComment> {
                           fontFamily: 'Inter',
                         ),
                       ),
-                      Container(
-                        width: 24,
-                        height: 24,
-                        padding: EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: Color(0xffE5E5E5),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Image.asset(
-                          "assets/crossblue.png",
-                          fit: BoxFit.contain,
+                      InkResponse(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          padding: EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            color: Color(0xffE5E5E5),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Image.asset(
+                            "assets/crossblue.png",
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ],
