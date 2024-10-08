@@ -365,7 +365,7 @@ class _DashboardState extends State<Dashboard> {
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      top: 8, left: 16, right: 16, bottom: 8),
+                      top: 16, left: 16, right: 16, bottom: 8),
                   child: Column(
                     children: [
                       // Search Container

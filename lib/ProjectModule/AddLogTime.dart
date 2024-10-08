@@ -36,6 +36,7 @@ class _AddlogtimeState extends State<Addlogtime> {
   String _validatetask = "";
 
   String taskid="";
+  final spinkit=Spinkits();
 
   bool _isLoading = false;
   @override
@@ -688,7 +689,8 @@ class _AddlogtimeState extends State<Addlogtime> {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(
-                  child: Text(
+                  child: _isLoading?spinkit.getFadingCircleSpinner():
+                  Text(
                     'Save',
                     style: TextStyle(
                       color: Color(0xffffffff),

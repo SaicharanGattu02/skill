@@ -23,6 +23,7 @@ class ProjectComment extends StatefulWidget {
 class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
   bool _loading = true;
+  final spinkit=Spinkits();
 
   XFile? _imageFile;
   File? filepath;
@@ -655,7 +656,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(
-                  child: Text(
+                  child:
+                  _loading?spinkit.getFadingCircleSpinner():
+                  Text(
                     'Submit',
                     style: TextStyle(
                       color: Color(0xffffffff),
@@ -924,6 +927,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                 SizedBox(
                                   width: 0.01,
                                 ),
+                                _loading?spinkit.getFadingCircleSpinner():
                                 Text(
                                   'Okay',
                                   style: TextStyle(
