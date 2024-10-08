@@ -6,7 +6,6 @@ const defaultWidth = 10.0;
 const defaultButtonHeight = 50.0;
 const defaultRadius = 10.0;
 const connectionTimeOut = 60;
-
 double LargeTextSize = 18;
 double TextheaderSize = 16;
 double TextlabelSize = 12;

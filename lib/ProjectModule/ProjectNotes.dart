@@ -40,6 +40,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
   XFile? _imageFile;
   File? filepath;
   bool _isLoading = false;
+  final spinkit=Spinkits();
 
   @override
   void initState() {
@@ -832,7 +833,8 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:     _isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),

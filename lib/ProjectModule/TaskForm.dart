@@ -43,6 +43,8 @@ class User {
 }
 
 class _TaskFormState extends State<TaskForm> {
+
+  final spinkits = Spinkits();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _mileStoneController = TextEditingController();
@@ -255,6 +257,7 @@ class _TaskFormState extends State<TaskForm> {
   XFile? _imageFile;
   File? filepath;
   String filename = "";
+
 
   Future<void> _pickImage(ImageSource source) async {
     // Check and request camera/gallery permissions
@@ -489,12 +492,6 @@ class _TaskFormState extends State<TaskForm> {
                         ),
                       ),
                     ),
-
-
-
-
-
-
                     if (_validateDescription.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
@@ -1054,9 +1051,7 @@ class _TaskFormState extends State<TaskForm> {
                         ),
                       ),
                     ] else ...[
-                      const SizedBox(
-                        height: 15,
-                      ),
+                      const SizedBox(height: 15,),
                     ],
                     _label(text: 'Deadline'),
                     SizedBox(height: 4),
@@ -1127,7 +1122,8 @@ class _TaskFormState extends State<TaskForm> {
               onTap: () {
                 _validateFields();
               },
-              child: Container(
+              child:
+              Container(
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
@@ -1138,8 +1134,12 @@ class _TaskFormState extends State<TaskForm> {
                   ),
                   borderRadius: BorderRadius.circular(7),
                 ),
-                child: Center(
-                  child: Text(
+                child:
+                Center(
+                  child:
+                      _isLoading?spinkits.getFadingCircleSpinner():
+
+                  Text(
                     'Save',
                     style: TextStyle(
                       color: Color(0xffffffff),

@@ -65,6 +65,7 @@ class _DashboardState extends State<Dashboard> {
   String userid = "";
   List<Rooms> rooms = [];
   String selectedEmployee = "";
+  final spinkit = Spinkits();
 
   @override
   void initState() {
@@ -1139,6 +1140,9 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             InkResponse(
                               onTap: () {
+                                // setState(() {
+                                //   _isLoading=true;
+                                // });
                                 // showCustomDialog(context);
                                 CustomSnackBar.show(context, "Coming soon...");
                               },
@@ -1154,6 +1158,7 @@ class _DashboardState extends State<Dashboard> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+                                    // _isLoading?spinkit.getFadingCircleSpinner():
                                     Text(
                                       "Punch In",
                                       style: TextStyle(
@@ -1165,10 +1170,10 @@ class _DashboardState extends State<Dashboard> {
                                     SizedBox(
                                       width: 8,
                                     ),
-                                    Image.asset(
-                                      "assets/fingerPrint.png",
-                                      fit: BoxFit.contain,
-                                    )
+                                    // Image.asset(
+                                    //   "assets/fingerPrint.png",
+                                    //   fit: BoxFit.contain,
+                                    // )
                                   ],
                                 ),
                               ),

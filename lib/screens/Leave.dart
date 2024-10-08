@@ -25,7 +25,7 @@ class _LeaveState extends State<Leave> {
   List<Data> rooms = [];
   List<Data> filteredRooms = [];
   bool isSelected = false;
-  bool _loading = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -58,7 +58,9 @@ class _LeaveState extends State<Leave> {
 
   FocusNode _focusNodeLeavetype = FocusNode();
   FocusNode _focusNodeReason = FocusNode();
-  String __validateReason = "";
+  String _validateReason = "";
+  String _validatefrom = "";
+  String _validateto = "";
 
   @override
   void initState() {
@@ -107,7 +109,7 @@ class _LeaveState extends State<Leave> {
     var Res = await Userapi.GetLeave();
     setState(() {
       if (Res != null) {
-        _loading = false;
+        _isLoading = false;
         if (Res.data != null) {
           leaves = Res.data ?? [];
           rooms = leaves!; // Set the original data
@@ -121,16 +123,19 @@ class _LeaveState extends State<Leave> {
 
   Count data = Count();
   Future<void> getleavesCount() async {
-    var Res = await Userapi.GetLeaveCount();
+    var res = await Userapi.GetLeaveCount();
     setState(() {
-      if (Res != null) {
-        if (Res.data != null) {
-          _loading = false;
-          data = Res.data!;
-          print("getleavesCount res>>${Res}");
+      if (res != null) {
+        if (res.success==1) {
+          _isLoading = false;
+
+          CustomSnackBar.show(context, "${res.message}");
         } else {
-          print("getleavesCount Failure>>${Res}");
+          CustomSnackBar.show(context, "${res.message}");
+
         }
+      }else{
+        CustomSnackBar.show(context, "An error occurred. Please try again.");
       }
     });
   }
@@ -141,8 +146,8 @@ class _LeaveState extends State<Leave> {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(title: "Apply Leave", actions: []),
-      body: _loading
+      appBar: CustomAppBar(title: "Apply Leave", actions: [Container()]),
+      body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
               color: Color(0xff8856F4),
@@ -236,7 +241,7 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data?.availableLeaves != null && data!.availableLeaves.toString().isNotEmpty)
+                                (data.availableLeaves != null && data!.availableLeaves.toString().isNotEmpty)
                                     ? data.availableLeaves.toString()
                                     : "0", // Show "0" if null or empty
                                 style: TextStyle(
@@ -399,7 +404,7 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data?.rejectedLeaves != null && data!.rejectedLeaves.toString().isNotEmpty)
+                                (data.rejectedLeaves != null && data.rejectedLeaves.toString().isNotEmpty)
                                     ? data.rejectedLeaves.toString()
                                     : "0", // Show "0" if null or empty
                                 style: TextStyle(
@@ -450,13 +455,9 @@ class _LeaveState extends State<Leave> {
                     Spacer(),
                     InkWell(
                       onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (BuildContext context) {
-                            return _bottomSheet(context);
-                          },
-                        );
+
+                        _bottomSheetApplyLeave(context);
+                          
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -611,301 +612,332 @@ class _LeaveState extends State<Leave> {
           ),
     );
   }
-  Widget _bottomSheet(BuildContext context) {
-    double h = MediaQuery.of(context).size.height * 0.6;
+
+
+
+  void _bottomSheetApplyLeave(BuildContext context) {
+    double h = MediaQuery.of(context).size.height * 0.55;
     double w = MediaQuery.of(context).size.width;
-    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.only(bottom: keyboardHeight),
-      child: Container(
-        height: h,
-        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-        decoration: BoxDecoration(
-          color: Color(0xffffffff),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: w * 0.1,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Text(
-                  "Apply Leave",
-                  style: TextStyle(
-                    color: Color(0xff1C1D22),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                    fontFamily: 'Inter',
-                    height: 18 / 16,
-                  ),
-                ),
-                Spacer(),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop(); // Close the BottomSheet
-                  },
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
                   child: Container(
-                    width: w * 0.05,
-                    height: w * 0.05,
+                    height: h,
+                    padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
                     decoration: BoxDecoration(
-                      color: Color(0xffE5E5E5),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/crossblue.png",
-                        fit: BoxFit.contain,
-                        width: w * 0.023,
-                        height: w * 0.023,
-                        color: Color(0xff8856F4),
+                      color: Color(0xffffffff),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _label(text: 'From Date'),
-                    SizedBox(height: 4),
-                    _buildDateField(_fromController),
-                    SizedBox(height: 10),
-                    _label(text: 'To Date'),
-                    SizedBox(height: 4),
-                    _buildDateField(_toController),
-                    SizedBox(height: 10),
-                    _label(text: 'Reason'),
-                    SizedBox(height: 4),
-                    Container(
-                      height: h * 0.18,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Color(0xffE8ECFF)),
-                      ),
-                      child: TextFormField(
-                        cursorColor: Color(0xff8856F4),
-                        scrollPadding: const EdgeInsets.only(top: 5),
-                        controller: _reasonController,
-                        textInputAction: TextInputAction.done,
-                        maxLines: 100,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(left: 10, top: 10),
-                          hintText: "Type Reason for Leave",
-                          hintStyle: TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 0,
-                            height: 1.2,
-                            color: Color(0xffAFAFAF),
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                          ),
-                          filled: true,
-                          fillColor: Color(0xffFCFAFF),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7),
-                            borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                            borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: w * 0.1,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Text(
+                              "Apply Leave",
+                              style: TextStyle(
+                                color: Color(0xff1C1D22),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                fontFamily: 'Inter',
+                                height: 18 / 16,
+                              ),
+                            ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pop(); // Close the BottomSheet when tapped
+                              },
+                              child: Container(
+                                width: w * 0.05,
+                                height: w * 0.05,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffE5E5E5),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    "assets/crossblue.png",
+                                    fit: BoxFit.contain,
+                                    width: w * 0.023,
+                                    height: w * 0.023,
+                                    color: Color(0xff8856F4),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _label(text: 'From Date'),
+                                SizedBox(height: 4),
+                                _buildDateField(
+                                  _fromController,
+                                ),
+                                if (_validatefrom.isNotEmpty) ...[
+                                  Container(
+                                    alignment: Alignment.topLeft,
+                                    margin: EdgeInsets.only(bottom: 5),
+                                    child: ShakeWidget(
+                                      key: Key("value"),
+                                      duration: Duration(milliseconds: 700),
+                                      child: Text(
+                                        _validatefrom,
+                                        style: TextStyle(
+                                          fontFamily: "Poppins",
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  const SizedBox(height: 15,),
+                                ],
+                                _label(text: 'To Date'),
+                                SizedBox(height: 4),
+                                _buildDateField(
+                                  _toController,
+                                ),
+                                if (_validateto.isNotEmpty) ...[
+                                  Container(
+                                    alignment: Alignment.topLeft,
+                                    margin: EdgeInsets.only(bottom: 5),
+                                    child: ShakeWidget(
+                                      key: Key("value"),
+                                      duration: Duration(milliseconds: 700),
+                                      child: Text(
+                                        _validateto,
+                                        style: TextStyle(
+                                          fontFamily: "Poppins",
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                ],
+                                SizedBox(height: 10),
+                                _label(text: 'Reason'),
+                                SizedBox(height: 4),
+                                Container(
+                                  height: h * 0.2,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(color: Color(0xffE8ECFF))),
+                                  child: TextFormField(
+                                    cursorColor: Color(0xff8856F4),
+                                    scrollPadding: const EdgeInsets.only(top: 5),
+                                    controller: _reasonController,
+                                    textInputAction: TextInputAction.done,
+                                    maxLines: 100,
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                      const EdgeInsets.only(left: 10, top: 10),
+                                      hintText: "Type Reason",
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        letterSpacing: 0,
+                                        height: 1.2,
+                                        color: Color(0xffAFAFAF),
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide:
+                                        BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide:
+                                        BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (_validateReason.isNotEmpty) ...[
+                                  Container(
+                                    alignment: Alignment.topLeft,
+                                    margin: EdgeInsets.only(bottom: 5),
+                                    child: ShakeWidget(
+                                      key: Key("value"),
+                                      duration: Duration(milliseconds: 700),
+                                      child: Text(
+                                        _validateReason,
+                                        style: TextStyle(
+                                          fontFamily: "Poppins",
+                                          fontSize: 12,
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                ],
 
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    height: 45,
-                    width: w * 0.43,
-                    decoration: BoxDecoration(
-                      color: Color(0xffF8FCFF),
-                      border: Border.all(
-                        color: Color(0xff8856F4),
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.close, color: Color(0xff8856F4)),
-                        SizedBox(width: 8),
-                        Text(
-                          'Close',
-                          style: TextStyle(
-                            color: Color(0xff8856F4),
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Inter',
+                              ],
+                            ),
                           ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child:
+                              Container(
+                                height: 45,
+                                width: w * 0.43,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffF8FCFF),
+                                  border: Border.all(
+                                    color: Color(0xff8856F4),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Icon(Icons.close, color: Color(0xff8856F4)),
+                                    // SizedBox(width: 8),
+                                    Text(
+                                      'Close',
+                                      style: TextStyle(
+                                        color: Color(0xff8856F4),
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            InkResponse(
+                              onTap: () {
+                                setState(() {
+                                  _validatefrom =
+                                  _fromController.text.isEmpty
+                                      ? "Please select a from date"
+                                      : "";
+                                  _validateto =
+                                  _toController.text.isEmpty
+                                      ? "Please select a from date"
+                                      : "";
+                                  _validateReason =
+                                  _reasonController.text.isEmpty
+                                      ? "Please enter a reason"
+                                      : "";
+
+                                  _isLoading = _validatefrom.isEmpty &&
+                                      _validateto.isEmpty&&
+                                      _validateReason.isEmpty;
+
+                                  if (_isLoading) {
+                                    LeaveRequests();
+                                  }
+                                });
+                              },
+                              child: Container(
+                                height: 45,
+                                width: w * 0.43,
+                                decoration: BoxDecoration(
+                                  color: Color(0xff8856F4),
+                                  border: Border.all(
+                                    color: Color(0xff8856F4),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Image.asset(
+                                    //   'assets/container_correct.png', // Replace with your apply icon path
+                                    //   width: 16,
+                                    //   height: 16,
+                                    // ),
+                                    // SizedBox(width: 8),
+                                    Text(
+
+                                      'Apply Leave',
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ),
-                InkWell(
+                );
+              });
+        }).whenComplete(() {
+      _fromController.text = "";
+      _toController.text = "";
+      _reasonController.text = "";
 
-                  onTap: () {
-                    _validateAndSubmit(); // Call the validation and submission method
-                  },
-                  child: Container(
-                    height: 45,
-                    width: w * 0.43,
-                    decoration: BoxDecoration(
-                      color: Color(0xff8856F4),
-                      border: Border.all(
-                        color: Color(0xff8856F4),
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/container_correct.png', // Replace with your apply icon path
-                          width: 16,
-                          height: 16,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-
-                          'Apply Leave',
-                          style: TextStyle(
-                            color: Color(0xffffffff),
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Inter',
-                          ),
-
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+      _validatefrom = "";
+      _validateto = "";
+      _validateReason = "";
+    });
   }
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-      required FocusNode focusNode,
-      bool obscureText = false,
-      required String hintText,
-      required String validationMessage,
-      TextInputType keyboardType = TextInputType.text,
-      Widget? prefixicon,
-      Widget? suffixicon}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.050,
-          child: TextFormField(
-            controller: controller,
-            focusNode: focusNode,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            cursorColor: Color(0xff8856F4),
-            decoration: InputDecoration(
-              hintText: hintText,
-              // prefixIcon: Container(
-              //     width: 21,
-              //     height: 21,
-              //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-              //     child: prefixicon),
-              suffixIcon: suffixicon,
-              hintStyle: const TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 19.36 / 14,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-              ),
-              filled: true,
-              fillColor: const Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-            ),
-          ),
-        ),
-        if (validationMessage.isNotEmpty) ...[
-          Container(
-            alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-            width: MediaQuery.of(context).size.width * 0.6,
-            child: ShakeWidget(
-              key: Key("value"),
-              duration: Duration(milliseconds: 700),
-              child: Text(
-                validationMessage,
-                style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontSize: 12,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ] else ...[
-          SizedBox(height: 15),
-        ]
-      ],
-    );
-  }
+
+
+
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -921,7 +953,7 @@ class _LeaveState extends State<Leave> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Please Select date",
+                  hintText: "Select dob from date picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

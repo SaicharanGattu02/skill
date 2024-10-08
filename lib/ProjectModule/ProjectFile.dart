@@ -39,7 +39,8 @@ class _ProjectFileState extends State<ProjectFile> {
 
   XFile? _imageFile;
   File? filepath;
-  bool _loading = true;
+  bool _isLoading = true;
+  final spinkit=Spinkits();
   bool isFilesSelected = true;
 
   String categoryID = "";
@@ -56,10 +57,10 @@ class _ProjectFileState extends State<ProjectFile> {
     setState(() {
       if (res != null) {
         if(res.settings?.success==1){
-          _loading = false;
+          _isLoading = false;
           data = res.data ?? [];
         }else{
-          _loading = false;
+          _isLoading = false;
           CustomSnackBar.show(context,res.settings?.message??"");
         }
       }
@@ -69,6 +70,7 @@ class _ProjectFileState extends State<ProjectFile> {
   Future<void> PostFiles(String editid) async {
     var res;
     if (editid != "") {
+
       res = await Userapi.putProjectFile(editid, categoryID,
           File(_imageFile!.path), _descriptionController.text);
       print("putProjectFile>>${res}");
@@ -78,20 +80,30 @@ class _ProjectFileState extends State<ProjectFile> {
     }
 
     print("filee>${File(_imageFile!.path)}");
+    setState(() {
 
     if (res != null) {
       if (res.settings?.success == 1) {
-        Navigator.pop(context, true);
-        CustomSnackBar.show(context, "${res.settings?.message}");
-        GetFile();
-      } else {
+
+
+            _isLoading=false;
+            Navigator.pop(context, true);
+            CustomSnackBar.show(context, "${res.settings?.message}");
+            GetFile();
+
+
+
+      }
+      else {
         CustomSnackBar.show(context, "${res.settings?.message}");
       }
     } else {}
+    });
   }
 
   Future<void> PostCategory(String id) async {
     var res;
+
     if (id != "") {
       res = await Userapi.PutProjectCategory(_nameController.text, id);
     } else {
@@ -116,7 +128,7 @@ class _ProjectFileState extends State<ProjectFile> {
 
     setState(() {
       if (res != null) {
-        _loading = false;
+        _isLoading = false;
         if (res.catagory != null) {
           catagory = res.catagory ?? [];
 
@@ -159,7 +171,7 @@ class _ProjectFileState extends State<ProjectFile> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _loading
+      body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
               color: Color(0xff8856F4),
@@ -1216,11 +1228,11 @@ class _ProjectFileState extends State<ProjectFile> {
                                       : "";
                               _validatefile =
                                   filename == "" ? "Please choose file." : "";
-                              _loading = _validateCategory.isEmpty &&
+                              _isLoading = _validateCategory.isEmpty &&
                                   _validateDescription.isEmpty &&
                                   _validatefile.isEmpty;
                             });
-                            if (_loading) {
+                            if (_isLoading) {
                               if (mode == "Edit") {
                                 PostFiles(id);
                               } else {
@@ -1240,7 +1252,9 @@ class _ProjectFileState extends State<ProjectFile> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:
+                              _isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),
@@ -1484,9 +1498,9 @@ class _ProjectFileState extends State<ProjectFile> {
                                   ? "Please select a category name"
                                   : "";
 
-                              _loading = _validatefile.isEmpty;
+                              _isLoading = _validatefile.isEmpty;
                             });
-                            if (_loading) {
+                            if (_isLoading) {
                               if (mode == "Edit") {
                                 PostCategory(id);
 
@@ -1507,7 +1521,8 @@ class _ProjectFileState extends State<ProjectFile> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:
+                              _isLoading?spinkit.getFadingCircleSpinner():Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),

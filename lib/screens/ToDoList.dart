@@ -45,6 +45,7 @@ class _TodolistState extends State<Todolist> {
   String labelColorid = "";
 
   bool _isLoading = true;
+  final spinkit=Spinkits();
   @override
   void initState() {
     super.initState();
@@ -772,7 +773,9 @@ class _TodolistState extends State<Todolist> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:
+                                  _isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),
@@ -1345,7 +1348,8 @@ class _TodolistState extends State<Todolist> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:_isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),

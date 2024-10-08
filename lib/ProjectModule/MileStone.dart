@@ -26,8 +26,8 @@ class _MileStoneState extends State<MileStone> {
   String title = "";
   String description = "";
   String deadline = "";
-  bool _isLoading = false;
-  bool _loading = true;
+  bool _isLoading = true;
+
 
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -66,9 +66,9 @@ class _MileStoneState extends State<MileStone> {
         if (res?.data != null) {
           if(res?.settings?.success==1){
             data = res?.data ?? [];
-            _loading=false;
+            _isLoading=false;
           }else{
-            _loading=false;
+            _isLoading=false;
             CustomSnackBar.show(context,res?.settings?.message??"");
           }
         } else {
@@ -117,12 +117,14 @@ class _MileStoneState extends State<MileStone> {
     }
   }
 
+
+  final spinkit=Spinkits();
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _loading
+      body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
               color: Color(0xff8856F4),
@@ -640,7 +642,9 @@ class _MileStoneState extends State<MileStone> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child: Text(
+                              child:
+                              _isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),
