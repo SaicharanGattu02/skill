@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_stack/flutter_image_stack.dart'; // Make sure to include this package
+import 'package:flutter_image_stack/flutter_image_stack.dart';
+import 'package:skill/utils/CustomAppBar.dart'; // Make sure to include this package
 
 class Allchannels extends StatefulWidget {
   const Allchannels({super.key});
@@ -43,6 +44,7 @@ final List<String> _images = [
 ];
 
 class _AllchannelsState extends State<Allchannels> {
+
   List<Map<String, String>> filteredItems = items1;
   String searchQuery = "";
 
@@ -63,10 +65,7 @@ class _AllchannelsState extends State<Allchannels> {
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
-        title: const Text("All Channels"),
-        actions: [],
-      ),
+      appBar:CustomAppBar(title: 'All Channels',actions:[ Container()],  ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
