@@ -280,7 +280,8 @@ class _TodolistState extends State<Todolist> {
                 color: const Color(0xffFFFFFF),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: ListView.builder(
+              child:(filteredData.length>0)?
+              ListView.builder(
                 itemCount: filteredData.length,
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -369,7 +370,29 @@ class _TodolistState extends State<Todolist> {
                     ],
                   );
                 },
-              ),
+              ):
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/nodata1.png', // Path to your no data image
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "No Data Found",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ),
           ],
         ),

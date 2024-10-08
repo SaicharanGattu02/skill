@@ -34,9 +34,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     String query = _searchController.text.toLowerCase();
     setState(() {
       filteredRooms = projectsData.where((room) {
-        String otherUser = room.name?.toLowerCase() ?? ''; // Handle null cases
-
-        return otherUser.contains(query) ;
+        String otherUser = room.name?.toLowerCase() ?? '';
+        return otherUser.contains(query);
       }).toList();
       print('Filtered rooms: ${filteredRooms.length}'); // Debug log
     });
@@ -85,6 +84,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
 
   bool isSelected = false;
+
   Future<void> GetProjectsData() async {
     var Res = await Userapi.GetProjectsList();
     setState(() {
@@ -97,19 +97,21 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         } else {
           isLoading = false;
         }
+      } else {
+        isLoading = false; // Handle empty or null response
       }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-    return Scaffold(
 
+    return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      appBar:
-      CustomAppBar(
+      appBar: CustomAppBar(
         title: 'All Projects',
         actions: [],
         onPlusTap: () {
@@ -117,70 +119,28 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            // isDismissible: false,
-
             builder: (BuildContext context) {
               return _bottomSheet(context);
             },
           );
         },
       ),
-      body:
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-      Padding(
+      body: _loading
+          ? Center(child: CircularProgressIndicator(color: Color(0xff8856F4)))
+          : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
-            // Container(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            //   decoration: BoxDecoration(
-            //     color: const Color(0xffffffff),
-            //     borderRadius: BorderRadius.circular(8),
-            //   ),
-            //   child:
-            //   Row(
-            //     children: [
-            //       Image.asset(
-            //         "assets/search.png",
-            //         width: 24,
-            //         height: 24,
-            //         fit: BoxFit.contain,
-            //       ),
-            //       const SizedBox(width: 10),
-            //       Expanded(
-            //         child: TextField(
-            //           controller: _searchController,
-            //           decoration: const InputDecoration(
-            //             border: InputBorder.none,
-            //             hintText: 'Search...',
-            //             hintStyle: TextStyle(
-            //               color: Color(0xff9E7BCA),
-            //               fontWeight: FontWeight.w400,
-            //               fontSize: 14,
-            //               height: 19.36 / 14,
-            //               fontFamily: "Nunito",
-            //             ),
-            //           ),
-            //           onChanged: (value) {
-            //             print("Search input: $value"); // Debug log for search input
-            //           },
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             SizedBox(
               width: w,
-              height: h*0.043,
-              child:
-              Container(
-                padding:  EdgeInsets.only(left: 14,right: 14,),
+              height: h * 0.043,
+              child: Container(
+                padding: EdgeInsets.only(left: 14, right: 14),
                 decoration: BoxDecoration(
                   color: const Color(0xffffffff),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child:
-                Row(
+                child: Row(
                   children: [
                     Image.asset(
                       "assets/search.png",
@@ -202,18 +162,14 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
                               fontFamily: "Nunito",
-
                             ),
                           ),
-                          style:  TextStyle(
-
+                          style: TextStyle(
                             color: Color(0xff9E7BCA),
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
-                            decorationColor:  Color(0xff9E7BCA),
-
+                            decorationColor: Color(0xff9E7BCA),
                             fontFamily: "Nunito",
-
                           ),
                         ),
                       ),
@@ -224,7 +180,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: isLoading ? _buildShimmerGrid(w) : _buildProjectGrid(),
+              child: filteredRooms.isEmpty
+                  ? _buildEmptyPlaceholder()
+                  : _buildProjectGrid(),
             ),
           ],
         ),
@@ -871,4 +829,28 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       ],
     );
   }
+
+  Widget _buildEmptyPlaceholder() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/nodata2.png',
+            height: 150,
+            width: 150,
+          ), // Add your placeholder image
+          SizedBox(height: 16),
+          Text(
+            'No projects found.',
+            style: TextStyle(
+              fontSize: 18,
+              color: Color(0xff9E7BCA),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

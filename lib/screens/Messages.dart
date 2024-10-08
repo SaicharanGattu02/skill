@@ -32,7 +32,7 @@ class _MessagesState extends State<Messages> {
       'time': '33 mins'
     },
   ];
-
+  bool showNoDataFoundMessage = false;
   bool isSelected = false;
   bool _loading = false;
   List<Rooms> rooms = [];
@@ -58,6 +58,7 @@ class _MessagesState extends State<Messages> {
     });
 
     var res = await Userapi.getrommsApi();
+
     setState(() {
       _loading = false; // Hide loading spinner once data is fetched
       if (res != null) {
@@ -65,7 +66,20 @@ class _MessagesState extends State<Messages> {
           rooms = res.data ?? [];
           rooms.sort((a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
           filteredRooms = rooms; // Initially, show all rooms
+
+          if (rooms.isEmpty) {
+            // Handle empty rooms case
+            showNoDataFoundMessage = true;  // Set this flag when no data is found
+          } else {
+            showNoDataFoundMessage = false; // Data found, so hide the message
+          }
+        } else {
+          // If success is not 1, assume no data and show the message
+          showNoDataFoundMessage = true;
         }
+      } else {
+        // Handle null response case, show message
+        showNoDataFoundMessage = true;
       }
     });
   }
@@ -219,14 +233,26 @@ class _MessagesState extends State<Messages> {
             SizedBox(height: w * 0.02),
             Expanded(
               child: filteredRooms.isEmpty
-                  ? Center( // Show this message if no data is found
-                child: Text(
-                  "No Data Found",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                    fontFamily: "Inter",
-                  ),
+                  ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/nodata1.png', // Make sure to use the correct image path
+                      width: 150, // Adjust the size according to your design
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "No Data Found",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
                 ),
               )
                   : ListView.builder(
@@ -319,6 +345,7 @@ class _MessagesState extends State<Messages> {
                 },
               ),
             ),
+
           ],
         ),
       ),
