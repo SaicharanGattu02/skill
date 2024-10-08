@@ -18,7 +18,7 @@ class _MeetingsState extends State<Meetings> {
   DateTime selectedDate = DateTime.now();
   DateTime currentMonth = DateTime.now();
   late ScrollController _scrollController;
-  bool _loading= true;
+  bool _loading= false;
 
   @override
   void initState() {
@@ -37,12 +37,14 @@ class _MeetingsState extends State<Meetings> {
     setState(() {
 
       if(res!=null){
-        _loading=false;
+
         if(res.data!=null){
+          _loading=false;
 
           meetings = res.data??[];
           print("projectsData List Get SuccFully  ${res.settings!.message}");
         } else {
+          _loading=false;
           print("Employee List Failure  ${res.settings?.message}");
         }
       }

@@ -132,7 +132,7 @@ class _TodolistState extends State<Todolist> {
               Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: w * 0.61,
+                    width: w * 0.56,
                     height: h*0.043,
                     child: Container(
                       padding:  EdgeInsets.only(left: 14,right: 14,),

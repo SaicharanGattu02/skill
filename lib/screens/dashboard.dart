@@ -1711,39 +1711,40 @@ class _DashboardState extends State<Dashboard> {
                 Spacer(),
                 InkResponse(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyHomePage(
-                                  title: "Demo chat bubble",
-                                )));
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => MyHomePage(
+                    //               title: "Demo chat bubble",
+                    //             ))
+                    // );
                   },
                   child: Container(
-                    padding: EdgeInsets.all(4),
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                        color: Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(4)),
-                    child: Image.asset("assets/Settings.png"),
+                    // padding: EdgeInsets.all(4),
+                    // width: 32,
+                    // height: 32,
+                    // decoration: BoxDecoration(
+                    //     color: Color(0xffffffff),
+                    //     borderRadius: BorderRadius.circular(4)),
+                    // child: Image.asset("assets/Settings.png"),
                   ),
                 ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Settings",
-                  style: TextStyle(
-                    color: Color(0xff6C848F),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
+                // SizedBox(
+                //   height: 4,
+                // ),
+                // Text(
+                //   "Settings",
+                //   style: TextStyle(
+                //     color: Color(0xff6C848F),
+                //     fontWeight: FontWeight.w400,
+                //     fontSize: 14,
+                //     overflow: TextOverflow.ellipsis,
+                //     fontFamily: "Inter",
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 20,
+                // ),
                 InkWell(
                   onTap: () {
                     PreferenceService().remove("token");
@@ -1780,7 +1781,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 SizedBox(
-                  height: 22,
+                  height: 102,
                 )
               ],
             ),
