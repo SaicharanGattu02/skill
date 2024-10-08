@@ -104,10 +104,12 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
     return Scaffold(
 
       backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(
+      appBar:
+      CustomAppBar(
         title: 'All Projects',
         actions: [],
         onPlusTap: () {
@@ -129,41 +131,95 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xffffffff),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/search.png",
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Search...',
-                        hintStyle: TextStyle(
-                          color: Color(0xff9E7BCA),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          height: 19.36 / 14,
-                          fontFamily: "Nunito",
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xffffffff),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child:
+            //   Row(
+            //     children: [
+            //       Image.asset(
+            //         "assets/search.png",
+            //         width: 24,
+            //         height: 24,
+            //         fit: BoxFit.contain,
+            //       ),
+            //       const SizedBox(width: 10),
+            //       Expanded(
+            //         child: TextField(
+            //           controller: _searchController,
+            //           decoration: const InputDecoration(
+            //             border: InputBorder.none,
+            //             hintText: 'Search...',
+            //             hintStyle: TextStyle(
+            //               color: Color(0xff9E7BCA),
+            //               fontWeight: FontWeight.w400,
+            //               fontSize: 14,
+            //               height: 19.36 / 14,
+            //               fontFamily: "Nunito",
+            //             ),
+            //           ),
+            //           onChanged: (value) {
+            //             print("Search input: $value"); // Debug log for search input
+            //           },
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            SizedBox(
+              width: w,
+              height: h*0.043,
+              child:
+              Container(
+                padding:  EdgeInsets.only(left: 14,right: 14,),
+                decoration: BoxDecoration(
+                  color: const Color(0xffffffff),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child:
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/search.png",
+                      width: 20,
+                      height: 17,
+                      fit: BoxFit.contain,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Search',
+                            hintStyle: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: Color(0xff9E7BCA),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              fontFamily: "Nunito",
+
+                            ),
+                          ),
+                          style:  TextStyle(
+
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            decorationColor:  Color(0xff9E7BCA),
+
+                            fontFamily: "Nunito",
+
+                          ),
                         ),
                       ),
-                      onChanged: (value) {
-                        print("Search input: $value"); // Debug log for search input
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),

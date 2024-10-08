@@ -138,6 +138,7 @@ class _LeaveState extends State<Leave> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: "Apply Leave", actions: []),
@@ -154,43 +155,59 @@ class _LeaveState extends State<Leave> {
                 InkWell(onTap: (){
 
                 },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 3),
-                    decoration: BoxDecoration(
+                  child:
+                  SizedBox(
+                    width: w,
+                    height: h*0.043,
+                    child:
+                    Container(
+                      padding:  EdgeInsets.only(left: 14,right: 14,),
+                      decoration: BoxDecoration(
                         color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child:
+                      Row(
+                        children: [
+                          Image.asset(
+                            "assets/search.png",
+                            width: 20,
+                            height: 17,
+                            fit: BoxFit.contain,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Search',
+                                  hintStyle: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: Color(0xff9E7BCA),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                    fontFamily: "Nunito",
 
-                    child: Row(
-                  children: [
-                  Image.asset(
-                  "assets/search.png",
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.contain,
-                  ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: TextField(
-            controller: _searchController,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              hintText: 'Search...',
-              hintStyle: TextStyle(
-                color: Color(0xff9E7BCA),
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                height: 19.36 / 14,
-                fontFamily: "Nunito",
-              ),
-            ),
-            onChanged: (value) {
-              print("Search input: $value"); // Debug log for search input
-            },
-          ),
-        ),
-        ],
-      ),
+                                  ),
+                                ),
+                                style:  TextStyle(
+
+                                  color: Color(0xff9E7BCA),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  decorationColor:  Color(0xff9E7BCA),
+
+                                  fontFamily: "Nunito",
+
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(

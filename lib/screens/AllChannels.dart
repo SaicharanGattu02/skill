@@ -59,6 +59,7 @@ class _AllchannelsState extends State<Allchannels> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
@@ -70,30 +71,56 @@ class _AllchannelsState extends State<Allchannels> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                  color: const Color(0xffffffff),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/search.png",
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      onChanged: updateSearchQuery,
-                      decoration: const InputDecoration(
-                        hintText: "Search",
-                        border: InputBorder.none,
+            SizedBox(height: h*0.045,
+              child: Container(
+                padding:  EdgeInsets.only(left: 14,right: 14,),
+                decoration: BoxDecoration(
+                    color: const Color(0xffffffff),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/search.png",
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+
+                          child: TextField(
+                            onChanged: updateSearchQuery,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Search',
+                              hintStyle: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Nunito",
+
+                              ),
+                            ),
+                            style:  TextStyle(
+
+                              color: Color(0xff9E7BCA),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              decorationColor:  Color(0xff9E7BCA),
+
+                              fontFamily: "Nunito",
+
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
