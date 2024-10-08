@@ -41,7 +41,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  static String host = "http://192.168.0.56:8000";
+  // static String host = "http://192.168.0.56:8000";
+  static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(
       String fullname, String mail,String phone, String password,String gender) async {
@@ -405,7 +406,7 @@ class Userapi {
     try {
       final headers = await getheader();
       final url = Uri.parse(
-          "${host}/project/project-comments?project_id=b2a78098d7b142e0bb69a3214c35aa8f");
+          "${host}/project/project-comments?project_id=$id");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetProjectComments Response:${res.body}");

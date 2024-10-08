@@ -46,6 +46,8 @@ const vehicleNumberRegex =
 const panNumberRegex = "[A-Z]{5}[0-9]{4}[A-Z]{1}";
 const aadhaarRegex = "[0-9]{12}";
 const staticImage = "https://picsum.photos/250?image=9";
+String chat_socket_url="wss://192.168.0.56:8000/ws/chat/";
+String notify_socket_url="wss://192.168.0.56:8000/ws/notify/";
 
 /////////Colors
 var notification_val=0;

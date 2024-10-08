@@ -135,37 +135,23 @@ class _TaskFormState extends State<TaskForm> {
   String statusid="";
   String priorityid="";
 
-  var items;
   Data? data = Data();
   List<Members> members = [];
   List<String> selectedIds = []; // List to store selected user IDs
 
   Future<void> GetProjectsOverviewData() async {
-
-
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
     setState(() {
       if (res != null && res.data != null) {
-
-        _loading=false;
+        _loading = false;
         data = res.data;
         members = data?.members ?? [];
-
-        print("members:${members}");
-        items = members.map((member) {
-
-          return DropdownItem<User>(
-            label: member.fullName ?? "",
-            value: User(
-              name: member.fullName ?? "",
-              id: member.id ?? "",
-            ),
-          );
-        }).toList();
-        print("items:${items}");
+        print("members: $members");
+      } else {
       }
     });
   }
+
 
   List<Statuses> statuses = [];
   Future<void> GetStatuses() async {
@@ -307,6 +293,21 @@ class _TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
+    var items = members.map((member) {
+      return DropdownItem<User>(
+        label: member.fullName ?? "",
+        value: User(
+          name: member.fullName ?? "",
+          id: member.id ?? "",
+        ),
+      );
+    }).toList();
+    // var items = [
+    //   DropdownItem(label: 'Alex', value: User(name: 'Alex', id: "1")),
+    //   DropdownItem(label: 'Cani', value: User(name: 'Cani', id: "6")),
+    //   DropdownItem(label: 'kim', value: User(name: 'kim', id: "2")),
+    // ];
+
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
@@ -526,7 +527,6 @@ class _TaskFormState extends State<TaskForm> {
                           return TextField(
                             controller: _mileStoneController,
                             focusNode: focusNode,
-                            autofocus: true,
                             onTap: () {
                               setState(() {
                                 _validateMileStone = "";
@@ -762,9 +762,7 @@ class _TaskFormState extends State<TaskForm> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.black87,
-                          ),
+                          borderSide:    const BorderSide(color: Color(0xffd0cbdb)),
                         ),
                       ),
                       dropdownDecoration: const DropdownDecoration(
@@ -831,7 +829,6 @@ class _TaskFormState extends State<TaskForm> {
                         builder: (context, controller, focusNode) {
                           return TextField(
                             focusNode: focusNode,
-                            autofocus: true,
                             controller: _statusController,
                             onTap: () {
                               setState(() {

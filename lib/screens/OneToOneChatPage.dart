@@ -153,9 +153,9 @@ class _ChatPageState extends State<ChatPage> {
   void _initializeWebSocket() {
     print('Attempting to connect to WebSocket...');
     _socket = IOWebSocketChannel.connect(
-        Uri.parse('ws://192.168.0.56:8000/ws/chat/${widget.roomId}'));
+        Uri.parse('wss://stage.skil.in/ws/chat/${widget.roomId}'));
     print(
-        'Connected to WebSocket at: ws://192.168.0.56:8000/ws/chat/${widget.roomId}');
+        'Connected to WebSocket at: wss://stage.skil.in/ws/chat/${widget.roomId}');
     setState(() {
       _isConnected = true;
     });

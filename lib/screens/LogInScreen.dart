@@ -186,6 +186,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         focusNode: _focusNodeEmail,
                         keyboardType: TextInputType.emailAddress,
                         cursorColor: Color(0xff8856F4),
+                        maxLines: 1,
                         onTap: () {
                           setState(() {
                             _validateEmail = "";
@@ -197,6 +198,7 @@ class _LogInScreenState extends State<LogInScreen> {
                           });
                         },
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Enter Email Address",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -241,6 +243,11 @@ class _LogInScreenState extends State<LogInScreen> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,  // Vertically center the text
                       ),
                     ),
                     if (_validateEmail.isNotEmpty) ...[
@@ -339,7 +346,13 @@ class _LogInScreenState extends State<LogInScreen> {
                             borderSide: const BorderSide(
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
                     if (_validatePassword.isNotEmpty) ...[

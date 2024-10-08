@@ -79,8 +79,8 @@ class _DashboardState extends State<Dashboard> {
   bool _isConnected = false;
   void _initializeWebSocket(String userid) {
     print('Attempting to connect to WebSocket...');
-    _socket = IOWebSocketChannel.connect(Uri.parse("ws://192.168.0.56:8000/ws/notify/${userid}"));
-    print('Connected to WebSocket at: ws://192.168.0.56:8000/ws/notify/${userid}');
+    _socket = IOWebSocketChannel.connect(Uri.parse("wss://stage.skil.in/ws/notify/${userid}"));
+    print('Connected to WebSocket at: wss://192.168.0.56:8000/ws/notify/${userid}');
     setState(() {
       _isConnected = true;
     });
