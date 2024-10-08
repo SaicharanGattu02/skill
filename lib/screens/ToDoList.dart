@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
-import 'package:skill/Model/Get_Color_Response.dart';
-import 'package:skill/screens/AddTaskScreen.dart';
+
+import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/ProjectLabelModel.dart';
-import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../ProjectModule/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
+import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 
 class Todolist extends StatefulWidget {
@@ -24,10 +24,13 @@ class _TodolistState extends State<Todolist> {
   TextEditingController _taskNameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _DateController = TextEditingController();
- TextEditingController _priorityController = TextEditingController();
- TextEditingController _labelController = TextEditingController();
+  TextEditingController _priorityController = TextEditingController();
+  TextEditingController _labelController = TextEditingController();
+  TextEditingController _labelnameController = TextEditingController();
+  TextEditingController _labelcolorController = TextEditingController();
 
   FocusNode _focusNodeTaskName = FocusNode();
+  FocusNode _focusNodeLabelName = FocusNode();
   FocusNode _focusNodedescription = FocusNode();
 
   String _validtaskName = "";
@@ -35,8 +38,11 @@ class _TodolistState extends State<Todolist> {
   String _validDate = "";
   String _validatePriority = "";
   String _validateLabel = "";
-  String priorityid="";
-  String labelid="";
+  String _validateLabelName = "";
+  String _validateLabelColor = "";
+  String priorityid = "";
+  String labelid = "";
+  String labelColorid = "";
 
   bool _isLoading = true;
   @override
@@ -63,41 +69,45 @@ class _TodolistState extends State<Todolist> {
       'subtitle': 'Presentation of new products and cost structure'
     },
   ];
-  List<Priorities> priorities = [];
-  Future<void> GetPriorities() async {
-    var res = await Userapi.GetProjectsPrioritiesApi();
-    setState(() {
-      if (res != null && res.data != null) {
-        priorities = res.data ?? [];
-      }
-    });
-  }
+
+  final List<Priorities> priorities = [
+    Priorities(priorityValue: 'Priority 1', priorityKey: '1'),
+    Priorities(priorityValue: 'Priority 2', priorityKey: '2'),
+    Priorities(priorityValue: 'Priority 3', priorityKey: '3'),
+    Priorities(priorityValue: 'Priority 4', priorityKey: '4'),
+  ];
 
   List<Label> labels = [];
   Future<void> GetLabel() async {
     var res = await Userapi.GetProjectsLabelApi();
     setState(() {
-      if (res != null && res.label!= null) {
+      if (res != null && res.label != null) {
         labels = res.label ?? [];
       }
     });
   }
 
-
+  List<LabelColor> labelcolor = [];
+  Future<void> GetLabelColor() async {
+    var res = await Userapi.GetProjectsLabelColorApi();
+    setState(() {
+      if (res != null && res.data != null) {
+        labelcolor = res.data ?? [];
+      }
+    });
+  }
 
   List<TODOList> data = [];
-  List<TODOList> filteredData = []; // For storing filtered tasks
-  TextEditingController _searchController =
-      TextEditingController(); // Controller for search input
-
+  List<TODOList> filteredData = [];
+  TextEditingController _searchController = TextEditingController();
 
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000), // Minimum date
-      lastDate: DateTime(2101), // Maximum date
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
     );
     if (pickedDate != null) {
       controller.text =
@@ -117,19 +127,32 @@ class _TodolistState extends State<Todolist> {
     });
   }
 
-  Future<void> PostToDo() async{
-    var res =await Userapi.PostProjectTodo(_taskNameController.text, _descriptionController.text, _DateController.text, priorityid, labelid);
-    if(res!=null){
-      if(res.settings?.success==1){
+  Future<void> PostToDo() async {
+    var res = await Userapi.PostProjectTodo(_taskNameController.text,
+        _descriptionController.text, _DateController.text, priorityid, labelid);
+    if (res != null) {
+      if (res.settings?.success == 1) {
         GetToDoList();
-        Navigator.pop(context,true);
+        Navigator.pop(context, true);
         CustomSnackBar.show(context, "${res.settings?.message}");
-      }else{
+      } else {
         CustomSnackBar.show(context, "${res.settings?.message}");
       }
-    } else {
+    } else {}
+  }
 
-    }
+  Future<void> PostToDoAddLabel() async {
+    var res = await Userapi.PostProjectTodoAddLabel(
+        _labelnameController.text, labelColorid);
+    if (res != null) {
+      if (res.settings?.success == 1) {
+        GetToDoList();
+        Navigator.pop(context, true);
+        CustomSnackBar.show(context, "${res.settings?.message}");
+      } else {
+        CustomSnackBar.show(context, "${res.settings?.message}");
+      }
+    } else {}
   }
 
   void _filterTasks() {
@@ -161,22 +184,22 @@ class _TodolistState extends State<Todolist> {
         actions: [],
         onPlusTap: () {
           GetLabel();
-          GetPriorities();
           _bottomSheet(context);
         },
       ),
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
         child: Column(
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16,),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: w * 0.56,
+                    width: w * 0.58,
                     height: h * 0.043,
                     child: Container(
                       padding: EdgeInsets.only(
@@ -233,36 +256,39 @@ class _TodolistState extends State<Todolist> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () {
-                        _showAddTaskBottomSheet(context);
+                        GetLabelColor();
+                        _showAddLabel(context);
                       },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Color(0xff8856F4),
-                            borderRadius: BorderRadius.circular(6)),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/circleadd.png",
-                              fit: BoxFit.contain,
-                              width: w * 0.045,
-                              height: w * 0.05,
-                              color: Color(0xffffffff),
-                            ),
-                            SizedBox(
-                              width: w * 0.01,
-                            ),
-                            Text(
-                              "Add Label",
-                              style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                  fontFamily: "Inter",
-                                  height: 16.94 / 12,
-                                  letterSpacing: 0.59),
-                            )
-                          ],
+                      child: Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Color(0xff8856F4),
+                              borderRadius: BorderRadius.circular(6)),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                "assets/circleadd.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.045,
+                                height: w * 0.05,
+                                color: Color(0xffffffff),
+                              ),
+                              SizedBox(
+                                width: w * 0.01,
+                              ),
+                              Text(
+                                "Add Label",
+                                style: TextStyle(
+                                    color: Color(0xffffffff),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                    fontFamily: "Inter",
+                                    height: 16.94 / 12,
+                                    letterSpacing: 0.59),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -273,7 +299,7 @@ class _TodolistState extends State<Todolist> {
             const SizedBox(height: 8),
             Container(
               width: w,
-              height: h * 0.85,
+              height: h*0.78,
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -394,444 +420,385 @@ class _TodolistState extends State<Todolist> {
                 ),
               )
             ),
+
           ],
         ),
       ),
+
     );
   }
 
-  void _showAddTaskBottomSheet(BuildContext context) {
-    // Getcolorcodes().then((response) {
-    //   if (response != null) {
-    //     _showBottomSheetWithColors(context, response);
-    //   } else {
-    //     print('Failed to load colors');
-    //   }
-    // });
-  }
-
-  void _showBottomSheetWithColors(
-      BuildContext context, Get_Color_Response colorResponse) {
+  void _showAddLabel(BuildContext context) {
+    double h = MediaQuery.of(context).size.height * 0.45;
+    double w = MediaQuery.of(context).size.width;
     showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // Ensures the bottom sheet is scrollable
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context)
-                  .viewInsets
-                  .bottom, // Handles keyboard overlap
-              left: 16.0,
-              right: 16.0,
-              top: 16.0),
-          child: SingleChildScrollView(
-            // Wrap the content in a scrollable view
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Add Label',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Label Name',
-                    border: OutlineInputBorder(),
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Container(
+                height: h,
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+                decoration: BoxDecoration(
+                  color: Color(0xffffffff),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                 ),
-                SizedBox(height: 16),
-                Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: DropdownButtonFormField<ColorItem>(
-                        decoration: InputDecoration(
-                          labelText: 'Priority',
-                          border: OutlineInputBorder(),
+                    Center(
+                      child: Container(
+                        width: w * 0.1,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        items:
-                            colorResponse.colorItem!.map((ColorItem colorItem) {
-                          return DropdownMenuItem<ColorItem>(
-                            value: colorItem,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(
-                                        int.parse(colorItem.colorCode ?? "")),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (ColorItem? selectedColor) {
-                          // Handle color selection
-                          print(
-                              'Selected color: ${selectedColor?.colorName ?? ""}');
-                        },
                       ),
                     ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Text(
+                          "Add Label",
+                          style: TextStyle(
+                            color: Color(0xff1C1D22),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            fontFamily: 'Inter',
+                            height: 18 / 16,
+                          ),
+                        ),
+                        Spacer(),
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context)
+                                .pop(); // Close the BottomSheet when tapped
+                          },
+                          child: Container(
+                            width: w * 0.05,
+                            height: w * 0.05,
+                            decoration: BoxDecoration(
+                              color: Color(0xffE5E5E5),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                "assets/crossblue.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.023,
+                                height: w * 0.023,
+                                color: Color(0xff8856F4),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _label(text: 'Label Name'),
+                            SizedBox(height: 6),
+                            Container(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
+                              child: TextFormField(
+                                controller: _labelnameController,
+                                focusNode: _focusNodeLabelName,
+                                keyboardType: TextInputType.text,
+                                cursorColor: Color(0xff8856F4),
+                                decoration: InputDecoration(
+                                  hintText: "Enter Label Name",
+                                  hintStyle: const TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: 0,
+                                    height: 19.36 / 14,
+                                    color: Color(0xffAFAFAF),
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xffFCFAFF),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (_validateLabelName.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(
+                                    left: 8, bottom: 10, top: 5),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    'please enter label name',
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              SizedBox(height: 15),
+                            ],
+                            _label(text: 'Color'),
+                            SizedBox(height: 4),
+                            Container(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
+                              child: TypeAheadField<LabelColor>(
+                                builder: (context, controller, focusNode) {
+                                  return TextField(
+                                    focusNode: focusNode,
+                                    controller: _labelcolorController,
+                                    onTap: () {
+                                      setState(() {
+                                        _validateLabelColor = "";
+                                      });
+                                    },
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _validateLabelColor = "";
+                                      });
+                                    },
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      height: 1.2,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "Select label",
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        letterSpacing: 0,
+                                        height: 1.2,
+                                        color: Color(0xffAFAFAF),
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                suggestionsCallback: (pattern) {
+                                  return labelcolor
+                                      .where((item) => item.colorName!
+                                          .toLowerCase()
+                                          .contains(pattern.toLowerCase()))
+                                      .toList();
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return
+                                    ListTile(
+                                    title:
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            color: Color(
+                                              int.parse(suggestion.colorCode!.replaceFirst('#','0xFF')),
+                                              // This replaces '#' with '0xFF' to make it a valid color value
+                                            ),
+                                            borderRadius: BorderRadius.circular(100),
+                                            border: Border.all(color: Colors.grey.shade300),
+                                          ),
+                                        ),
+
+                                        SizedBox(width: 10),
+                                        Text(
+                                          (suggestion.colorName!),
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                onSelected: (suggestion) {
+                                  setState(() {
+                                    _labelcolorController.text =
+                                        suggestion.colorName!;
+                                    labelColorid = suggestion.colorCode!;
+                                    print("labelColorid:${labelColorid}");
+                                    _validateLabelColor = "";
+                                  });
+                                },
+                              ),
+                            ),
+                            if (_validateLabelColor.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateLabelColor,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            height: 40,
+                            width: w * 0.43,
+                            decoration: BoxDecoration(
+                              color: Color(0xffF8FCFF),
+                              border: Border.all(
+                                color: Color(0xff8856F4),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Close',
+                                style: TextStyle(
+                                  color: Color(0xff8856F4),
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        InkResponse(
+                          onTap: () {
+                            setState(() {
+                              _validateLabelName =
+                                  _labelnameController.text.isEmpty
+                                      ? "Please enter label name"
+                                      : "";
+                              _validateLabelColor =
+                                  _labelcolorController.text.isEmpty
+                                      ? "Please select a label color"
+                                      : "";
+
+                              _isLoading = _validateLabelName.isEmpty &&
+                                  _validateLabelColor.isEmpty;
+
+                              if (_isLoading) {
+                                PostToDoAddLabel();
+                              }
+                            });
+                          },
+                          child: Container(
+                            height: 40,
+                            width: w * 0.43,
+                            decoration: BoxDecoration(
+                              color: Color(0xff8856F4),
+                              border: Border.all(
+                                color: Color(0xff8856F4),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Save',
+                                style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Dismiss the bottom sheet
-                      },
-                      child: Text('Cancel'),
-                    ),
-                    SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Save task logic here
-                      },
-                      child: Text('Add Label'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+              ),
+            );
+          });
+        }).whenComplete(() {
+      _labelnameController.text = "";
+      _labelcolorController.text = "";
+
+      _validateLabelColor = "";
+      _validateLabelName = "";
+    });
   }
-  // Widget _bottomSheet(BuildContext context) {
-  //   double h = MediaQuery.of(context).size.height * 0.75;
-  //   double w = MediaQuery.of(context).size.width;
-  //
-  //   return Padding(
-  //     padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-  //     child: Container(
-  //       height: h, // Set the height to 70% of the screen
-  //       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-  //       decoration: BoxDecoration(
-  //         color: Color(0xffffffff),
-  //         borderRadius: BorderRadius.only(
-  //           topLeft: Radius.circular(20),
-  //           topRight: Radius.circular(20),
-  //         ),
-  //       ),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Center(
-  //             child: Container(
-  //               width: w * 0.1,
-  //               height: 5,
-  //               decoration: BoxDecoration(
-  //                 color: Colors.grey[300],
-  //                 borderRadius: BorderRadius.circular(10),
-  //               ),
-  //             ),
-  //           ),
-  //           SizedBox(height: 20),
-  //           Row(
-  //             children: [
-  //               Text(
-  //                 "Add To Do List",
-  //                 style: TextStyle(
-  //                     color: Color(0xff1C1D22),
-  //                     fontWeight: FontWeight.w500,
-  //                     fontSize: 16,
-  //                     fontFamily: 'Inter',
-  //                     height: 18 / 16),
-  //               ),
-  //               Spacer(),
-  //               InkWell(
-  //                 onTap: () {
-  //                   Navigator.of(context)
-  //                       .pop(); // Close the BottomSheet when tapped
-  //                 },
-  //                 child: Container(
-  //                   width: w * 0.05,
-  //                   height: w * 0.05,
-  //                   decoration: BoxDecoration(
-  //                     color: Color(0xffE5E5E5),
-  //                     borderRadius: BorderRadius.circular(100),
-  //                   ),
-  //                   child: Center(
-  //                       child: Image.asset(
-  //                         "assets/crossblue.png",
-  //                         fit: BoxFit.contain,
-  //                         width: w * 0.023,
-  //                         height: w * 0.023,
-  //                         color: Color(0xff8856F4),
-  //                       )),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           SizedBox(height: 16),
-  //           Expanded(
-  //             child: SingleChildScrollView(
-  //               physics: AlwaysScrollableScrollPhysics(),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   _label(text: 'Task Name'),
-  //                   SizedBox(height: 6),
-  //                   Container(
-  //                     height: MediaQuery.of(context).size.height * 0.050,
-  //                     child: TextFormField(
-  //                       controller: _taskNameController,
-  //                       focusNode: _focusNodeTaskName,
-  //                       keyboardType: TextInputType.text,
-  //                       cursorColor: Color(0xff8856F4),
-  //                       decoration: InputDecoration(
-  //                         hintText: "Enter Task Name",
-  //                         hintStyle: const TextStyle(
-  //                           fontSize: 14,
-  //                           letterSpacing: 0,
-  //                           height: 19.36 / 14,
-  //                           color: Color(0xffAFAFAF),
-  //                           fontFamily: 'Inter',
-  //                           fontWeight: FontWeight.w400,
-  //                         ),
-  //                         filled: true,
-  //                         fillColor: const Color(0xffFCFAFF),
-  //                         enabledBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7),
-  //                           borderSide:
-  //                           const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //                         ),
-  //                         focusedBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7),
-  //                           borderSide:
-  //                           const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //                         ),
-  //                         errorBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7),
-  //                           borderSide:
-  //                           const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //                         ),
-  //                         focusedErrorBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7),
-  //                           borderSide:
-  //                           const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   if (_validtaskName.isNotEmpty) ...[
-  //                     Container(
-  //                       alignment: Alignment.topLeft,
-  //                       margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-  //                       width: MediaQuery.of(context).size.width * 0.6,
-  //                       child: ShakeWidget(
-  //                         key: Key("value"),
-  //                         duration: Duration(milliseconds: 700),
-  //                         child: Text(
-  //                           'please enter task name',
-  //                           style: TextStyle(
-  //                             fontFamily: "Poppins",
-  //                             fontSize: 12,
-  //                             color: Colors.red,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ] else ...[
-  //                     SizedBox(height: 15),
-  //                   ],
-  //                   _label(text: 'Description'),
-  //                   SizedBox(height: 4),
-  //                   Container(
-  //                     height: h * 0.2,
-  //                     decoration: BoxDecoration(
-  //                         color: Colors.white,
-  //                         borderRadius: BorderRadius.circular(20),
-  //                         border: Border.all(color: Color(0xffE8ECFF))),
-  //                     child: TextFormField(
-  //                       cursorColor: Color(0xff8856F4),
-  //                       scrollPadding: const EdgeInsets.only(top: 5),
-  //                       controller: _descriptionController,
-  //                       textInputAction: TextInputAction.done,
-  //                       maxLines: 100,
-  //                       onTap: () {
-  //                         setState(() {
-  //                           _validdescription = "";
-  //                         });
-  //                       },
-  //                       onChanged: (v) {
-  //                         setState(() {
-  //                           _validdescription = "";
-  //                         });
-  //                       },
-  //                       decoration: InputDecoration(
-  //                         contentPadding:
-  //                         const EdgeInsets.only(left: 10, top: 10),
-  //                         hintText: "Type Description",
-  //                         hintStyle: TextStyle(
-  //                           fontSize: 15,
-  //                           letterSpacing: 0,
-  //                           height: 1.2,
-  //                           color: Color(0xffAFAFAF),
-  //                           fontFamily: 'Poppins',
-  //                           fontWeight: FontWeight.w400,
-  //                         ),
-  //                         filled: true,
-  //                         fillColor: Color(0xffFCFAFF),
-  //                         enabledBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7),
-  //                           borderSide: BorderSide(
-  //                               width: 1, color: Color(0xffD0CBDB)),
-  //                         ),
-  //                         focusedBorder: OutlineInputBorder(
-  //                           borderRadius: BorderRadius.circular(7.0),
-  //                           borderSide: BorderSide(
-  //                               width: 1, color: Color(0xffD0CBDB)),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   if (_validdescription.isNotEmpty) ...[
-  //                     Container(
-  //                       alignment: Alignment.topLeft,
-  //                       margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-  //                       width: MediaQuery.of(context).size.width * 0.6,
-  //                       child: ShakeWidget(
-  //                         key: Key("value"),
-  //                         duration: Duration(milliseconds: 700),
-  //                         child: Text(
-  //                           'please type description',
-  //                           style: TextStyle(
-  //                             fontFamily: "Poppins",
-  //                             fontSize: 12,
-  //                             color: Colors.red,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ] else ...[
-  //                     SizedBox(height: 15),
-  //                   ],
-  //
-  //
-  //                   SizedBox(height: 10),
-  //                   _label(text: 'Date'),
-  //                   SizedBox(height: 4),
-  //                   _buildDateField(
-  //                     _DateController,
-  //                   ),   if (_validDate.isNotEmpty) ...[
-  //                     Container(
-  //                       alignment: Alignment.topLeft,
-  //                       margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-  //                       width: MediaQuery.of(context).size.width * 0.6,
-  //                       child: ShakeWidget(
-  //                         key: Key("value"),
-  //                         duration: Duration(milliseconds: 700),
-  //                         child: Text(
-  //                           'please select date',
-  //                           style: TextStyle(
-  //                             fontFamily: "Poppins",
-  //                             fontSize: 12,
-  //                             color: Colors.red,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ] else ...[
-  //                     SizedBox(height: 15),
-  //                   ],
-  //
-  //                   SizedBox(height: 30),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           Row(
-  //             children: [
-  //               Container(
-  //                 height: 40,
-  //                 width: w * 0.43,
-  //                 decoration: BoxDecoration(
-  //                   color: Color(0xffF8FCFF),
-  //                   border: Border.all(
-  //                     color: Color(0xff8856F4),
-  //                     width: 1.0,
-  //                   ),
-  //                   borderRadius: BorderRadius.circular(7),
-  //                 ),
-  //                 child: Center(
-  //                   child: Text(
-  //                     'Close',
-  //                     style: TextStyle(
-  //                       color: Color(0xff8856F4),
-  //                       fontSize: 16.0,
-  //                       fontWeight: FontWeight.w400,
-  //                       fontFamily: 'Inter',
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               Spacer(),
-  //               InkResponse(
-  //                 onTap: () {
-  //                   setState(() {
-  //                     _validtaskName = _taskNameController.text.isEmpty ? "Please enter title" : "";
-  //                     _validdescription = _descriptionController.text.isEmpty
-  //                         ? "Please enter a description"
-  //                         : "";
-  //                     _validDate =
-  //                     _DateController.text.isEmpty ? "Please enter a deadline" : "";
-  //
-  //                     _isLoading = _validtaskName.isEmpty && _validdescription.isEmpty && _validDate.isEmpty;
-  //
-  //                     if (_isLoading) {
-  //
-  //                     }
-  //                   });
-  //                 },
-  //                 child: Container(
-  //                   height: 40,
-  //                   width: w * 0.43,
-  //                   decoration: BoxDecoration(
-  //                     color: Color(0xff8856F4),
-  //                     border: Border.all(
-  //                       color: Color(0xff8856F4),
-  //                       width: 1.0,
-  //                     ),
-  //                     borderRadius: BorderRadius.circular(7),
-  //                   ),
-  //                   child: Center(
-  //                     child: Text(
-  //                       'Save',
-  //                       style: TextStyle(
-  //                         color: Color(0xffffffff),
-  //                         fontSize: 16.0,
-  //                         fontWeight: FontWeight.w400,
-  //                         fontFamily: 'Inter',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  //
-  // }
 
   void _bottomSheet(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.65;
@@ -986,7 +953,7 @@ class _TodolistState extends State<Todolist> {
                             _label(text: 'Description'),
                             SizedBox(height: 4),
                             Container(
-                              height: h * 0.2,
+                              height: h * 0.1,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
@@ -1089,7 +1056,8 @@ class _TodolistState extends State<Todolist> {
                             _label(text: 'Priority'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Priorities>(
                                 builder: (context, controller, focusNode) {
                                   return TextField(
@@ -1130,7 +1098,8 @@ class _TodolistState extends State<Todolist> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
@@ -1139,15 +1108,15 @@ class _TodolistState extends State<Todolist> {
                                 },
                                 suggestionsCallback: (pattern) {
                                   return priorities
-                                      .where((item) => item.priorityValue!
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
+                                      .where((item) => item.priorityValue
+                                          .toLowerCase()
+                                          .contains(pattern.toLowerCase()))
                                       .toList();
                                 },
                                 itemBuilder: (context, suggestion) {
                                   return ListTile(
                                     title: Text(
-                                      suggestion.priorityValue!,
+                                      suggestion.priorityValue,
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontFamily: "Inter",
@@ -1159,10 +1128,8 @@ class _TodolistState extends State<Todolist> {
                                 onSelected: (suggestion) {
                                   setState(() {
                                     _priorityController.text =
-                                    suggestion.priorityValue!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    priorityid = suggestion.priorityKey!;
-                                    // Call your API with the selected key here if needed
+                                        suggestion.priorityValue;
+                                    priorityid = suggestion.priorityKey;
                                     _validatePriority = "";
                                   });
                                 },
@@ -1194,7 +1161,8 @@ class _TodolistState extends State<Todolist> {
                             _label(text: 'Label'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Label>(
                                 builder: (context, controller, focusNode) {
                                   return TextField(
@@ -1235,7 +1203,8 @@ class _TodolistState extends State<Todolist> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
@@ -1245,8 +1214,8 @@ class _TodolistState extends State<Todolist> {
                                 suggestionsCallback: (pattern) {
                                   return labels
                                       .where((item) => item.name!
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
+                                          .toLowerCase()
+                                          .contains(pattern.toLowerCase()))
                                       .toList();
                                 },
                                 itemBuilder: (context, suggestion) {
@@ -1263,8 +1232,7 @@ class _TodolistState extends State<Todolist> {
                                 },
                                 onSelected: (suggestion) {
                                   setState(() {
-                                    _labelController.text =
-                                    suggestion.name!;
+                                    _labelController.text = suggestion.name!;
                                     // You can use suggestion.statusKey to send to the server
                                     labelid = suggestion.id!;
                                     print("labelid:${labelid}");
@@ -1346,17 +1314,18 @@ class _TodolistState extends State<Todolist> {
                               _validDate = _DateController.text.isEmpty
                                   ? "Please enter a deadline"
                                   : "";
-                              _validatePriority = _priorityController.text.isEmpty
-                                  ? "Please select a priority"
-                                  : "";
+                              _validatePriority =
+                                  _priorityController.text.isEmpty
+                                      ? "Please select a priority"
+                                      : "";
                               _validateLabel = _labelController.text.isEmpty
                                   ? "Please select a label"
                                   : "";
 
                               _isLoading = _validtaskName.isEmpty &&
                                   _validdescription.isEmpty &&
-                                  _validatePriority.isEmpty&&
-                                  _validatePriority.isEmpty&&
+                                  _validatePriority.isEmpty &&
+                                  _validatePriority.isEmpty &&
                                   _validateLabel.isEmpty;
 
                               if (_isLoading) {
@@ -1399,9 +1368,13 @@ class _TodolistState extends State<Todolist> {
       _taskNameController.text = "";
       _descriptionController.text = "";
       _DateController.text = "";
+      _priorityController.text = "";
+      _labelController.text = "";
       _validtaskName = "";
       _validdescription = "";
       _validDate = "";
+      _validatePriority = "";
+      _validateLabel = "";
     });
   }
 
@@ -1490,7 +1463,7 @@ class _TodolistState extends State<Todolist> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select dob from date picker",
+                  hintText: "Select date",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

@@ -10,6 +10,7 @@ import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectActivityModel.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
+import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
@@ -399,6 +400,26 @@ class Userapi {
       return null;
     }
   }
+
+
+  static Future<ProjectLabelColorModel?> GetProjectsLabelColorApi() async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/todo/color-choices");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetProjectsLabelColorApi Response:${res.body}");
+        return ProjectLabelColorModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
 
   static Future<NoteModel?> GetProjectNote(String id) async {
     try {
@@ -1128,7 +1149,37 @@ class Userapi {
       return null;
     }
   }
+  static Future<LoginModel?> PostProjectTodoAddLabel(
+      String name,
+      String color,
+    ) async {
 
+    try {
+      Map<String,String> data = {
+        'name': name,
+        'color': color,
+       };
+
+      final url = Uri.parse('${host}/todo/add-label');
+      final headers = await getheader();
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(data),
+      );
+      if (response != null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostProjectTodoAddLabel :${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
 
 
   static Future<LoginModel?> PutProjectCategory(String name, String id) async {

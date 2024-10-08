@@ -370,3 +370,11 @@ class DateTimeFormatter {
 }
 
 
+class Priorities {
+  final String priorityValue;
+  final String priorityKey;
+
+  Priorities({required this.priorityValue, required this.priorityKey});
+}
+
+
