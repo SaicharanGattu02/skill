@@ -333,4 +333,107 @@ class _TodolistState extends State<Todolist> {
       ),
     );
   }
+  void _showAddTaskBottomSheet(BuildContext context) {
+    // Fetch color codes when the bottom sheet is opened
+    // Getcolorcodes().then((response) {
+    //   if (response != null) {
+    //     _showBottomSheetWithColors(context, response);
+    //   } else {
+    //     print('Failed to load colors');
+    //   }
+    // });
+  }
+
+  void _showBottomSheetWithColors(BuildContext context, Get_Color_Response colorResponse) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Ensures the bottom sheet is scrollable
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom, // Handles keyboard overlap
+              left: 16.0,
+              right: 16.0,
+              top: 16.0),
+          child: SingleChildScrollView( // Wrap the content in a scrollable view
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Add Label',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Label Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<ColorItem>(
+                        decoration: InputDecoration(
+                          labelText: 'Priority',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: colorResponse.colorItem!.map((ColorItem colorItem) {
+                          return DropdownMenuItem<ColorItem>(
+                            value: colorItem,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(int.parse(colorItem.colorCode ?? "")),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (ColorItem? selectedColor) {
+                          // Handle color selection
+                          print('Selected color: ${selectedColor?.colorName??""}');
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Dismiss the bottom sheet
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Save task logic here
+                      },
+                      child: Text('Add Label'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

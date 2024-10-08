@@ -166,19 +166,6 @@ class _LogInScreenState extends State<LogInScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // _buildTextFormField(
-                    //     controller: _emailController,
-                    //     focusNode: _focusNodeEmail,
-                    //     hintText: "Email Address",
-                    //     validationMessage: 'Please enter your category',
-                    //     prefixicon: Image.asset(
-                    //       "assets/gmail.png",
-                    //       width: 21,
-                    //       height: 21,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
-                    // const SizedBox(height: 16),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(

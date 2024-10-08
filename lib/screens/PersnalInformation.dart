@@ -7,7 +7,6 @@ import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
 import 'LogInScreen.dart';
-import 'Login.dart';
 
 class PersonalInformation extends StatefulWidget {
 
@@ -71,7 +70,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
 
     });
 
-    // Check if both validations are empty (no errors)
     if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty&&_validatePwd.isEmpty&& _validateGender.isEmpty) {
 
       RegisterApi();
@@ -192,20 +190,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // _buildTextFormField(
-                    //     controller: _firstNameController,
-                    //     focusNode: _focusNodeFirstName,
-                    //     hintText: "First Name",
-                    //     validationMessage: 'Please enter your first name',
-                    //     keyboardType: TextInputType.text,
-                    //     prefixicon: Image.asset(
-                    //       "assets/profilep.png",
-                    //       width: 21,
-                    //       height: 21,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
-
                     SizedBox(height: 4),
                     Container(
                       height:
@@ -226,6 +210,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           });
                         },
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Enter FirstName",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -270,6 +255,11 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
                     if (_validateFirstName.isNotEmpty) ...[
@@ -295,19 +285,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
                     ] else ...[
                       SizedBox(height: 8),
                     ],
-
-                    // _buildTextFormField(
-                    //     controller: _lastNameController,
-                    //     focusNode: _focusNodeLastName,
-                    //     hintText: "Last Name",
-                    //     validationMessage: 'Please enter your last size',
-                    //     prefixicon: Image.asset(
-                    //       "assets/profilep.png",
-                    //       width: 21,
-                    //       height: 21,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
                     Container(
                       height:
                       MediaQuery.of(context).size.height * 0.050,
@@ -327,6 +304,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           });
                         },
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Enter Last Name",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -371,6 +349,11 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
                     if (_validateLastName.isNotEmpty) ...[
@@ -397,26 +380,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       SizedBox(height: 8),
                     ],
 
-                    // _buildTextFormField(
-                    //     controller: _emailController,
-                    //     focusNode: _focusNodeEmail,
-                    //     hintText: "Email Address",
-                    //     validationMessage: 'Please enter your category',
-                    //     prefixicon: Image.asset(
-                    //       "assets/gmail.png",
-                    //       width: 18,
-                    //       height: 18,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
                     Container(
-                      height:
-                      MediaQuery.of(context).size.height * 0.050,
+                      height: MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(
                         controller: _emailController,
                         focusNode: _focusNodeEmail,
                         keyboardType: TextInputType.emailAddress,
                         cursorColor: Color(0xff8856F4),
+                        maxLines: 1,
                         onTap: () {
                           setState(() {
                             _validateemail = "";
@@ -428,7 +399,8 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: "Enter EmailAddress",
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          hintText: "Enter Email Address",
                           hintStyle: const TextStyle(
                             fontSize: 14,
                             letterSpacing: 0,
@@ -472,13 +444,17 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,  // Vertically center the text
                       ),
                     ),
                     if (_validateemail.isNotEmpty) ...[
                       Container(
                         alignment: Alignment.topLeft,
-                        margin: EdgeInsets.only(
-                            left: 8, bottom: 10, top: 5),
+                        margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
                         width: MediaQuery.of(context).size.width * 0.6,
                         child: ShakeWidget(
                           key: Key("value"),
@@ -498,25 +474,13 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       SizedBox(height: 8),
                     ],
 
-                    // _buildTextFormField(
-                    //     controller: _phoneController,
-                    //     focusNode: _focusNodePhone,
-                    //     hintText: "Phone Number",
-                    //     validationMessage: 'Please enter your phoneNumber',
-                    //     prefixicon: Image.asset(
-                    //       "assets/call.png",
-                    //       width: 21,
-                    //       height: 21,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
                     Container(
                       height:
                       MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(
                         controller: _phoneController,
                         focusNode: _focusNodePhone,
-                        keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.phone,
                         cursorColor: Color(0xff8856F4),
                         onTap: () {
                           setState(() {
@@ -529,6 +493,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           });
                         },
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Phone Number",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -573,6 +538,12 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+
                       ),
                     ),
                     if (_validatePhone.isNotEmpty) ...[
@@ -599,22 +570,11 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       SizedBox(height: 8),
                     ],
 
-                    // _buildTextFormField(
-                    //     controller: _pwdController,
-                    //     focusNode: _focusNodePassword,
-                    //     hintText: "Password",
-                    //     validationMessage: 'Please select your city',
-                    //     prefixicon: Image.asset(
-                    //       "assets/Lock.png",
-                    //       width: 21,
-                    //       height: 21,
-                    //       fit: BoxFit.contain,
-                    //       color: Color(0xffAFAFAF),
-                    //     )),
                     Container(
                       height:
                       MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(
+                        obscureText: true,
                         controller: _pwdController,
                         focusNode: _focusNodePassword,
                         keyboardType: TextInputType.text,
@@ -630,6 +590,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           });
                         },
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Enter Password",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -674,6 +635,11 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
+                        style: TextStyle(
+                          fontSize: 14,  // Ensure font size fits within height
+                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
                     if (_validatePwd.isNotEmpty) ...[
@@ -845,57 +811,4 @@ class _PersonalInformationState extends State<PersonalInformation> {
       ),
     );
   }
-
-  // Widget _buildTextFormField(
-  //     {required TextEditingController controller,
-  //       required FocusNode focusNode,
-  //       bool obscureText = false,
-  //       required String hintText,
-  //       required String validationMessage,
-  //       TextInputType keyboardType = TextInputType.text,
-  //       Widget? prefixicon}) {
-  //   return Container(
-  //     height: MediaQuery.of(context).size.height * 0.045,
-  //     child: TextFormField(
-  //       controller: controller,
-  //       focusNode: focusNode,
-  //       keyboardType: keyboardType,
-  //       obscureText: obscureText,
-  //       decoration: InputDecoration(
-  //         hintText: hintText,
-  //         prefixIcon: Container(
-  //             width: 20,
-  //             height: 20,
-  //             padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-  //             child: prefixicon),
-  //         hintStyle: const TextStyle(
-  //           fontSize: 15,
-  //           letterSpacing: 0,
-  //           height: 1.2,
-  //           color: Color(0xffAFAFAF),
-  //           fontFamily: 'Poppins',
-  //           fontWeight: FontWeight.w400,
-  //         ),
-  //         filled: true,
-  //         fillColor: const Color(0xffffffff),
-  //         enabledBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(7),
-  //           borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-  //         ),
-  //         focusedBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(7),
-  //           borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-  //         ),
-  //         errorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(7),
-  //           borderSide: const BorderSide(width: 1, color: Colors.red),
-  //         ),
-  //         focusedErrorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(7),
-  //           borderSide: const BorderSide(width: 1, color: Colors.red),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

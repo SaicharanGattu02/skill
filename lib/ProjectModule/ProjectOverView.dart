@@ -499,12 +499,17 @@ class _OverViewState extends State<OverView> {
           child: ListView.builder(
             itemCount: 10, // Example member count
             itemBuilder: (context, index) {
+              String isoDate1 = activitydata[index].createdTime ?? "";
+              String isoDate =activitydata[index].createdTime ?? "";
+              String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false); // Date only
+
+              String formattedTime = DateTimeFormatter.format(isoDate1, includeDate: false, includeTime: true);
               return Column(
                 children: [
                   ActivityCard(
                     name: activitydata[index].userName ?? "",
                     user_img: activitydata[index].userImage ?? "",
-                    time: activitydata[index].createdTime ?? "",
+                    time:"${formattedTime} | ${formattedDate}",
                     action: activitydata[index].action ?? "",
                     desc: activitydata[index].description ?? "",
                     project_name: activitydata[index].projectName ?? "",

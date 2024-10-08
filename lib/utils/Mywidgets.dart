@@ -244,9 +244,11 @@ class ActivityCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18)
             ),// Set the desired height for your rectangle
-            child: Image(
-              image: NetworkImage(user_img),
-              fit: BoxFit.cover, // Adjust how the image fits in the rectangle
+            child: ClipOval(
+              child: Image(
+                image: NetworkImage(user_img),
+                fit: BoxFit.cover, // Adjust how the image fits in the rectangle
+              ),
             ),
           ),
           SizedBox(width: 16),
@@ -265,12 +267,7 @@ class ActivityCard extends StatelessWidget {
                     SizedBox(
                       width: 10,
                     ),
-                    Text(time,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            color: Color(0xff6c848f))),
+
                     Spacer(),
                     Container(
                       decoration: BoxDecoration(
@@ -288,6 +285,13 @@ class ActivityCard extends StatelessWidget {
                     )
                   ],
                 ),
+                Text(time,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                        color: Color(0xff6c848f))),
+                
                 Text("${desc}",
                     style: TextStyle(
                         fontSize: 16,

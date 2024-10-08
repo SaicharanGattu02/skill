@@ -1,7 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
-import 'package:skill/screens/Login.dart';
 import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
