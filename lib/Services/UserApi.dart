@@ -1155,8 +1155,6 @@ class Userapi {
     }
   }
 
-
-
   static Future<Get_Color_Response?> Getcolorcodes() async {
     try {
       final headers = await getheader();
@@ -1165,6 +1163,25 @@ class Userapi {
       if (res != null) {
         print("GetProjectsPrioritiesApi Response:${res.body}");
         return Get_Color_Response.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<EmployeeListModel?> GetSearchUsers(String text) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/chat/search-user?text=${text}");
+      print("URL: ${url}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetSearchUsers Response:${res.body}");
+        return EmployeeListModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

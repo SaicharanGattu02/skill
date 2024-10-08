@@ -45,12 +45,12 @@ class _LogInScreenState extends State<LogInScreen> {
     if (data != null) {
       if (data.settings?.success == 1) {
         PreferenceService().saveString("token", data.data?.access ?? "");
-
         CustomSnackBar.show(context, "${data.settings?.message}");
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Dashboard()));
       } else {
         print("Login failure");
+        CustomSnackBar.show(context, "${data.settings?.message}");
       }
     } else {
       print("Login >>>${data?.settings?.message}");

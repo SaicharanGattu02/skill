@@ -83,17 +83,15 @@ class _PersonalInformationState extends State<PersonalInformation> {
     var data = await Userapi.PostRegister(Fullname, _emailController.text, _phoneController.text, _pwdController.text, _gender??"");
     if (data != null) {
       if (data.settings?.success == 1) {
-
-
         CustomSnackBar.show(context, "${data.settings?.message}");
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LogInScreen()));
       } else {
+        CustomSnackBar.show(context, "${data.settings?.message}");
         print("Register failure");
       }
     } else {
       print("Register >>>${data?.settings?.message}");
-      CustomSnackBar.show(context, "${data?.settings?.message}");
     }
   }
 

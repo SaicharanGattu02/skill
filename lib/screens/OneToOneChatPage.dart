@@ -87,6 +87,7 @@ class _ChatPageState extends State<ChatPage> {
       }
     });
   }
+
   Future<void> _fetchMessages() async {
     print('Fetching messages for page $_currentPage...');
     var res = await Userapi.fetchroommessages(widget.roomId, last_msg_id);
@@ -228,10 +229,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageBubble(String message, String sender) {
     bool isMe = sender == 'you';
     return Align(
-      alignment:
-      isMe ?
-      Alignment.centerRight
-          : Alignment.centerLeft,
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.75,
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -327,6 +325,9 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
         children: [
+          SizedBox(
+            height: 20,
+          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -352,23 +353,49 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter your message',
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 5.0,
+                    spreadRadius: 1.0,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your message',
+                        border: InputBorder.none, // Remove the default border
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0), // Add padding
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
+                  InkResponse(
+                    onTap: (){
+                      _sendMessage();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(right: 10),
+                        child: Image(
+                      image: AssetImage(
+                        "assets/container.png",
+                      ),
+                      height: 36,
+                      width: 36,
+                    )),
+                  ),
+                ],
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
