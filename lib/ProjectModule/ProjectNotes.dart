@@ -51,16 +51,18 @@ class _ProjectNotesState extends State<ProjectNotes> {
   Future<void> GetNote() async {
     var res = await Userapi.GetProjectNote(widget.id);
     setState(() {
-      if (res != null) {
-        _loading = false;
-        if (res.data != null) {
-          data = res.data ?? [];
-
-          print("sucsesss");
+        if (res!= null) {
+          if(res.settings?.success==1){
+            _loading=false;
+            data = res.data ?? [];
+          }else{
+            _loading=false;
+            CustomSnackBar.show(context,res.settings?.message??"");
+          }
         } else {
-          print("Task Failure  ${res.settings?.message}");
+          print("Task Failure  ${res?.settings?.message}");
         }
-      }
+
     });
   }
 

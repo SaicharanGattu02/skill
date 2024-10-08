@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:skill/ProjectModule/AddLogTime.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
+import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 
 class TimeSheet extends StatefulWidget {
@@ -17,21 +18,20 @@ class _TimeSheetState extends State<TimeSheet> {
     TimeSheetDetails();
     super.initState();
   }
-
   int selectedTabIndex = 0;
+  bool isloading=true;
 
   List<Data> data = [];
   Future<void> TimeSheetDetails() async {
     var res = await Userapi.GetProjectTimeSheetDetails(widget.id);
-
     setState(() {
       if (res != null) {
-        if (res.data != null) {
+        if(res.settings?.success==1){
+          isloading=false;
           data = res.data ?? [];
-
-          print("sucsesss");
-        } else {
-          print("TimeSheetDetails Failure  ${res.settings?.message}");
+        }else{
+          isloading=false;
+          CustomSnackBar.show(context,res.settings?.message??"");
         }
       } else {
         print("not fetch");
@@ -44,7 +44,10 @@ class _TimeSheetState extends State<TimeSheet> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: SingleChildScrollView(
+      body: (isloading)?Center(
+        child: CircularProgressIndicator(color: Color(0xff8856F4),),
+      ):
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

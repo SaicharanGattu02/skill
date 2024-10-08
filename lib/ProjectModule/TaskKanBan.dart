@@ -4,6 +4,7 @@ import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TaskKanBanModel.dart';
+import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 
 class TaskKanBan extends StatefulWidget {
@@ -72,11 +73,9 @@ class _TaskKanBanState extends State<TaskKanBan> {
         if (res.settings?.success==1) {
           data = res.data ?? [];
           _loading=false;
-
-        }
-        else {
+        } else {
           _loading=false;
-
+          CustomSnackBar.show(context,res.settings?.message??"");
         }
       }else{
         print("Task KanBAn Failuree ${res?.settings?.message}");

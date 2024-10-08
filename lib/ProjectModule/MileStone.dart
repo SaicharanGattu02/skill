@@ -63,16 +63,17 @@ class _MileStoneState extends State<MileStone> {
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
-      _isLoading = false;
-      if (res != null) {
-        _loading = false;
-        if (res.data != null) {
-          data = res.data ?? [];
-          print("sucsesss");
+        if (res?.data != null) {
+          if(res?.settings?.success==1){
+            data = res?.data ?? [];
+            _loading=false;
+          }else{
+            _loading=false;
+            CustomSnackBar.show(context,res?.settings?.message??"");
+          }
         } else {
-          print("Task Failure  ${res.settings?.message}");
+          print("Task Failure  ${res?.settings?.message}");
         }
-      }
     });
   }
 

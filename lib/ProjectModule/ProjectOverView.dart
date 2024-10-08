@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/utils/CustomSnackBar.dart';
 import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
@@ -19,6 +20,7 @@ class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
   final FocusNode searchFocusNode = FocusNode();
   bool _isSearchFocused = false;
+  bool isloading=true;
   @override
   void initState() {
     super.initState();
@@ -38,9 +40,15 @@ class _OverViewState extends State<OverView> {
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
     setState(() {
       if (res != null && res.data != null) {
-        data = res.data;
-        members = data?.members ?? [];
-        _updatePieChartData();
+        if(res.settings?.success==1){
+          isloading=false;
+          data = res.data;
+          members = data?.members ?? [];
+          _updatePieChartData();
+        }else{
+          isloading=false;
+          CustomSnackBar.show(context,res.settings?.message??"");
+        }
       }
     });
   }
@@ -88,7 +96,12 @@ class _OverViewState extends State<OverView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body: NestedScrollView(
+      body:(isloading)?
+    Center(
+      child: CircularProgressIndicator(
+          color: Color(0xff8856F4),
+        ),
+    ): NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
@@ -130,12 +143,12 @@ class _OverViewState extends State<OverView> {
                 child: isMembersTab
                     ? _buildMembersTab(context)
                     : _buildAcitivityTab(
-                        context), // Conditional rendering for Activity Tab
+                    context), // Conditional rendering for Activity Tab
               ),
             ],
           ),
         ),
-      ),
+      )
     );
   }
 

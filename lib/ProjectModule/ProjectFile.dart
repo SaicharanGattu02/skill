@@ -53,15 +53,14 @@ class _ProjectFileState extends State<ProjectFile> {
   List<Data> data = [];
   Future<void> GetFile() async {
     var res = await Userapi.GetProjectFile(widget.id);
-
     setState(() {
       if (res != null) {
-        _loading = false;
-        if (res.data != null) {
+        if(res.settings?.success==1){
+          _loading = false;
           data = res.data ?? [];
-          print("sucsesss");
-        } else {
-          print("Task Failure  ${res.settings?.message}");
+        }else{
+          _loading = false;
+          CustomSnackBar.show(context,res.settings?.message??"");
         }
       }
     });

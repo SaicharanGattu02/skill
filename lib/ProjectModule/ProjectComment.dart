@@ -22,7 +22,7 @@ class ProjectComment extends StatefulWidget {
 
 class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
-  bool _loading = false;
+  bool _loading = true;
 
   XFile? _imageFile;
   File? filepath;
@@ -42,11 +42,12 @@ class _ProjectCommentState extends State<ProjectComment> {
     var res = await Userapi.GetProjectComments(widget.id);
     setState(() {
       if (res != null) {
-        if (res.data != null) {
+        if (res.settings?.success==1) {
+          _loading=false;
           data = res.data ?? [];
-          print("sucsesss");
         } else {
-          print("TimeSheetDetails Failure  ${res.settings?.message}");
+          _loading=false;
+          CustomSnackBar.show(context,res.settings?.message??"");
         }
       } else {
         print("not fetch");
@@ -73,7 +74,6 @@ class _ProjectCommentState extends State<ProjectComment> {
   }
 
   List<XFile> _imageList = [];
-
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.camera) {
       var status = await Permission.camera.status;

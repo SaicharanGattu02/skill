@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
 import '../Model/TasklistModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 
 class TaskList extends StatefulWidget {
@@ -34,6 +35,7 @@ class _TaskListState extends State<TaskList> {
           _loading=false;
         } else {
           _loading=false;
+          CustomSnackBar.show(context,Res?.settings?.message??"");
         }
       } else {
         print("Task Failure  ${Res?.settings?.message}");
