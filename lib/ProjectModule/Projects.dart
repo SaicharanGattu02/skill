@@ -115,7 +115,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(
         title: 'All Projects',
-        actions: [],
+        actions: [Container()],
         onPlusTap: () {
           // Show the bottom sheet on plus icon tap
           showModalBottomSheet(

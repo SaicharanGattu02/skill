@@ -377,7 +377,12 @@ class Priorities {
 
   Priorities({required this.priorityValue, required this.priorityKey});
 }
+class MeetingTypess {
+  final String meetingtypevalue;
 
+
+  MeetingTypess({required this.meetingtypevalue,});
+}
 
 
 
