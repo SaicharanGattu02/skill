@@ -44,7 +44,7 @@ class _TodolistState extends State<Todolist> {
   String labelid = "";
   String labelColorid = "";
 
-  bool _isLoading = true;
+  bool _isLoading = false;
   final spinkit=Spinkits();
   @override
   void initState() {
@@ -131,7 +131,9 @@ class _TodolistState extends State<Todolist> {
   Future<void> PostToDo() async {
     var res = await Userapi.PostProjectTodo(_taskNameController.text,
         _descriptionController.text, _DateController.text, priorityid, labelid);
-    if (res != null) {
+    setState(() {
+      _isLoading=false;
+      if (res != null) {
       if (res.settings?.success == 1) {
         GetToDoList();
         Navigator.pop(context, true);
@@ -139,21 +141,35 @@ class _TodolistState extends State<Todolist> {
       } else {
         CustomSnackBar.show(context, "${res.settings?.message}");
       }
-    } else {}
+    } else {
+        _isLoading=false;
+      }
+
+
+    });
+
   }
 
   Future<void> PostToDoAddLabel() async {
     var res = await Userapi.PostProjectTodoAddLabel(
         _labelnameController.text, labelColorid);
-    if (res != null) {
-      if (res.settings?.success == 1) {
-        GetToDoList();
-        Navigator.pop(context, true);
-        CustomSnackBar.show(context, "${res.settings?.message}");
-      } else {
-        CustomSnackBar.show(context, "${res.settings?.message}");
+    setState(() {
+      if (res != null) {
+        _isLoading=false;
+        if (res.settings?.success == 1) {
+          GetToDoList();
+          Navigator.pop(context, true);
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }
+      }else {
+        _isLoading=false;
       }
-    } else {}
+
+
+    });
+
   }
 
   void _filterTasks() {
@@ -188,7 +204,7 @@ class _TodolistState extends State<Todolist> {
           _bottomSheet(context);
         },
       ),
-      body:
+      body:_isLoading?Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))):
       SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
         child: Column(
@@ -202,30 +218,28 @@ class _TodolistState extends State<Todolist> {
                   SizedBox(
                     width: w * 0.58,
                     height: h * 0.043,
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        left: 14,
-                        right: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "assets/search.png",
-                            width: 20,
-                            height: 17,
-                            fit: BoxFit.contain,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                    child: Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffffffff),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/search.png",
+                              width: 20,
+                              height: 17,
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(width: 10,),
+                            Expanded(
                               child: TextField(
                                 controller:
                                     _searchController, // Use the controller for search
                                 decoration: InputDecoration(
+                                  isCollapsed: true,
                                   border: InputBorder.none,
                                   hintText: 'Search',
                                   hintStyle: const TextStyle(
@@ -242,11 +256,12 @@ class _TodolistState extends State<Todolist> {
                                   fontSize: 16,
                                   decorationColor: Color(0xff9E7BCA),
                                   fontFamily: "Nunito",
-                                ),
+                                ),   textAlignVertical: TextAlignVertical.center,
+                              
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -744,6 +759,7 @@ class _TodolistState extends State<Todolist> {
                         InkResponse(
                           onTap: () {
                             setState(() {
+                              _isLoading=true;
                               _validateLabelName =
                                   _labelnameController.text.isEmpty
                                       ? "Please enter label name"
@@ -757,6 +773,7 @@ class _TodolistState extends State<Todolist> {
                                   _validateLabelColor.isEmpty;
 
                               if (_isLoading) {
+
                                 PostToDoAddLabel();
                               }
                             });
@@ -774,7 +791,7 @@ class _TodolistState extends State<Todolist> {
                             ),
                             child: Center(
                               child:
-                                  _isLoading?spinkit.getFadingCircleSpinner():
+                              _isLoading?spinkit.getFadingCircleSpinner():
                               Text(
                                 'Save',
                                 style: TextStyle(

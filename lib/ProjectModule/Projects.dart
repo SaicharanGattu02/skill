@@ -67,6 +67,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   final FocusNode _focusNodepriority = FocusNode();
   final FocusNode _focusNodestartDate = FocusNode();
   final FocusNode _focusNodedeadline = FocusNode();
+  // final spinkit=Spinkits();
+
 
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -133,9 +135,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           children: [
             SizedBox(
               width: w,
-              height: h * 0.043,
+              // height: h * 0.043,
               child: Container(
-                padding: EdgeInsets.only(left: 14, right: 14),
+                padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xffffffff),
                   borderRadius: BorderRadius.circular(8),
@@ -148,30 +150,31 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       height: 17,
                       fit: BoxFit.contain,
                     ),
+                    SizedBox(width: 10,),
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Search',
-                            hintStyle: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: Color(0xff9E7BCA),
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              fontFamily: "Nunito",
-                            ),
-                          ),
-                          style: TextStyle(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          isCollapsed: true,
+                          border: InputBorder.none,
+                          hintText: 'Search',
+                          hintStyle: const TextStyle(
+                            overflow: TextOverflow.ellipsis,
                             color: Color(0xff9E7BCA),
                             fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            decorationColor: Color(0xff9E7BCA),
+                            fontSize: 14,
                             fontFamily: "Nunito",
                           ),
                         ),
+                        style: TextStyle(
+                          color: Color(0xff9E7BCA),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          decorationColor: Color(0xff9E7BCA),
+                          fontFamily: "Nunito",
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
                   ],

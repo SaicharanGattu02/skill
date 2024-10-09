@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
@@ -36,6 +37,7 @@ class _MessagesState extends State<Messages> {
   bool showNoDataFoundMessage = false;
   bool isSelected = false;
   bool _loading = false;
+  final spinkit=Spinkits();
   List<Rooms> rooms = [];
   List<Rooms> filteredRooms =
       []; // To store filtered messages based on the search query
@@ -133,7 +135,8 @@ class _MessagesState extends State<Messages> {
       ),
       body: _loading
           ? Center(
-              child: CircularProgressIndicator(color: Color(0xff8856F4)),
+              child: spinkit.getFadingCircleSpinner(color:  Color(0xff9E7BCA), // Set the color to purple
+              )
             )
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -142,7 +145,7 @@ class _MessagesState extends State<Messages> {
                 children: [
                   SizedBox(
                     width: w,
-                    // height: h * 0.043,
+
                     child: Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),

@@ -19,22 +19,41 @@ bool _loading =false;
 class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
   final FocusNode searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
   bool _isSearchFocused = false;
   bool isloading=true;
+  final spinkit=Spinkits();
   @override
   void initState() {
     super.initState();
-    searchFocusNode.addListener(() {
-      setState(() {
-        _isSearchFocused = searchFocusNode.hasFocus;
-      });
-    });
+
+    filteredMembers = List.from(members); // Start with all members
+    _searchController.addListener(filterMembers); // Add listener
     GetProjectsOverviewData();
     GetProjectsActivityData();
   }
 
+  void filterMembers() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredMembers = members.where((member) {
+        return member.fullName?.toLowerCase().contains(query) ?? false;
+      }).toList();
+    });
+  }
+
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+
   Data? data = Data();
   List<Members> members = [];
+  List<Members> filteredMembers = [];
+
   List<PieChartSectionData> pieChartSectionData = [];
   Future<void> GetProjectsOverviewData() async {
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
@@ -86,11 +105,6 @@ class _OverViewState extends State<OverView> {
     ];
   }
 
-  @override
-  void dispose() {
-    searchFocusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +112,11 @@ class _OverViewState extends State<OverView> {
       backgroundColor: const Color(0xffF3ECFB),
       body:(isloading)?
     Center(
-      child: CircularProgressIndicator(
+      child: 
+      CircularProgressIndicator(
           color: Color(0xff8856F4),
         ),
+      // _loading?spinkit.getFadingCircleSpinner(color: Color(0xff8856F4),
     ): NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
@@ -127,7 +143,8 @@ class _OverViewState extends State<OverView> {
             ),
           ];
         },
-        body: Container(
+        body:
+        Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           margin: EdgeInsets.only(left: 16, right: 16, top: 16),
           decoration: BoxDecoration(
@@ -150,6 +167,7 @@ class _OverViewState extends State<OverView> {
         ),
       )
     );
+
   }
 
   Widget _buildProjectStatusCard(BuildContext context) {
@@ -414,70 +432,126 @@ class _OverViewState extends State<OverView> {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  width: w * 0.8,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xfffcfaff),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/search.png",
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.contain,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Search",
-                        style: TextStyle(
-                          color: Color(0xff9E7BCA),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          fontFamily: "Nunito",
+          child:
+          SizedBox(
+            width: w,
+
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xff9E7BCA).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/search.png",
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          isCollapsed: true,
+                          border: InputBorder.none,
+                          hintText: 'Search',
+                          hintStyle: const TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            fontFamily: "Nunito",
+                          ),
                         ),
+                        style: TextStyle(
+                            color: Color(0xff9E7BCA),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            decorationColor: Color(0xff9E7BCA),
+                            fontFamily: "Nunito",
+                            overflow: TextOverflow.ellipsis),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              // SizedBox(width: 10),
-              // GestureDetector(
-              //   onTap: () {
-              //     // _showBottomSheet();
-              //   },
-              //   child: Container(
-              //     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-              //     decoration: BoxDecoration(
-              //       color: Color(0xff8856F4), // Background color
-              //       borderRadius: BorderRadius.circular(8), // Rounded corners
-              //     ),
-              //     child: Row(
-              //       mainAxisSize: MainAxisSize.min,
-              //       children: [
-              //         Icon(Icons.add_circle_outline,
-              //             color: Colors.white), // Plus icon
-              //         SizedBox(width: 8), // Space between icon and text
-              //         Text(
-              //           'Add Member',
-              //           style: TextStyle(color: Colors.white), // Text color
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-            ],
+            ),
           ),
+
+          // Row(
+          //   children: [
+          //
+          //     Expanded(
+          //       child: Container(
+          //         width: w * 0.8,
+          //         padding:
+          //             const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+          //         decoration: BoxDecoration(
+          //           color: const Color(0xfffcfaff),
+          //           borderRadius: BorderRadius.circular(8),
+          //         ),
+          //         child: Row(
+          //           children: [
+          //             Image.asset(
+          //               "assets/search.png",
+          //               width: 20,
+          //               height: 20,
+          //               fit: BoxFit.contain,
+          //             ),
+          //             const SizedBox(width: 10),
+          //             const Text(
+          //               "Search",
+          //               style: TextStyle(
+          //                 color: Color(0xff9E7BCA),
+          //                 fontWeight: FontWeight.w400,
+          //                 fontSize: 16,
+          //                 fontFamily: "Nunito",
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //     // SizedBox(width: 10),
+          //     // GestureDetector(
+          //     //   onTap: () {
+          //     //     // _showBottomSheet();
+          //     //   },
+          //     //   child: Container(
+          //     //     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+          //     //     decoration: BoxDecoration(
+          //     //       color: Color(0xff8856F4), // Background color
+          //     //       borderRadius: BorderRadius.circular(8), // Rounded corners
+          //     //     ),
+          //     //     child: Row(
+          //     //       mainAxisSize: MainAxisSize.min,
+          //     //       children: [
+          //     //         Icon(Icons.add_circle_outline,
+          //     //             color: Colors.white), // Plus icon
+          //     //         SizedBox(width: 8), // Space between icon and text
+          //     //         Text(
+          //     //           'Add Member',
+          //     //           style: TextStyle(color: Colors.white), // Text color
+          //     //         ),
+          //     //       ],
+          //     //     ),
+          //     //   ),
+          //     // ),
+          //   ],
+          // ),
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: members.length, // Example member count
+            itemCount: members.length,
             itemBuilder: (context, index) {
               return Column(
                 children: [

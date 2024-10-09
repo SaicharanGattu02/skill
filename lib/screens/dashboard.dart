@@ -48,7 +48,7 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
   ];
 
-  final List<Map<String, String>> items = [
+  final List<Map<String, String>> items=[
     {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
     {'image': 'assets/hrteam.png', 'text': '# Designers'},
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
@@ -1605,43 +1605,43 @@ class _DashboardState extends State<Dashboard> {
                 SizedBox(
                   height: 20,
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Allchannels()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/Channel.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Channels",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
+                // InkWell(
+                //   onTap: () {
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) => Allchannels()));
+                //   },
+                //   child: Container(
+                //     child: Column(
+                //       children: [
+                //         Container(
+                //           padding: EdgeInsets.all(4),
+                //           width: 32,
+                //           height: 32,
+                //           decoration: BoxDecoration(
+                //               color: Color(0xffffffff),
+                //               borderRadius: BorderRadius.circular(4)),
+                //           child: Image.asset("assets/Channel.png"),
+                //         ),
+                //         SizedBox(
+                //           height: 4,
+                //         ),
+                //         Text(
+                //           "Channels",
+                //           style: TextStyle(
+                //             color: Color(0xff6C848F),
+                //             fontWeight: FontWeight.w400,
+                //             fontSize: 14,
+                //             overflow: TextOverflow.ellipsis,
+                //             fontFamily: "Inter",
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 20,
+                // ),
                 InkWell(
                   onTap: () {
                     Navigator.push(context,

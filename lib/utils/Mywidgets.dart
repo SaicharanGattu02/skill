@@ -186,16 +186,16 @@ class MemberCard extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            icon: Image.asset(
-              'assets/delete_icon.png',
-              width: 16,
-              height: 16,
-            ),
-            onPressed: () {
-              // Handle delete action
-            },
-          ),
+          // IconButton(
+          //   icon: Image.asset(
+          //     'assets/delete_icon.png',
+          //     width: 16,
+          //     height: 16,
+          //   ),
+          //   onPressed: () {
+          //     // Handle delete action
+          //   },
+          // ),
           IconButton(
             icon: Image.asset(
               'assets/chat_icon.png',

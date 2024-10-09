@@ -17,8 +17,7 @@ class CustomSnackBar {
 }
 
 class Spinkits {
-
-  Widget getFadingCircleSpinner() {
+  Widget getFadingCircleSpinner({Color color = Colors.white}) {
     return SizedBox(
       height: 15,
       width: 35,
@@ -26,10 +25,9 @@ class Spinkits {
         size: 20,
         itemBuilder: (BuildContext context, int index) {
           return DecoratedBox(
-
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(0xffffffff),
+              color: color, // Use the passed color or default to white
             ),
           );
         },
