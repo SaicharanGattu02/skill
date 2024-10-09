@@ -1,9 +1,9 @@
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:skill/Services/UserApi.dart';
+
 import '../Model/MileStoneModel.dart';
+import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart';
 
@@ -19,76 +19,77 @@ class _MileStoneState extends State<MileStone> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
+  final spinkit=Spinkits();
 
   String title = "";
   String description = "";
   String deadline = "";
-  bool _isLoading = true;
+  bool _isLoading = false;
 
-
-  void _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000), // Minimum date
-      lastDate: DateTime(2101), // Maximum date
-    );
-    if (pickedDate != null) {
-      controller.text =
-          DateFormat('yyyy-MM-dd').format(pickedDate); // Format the date
-    }
-  }
+  List<Milestones> rooms = [];
+  List<Milestones> filteredRooms = [];
 
   @override
   void initState() {
-    _titleController.addListener(() {
-      setState(() {
-        title = "";
-      });
-    });
-    _descriptionController.addListener(() {
-      setState(() {
-        description = "";
-      });
-    });
-    GetMileStone();
     super.initState();
+
+    _searchController.addListener(_onSearchChanged);  // Listen for search input changes
+    GetMileStone();  // Fetch the milestones data
   }
 
-  List<Milestones> data = [];
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);  // Remove the listener on dispose
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // Search listener function to filter the list
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      // Filter the rooms based on title or ID
+      filteredRooms = rooms.where((room) {
+        String title = room.title?.toLowerCase() ?? '';
+        String id = room.id?.toLowerCase() ?? '';
+        return title.contains(query) || id.contains(query);
+      }).toList();
+    });
+  }
+
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
-        if (res?.data != null) {
-          if(res?.settings?.success==1){
-            data = res?.data ?? [];
-            _isLoading=false;
-          }else{
-            _isLoading=false;
-            CustomSnackBar.show(context,res?.settings?.message??"");
-          }
+      if (res?.data != null) {
+        if (res?.settings?.success == 1) {
+          rooms = res?.data ?? [];
+          filteredRooms = rooms;  // Initially, show all rooms
+          _isLoading = false;
         } else {
-          print("Task Failure  ${res?.settings?.message}");
+          _isLoading = false;
+          CustomSnackBar.show(context, res?.settings?.message ?? "");
         }
+      } else {
+        print("Task Failure  ${res?.settings?.message}");
+      }
     });
   }
-
   Future<void> GetMileStoneDetails(String id) async {
     var res = await Userapi.getmilestonedeatilsApi(id);
     setState(() {
-        if (res?.data != null) {
-          if(res?.settings?.success==1){
-            _titleController.text==res?.data?.title??"";
-            _descriptionController.text==res?.data?.description??"";
-            _deadlineController.text==res?.data?.dueDate??"";
-             _bottomSheet(context,"Edit",id);
-          }
-        } else {
+      if (res?.data != null) {
+        if(res?.settings?.success==1){
+          _titleController.text==res?.data?.title??"";
+          _descriptionController.text==res?.data?.description??"";
+          _deadlineController.text==res?.data?.dueDate??"";
+          _bottomSheet(context,"Edit",id);
         }
+      } else {
+      }
     });
   }
 
@@ -117,8 +118,20 @@ class _MileStoneState extends State<MileStone> {
     }
   }
 
+  void _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000), // Minimum date
+      lastDate: DateTime(2101), // Maximum date
+    );
+    if (pickedDate != null) {
+      controller.text =
+          DateFormat('yyyy-MM-dd').format(pickedDate); // Format the date
+    }
+  }
 
-  final spinkit=Spinkits();
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -126,207 +139,221 @@ class _MileStoneState extends State<MileStone> {
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
+          child: CircularProgressIndicator(
+            color: Color(0xff8856F4),
+          ))
           : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // Search Row
+              Row(
+                children: [
+                  // Search Bar with Input Field
+                  Container(
+                    width: w * 0.53,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
                       children: [
-                        Container(
-                          width: w * 0.53,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/search.png",
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                "Search",
-                                style: TextStyle(
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  fontFamily: "Nunito",
-                                ),
-                              ),
-                            ],
-                          ),
+                        Image.asset(
+                          "assets/search.png",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
                         ),
-                        Spacer(),
-                        SizedBox(
-                          height: w * 0.09,
-                          child: InkWell(
-                            onTap: () {
-                              return _bottomSheet(context, "Add","");
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  color: Color(0xff8856F4),
-                                  borderRadius: BorderRadius.circular(6)),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/circleadd.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.045,
-                                    height: w * 0.05,
-                                    color: Color(0xffffffff),
-                                  ),
-                                  SizedBox(
-                                    width: w * 0.01,
-                                  ),
-                                  Text(
-                                    "Add Milestones",
-                                    style: TextStyle(
-                                        color: Color(0xffffffff),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 12,
-                                        fontFamily: "Inter",
-                                        height: 16.94 / 12,
-                                        letterSpacing: 0.59),
-                                  )
-                                ],
+                        const SizedBox(width: 10),
+                        // TextField for search input
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'Search...',
+                              hintStyle: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                fontFamily: "Nunito",
                               ),
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final milestone = data[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/calendar.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.06,
-                                    height: w * 0.05,
-                                    color: Color(0xff6C848F),
-                                  ),
-                                  Text(
-                                    milestone.dueDate ?? "",
-                                    style: TextStyle(
-                                      color: const Color(0xff1D1C1D),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15,
-                                      height: 19.41 / 15,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  InkWell(
-                                    onTap: () {
-                                      GetMileStoneDetails(milestone.id??"");
-                                    },
-                                    child: Image.asset(
-                                      "assets/edit.png",
-                                      fit: BoxFit.contain,
-                                      width: w * 0.06,
-                                      height: w * 0.05,
-                                      color: Color(0xff8856F4),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                milestone.title ?? "",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  height: 19.36 / 16,
-                                  color: Color(0xff1D1C1D),
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                milestone.description ?? "",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  height: 18.15 / 14,
-                                  color: Color(0xff6C848F),
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              LinearProgressIndicator(
-                                value: (milestone.totalTasks != 0)
-                                    ? (milestone.tasksDone ?? 0) /
-                                        (milestone.totalTasks ?? 1)
-                                    : 0.0, // If totalTasks is 0, set progress to 0
-                                minHeight: 8,
-                                backgroundColor: const Color(0xffE0E0E0),
-                                borderRadius: BorderRadius.circular(20),
-                                color: const Color(0xff2FB035),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Progress",
-                                    style: TextStyle(
-                                      color: Color(0xff6C848F),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                  Text(
-                                    "${(((milestone.totalTasks != 0) ? (milestone.tasksDone ?? 0) / (milestone.totalTasks ?? 1) : 0.0) * 100).toStringAsFixed(0)}%", // Round to nearest integer
-                                    style: const TextStyle(
-                                      color: Color(0xff6C848F),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
+                  ),
+                  Spacer(),
+                  // Add Milestone Button
+                  SizedBox(
+                    height: w * 0.09,
+                    child: InkWell(
+                      onTap: () {
+                        return _bottomSheet(context, "Add", "");
                       },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/circleadd.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.045,
+                              height: w * 0.05,
+                              color: Color(0xffffffff),
+                            ),
+                            SizedBox(
+                              width: w * 0.01,
+                            ),
+                            Text(
+                              "Add Milestones",
+                              style: TextStyle(
+                                color: Color(0xffffffff),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                fontFamily: "Inter",
+                                height: 16.94 / 12,
+                                letterSpacing: 0.59,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
+              SizedBox(height: 8),
+              // Milestones List (Filtered based on search)
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: filteredRooms.length,  // Use filteredRooms instead of rooms
+                itemBuilder: (context, index) {
+                  final milestone = filteredRooms[index];
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Image.asset(
+                              "assets/calendar.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.06,
+                              height: w * 0.05,
+                              color: Color(0xff6C848F),
+                            ),
+                            Text(
+                              milestone.dueDate ?? "",
+                              style: TextStyle(
+                                color: const Color(0xff1D1C1D),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 15,
+                                height: 19.41 / 15,
+                                overflow: TextOverflow.ellipsis,
+                                fontFamily: "Inter",
+                              ),
+                            ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {
+                                GetMileStoneDetails(milestone.id ?? "");
+                              },
+                              child: Image.asset(
+                                "assets/edit.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.06,
+                                height: w * 0.05,
+                                color: Color(0xff8856F4),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          milestone.title ?? "",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            height: 19.36 / 16,
+                            color: Color(0xff1D1C1D),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          milestone.description ?? "",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 18.15 / 14,
+                            color: Color(0xff6C848F),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          value: (milestone.totalTasks != 0)
+                              ? (milestone.tasksDone ?? 0) / (milestone.totalTasks ?? 1)
+                              : 0.0, // If totalTasks is 0, set progress to 0
+                          minHeight: 8,
+                          backgroundColor: const Color(0xffE0E0E0),
+                          borderRadius: BorderRadius.circular(20),
+                          color: const Color(0xff2FB035),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Progress",
+                              style: TextStyle(
+                                color: Color(0xff6C848F),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Inter",
+                              ),
+                            ),
+                            Text(
+                              "${(((milestone.totalTasks != 0) ? (milestone.tasksDone ?? 0) / (milestone.totalTasks ?? 1) : 0.0) * 100).toStringAsFixed(0)}%", // Round to nearest integer
+                              style: const TextStyle(
+                                color: Color(0xff6C848F),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Inter",
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+
 
   void _bottomSheet(BuildContext context, String mode, String id,) {
     double h = MediaQuery.of(context).size.height * 0.55;
@@ -341,7 +368,7 @@ class _MileStoneState extends State<MileStone> {
               child: Container(
                 height: h,
                 padding:
-                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+                EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
                 decoration: BoxDecoration(
                   color: Color(0xffffffff),
                   borderRadius: BorderRadius.only(

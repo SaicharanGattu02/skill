@@ -142,7 +142,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   color: const Color(0xffffffff),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
+                child:
+                Row(
                   children: [
                     Image.asset(
                       "assets/search.png",

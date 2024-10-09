@@ -41,7 +41,8 @@ class Data {
   String? status;
 
   Data(
-      {this.id,
+      {
+        this.id,
         this.title,
         this.description,
         this.startDate,
@@ -50,7 +51,10 @@ class Data {
         this.assignedTo,
         this.assignedToImage,
         this.collaborators,
-        this.status});
+        this.status
+
+      }
+      );
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
