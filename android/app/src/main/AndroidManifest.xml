@@ -9,7 +9,7 @@
     <application
         android:label="Skil"
         android:name="${applicationName}"
-        android:icon="@mipmap/skillapplogo">
+        android:icon="@mipmap/skillicon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

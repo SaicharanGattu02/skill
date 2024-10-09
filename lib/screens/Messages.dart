@@ -10,6 +10,7 @@ class Messages extends StatefulWidget {
 
   @override
   State<Messages> createState() => _MessagesState();
+
 }
 
 class _MessagesState extends State<Messages> {
@@ -39,8 +40,7 @@ class _MessagesState extends State<Messages> {
   bool _loading = false;
   final spinkit=Spinkits();
   List<Rooms> rooms = [];
-  List<Rooms> filteredRooms =
-      []; // To store filtered messages based on the search query
+  List<Rooms> filteredRooms = []; // To store filtered messages based on the search query
 
   @override
   void initState() {

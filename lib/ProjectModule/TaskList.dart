@@ -14,12 +14,12 @@ class TaskList extends StatefulWidget {
 
   @override
   State<TaskList> createState() => _TaskListState();
+
 }
-
 bool _loading = true;
-
 class _TaskListState extends State<TaskList> {
   List<Data> data = [];
+
   @override
   void initState() {
     super.initState(); // Add this to properly initialize the state
