@@ -78,6 +78,13 @@ class _MileStoneState extends State<MileStone> {
       }
     });
   }
+
+
+
+
+
+
+
   Future<void> GetMileStoneDetails(String id) async {
     var res = await Userapi.getmilestonedeatilsApi(id);
     setState(() {
@@ -89,7 +96,7 @@ class _MileStoneState extends State<MileStone> {
           _bottomSheet(context,"Edit",id);
         }
       } else {
-      }
+    }
     });
   }
 
