@@ -121,6 +121,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                 width: w,
                 decoration: const BoxDecoration(
                   color: Color(0xff8856F4),
+                  image: DecorationImage(image: AssetImage("assets/Background.png"),fit: BoxFit.cover)
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,

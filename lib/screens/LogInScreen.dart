@@ -63,16 +63,13 @@ class _LogInScreenState extends State<LogInScreen> {
     super.initState();
   }
 
-
   void _validateFields() {
     setState(() {
       // Check if the fields are empty and set validation messages accordingly
-      _validateEmail = _emailController.text.isEmpty
-          ? "Please enter an email address"
-          : "";
-      _validatePassword = _passwordController.text.isEmpty
-          ? "Please enter a password"
-          : "";
+      _validateEmail =
+          _emailController.text.isEmpty ? "Please enter an email address" : "";
+      _validatePassword =
+          _passwordController.text.isEmpty ? "Please enter a password" : "";
     });
 
     // Check if both validations are empty (no errors)
@@ -81,6 +78,7 @@ class _LogInScreenState extends State<LogInScreen> {
       LoginApi();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -100,6 +98,11 @@ class _LogInScreenState extends State<LogInScreen> {
                 width: w,
                 decoration: const BoxDecoration(
                   color: Color(0xff8856F4),
+                  image: DecorationImage(
+                      image: AssetImage(
+                        "assets/Background.png",
+                      ),
+                      fit: BoxFit.cover),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -185,7 +188,8 @@ class _LogInScreenState extends State<LogInScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Enter Email Address",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -198,7 +202,8 @@ class _LogInScreenState extends State<LogInScreen> {
                           prefixIcon: Container(
                             width: 21,
                             height: 21,
-                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                            padding:
+                                EdgeInsets.only(top: 10, bottom: 10, left: 6),
                             child: Image.asset(
                               "assets/gmail.png",
                               width: 21,
@@ -231,10 +236,12 @@ class _LogInScreenState extends State<LogInScreen> {
                           ),
                         ),
                         style: TextStyle(
-                          fontSize: 14,  // Ensure font size fits within height
-                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                          fontSize: 14, // Ensure font size fits within height
+                          overflow: TextOverflow
+                              .ellipsis, // Add ellipsis for long text
                         ),
-                        textAlignVertical: TextAlignVertical.center,  // Vertically center the text
+                        textAlignVertical: TextAlignVertical
+                            .center, // Vertically center the text
                       ),
                     ),
                     if (_validateEmail.isNotEmpty) ...[
@@ -302,7 +309,8 @@ class _LogInScreenState extends State<LogInScreen> {
                           prefixIcon: Container(
                             width: 21,
                             height: 21,
-                            padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                            padding:
+                                EdgeInsets.only(top: 10, bottom: 10, left: 6),
                             child: Image.asset(
                               "assets/Lock.png",
                               width: 21,
@@ -333,11 +341,13 @@ class _LogInScreenState extends State<LogInScreen> {
                             borderSide: const BorderSide(
                                 width: 1, color: Color(0xffd0cbdb)),
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                         ),
                         style: TextStyle(
-                          fontSize: 14,  // Ensure font size fits within height
-                          overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                          fontSize: 14, // Ensure font size fits within height
+                          overflow: TextOverflow
+                              .ellipsis, // Add ellipsis for long text
                         ),
                         textAlignVertical: TextAlignVertical.center,
                       ),
@@ -428,9 +438,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     // const SizedBox(height: 24),
                     InkResponse(
                       onTap: () {
-
-                       _validateFields();
-
+                        _validateFields();
                       },
                       child: Container(
                         width: w,

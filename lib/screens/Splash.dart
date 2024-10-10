@@ -1,7 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
-import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
 
@@ -18,7 +17,6 @@ class _SplashState extends State<Splash> {
   @override
   void initState() {
     fetchDetails();
-
     super.initState();
   }
 
@@ -32,29 +30,27 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
+    var h = MediaQuery.of(context).size.height;
+    var w = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: AnimatedSplashScreen(
+
+      body:
+      AnimatedSplashScreen(
         duration: 2000,
-        splash: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image(
-                image: AssetImage("assets/skillLogo.png"),
-                width: 281,
-                height: 60,
-              ),
-            ],
+        splash: Center(
+          child:
+          Center(
+            child: Image.asset(
+              "assets/skillLogo.png",
+              fit: BoxFit.contain, // Keep the logo's aspect ratio intact
+              height: h * 0.20, // Adjust the logo to take up 20% of the screen height
+            ),
           ),
         ),
-
         nextScreen: (token == "") ? LogInScreen() : Dashboard(),
-        // ? (permissions_granted ? MyMainHome() : MyPermission())
-        // : (permissions_granted ? MySignup() : MyPermission()),
-        // nextScreen:  Register(), // Change this to your desired next screen
-        // splashIconSize: double.infinity,
         backgroundColor: const Color(0xff8856F4),
+
         splashTransition: SplashTransition.scaleTransition,
       ),
     );
