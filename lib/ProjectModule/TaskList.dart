@@ -238,7 +238,7 @@ class _TaskListState extends State<TaskList> {
                                     width: w * 0.04,
                                   ),
                                   InkWell(onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TaskForm(title:'Edit Task',projectId:'',taskid:task.id??"")));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TaskForm(title:'Edit Task',projectId:widget.id1,taskid:task.id??"")));
                              
                                   },
                                     child: Container(

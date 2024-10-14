@@ -52,9 +52,25 @@ class _AddMeetingsState extends State<AddMeetings> {
   String _validateStartDate = "";
   String _validateMeetingLink = "";
 
+
+
   String get dateAndTime {
-    return "${_dateController.text} ${_timeController.text}".trim();
+    // Assume _dateController.text is in the format "YYYY-MM-DD"
+    // and _timeController.text is in the format "hh:mm AM/PM"
+    String date = _dateController.text; // e.g., "2024-10-15"
+    String time = _timeController.text; // e.g., "12:00 PM"
+
+    // Parse the time and convert to 24-hour format
+    DateFormat inputFormat = DateFormat("hh:mm a");
+    DateFormat outputFormat = DateFormat("HH:mm:ss");
+
+    DateTime parsedTime = inputFormat.parse(time);
+    String formattedTime = outputFormat.format(parsedTime);
+
+    // Combine date and formatted time
+    return "$date $formattedTime"; // e.g., "2024-10-15T12:00:00"
   }
+
 
   bool _isLoading = false;
   @override
@@ -141,10 +157,11 @@ class _AddMeetingsState extends State<AddMeetings> {
   }
 
   Future<void> AddMeeting() async {
+    print("Date Time:${dateAndTime}");
     var res = await Userapi.postAddMeeting(
         _meetingtitleController.text,
         _descriptionController.text,
-        _PriojectController.text,
+        projectid,
         _meetingTypeController.text,
         controller.toString(),
         dateAndTime,

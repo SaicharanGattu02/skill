@@ -196,49 +196,49 @@ class _MessagesState extends State<Messages> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      const Text(
-                        "Direct messages",
-                        style: TextStyle(
-                          color: Color(0xff1C1C1C),
-                          fontFamily: "Inter",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          height: 15 / 14,
-                        ),
-                      ),
-                      const Spacer(),
-                      const Text(
-                        "Unread",
-                        style: TextStyle(
-                          color: Color(0xff000000),
-                          fontFamily: "Inter",
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          height: 15 / 13,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 40,
-                        height: 20,
-                        child: Transform.scale(
-                          scale: 0.5,
-                          child: Switch(
-                            value: isSelected,
-                            inactiveThumbColor: const Color(0xff98A9B0),
-                            activeColor: const Color(0xff8856F4),
-                            onChanged: (bool value) {
-                              setState(() {
-                                isSelected = value;
-                              });
-                            },
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                  // const SizedBox(height: 20),
+                  // Row(
+                  //   children: [
+                  //     const Text(
+                  //       "Direct messages",
+                  //       style: TextStyle(
+                  //         color: Color(0xff1C1C1C),
+                  //         fontFamily: "Inter",
+                  //         fontSize: 14,
+                  //         fontWeight: FontWeight.w400,
+                  //         height: 15 / 14,
+                  //       ),
+                  //     ),
+                  //     const Spacer(),
+                  //     const Text(
+                  //       "Unread",
+                  //       style: TextStyle(
+                  //         color: Color(0xff000000),
+                  //         fontFamily: "Inter",
+                  //         fontSize: 13,
+                  //         fontWeight: FontWeight.w400,
+                  //         height: 15 / 13,
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: 40,
+                  //       height: 20,
+                  //       child: Transform.scale(
+                  //         scale: 0.5,
+                  //         child: Switch(
+                  //           value: isSelected,
+                  //           inactiveThumbColor: const Color(0xff98A9B0),
+                  //           activeColor: const Color(0xff8856F4),
+                  //           onChanged: (bool value) {
+                  //             setState(() {
+                  //               isSelected = value;
+                  //             });
+                  //           },
+                  //         ),
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
                   SizedBox(height: w * 0.02),
                   Expanded(
                     child: filteredRooms.isEmpty

@@ -189,6 +189,18 @@ class _TodolistState extends State<Todolist> {
     super.dispose();
   }
 
+  // Function to convert hex color string to Color
+  Color hexToColor(String hexColor) {
+    final buffer = StringBuffer();
+    if (hexColor.length == 6 || hexColor.length == 7) {
+      buffer.write('FF'); // Add alpha if missing
+      buffer.write(hexColor.replaceFirst('#', ''));
+    } else {
+      throw FormatException("Invalid hex color format");
+    }
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -353,7 +365,9 @@ class _TodolistState extends State<Todolist> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
-                                    // color: labelColor,
+                                    color: tododata.labelColor != null
+                                        ? hexToColor(tododata.labelColor??"")
+                                        : Colors.grey, // Fallback color
                                     width: 3,
                                   ),
                                 ),

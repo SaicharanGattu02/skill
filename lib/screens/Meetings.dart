@@ -29,7 +29,6 @@ class _MeetingsState extends State<Meetings> {
     _generateDates();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
-
       getMeeting();
     });
   }
@@ -41,7 +40,6 @@ class _MeetingsState extends State<Meetings> {
       if (res != null) {
         if (res.data != null) {
           _loading = false;
-
           meetings = res.data ?? [];
           print("projectsData List Get SuccFully  ${res.settings!.message}");
         } else {
@@ -90,7 +88,6 @@ class _MeetingsState extends State<Meetings> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: 'Meetings', 
@@ -98,13 +95,19 @@ class _MeetingsState extends State<Meetings> {
           Padding(
           padding: const EdgeInsets.only(right: 20),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          var res = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => AddMeetings(), // Replace with your destination screen
             ),
           );
+          if(res==true){
+            setState(() {
+              _loading=true;
+            });
+            getMeeting();
+          }
         },
         child: Image.asset(
           "assets/Plus square.png",

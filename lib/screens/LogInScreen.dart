@@ -36,21 +36,23 @@ class _LogInScreenState extends State<LogInScreen> {
     super.dispose();
   }
 
+  final spinkit=Spinkits();
   Future<void> LoginApi() async {
-    setState(() {
-      _loading = false;
-    });
-    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text);
+    final fcm_token = await PreferenceService().getString("fbstoken") ?? "";
+    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text,fcm_token,"android_token");
     if (data != null) {
-      if (data.settings?.success == 1) {  
-        PreferenceService().saveString("token", data.data?.access ?? "");
-        CustomSnackBar.show(context, "${data.settings?.message}");
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Dashboard()));
-      } else {
-        print("Login failure");
-        CustomSnackBar.show(context, "${data.settings?.message}");
-      }
+      setState(() {
+        if (data.settings?.success == 1) {
+          _loading = false;
+          PreferenceService().saveString("token", data.data?.access ?? "");
+          CustomSnackBar.show(context, "${data.settings?.message}");
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => Dashboard()));
+        } else {
+          print("Login failure");
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        }
+      });
     } else {
       print("Login >>>${data?.settings?.message}");
       CustomSnackBar.show(context, "${data?.settings?.message}");
@@ -75,6 +77,10 @@ class _LogInScreenState extends State<LogInScreen> {
     if (_validateEmail.isEmpty && _validatePassword.isEmpty) {
       // Proceed with the API call if validations pass
       LoginApi();
+    }else{
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -82,7 +88,6 @@ class _LogInScreenState extends State<LogInScreen> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
@@ -437,7 +442,14 @@ class _LogInScreenState extends State<LogInScreen> {
                     // const SizedBox(height: 24),
                     InkResponse(
                       onTap: () {
-                        _validateFields();
+                        if(_loading){
+
+                        }else{
+                          setState(() {
+                            _loading=true;
+                          });
+                          _validateFields();
+                        }
                       },
                       child: Container(
                         width: w,
@@ -448,9 +460,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                         child: Center(
                           child:
-                              // _loading?CircularProgressIndicator(
-                              //
-                              // ):
+                              _loading?spinkit.getFadingCircleSpinner():
                               Text(
                             "Continue",
                             style: TextStyle(
