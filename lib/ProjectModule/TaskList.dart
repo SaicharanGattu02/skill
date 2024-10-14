@@ -16,8 +16,9 @@ class TaskList extends StatefulWidget {
   State<TaskList> createState() => _TaskListState();
 
 }
-bool _loading = true;
+
 class _TaskListState extends State<TaskList> {
+  bool _loading = true;
   final TextEditingController _searchController = TextEditingController();
   List<Data> data = [];
 
@@ -43,6 +44,24 @@ class _TaskListState extends State<TaskList> {
       }
     });
   }
+
+  Future<void> DelateTask(String id) async {
+    var data = await Userapi.ProjectDelateTask(id);
+    setState(() {
+      _loading = false;
+      if (data != null) {
+        if (data.settings?.success == 1) {
+          GetProjectTasks();
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        }
+      } else {
+        CustomSnackBar.show(context, "${data?.settings?.message}");
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,12 +222,17 @@ class _TaskListState extends State<TaskList> {
                                     ),
                                   ),
                                   Spacer(),
-                                  Image.asset(
-                                    "assets/delate.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.04,
-                                    height: w * 0.05,
-                                    color: Color(0xffDE350B),
+                                  InkWell( onTap:(){
+                                    DelateTask(task.id??"");
+
+                        },
+                                    child: Image.asset(
+                                      "assets/delate.png",
+                                      fit: BoxFit.contain,
+                                      width: w * 0.04,
+                                      height: w * 0.05,
+                                      color: Color(0xffDE350B),
+                                    ),
                                   ),
                                   SizedBox(
                                     width: w * 0.04,

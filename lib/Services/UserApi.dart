@@ -859,6 +859,25 @@ class Userapi {
     }
   }
 
+  static Future<LoginModel?> ProjectDelateTask(id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-task-detail/$id");
+      final res = await http.delete(url, headers: headers);
+      if (res != null) {
+        print("ProjectDelateTask Response:${res.body}");
+        return LoginModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+
   static Future<RoomsModel?> getrommsApi() async {
     try {
       final headers = await getheader();
@@ -1427,34 +1446,97 @@ class Userapi {
   }
 
 
-  Future<LoginModel?> updateUserDetails() async {
-    final url = Uri.parse('${host}/auth/user-detail');
-    final headers = await getheader();
-    var request = http.MultipartRequest('PUT', url)
-      ..headers.addAll(headers)
-      ..fields['full_name'] = 'Chappidi Balaji'
-      ..fields['mobile'] = '9390324344'
-      ..files.add(await http.MultipartFile.fromPath('image', '/home/balaji/Downloads/AVATHAR.jpg'));
+  // Future<LoginModel?> UpdateUserDetails(String fullname, String phonenumber, String email, File image) async {
+  //   final url = Uri.parse('$host/auth/user-detail');
+  //   final headers = await getheader(); // Ensure this returns the correct authorization headers
+  //
+  //   var request = http.MultipartRequest('PUT', url)
+  //     ..headers.addAll(headers) // Add headers to the request
+  //     ..fields['full_name'] = fullname
+  //     ..fields['mobile'] = phonenumber;
+  //
+  //   // Add the selected image file
+  //   if (image != null) {
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'image',
+  //       image.path,
+  //       filename: p.basename(image.path),
+  //     ));
+  //   }
+  //
+  //   try {
+  //     var response = await request.send();
+  //
+  //     final responseBody = await response.stream.bytesToString();
+  //
+  //     if (response.statusCode == 200) {
+  //       final jsonResponse = jsonDecode(responseBody);
+  //       print("UpdateUserDetails response: $responseBody");
+  //       return LoginModel.fromJson(jsonResponse); // Parse response into LoginModel
+  //     } else {
+  //       print('Failed to update user details: ${response.statusCode}');
+  //       print('Response body: $responseBody');
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //   }
+  //
+  //   return null; // Return null if there's an error or failure
+  // }
+
+
+  static Future<LoginModel?> UpdateUserDetails(
+      String fullname, String phonenumber, File image) async {
+    // Validate the file type to ensure it's an image
+    String? mimeType = lookupMimeType(image.path);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Selected file is not a valid image.');
+      return null;
+    }
 
     try {
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        // Handle success
-        print('User details updated successfully.');
-        var responseData = await response.stream.toBytes();
-        var responseString = String.fromCharCodes(responseData);
-        print(responseString);
+      final url = Uri.parse("$host/auth/user-detail");
 
-        // Deserialize response to LoginModel
-        return LoginModel.fromJson(jsonDecode(responseString));
+      // Headers
+      final headers =
+      await getheader(); // Make sure this includes your authorization token
+
+      // Create multipart request
+      var request = http.MultipartRequest('PUT', url)
+        ..headers.addAll(headers)
+        ..fields['full_name'] = fullname
+        ..fields['mobile'] = phonenumber;
+
+      print("putProjectFile>>${request}");
+      // Attach the image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+          contentType: MediaType.parse(mimeType), // Set the MIME type
+        ),
+      );
+
+      // Send the request
+      var response = await request.send();
+
+      // Check for response status
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final respStr = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(respStr);
+        print("UpdateUserDetails: $jsonResponse");
+
+        // Return the parsed login model
+        return LoginModel.fromJson(jsonResponse);
       } else {
-        // Handle error
-        print('Failed to update user details: ${response.statusCode}');
+        print("Request failed with status: ${response.statusCode}");
+        return null;
       }
     } catch (e) {
-      print('Error: $e');
+      print("Error occurred: $e");
+      return null;
     }
-    return null; // Return null if update failed
   }
 
 }

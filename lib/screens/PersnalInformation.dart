@@ -77,9 +77,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
   }
 
   Future<void> RegisterApi() async {
-    setState(() {
-      _loading = false;
-    });
+
     var data = await Userapi.PostRegister(Fullname, _emailController.text, _phoneController.text, _pwdController.text, _gender??"");
     if (data != null) {
       if (data.settings?.success == 1) {

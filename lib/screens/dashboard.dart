@@ -403,10 +403,14 @@ class _DashboardState extends State<Dashboard> {
                         height: w * 0.03,
                       ),
                       // User Info Container
-                      InkResponse(onTap: (){
-                        // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileDashboard()));
+                      InkResponse(onTap: () async {
+                        var res= await Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileUpdateScreen()));
+                        if(res==true){
+                          GetUserDeatails();
+                        }
                       },
-                        child: Container(
+                        child:
+                        Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               color: const Color(0xff8856F4),
