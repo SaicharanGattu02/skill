@@ -65,8 +65,6 @@ final spinkit=Spinkits();
       _validateimage = _image==null
           ? "Please select the image."
           : "";
-
-
     });
 
     if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty) {
