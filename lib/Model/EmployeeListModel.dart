@@ -86,3 +86,16 @@ class Settings {
     return data;
   }
 }
+
+
+class User {
+  final String name;
+  final String id;
+
+  User({required this.name, required this.id});
+
+  @override
+  String toString() {
+    return 'User(name: $name, id: $id)';
+  }
+}

@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../Model/EmployeeListModel.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
@@ -31,21 +32,8 @@ class TaskForm extends StatefulWidget {
   @override
   _TaskFormState createState() => _TaskFormState();
 }
-bool _loading =true;
-class User {
-  final String name;
-  final String id;
-
-  User({required this.name, required this.id});
-
-  @override
-  String toString() {
-    return 'User(name: $name, id: $id)';
-  }
-}
-
 class _TaskFormState extends State<TaskForm> {
-
+  bool _loading =true;
   final spinkits = Spinkits();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();

@@ -198,11 +198,10 @@ class Userapi {
     }
   }
 
-  static Future<FetchmesgsModel?> fetchroommessages(String rommid,
-      String lats_msg_id) async {
+  static Future<FetchmesgsModel?> fetchroommessages(
+      String rommid, String lats_msg_id) async {
     try {
       final headers = await getheader();
-
       final url = Uri.parse("${host}/chat/room-messages/$rommid/$lats_msg_id");
       print("URL:${url}");
       final res = await get(url, headers: headers);
@@ -314,8 +313,7 @@ class Userapi {
   static Future<GetMileStoneModel?> GetMileStoneApi(String id) async {
     try {
       final headers = await getheader();
-      final url =
-      Uri.parse("${host}/project/project-milestones?project_id=${id}");
+      final url = Uri.parse("${host}/project/project-milestones?project_id=${id}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetMileStone Response:${res.body}");
@@ -421,7 +419,6 @@ class Userapi {
     }
   }
 
-
   static Future<ProjectLabelColorModel?> GetProjectsLabelColorApi() async {
     try {
       final headers = await getheader();
@@ -439,7 +436,6 @@ class Userapi {
       return null;
     }
   }
-
 
   static Future<NoteModel?> GetProjectNote(String id) async {
     try {
@@ -495,17 +491,19 @@ class Userapi {
     }
   }
 
-  static Future<TaskAddmodel?> CreateTask(String projectId,
-      String title,
-      String desc,
-      String milestone,
-      String assignedTo,
-      String status,
-      String priority,
-      String startDate,
-      String endDate,
-      List<String> collaborators, // Change type from String to List<String>
-      File image,) async {
+  static Future<TaskAddmodel?> CreateTask(
+    String projectId,
+    String title,
+    String desc,
+    String milestone,
+    String assignedTo,
+    String status,
+    String priority,
+    String startDate,
+    String endDate,
+    List<String> collaborators, // Change type from String to List<String>
+    File image,
+  ) async {
     try {
       // Check if the file is an image
       String? mimeType = lookupMimeType(image.path);
@@ -655,8 +653,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostMileStone(String title, String description,
-      String id, String date) async {
+  static Future<LoginModel?> PostMileStone(
+      String title, String description, String id, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -687,8 +685,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> putMileStone(String editId, String title,
-      String description, String date) async {
+  static Future<LoginModel?> putMileStone(
+      String editId, String title, String description, String date) async {
     try {
       Map<String, String> data = {
         'title': title,
@@ -698,7 +696,7 @@ class Userapi {
       print("putMileStone ${data}");
 
       final url =
-      Uri.parse('${host}/project/project-milestone-detail/${editId}');
+          Uri.parse('${host}/project/project-milestone-detail/${editId}');
       final headers = await getheader();
       final response = await http.post(
         url,
@@ -719,8 +717,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostAddNote(String title, String description,
-      File image, String id) async {
+  static Future<LoginModel?> PostAddNote(
+      String title, String description, File image, String id) async {
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
       print('Selected file is not a valid image.');
@@ -953,8 +951,8 @@ class Userapi {
     }
   }
 
-  static Future<LeaveRequestModel?> LeaveRequest(String fromdate, String todate,
-      String reason) async {
+  static Future<LeaveRequestModel?> LeaveRequest(
+      String fromdate, String todate, String reason) async {
     try {
       Map<String, String> body = {
         "from_date": fromdate,
@@ -1013,8 +1011,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> sendComment(String comment, String id,
-      List images) async {
+  static Future<LoginModel?> sendComment(
+      String comment, String id, List images) async {
     var url = Uri.parse('${host}/project/project-comments');
     final headers = await getheader();
 
@@ -1055,7 +1053,7 @@ class Userapi {
     try {
       final headers = await getheader();
       final url =
-      Uri.parse("${host}/project/project-file-categories?project_id=${id}");
+          Uri.parse("${host}/project/project-file-categories?project_id=${id}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("getcatagory Response:${res.body}");
@@ -1070,8 +1068,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> postProjectFile(String id, String category,
-      File image, String description) async {
+  static Future<LoginModel?> postProjectFile(
+      String id, String category, File image, String description) async {
     // Validate the file type to ensure it's an image
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
@@ -1084,7 +1082,7 @@ class Userapi {
 
       // Headers
       final headers =
-      await getheader(); // Make sure this includes your authorization token
+          await getheader(); // Make sure this includes your authorization token
 
       // Create multipart request
       var request = http.MultipartRequest('POST', url)
@@ -1124,8 +1122,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> putProjectFile(String id, String category,
-      File image, String description) async {
+  static Future<LoginModel?> putProjectFile(
+      String id, String category, File image, String description) async {
     // Validate the file type to ensure it's an image
     String? mimeType = lookupMimeType(image.path);
     if (mimeType == null || !mimeType.startsWith('image/')) {
@@ -1138,7 +1136,7 @@ class Userapi {
 
       // Headers
       final headers =
-      await getheader(); // Make sure this includes your authorization token
+          await getheader(); // Make sure this includes your authorization token
 
       // Create multipart request
       var request = http.MultipartRequest('PUT', url)
@@ -1203,18 +1201,16 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostProjectTodo(String name,
-      String description,
-      String date,
-      String priority,
-      String label) async {
+  static Future<LoginModel?> PostProjectTodo(String name, String description,
+      String date, String priority, String label) async {
     try {
       Map<String, String> data = {
         'task_name': name,
         'description': description,
         'date': date,
         'priority': priority,
-        'label': label};
+        'label': label
+      };
 
       final url = Uri.parse('${host}/todo/add-task');
       final headers = await getheader();
@@ -1237,7 +1233,8 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> postAddMeeting(String title,
+  static Future<LoginModel?> postAddMeeting(
+      String title,
       String description,
       String projects,
       String meetingType,
@@ -1253,7 +1250,7 @@ class Userapi {
         'meeting_type': meetingType,
         'start_date': datetime,
         'meeting_link': meetingLink,
-      'collaborators': ('a952174dfa5548628ed606d44e55ddbb'),
+        'collaborators': 'a952174dfa5548628ed606d44e55ddbb',
       };
 
       // Define the URL
@@ -1283,9 +1280,10 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostProjectTodoAddLabel(String name,
-      String color,) async {
-
+  static Future<LoginModel?> PostProjectTodoAddLabel(
+    String name,
+    String color,
+  ) async {
     try {
       Map<String, String> data = {
         'name': name,
@@ -1314,14 +1312,13 @@ class Userapi {
     }
   }
 
-
   static Future<LoginModel?> PutProjectCategory(String name, String id) async {
     try {
       Map<String, String> data = {
         'name': name,
       };
       final url =
-      Uri.parse('${host}/project/project-file-category-detail/${id}');
+          Uri.parse('${host}/project/project-file-category-detail/${id}');
       final headers = await getheader();
       final response = await http.put(
         url,
@@ -1396,4 +1393,68 @@ class Userapi {
       return null;
     }
   }
+
+  Future<LoginModel?> addMeeting() async {
+    final url = Uri.parse('${host}/meeting/add-meeting');
+    // Prepare headers
+    final headers = await getheader();
+    // Prepare form data
+    final request = http.MultipartRequest('POST', url)
+      ..headers.addAll(headers)
+      ..fields['title'] = 'meeting 5'
+      ..fields['description'] = 'test meeting 5'
+      ..fields['project'] = 'b2a78098d7b142e0bb69a3214c35aa8f'
+      ..fields['meeting_type'] = 'internal'
+      ..fields['external'] = 'charandeep dokara'
+      ..fields['start_date'] = '2024-09-28 14:50:55'
+      ..fields['meeting_link'] = 'https://meeting5.com'
+      ..fields['collaborators'] = 'a952174dfa5548628ed606d44e55ddbb'
+      ..fields['collaborators'] = '7fceb6a6ee0546e48f365e15079561e2';
+    try {
+      // Send the request
+      final response = await request.send();
+      // Check the response status
+      if (response.statusCode == 200) {
+        final responseBody = await http.Response.fromStream(response);
+        print('Meeting added successfully: ${responseBody.body}');
+        return LoginModel.fromJson(jsonDecode(responseBody.body));
+      } else {
+        print('Failed to add meeting: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
+
+  Future<LoginModel?> updateUserDetails() async {
+    final url = Uri.parse('${host}/auth/user-detail');
+    final headers = await getheader();
+    var request = http.MultipartRequest('PUT', url)
+      ..headers.addAll(headers)
+      ..fields['full_name'] = 'Chappidi Balaji'
+      ..fields['mobile'] = '9390324344'
+      ..files.add(await http.MultipartFile.fromPath('image', '/home/balaji/Downloads/AVATHAR.jpg'));
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        // Handle success
+        print('User details updated successfully.');
+        var responseData = await response.stream.toBytes();
+        var responseString = String.fromCharCodes(responseData);
+        print(responseString);
+
+        // Deserialize response to LoginModel
+        return LoginModel.fromJson(jsonDecode(responseString));
+      } else {
+        // Handle error
+        print('Failed to update user details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return null; // Return null if update failed
+  }
+
 }

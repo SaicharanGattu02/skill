@@ -1,4 +1,3 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/dashboard.dart';
@@ -16,8 +15,8 @@ class _SplashState extends State<Splash> {
 
   @override
   void initState() {
-    fetchDetails();
     super.initState();
+    fetchDetails();
   }
 
   fetchDetails() async {
@@ -25,6 +24,15 @@ class _SplashState extends State<Splash> {
     print("Token>>>${Token}");
     setState(() {
       token = Token;
+    });
+
+    // Wait for 2 seconds before navigating
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => (token.isEmpty) ? LogInScreen() : Dashboard(),
+        ),
+      );
     });
   }
 
@@ -34,30 +42,26 @@ class _SplashState extends State<Splash> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: AnimatedSplashScreen(
-        duration: 2000,
-        splash: SizedBox(
-          height: h,
+      backgroundColor: Color(0xff8856F4),
+      body: Center(
+        child: Container(
+          height:376,
           width: w,
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/Background.png"),
-                fit: BoxFit.cover,
-              ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/Background.png"),
+              fit: BoxFit.cover,
             ),
-            child: Center(
-              child: Image.asset(
-                "assets/skillLogo.png",
-                fit: BoxFit.contain,
-                height: h * 0.20,
-              ),
+          ),
+          child: Center(
+            child: Image.asset(
+              "assets/skillLogo.png",
+              fit: BoxFit.contain,
+              height: h * 0.20,
+              width: w*0.35,
             ),
           ),
         ),
-        nextScreen: (token == "") ? LogInScreen() : Dashboard(),
-        backgroundColor: Color(0xff8856F4),
-        splashTransition: SplashTransition.scaleTransition,
       ),
     );
   }

@@ -25,8 +25,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _PriojectController = TextEditingController();
   final TextEditingController _meetingTypeController = TextEditingController();
-  final MultiSelectController<Employeedata> _collabaratorsController =
-  MultiSelectController();
+  final controller = MultiSelectController<User>();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _meetinglinkController = TextEditingController();
@@ -83,7 +82,7 @@ class _AddMeetingsState extends State<AddMeetings> {
         _validateMeetingType = "";
       });
     });
-    _collabaratorsController.addListener(() {
+    controller.addListener(() {
       setState(() {
         _validateCollaborators = "";
       });
@@ -147,7 +146,7 @@ class _AddMeetingsState extends State<AddMeetings> {
         _descriptionController.text,
         _PriojectController.text,
         _meetingTypeController.text,
-        _collabaratorsController.toString(),
+        controller.toString(),
         dateAndTime,
         _meetinglinkController.text);
     setState(() {
@@ -209,10 +208,15 @@ class _AddMeetingsState extends State<AddMeetings> {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
 
-    List<DropdownItem<Employeedata>> dropdownItems = employeeData
-        .map((employee) => DropdownItem<Employeedata>(
-            value: employee, label: employee.fullName ?? ""))
-        .toList();
+    var items = employeeData.map((member) {
+      return DropdownItem<User>(
+        label: member.fullName ?? "",
+        value: User(
+          name: member.fullName ?? "",
+          id: member.id ?? "",
+        ),
+      );
+    }).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
@@ -522,9 +526,9 @@ class _AddMeetingsState extends State<AddMeetings> {
                     ],
                     _label(text: 'Collaborators'),
                     SizedBox(height: 4),
-                    MultiDropdown<Employeedata>(
-                      items: dropdownItems,
-                      controller: _collabaratorsController,
+                    MultiDropdown<User>(
+                      items: items,
+                      controller: controller,
                       enabled: true,
                       searchEnabled: true,
                       chipDecoration: const ChipDecoration(
@@ -903,9 +907,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                 controller: controller,
                 decoration: InputDecoration(
                   hintText: "Select time from time picker",
-                  suffixIcon: Container(
-                      padding: EdgeInsets.only(top: 12, bottom: 12),
-                      child: Icon(Icons.access_time)),
+                  suffixIcon: Icon(Icons.access_time,size:18,),
                   hintStyle: TextStyle(
                     fontSize: 14,
                     letterSpacing: 0,

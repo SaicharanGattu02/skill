@@ -40,10 +40,9 @@ class _LogInScreenState extends State<LogInScreen> {
     setState(() {
       _loading = false;
     });
-    var data = await Userapi.PostLogin(
-        _emailController.text, _passwordController.text);
+    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text);
     if (data != null) {
-      if (data.settings?.success == 1) {
+      if (data.settings?.success == 1) {  
         PreferenceService().saveString("token", data.data?.access ?? "");
         CustomSnackBar.show(context, "${data.settings?.message}");
         Navigator.push(
