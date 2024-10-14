@@ -7,7 +7,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/ProjectLabelModel.dart';
 import '../Model/ToDoListModel.dart';
-import '../ProjectModule/UserDetailsModel.dart';
+import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/Mywidgets.dart';

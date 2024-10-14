@@ -34,23 +34,29 @@ class _SplashState extends State<Splash> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-
-      body:
-      AnimatedSplashScreen(
+      body: AnimatedSplashScreen(
         duration: 2000,
-        splash: Center(
-          child:
-          Center(
-            child: Image.asset(
-              "assets/skillLogo.png",
-              fit: BoxFit.contain, // Keep the logo's aspect ratio intact
-              height: h * 0.20, // Adjust the logo to take up 20% of the screen height
+        splash: SizedBox(
+          height: h,
+          width: w,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/Background.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Center(
+              child: Image.asset(
+                "assets/skillLogo.png",
+                fit: BoxFit.contain,
+                height: h * 0.20,
+              ),
             ),
           ),
         ),
         nextScreen: (token == "") ? LogInScreen() : Dashboard(),
-        backgroundColor: const Color(0xff8856F4),
-
+        backgroundColor: Color(0xff8856F4),
         splashTransition: SplashTransition.scaleTransition,
       ),
     );

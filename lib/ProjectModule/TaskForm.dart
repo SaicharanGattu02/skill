@@ -21,9 +21,11 @@ import 'package:path/path.dart' as p; // Import the path package
 
 
 class TaskForm extends StatefulWidget {
-  final String projectId; // Explicitly define the type
+  final String projectId;
+  final String taskid;
+  final String title;
 
-  TaskForm({Key? key, required this.projectId})
+  TaskForm({Key? key, required this.projectId,required this.taskid,required this.title})
       : super(key: key); // Constructor
 
   @override
@@ -80,6 +82,7 @@ class _TaskFormState extends State<TaskForm> {
   @override
   void initState() {
     super.initState();
+    GetProjectTaskDetrails();
 
     _titleController.addListener(() {
       setState(() {
@@ -190,6 +193,35 @@ class _TaskFormState extends State<TaskForm> {
     });
   }
 
+
+  Future<void> GetProjectTaskDetrails() async {
+    var res = await Userapi.GetTaskDetail(widget.taskid);
+    setState(() {
+      _isLoading=false;
+      if (res?.taskDetail!= null) {
+        if (res?.settings?.success == 1) {
+          _loading=false;
+          _titleController.text=res?.taskDetail?.title??"";
+          // filename=res?.taskDetail?.assignedToImage??"";
+          _descriptionController.text=res?.taskDetail?.description??"";
+          _mileStoneController.text=res?.taskDetail?.milestone??"";
+          _assignedToController.text=res?.taskDetail?.assignedTo??"";
+          _statusController.text=res?.taskDetail?.status??"";
+          _priorityController.text=res?.taskDetail?.priority??"";
+          _startDateController.text=res?.taskDetail?.startDate??"";
+          _deadlineController.text=res?.taskDetail?.endDate??"";
+
+        } else {
+          _loading=false;
+          CustomSnackBar.show(context,res?.settings?.message??"");
+        }
+      } else {
+        _isLoading=false;
+        print("Task GetTaskDetail  ${res?.settings?.message}");
+      }
+    });
+  }
+
   void _validateFields() {
     setState(() {
       _validateTitle =
@@ -230,7 +262,20 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   Future<void> CreateTaskApi() async {
-    var data = await Userapi.CreateTask(
+    var data;
+    if(widget.title=="Edit Task"){
+      data= await Userapi.UpdateTask(widget.taskid, _titleController.text,
+          _descriptionController.text,
+          milestoneid,
+          assignedid,
+          statusid,
+          priorityid,
+          _startDateController.text,
+          _deadlineController.text,
+          selectedIds,
+          File(_imageFile!.path));
+    }
+    data = await Userapi.CreateTask(
         widget.projectId,
         _titleController.text,
         _descriptionController.text,
@@ -242,6 +287,7 @@ class _TaskFormState extends State<TaskForm> {
         _deadlineController.text,
         selectedIds,
         File(_imageFile!.path));
+
     if (data != null) {
       if(data.settings.success==1){
         Navigator.pop(context,true);
@@ -315,7 +361,7 @@ class _TaskFormState extends State<TaskForm> {
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
-        title: 'Add Task',
+        title: widget.title ,
         actions: [Container()],
       ),
       body:
@@ -542,6 +588,8 @@ class _TaskFormState extends State<TaskForm> {
                               fontWeight: FontWeight.w400,
                             ),
                             decoration: InputDecoration(
+                              contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                               hintText: "Select your milestone",
                               hintStyle: TextStyle(
                                 fontSize: 15,
@@ -550,6 +598,7 @@ class _TaskFormState extends State<TaskForm> {
                                 color: Color(0xffAFAFAF),
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w400,
+                                overflow: TextOverflow.ellipsis
                               ),
                               filled: true,
                               fillColor: Color(0xffFCFAFF),
@@ -564,6 +613,8 @@ class _TaskFormState extends State<TaskForm> {
                                     width: 1, color: Color(0xffD0CBDB)),
                               ),
                             ),
+                            textAlignVertical: TextAlignVertical
+                                .center, // Vertically center the
                           );
                         },
                         suggestionsCallback: (pattern) {
@@ -1172,12 +1223,15 @@ class _TaskFormState extends State<TaskForm> {
         Container(
           height: MediaQuery.of(context).size.height * 0.050,
           child: TextFormField(
+
             controller: controller,
             focusNode: focusNode,
             keyboardType: keyboardType,
             obscureText: obscureText,
             cursorColor: Color(0xff8856F4),
             decoration: InputDecoration(
+              contentPadding:
+              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               hintText: hintText,
               // prefixIcon: Container(
               //     width: 21,
@@ -1186,6 +1240,7 @@ class _TaskFormState extends State<TaskForm> {
               //     child: prefixicon),
               suffixIcon: suffixicon,
               hintStyle: const TextStyle(
+                overflow: TextOverflow.ellipsis,
                 fontSize: 14,
                 letterSpacing: 0,
                 height: 19.36 / 14,
@@ -1215,7 +1270,10 @@ class _TaskFormState extends State<TaskForm> {
                 borderSide:
                     const BorderSide(width: 1, color: Color(0xffd0cbdb)),
               ),
+
             ),
+            textAlignVertical: TextAlignVertical
+                .center,
           ),
         ),
         if (validationMessage.isNotEmpty) ...[
@@ -1259,7 +1317,7 @@ class _TaskFormState extends State<TaskForm> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select dob from date picker",
+                  hintText: "Select date from date picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

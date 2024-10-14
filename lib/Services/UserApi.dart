@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:mime/mime.dart';
 import 'package:skill/Model/GetLeaveCountModel.dart';
 import 'package:skill/Model/GetLeaveModel.dart';
+import 'package:skill/Model/GetTaskDetailModel.dart';
 import 'package:skill/Model/MeetingModel.dart';
 import 'package:skill/Model/ProjectActivityModel.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
@@ -38,7 +39,7 @@ import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
 import '../Model/ToDoListModel.dart';
-import '../ProjectModule/UserDetailsModel.dart';
+import '../Model/UserDetailsModel.dart';
 import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
@@ -292,6 +293,24 @@ class Userapi {
     }
   }
 
+  static Future<GetTaskDetailModel?> GetTaskDetail(String taskid) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-task-detail/$taskid");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetTaskDetail Response:${res.body}");
+        return GetTaskDetailModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
   static Future<GetMileStoneModel?> GetMileStoneApi(String id) async {
     try {
       final headers = await getheader();
@@ -500,6 +519,76 @@ class Userapi {
         "title": title,
         "description": desc,
         "points": '3', // Update as needed
+        "milestone": milestone,
+        "assign_to": assignedTo,
+        "status": status,
+        "priority": priority,
+        "start_date": startDate,
+        "end_date": endDate,
+      };
+      print("CreateTask:${body}");
+      print("Image : ${image}");
+      final headers = await getheader();
+      // Create a multipart request
+      var req = http.MultipartRequest('POST', url)
+        ..headers.addAll(headers)
+        ..fields.addAll(body);
+
+      // Add collaborators as a separate field
+      for (String collaborator in collaborators) {
+        req.fields['collaborators[]'] = collaborator; // Use array notation
+      }
+
+      // Add the image file to the request
+      req.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          image.path,
+          contentType: MediaType.parse(mimeType),
+        ),
+      );
+
+      // Send the request
+      var res = await req.send();
+
+      // Read the response body
+      var responseBody = await res.stream.bytesToString();
+
+      if (res.statusCode == 200) {
+        print("Response: $responseBody");
+        return TaskAddmodel.fromJson(jsonDecode(responseBody));
+      } else {
+        print('Error: ${res.statusCode}, Response: $responseBody');
+        return null; // Return null for an unsuccessful response
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return null; // Handle error case by returning null
+    }
+  }
+  static Future<TaskAddmodel?> UpdateTask(String taskid,
+      String title,
+      String desc,
+      String milestone,
+      String assignedTo,
+      String status,
+      String priority,
+      String startDate,
+      String endDate,
+      List<String> collaborators, // Change type from String to List<String>
+      File image,) async {
+    try {
+      // Check if the file is an image
+      String? mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null; // Return null for invalid image
+      }
+      final url = Uri.parse("${host}/project/project-task-detail/$taskid");
+      Map<String, String> body = {
+        "title": title,
+        "description": desc,
+        "points": '3',
         "milestone": milestone,
         "assign_to": assignedTo,
         "status": status,

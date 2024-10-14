@@ -309,7 +309,7 @@ class ActivityCard extends StatelessWidget {
 }
 
 class TaskBottomSheet {
-  static void show(BuildContext context,String project_id) {
+  static void show(BuildContext context,String title,String project_id,String id) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -319,7 +319,7 @@ class TaskBottomSheet {
       builder: (BuildContext context) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: TaskForm(projectId: project_id),
+          child: TaskForm(title:title ,projectId: project_id,taskid: id,),
         );
       },
     );

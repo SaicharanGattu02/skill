@@ -42,15 +42,18 @@ class _ProjectCommentState extends State<ProjectComment> {
   Future<void> GetProjectCommentsApi() async {
     var res = await Userapi.GetProjectComments(widget.id);
     setState(() {
+
       if (res != null) {
+        _loading=false;
         if (res.settings?.success==1) {
-          _loading=false;
+
           data = res.data ?? [];
         } else {
-          _loading=false;
+
           CustomSnackBar.show(context,res.settings?.message??"");
         }
       } else {
+        _loading=false;
         print("not fetch");
       }
     });
@@ -60,6 +63,7 @@ class _ProjectCommentState extends State<ProjectComment> {
     var res = await Userapi.sendComment(_commentController.text,widget.id,_imageList);
     setState(() {
       if (res != null) {
+        _loading=false;
         if (res.data != null) {
           CustomSnackBar.show(context,"${res.settings?.message}");
           _imageList=[];
@@ -69,6 +73,7 @@ class _ProjectCommentState extends State<ProjectComment> {
           CustomSnackBar.show(context,"${res.settings?.message}");
         }
       } else {
+        _loading=false;
         print("not fetch");
       }
     });
@@ -140,12 +145,14 @@ class _ProjectCommentState extends State<ProjectComment> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       resizeToAvoidBottomInset: true,
-      body: _loading
+      body:
+      _loading
           ? Center(
               child: CircularProgressIndicator(
               color: Color(0xff8856F4),
             ))
-          : Padding(
+          :
+      Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -631,13 +638,14 @@ class _ProjectCommentState extends State<ProjectComment> {
             InkResponse(
               onTap: () {
                 setState(() {
+
                   validatecomment = _commentController.text.isEmpty
                       ? "Please enter comment"
                       : "";
                   _validatefile = _imageList.length == 0 ? "Please select a file" : "";
-                  var _isLoading =
+                   _loading =
                       validatecomment.isEmpty && _validatefile.isEmpty;
-                  if (_isLoading) {
+                  if (_loading) {
                     SendComments();
                   } else {
 

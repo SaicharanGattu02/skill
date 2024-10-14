@@ -584,7 +584,7 @@ class _OverViewState extends State<OverView> {
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: 10, // Example member count
+            itemCount: activitydata.length,
             itemBuilder: (context, index) {
               String isoDate1 = activitydata[index].createdTime ?? "";
               String isoDate =activitydata[index].createdTime ?? "";
@@ -602,7 +602,7 @@ class _OverViewState extends State<OverView> {
                     project_name: activitydata[index].projectName ?? "",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < 9)
+                  if (index < activitydata.length-1)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Divider(

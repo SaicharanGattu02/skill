@@ -522,94 +522,94 @@ class _AddMeetingsState extends State<AddMeetings> {
                     ],
                     _label(text: 'Collaborators'),
                     SizedBox(height: 4),
-                    // MultiDropdown<Employeedata>(
-                    //   items: dropdownItems,
-                    //   controller: _collabaratorsController,
-                    //   enabled: true,
-                    //   searchEnabled: true,
-                    //   chipDecoration: const ChipDecoration(
-                    //       backgroundColor: Color(0xffE8E4EF),
-                    //       wrap: true,
-                    //       runSpacing: 2,
-                    //       spacing: 10,
-                    //       borderRadius: BorderRadius.all(Radius.circular(7))),
-                    //   fieldDecoration: FieldDecoration(
-                    //     hintText: 'Collaborators',
-                    //     hintStyle: TextStyle(
-                    //       fontSize: 15,
-                    //       letterSpacing: 0,
-                    //       height: 1.2,
-                    //       color: Color(0xffAFAFAF),
-                    //       fontFamily: 'Poppins',
-                    //       fontWeight: FontWeight.w400,
-                    //     ),
-                    //     showClearIcon: false,
-                    //     backgroundColor: Color(0xfffcfaff),
-                    //     border: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(7),
-                    //       borderSide:
-                    //           const BorderSide(color: Color(0xffd0cbdb)),
-                    //     ),
-                    //     focusedBorder: OutlineInputBorder(
-                    //       borderRadius: BorderRadius.circular(7),
-                    //       borderSide:
-                    //           const BorderSide(color: Color(0xffd0cbdb)),
-                    //     ),
-                    //   ),
-                    //   dropdownDecoration: const DropdownDecoration(
-                    //     marginTop: 2,
-                    //     maxHeight: 500,
-                    //     header: Padding(
-                    //       padding: EdgeInsets.all(8),
-                    //       child: Text(
-                    //         'Select members from the list',
-                    //         textAlign: TextAlign.start,
-                    //         style: TextStyle(
-                    //             fontSize: 16,
-                    //             fontWeight: FontWeight.w500,
-                    //             fontFamily: "Inter"),
-                    //       ),
-                    //     ),
-                    //   ),
-                    //   dropdownItemDecoration: DropdownItemDecoration(
-                    //     selectedIcon: const Icon(Icons.check_box,
-                    //         color: Color(0xff8856F4)),
-                    //     disabledIcon:
-                    //         Icon(Icons.lock, color: Colors.grey.shade300),
-                    //   ),
-                    //   // onSelectionChange: (selectedItems) {
-                    //   //   debugPrint("OnSelectionChange: $selectedItems");
-                    //   // },
-                    //   onSelectionChange: (selectedItems) {
-                    //     setState(() {
-                    //       // Extract only the IDs and store them in selectedIds
-                    //       // selectedIds = selectedItems.map(() => user.id).toList();
-                    //       _validateCollaborators = "";
-                    //     });
-                    //     debugPrint("Selected IDs: $selectedIds");
-                    //   },
-                    // ),
-                    // if (_validateCollaborators.isNotEmpty) ...[
-                    //   Container(
-                    //     alignment: Alignment.topLeft,
-                    //     margin: EdgeInsets.only(bottom: 5),
-                    //     child: ShakeWidget(
-                    //       key: Key("value"),
-                    //       duration: Duration(milliseconds: 700),
-                    //       child: Text(
-                    //         _validateCollaborators,
-                    //         style: TextStyle(
-                    //           fontFamily: "Poppins",
-                    //           fontSize: 12,
-                    //           color: Colors.red,
-                    //           fontWeight: FontWeight.w500,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ] else ...[
-                    //   const SizedBox(height: 15),
-                    // ],
+                    MultiDropdown<Employeedata>(
+                      items: dropdownItems,
+                      controller: _collabaratorsController,
+                      enabled: true,
+                      searchEnabled: true,
+                      chipDecoration: const ChipDecoration(
+                          backgroundColor: Color(0xffE8E4EF),
+                          wrap: true,
+                          runSpacing: 2,
+                          spacing: 10,
+                          borderRadius: BorderRadius.all(Radius.circular(7))),
+                      fieldDecoration: FieldDecoration(
+                        hintText: 'Collaborators',
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          letterSpacing: 0,
+                          height: 1.2,
+                          color: Color(0xffAFAFAF),
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
+                        ),
+                        showClearIcon: false,
+                        backgroundColor: Color(0xfffcfaff),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide:
+                              const BorderSide(color: Color(0xffd0cbdb)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide:
+                              const BorderSide(color: Color(0xffd0cbdb)),
+                        ),
+                      ),
+                      dropdownDecoration: const DropdownDecoration(
+                        marginTop: 2,
+                        maxHeight: 500,
+                        header: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            'Select members from the list',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: "Inter"),
+                          ),
+                        ),
+                      ),
+                      dropdownItemDecoration: DropdownItemDecoration(
+                        selectedIcon: const Icon(Icons.check_box,
+                            color: Color(0xff8856F4)),
+                        disabledIcon:
+                            Icon(Icons.lock, color: Colors.grey.shade300),
+                      ),
+                      // onSelectionChange: (selectedItems) {
+                      //   debugPrint("OnSelectionChange: $selectedItems");
+                      // },
+                      onSelectionChange: (selectedItems) {
+                        setState(() {
+                          // Extract only the IDs and store them in selectedIds
+                          // selectedIds = selectedItems.map(() => user.id).toList();
+                          _validateCollaborators = "";
+                        });
+                        debugPrint("Selected IDs: $selectedIds");
+                      },
+                    ),
+                    if (_validateCollaborators.isNotEmpty) ...[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        margin: EdgeInsets.only(bottom: 5),
+                        child: ShakeWidget(
+                          key: Key("value"),
+                          duration: Duration(milliseconds: 700),
+                          child: Text(
+                            _validateCollaborators,
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 12,
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 15),
+                    ],
                     _label(text: 'Start Date'),
                     SizedBox(height: 4),
                     _buildDateField(

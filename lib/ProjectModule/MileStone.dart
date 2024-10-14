@@ -150,44 +150,55 @@ class _MileStoneState extends State<MileStone> {
               // Search Row
               Row(
                 children: [
-                  // Search Bar with Input Field
-                  Container(
-                    width: w * 0.53,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffffffff),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "assets/search.png",
-                          width: 20,
-                          height: 20,
-                          fit: BoxFit.contain,
+
+                  SizedBox(
+                    child: Center(
+                      child: Container(
+                        width: w * 0.53,
+                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffffffff),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        const SizedBox(width: 10),
-                        // TextField for search input
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: const InputDecoration(
-                              hintText: 'Search...',
-                              hintStyle: TextStyle(
-                                color: Color(0xff9E7BCA),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                fontFamily: "Nunito",
+                        child:
+                        Row(
+                          children: [
+                            Image.asset(
+                              "assets/search.png",
+                              width: 20,
+                              height: 20,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(width: 10),
+
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  isCollapsed: true,
+                                  border: InputBorder.none,
+                                  hintText: 'Search',
+                                  hintStyle: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: Color(0xff9E7BCA),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                    fontFamily: "Nunito",
+                                  ),
+                                ),
+                                style: TextStyle(
+                                    color: Color(0xff9E7BCA),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    decorationColor: Color(0xff9E7BCA),
+                                    fontFamily: "Nunito",
+                                    overflow: TextOverflow.ellipsis),
+                                textAlignVertical: TextAlignVertical.center,
                               ),
-                              border: InputBorder.none,
                             ),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                   Spacer(),
@@ -715,7 +726,7 @@ class _MileStoneState extends State<MileStone> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select dob from date picker",
+                  hintText: "Select date from date picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

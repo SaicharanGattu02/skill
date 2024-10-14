@@ -12,6 +12,7 @@ import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/ProjectModule/Projects.dart';
+import 'package:skill/screens/Profiledashboard.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
@@ -22,7 +23,7 @@ import '../Model/EmployeeListModel.dart';
 import '../Model/ProjectsModel.dart';
 import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
-import '../ProjectModule/UserDetailsModel.dart';
+import '../Model/UserDetailsModel.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 
@@ -61,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/designers.png', 'text': '# Hr Team'},
     {'image': 'assets/pixl.png', 'text': '# BDE Team'},
   ];
-  bool _isLoading = true;
+
   String userid = "";
   List<Rooms> rooms = [];
   String selectedEmployee = "";
@@ -185,7 +186,9 @@ class _DashboardState extends State<Dashboard> {
   Future<void> GetRoomsList() async {
     var res = await Userapi.getrommsApi();
     setState(() {
+
       if (res != null) {
+        _loading=false;
         if (res.settings?.success == 1) {
           rooms = res.data ?? [];
           rooms.sort(
@@ -243,13 +246,13 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       if (Res != null) {
         if (Res.settings?.success == 1) {
-          _isLoading = false;
+          _loading=false;
           userdata = Res.data;
           userid = Res.data?.id ?? "";
           _initializeWebSocket(userdata?.id ?? "");
           PreferenceService().saveString("user_id", userdata?.id ?? "");
         } else {
-          _isLoading = false;
+          _loading=false;
         }
       }
     });
@@ -267,7 +270,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  bool _loading = false;
+  bool _loading = true;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -351,7 +354,8 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      body: _loading
+      body:
+      _loading
           ? Center(
               child: CircularProgressIndicator(
               color: Color(0xff8856F4),
@@ -399,265 +403,269 @@ class _DashboardState extends State<Dashboard> {
                         height: w * 0.03,
                       ),
                       // User Info Container
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: const Color(0xff8856F4),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                ClipOval(
-                                  child: Center(
-                                    child: Image.network(
-                                      userdata?.image ?? "",
-                                      width: 70,
-                                      height: 70,
-                                      fit: BoxFit.cover,
+                      InkResponse(onTap: (){
+                        // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileDashboard()));
+                      },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              color: const Color(0xff8856F4),
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  ClipOval(
+                                    child: Center(
+                                      child: Image.network(
+                                        userdata?.image ?? "",
+                                        width: 70,
+                                        height: 70,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                // User Info and Performance
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 2,
-                                            bottom: 2),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xffFFFFFF),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                  const SizedBox(width: 10),
+                                  // User Info and Performance
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 4,
+                                              right: 4,
+                                              top: 2,
+                                              bottom: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xffFFFFFF),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: const [
+                                              Text(
+                                                "Skil ID - 02",
+                                                style: TextStyle(
+                                                    color: Color(0xff8856F4),
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 10,
+                                                    height: 12.1 / 10,
+                                                    letterSpacing: 0.14,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    fontFamily: "Nunito"),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: const [
-                                            Text(
-                                              "Skil ID - 02",
-                                              style: TextStyle(
-                                                  color: Color(0xff8856F4),
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 10,
-                                                  height: 12.1 / 10,
-                                                  letterSpacing: 0.14,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  fontFamily: "Nunito"),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                userdata?.fullName ?? "",
+                                                style: const TextStyle(
+                                                    color: Color(0xffFFFFFF),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    fontFamily: "Inter"),
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 4, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xff2FB035),
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                              ),
+                                              child: const Text(
+                                                "Active",
+                                                style: TextStyle(
+                                                    color: Color(0xffFFFFFF),
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 12,
+                                                    height: 16.36 / 12,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    fontFamily: "Nunito"),
+                                              ),
+                                            ),
+                                            SizedBox(width: 15),
+                                            Image.asset(
+                                              "assets/edit.png",
+                                              width: 18,
+                                              height: 18,
+                                              fit: BoxFit.cover,
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              userdata?.fullName ?? "",
-                                              style: const TextStyle(
-                                                  color: Color(0xffFFFFFF),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  fontFamily: "Inter"),
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 4, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xff2FB035),
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                            ),
-                                            child: const Text(
-                                              "Active",
-                                              style: TextStyle(
-                                                  color: Color(0xffFFFFFF),
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 12,
-                                                  height: 16.36 / 12,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  fontFamily: "Nunito"),
-                                            ),
-                                          ),
-                                          SizedBox(width: 15),
-                                          Image.asset(
-                                            "assets/edit.png",
-                                            width: 18,
-                                            height: 18,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // UX/UI and Performance in a Row
-                                      Row(
-                                        children: [
-                                          // UX/UI and Contact Details
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "UX/UI Designer at PIXL Since 2024",
-                                                  style: TextStyle(
-                                                      color: const Color(
-                                                              0xffFFFFFF)
-                                                          .withOpacity(0.7),
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 12,
-                                                      height: 16.21 / 12,
-                                                      letterSpacing: 0.14,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      fontFamily: "Inter"),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Container(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 4,
-                                                                vertical: 3),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(6),
-                                                          color:
-                                                              Color(0xffFFFFFF)
-                                                                  .withOpacity(
-                                                                      0.25),
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Image.asset(
-                                                              "assets/call.png",
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                              width: 12,
-                                                              color: Color(
-                                                                  0xffffffff),
-                                                            ),
-                                                            SizedBox(width: 4),
-                                                            Expanded(
-                                                              // Wrap Text with Expanded to avoid overflow
-                                                              child: Text(
-                                                                userdata?.mobile ??
-                                                                    "",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: const Color(
-                                                                      0xffFFFFFF),
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 11,
-                                                                  height:
-                                                                      13.41 /
-                                                                          11,
-                                                                  letterSpacing:
-                                                                      0.14,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  fontFamily:
-                                                                      "Inter",
+                                        const SizedBox(height: 8),
+                                        // UX/UI and Performance in a Row
+                                        Row(
+                                          children: [
+                                            // UX/UI and Contact Details
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "UX/UI Designer at PIXL Since 2024",
+                                                    style: TextStyle(
+                                                        color: const Color(
+                                                                0xffFFFFFF)
+                                                            .withOpacity(0.7),
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 12,
+                                                        height: 16.21 / 12,
+                                                        letterSpacing: 0.14,
+                                                        overflow:
+                                                            TextOverflow.ellipsis,
+                                                        fontFamily: "Inter"),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Container(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal: 4,
+                                                                  vertical: 3),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(6),
+                                                            color:
+                                                                Color(0xffFFFFFF)
+                                                                    .withOpacity(
+                                                                        0.25),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              Image.asset(
+                                                                "assets/call.png",
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                                width: 12,
+                                                                color: Color(
+                                                                    0xffffffff),
+                                                              ),
+                                                              SizedBox(width: 4),
+                                                              Expanded(
+                                                                // Wrap Text with Expanded to avoid overflow
+                                                                child: Text(
+                                                                  userdata?.mobile ??
+                                                                      "",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: const Color(
+                                                                        0xffFFFFFF),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize: 11,
+                                                                    height:
+                                                                        13.41 /
+                                                                            11,
+                                                                    letterSpacing:
+                                                                        0.14,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    fontFamily:
+                                                                        "Inter",
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    SizedBox(width: w * 0.015),
-                                                    Expanded(
-                                                      // Use Expanded for the second container as well
-                                                      child: Container(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 4,
-                                                                vertical: 3),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(6),
-                                                          color:
-                                                              Color(0xffFFFFFF)
-                                                                  .withOpacity(
-                                                                      0.25),
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Image.asset(
-                                                              "assets/gmail.png",
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                              width: 12,
-                                                              color: Color(
-                                                                  0xffffffff),
-                                                            ),
-                                                            SizedBox(width: 4),
-                                                            Expanded(
-                                                              // Wrap Text with Expanded here too
-                                                              child: Text(
-                                                                userdata?.email ??
-                                                                    "",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: const Color(
-                                                                      0xffFFFFFF),
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 11,
-                                                                  height:
-                                                                      13.41 /
-                                                                          11,
-                                                                  letterSpacing:
-                                                                      0.14,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  fontFamily:
-                                                                      "Inter",
+                                                      SizedBox(width: w * 0.015),
+                                                      Expanded(
+                        
+                                                        child: Container(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal: 4,
+                                                                  vertical: 3),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(6),
+                                                            color:
+                                                                Color(0xffFFFFFF)
+                                                                    .withOpacity(
+                                                                        0.25),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              Image.asset(
+                                                                "assets/gmail.png",
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                                width: 12,
+                                                                color: Color(
+                                                                    0xffffffff),
+                                                              ),
+                                                              SizedBox(width: 4),
+                                                              Expanded(
+                                                                // Wrap Text with Expanded here too
+                                                                child: Text(
+                                                                  userdata?.email ??
+                                                                      "",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: const Color(
+                                                                        0xffFFFFFF),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize: 11,
+                                                                    height:
+                                                                        13.41 /
+                                                                            11,
+                                                                    letterSpacing:
+                                                                        0.14,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    fontFamily:
+                                                                        "Inter",
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 15),
-                                          // Performance Container
-                                        ],
-                                      ),
-                                    ],
+                                            const SizedBox(width: 15),
+                                            // Performance Container
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(

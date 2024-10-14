@@ -21,7 +21,6 @@ class ProjectNotes extends StatefulWidget {
   State<ProjectNotes> createState() => _ProjectNotesState();
 }
 
-bool _loading = true;
 
 class _ProjectNotesState extends State<ProjectNotes> {
   // final TextEditingController _createdDateController = TextEditingController();
@@ -39,7 +38,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
   XFile? _imageFile;
   File? filepath;
-  bool _isLoading = false;
+  bool _isLoading = true;
   final spinkit=Spinkits();
 
   @override
@@ -54,10 +53,10 @@ class _ProjectNotesState extends State<ProjectNotes> {
     setState(() {
         if (res!= null) {
           if(res.settings?.success==1){
-            _loading=false;
+            _isLoading=false;
             data = res.data ?? [];
           }else{
-            _loading=false;
+            _isLoading=false;
             CustomSnackBar.show(context,res.settings?.message??"");
           }
         } else {
@@ -68,16 +67,29 @@ class _ProjectNotesState extends State<ProjectNotes> {
   }
 
   Future<void> PostAddNoteApi(String editid) async {
+    setState(() {
+      _isLoading = false;
+
+    });
     var res;
     if (editid != "") {
+      setState(() {
+        _isLoading = false;
+
+      });
       res = await Userapi.PutEditNote(
-        editid!, // Pass the edit ID for PUT request
+        editid,
         _titleController.text,
         _descriptionController.text,
         File(_imageFile!.path),
         widget.id,
+
       );
     } else {
+      setState(() {
+        _isLoading = false;
+
+      });
       res = await await Userapi.PostAddNote(_titleController.text,
           _descriptionController.text, File(_imageFile!.path), widget.id);
     }
@@ -86,6 +98,10 @@ class _ProjectNotesState extends State<ProjectNotes> {
         _isLoading = false;
       });
       if (res.settings?.success == 1) {
+        setState(() {
+          _isLoading = false;
+
+        });
         print("PostAddNoteApi>>${res}");
         CustomSnackBar.show(context, "${res.settings?.message}");
         Navigator.pop(context);
@@ -103,6 +119,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
   Future<void> EditNoteApi(String editid) async {
     var res = await Userapi.GetProjectEditNotes(editid);
     setState(() {
+      _isLoading=false;
       if (res != null) {
         if (res.editData != null) {
           _titleController.text = res.editData?.title ?? "";
@@ -136,6 +153,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
     if (res != null) {
       setState(() {
+        _isLoading=false;
         if (res.settings == 1) {
           GetNote();
           CustomSnackBar.show(context, "${res.settings?.message}");
@@ -154,12 +172,14 @@ class _ProjectNotesState extends State<ProjectNotes> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _loading
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
-          : SingleChildScrollView(
+      body:
+      // _isLoading
+      //     ? Center(
+      //         child: CircularProgressIndicator(
+      //         color: Color(0xff8856F4),
+      //       ))
+      //     :
+      SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(

@@ -20,12 +20,13 @@ class MyTabBar extends StatefulWidget {
   @override
   _MyTabBarState createState() => _MyTabBarState();
 }
-bool _loading =true;
+
 class _MyTabBarState extends State<MyTabBar>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late PageController _pageController;
   int _selectedTabIndex = 0;
+  bool _loading =true;
 
   @override
   void initState() {

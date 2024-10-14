@@ -18,6 +18,7 @@ class TaskList extends StatefulWidget {
 }
 bool _loading = true;
 class _TaskListState extends State<TaskList> {
+  final TextEditingController _searchController = TextEditingController();
   List<Data> data = [];
 
   @override
@@ -48,12 +49,14 @@ class _TaskListState extends State<TaskList> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body: _loading
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
-          : SingleChildScrollView(
+      body:
+      // _loading
+      //     ? Center(
+      //         child: CircularProgressIndicator(
+      //         color: Color(0xff8856F4),
+      //       ))
+      //     :
+        SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -68,7 +71,8 @@ class _TaskListState extends State<TaskList> {
                             color: const Color(0xffffffff),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Row(
+                          child:
+                          Row(
                             children: [
                               Image.asset(
                                 "assets/search.png",
@@ -77,13 +81,30 @@ class _TaskListState extends State<TaskList> {
                                 fit: BoxFit.contain,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
-                                "Search",
-                                style: TextStyle(
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  fontFamily: "Nunito",
+
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    isCollapsed: true,
+                                    border: InputBorder.none,
+                                    hintText: 'Search',
+                                    hintStyle: const TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: Color(0xff9E7BCA),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      fontFamily: "Nunito",
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                      color: Color(0xff9E7BCA),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      decorationColor: Color(0xff9E7BCA),
+                                      fontFamily: "Nunito",
+                                      overflow: TextOverflow.ellipsis),
+                                  textAlignVertical: TextAlignVertical.center,
                                 ),
                               ),
                             ],
@@ -98,7 +119,7 @@ class _TaskListState extends State<TaskList> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        TaskForm(projectId: widget.id1),
+                                        TaskForm(title: 'Add Task',projectId: widget.id1,taskid: '',),
                                   ));
                               if (res == true) {
                                 setState(() {
@@ -192,16 +213,23 @@ class _TaskListState extends State<TaskList> {
                                   SizedBox(
                                     width: w * 0.04,
                                   ),
-                                  Image.asset(
-                                    "assets/edit.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.06,
-                                    height: w * 0.05,
-                                    color: Color(0xff8856F4),
+                                  InkWell(onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TaskForm(title:'Edit Task',projectId:'',taskid:task.id??"")));
+                             
+                                  },
+                                    child: Container(
+                                      child: Image.asset(
+                                        "assets/edit.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.06,
+                                        height: w * 0.05,
+                                        color: Color(0xff8856F4),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
+                               SizedBox(height: 6),
                               Text(
                                 task.title ?? "",
                                 style: const TextStyle(

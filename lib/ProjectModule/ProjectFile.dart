@@ -63,9 +63,8 @@ class _ProjectFileState extends State<ProjectFile> {
   void dispose() {
 
     _searchController.removeListener(_onSearchChanged);
-    _searchController2.removeListener(_onSearchChanged2);
-
     _searchController.dispose();
+    _searchController2.removeListener(_onSearchChanged2);
     _searchController2.dispose();
     super.dispose();
   }
@@ -88,9 +87,9 @@ class _ProjectFileState extends State<ProjectFile> {
   }
 
   void _onSearchChanged2() {
-    String query = _searchController2.text.toLowerCase();
+    String query = _searchController.text.toLowerCase();
     setState(() {
-
+      // Filter the rooms based on title or ID
       filteredRooms2 = catagory.where((room) {
         String title = room.name?.toLowerCase() ?? '';
         String id = room.id?.toLowerCase() ?? '';
@@ -386,7 +385,8 @@ class _ProjectFileState extends State<ProjectFile> {
                               color: const Color(0xffffffff),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
+                            child:
+                            Row(
                               children: [
                                 Image.asset(
                                   "assets/search.png",
@@ -395,24 +395,30 @@ class _ProjectFileState extends State<ProjectFile> {
                                   fit: BoxFit.contain,
                                 ),
                                 const SizedBox(width: 10),
-                                // TextField for search input
+
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Search...',
-                                      hintStyle: TextStyle(
+                                    decoration: InputDecoration(
+                                      isCollapsed: true,
+                                      border: InputBorder.none,
+                                      hintText: 'Search',
+                                      hintStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                        color: Color(0xff9E7BCA),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                        fontFamily: "Nunito",
+                                      ),
+                                    ),
+                                    style: TextStyle(
                                         color: Color(0xff9E7BCA),
                                         fontWeight: FontWeight.w400,
                                         fontSize: 16,
+                                        decorationColor: Color(0xff9E7BCA),
                                         fontFamily: "Nunito",
-                                      ),
-                                      border: InputBorder.none,
-                                    ),
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
+                                        overflow: TextOverflow.ellipsis),
+                                    textAlignVertical: TextAlignVertical.center,
                                   ),
                                 ),
                               ],
@@ -635,7 +641,8 @@ class _ProjectFileState extends State<ProjectFile> {
                               color: const Color(0xffffffff),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
+                            child:
+                            Row(
                               children: [
                                 Image.asset(
                                   "assets/search.png",
@@ -644,24 +651,30 @@ class _ProjectFileState extends State<ProjectFile> {
                                   fit: BoxFit.contain,
                                 ),
                                 const SizedBox(width: 10),
-                                // TextField for search input
+
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController2,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Search...',
-                                      hintStyle: TextStyle(
+                                    decoration: InputDecoration(
+                                      isCollapsed: true,
+                                      border: InputBorder.none,
+                                      hintText: 'Search',
+                                      hintStyle: const TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                        color: Color(0xff9E7BCA),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                        fontFamily: "Nunito",
+                                      ),
+                                    ),
+                                    style: TextStyle(
                                         color: Color(0xff9E7BCA),
                                         fontWeight: FontWeight.w400,
                                         fontSize: 16,
+                                        decorationColor: Color(0xff9E7BCA),
                                         fontFamily: "Nunito",
-                                      ),
-                                      border: InputBorder.none,
-                                    ),
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
+                                        overflow: TextOverflow.ellipsis),
+                                    textAlignVertical: TextAlignVertical.center,
                                   ),
                                 ),
                               ],

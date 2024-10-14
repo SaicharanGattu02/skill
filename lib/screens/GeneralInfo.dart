@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../ProjectModule/UserDetailsModel.dart';
+import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 
 class GeneralInfo extends StatefulWidget {

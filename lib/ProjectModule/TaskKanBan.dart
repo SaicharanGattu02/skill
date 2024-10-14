@@ -55,15 +55,14 @@ class _TaskKanBanState extends State<TaskKanBan> {
   }
 
   Future<void> GetKanBan() async {
-    setState(() {
-      _loading = true; // Show loading spinner
-    });
+
     var res = await Userapi.GetTaskKanBan(widget.id);
 
     setState(() {
-      _loading = false; // Hide loading spinner
+      _loading = false;
       if (res != null && res.settings?.success == 1) {
         data = res.data ?? [];
+        print("data>>${data}");
         data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
         filteredRooms = data; // Initialize with all data
         showNoDataFoundMessage = data.isEmpty;
@@ -111,10 +110,26 @@ class _TaskKanBanState extends State<TaskKanBan> {
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              decoration: const InputDecoration(
-                                hintText: 'Search',
+                              decoration: InputDecoration(
+                                isCollapsed: true,
                                 border: InputBorder.none,
+                                hintText: 'Search',
+                                hintStyle: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  color: Color(0xff9E7BCA),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  fontFamily: "Nunito",
+                                ),
                               ),
+                              style: TextStyle(
+                                  color: Color(0xff9E7BCA),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  decorationColor: Color(0xff9E7BCA),
+                                  fontFamily: "Nunito",
+                                  overflow: TextOverflow.ellipsis),
+                              textAlignVertical: TextAlignVertical.center,
                             ),
                           ),
                         ],
