@@ -26,6 +26,8 @@ class _ProjectFileState extends State<ProjectFile> {
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController2 = TextEditingController();
   // final TextEditingController _labelController = TextEditingController();
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
@@ -36,22 +38,68 @@ class _ProjectFileState extends State<ProjectFile> {
   String _validatefile = "";
   String filename = "";
   String _validatename = "";
-
   XFile? _imageFile;
   File? filepath;
-  bool _isLoading = true;
+  bool _isLoading = false;
   final spinkit=Spinkits();
   bool isFilesSelected = true;
 
   String categoryID = "";
 
+
+
+  @override
   void initState() {
+    super.initState();
     GetFile();
     GetCatagory();
-    super.initState();
+    _searchController.addListener(_onSearchChanged);
+    _searchController2.addListener(_onSearchChanged2);
   }
 
+
+
+  @override
+  void dispose() {
+
+    _searchController.removeListener(_onSearchChanged);
+    _searchController2.removeListener(_onSearchChanged2);
+
+    _searchController.dispose();
+    _searchController2.dispose();
+    super.dispose();
+  }
   List<Data> data = [];
+  List<Data> filteredRooms = [];
+  List<Catagory> catagory = [];
+  List<Catagory> filteredRooms2 = [];
+
+  // Search listener function to filter the list
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      // Filter the rooms based on title or ID
+      filteredRooms = data.where((room) {
+        String title = room.fileName?.toLowerCase() ?? '';
+        String id = room.id?.toLowerCase() ?? '';
+        return title.contains(query) || id.contains(query);
+      }).toList();
+    });
+  }
+
+  void _onSearchChanged2() {
+    String query = _searchController2.text.toLowerCase();
+    setState(() {
+
+      filteredRooms2 = catagory.where((room) {
+        String title = room.name?.toLowerCase() ?? '';
+        String id = room.id?.toLowerCase() ?? '';
+        return title.contains(query) || id.contains(query);
+      }).toList();
+    });
+  }
+
+
   Future<void> GetFile() async {
     var res = await Userapi.GetProjectFile(widget.id);
     setState(() {
@@ -64,7 +112,18 @@ class _ProjectFileState extends State<ProjectFile> {
           CustomSnackBar.show(context,res.settings?.message??"");
         }
       }
-    });
+
+        if (res != null) {
+          if (res.settings?.success == 1) {
+            data = res.data ?? [];
+            filteredRooms = data;  // Initially, show all rooms
+          } else {
+            CustomSnackBar.show(context, res.settings?.message ?? "");
+          }
+        } else {
+          print("Task Failure  ${res?.settings?.message}");
+        }
+      });
   }
 
   Future<void> PostFiles(String editid) async {
@@ -122,8 +181,9 @@ class _ProjectFileState extends State<ProjectFile> {
     } else {}
   }
 
-  List<Catagory> catagory = [];
+  // List<Catagory> catagory = [];
   Future<void> GetCatagory() async {
+    print("hiii");
     var res = await Userapi.GetProjectCatagory(widget.id);
 
     setState(() {
@@ -137,15 +197,30 @@ class _ProjectFileState extends State<ProjectFile> {
           print("Task Failure  ${res.settings?.message}");
         }
       }
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          catagory = res.catagory ?? [];
+          filteredRooms2 = catagory;  // Initially, show all rooms
+        } else {
+          CustomSnackBar.show(context, res.settings?.message ?? "");
+        }
+      } else {
+        print("Task Failure  ${res?.settings?.message}");
+      }
+
+
     });
   }
 
-  EditFile? editFile;
+
   Future<void> GetEditFileApi(String editid) async {
     var res = await Userapi.GetEditFile(editid);
     setState(() {
       if (res != null) {
         if (res.editFile != null) {
+
+          filteredRooms = data;  // Initially, show all rooms
+          _isLoading = false;
           _categoryController.text = res.editFile?.category ?? "";
           String fileUrl = res.editFile?.fileName ?? "";
           _descriptionController.text = res.editFile?.description ?? "";
@@ -171,12 +246,14 @@ class _ProjectFileState extends State<ProjectFile> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
-          : SingleChildScrollView(
+      body:
+      // _isLoading
+      //     ? Center(
+      //         child: CircularProgressIndicator(
+      //         color: Color(0xff8856F4),
+      //       ))
+      //     :
+        SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -318,13 +395,24 @@ class _ProjectFileState extends State<ProjectFile> {
                                   fit: BoxFit.contain,
                                 ),
                                 const SizedBox(width: 10),
-                                const Text(
-                                  "Search",
-                                  style: TextStyle(
-                                    color: Color(0xff9E7BCA),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                    fontFamily: "Nunito",
+                                // TextField for search input
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController,
+                                    decoration: const InputDecoration(
+                                      hintText: 'Search...',
+                                      hintStyle: TextStyle(
+                                        color: Color(0xff9E7BCA),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 16,
+                                        fontFamily: "Nunito",
+                                      ),
+                                      border: InputBorder.none,
+                                    ),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -335,6 +423,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             height: w * 0.09,
                             child: InkWell(
                               onTap: () {
+                                GetCatagory();
                                 _showBottomSheet(context, "Add", "", "");
                               },
                               child: Container(
@@ -375,7 +464,7 @@ class _ProjectFileState extends State<ProjectFile> {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: data.length,
+                        itemCount: filteredRooms.length,
                         itemBuilder: (context, index) {
                           final projectfile = data[index];
                           String isoDate =projectfile.createdTime??"";
@@ -555,13 +644,24 @@ class _ProjectFileState extends State<ProjectFile> {
                                   fit: BoxFit.contain,
                                 ),
                                 const SizedBox(width: 10),
-                                const Text(
-                                  "Search",
-                                  style: TextStyle(
-                                    color: Color(0xff9E7BCA),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                    fontFamily: "Nunito",
+                                // TextField for search input
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController2,
+                                    decoration: const InputDecoration(
+                                      hintText: 'Search...',
+                                      hintStyle: TextStyle(
+                                        color: Color(0xff9E7BCA),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 16,
+                                        fontFamily: "Nunito",
+                                      ),
+                                      border: InputBorder.none,
+                                    ),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -612,7 +712,7 @@ class _ProjectFileState extends State<ProjectFile> {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: catagory.length,
+                        itemCount: filteredRooms2.length,
                         itemBuilder: (context, index) {
                           final projectcatagory = catagory[index];
 
@@ -1253,7 +1353,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             ),
                             child: Center(
                               child:
-                              _isLoading?spinkit.getFadingCircleSpinner():
+                              // _isLoading?spinkit.getFadingCircleSpinner():
                               Text(
                                 'Save',
                                 style: TextStyle(
@@ -1522,7 +1622,8 @@ class _ProjectFileState extends State<ProjectFile> {
                             ),
                             child: Center(
                               child:
-                              _isLoading?spinkit.getFadingCircleSpinner():Text(
+                              _isLoading?spinkit.getFadingCircleSpinner():
+                              Text(
                                 'Save',
                                 style: TextStyle(
                                   color: Color(0xffffffff),

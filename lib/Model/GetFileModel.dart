@@ -11,6 +11,8 @@ class GetFileModel {
         : null;
   }
 
+
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.editFile != null) {

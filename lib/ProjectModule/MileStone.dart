@@ -14,7 +14,6 @@ class MileStone extends StatefulWidget {
   @override
   State<MileStone> createState() => _MileStoneState();
 }
-
 class _MileStoneState extends State<MileStone> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -78,12 +77,6 @@ class _MileStoneState extends State<MileStone> {
       }
     });
   }
-
-
-
-
-
-
 
   Future<void> GetMileStoneDetails(String id) async {
     var res = await Userapi.getmilestonedeatilsApi(id);
