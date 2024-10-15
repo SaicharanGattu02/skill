@@ -173,6 +173,7 @@ class _MyTabBarState extends State<MyTabBar>
                 Tab(child: Align(alignment: Alignment.centerLeft, child: Text('Comments'))),
               ],
               onTap: (index) {
+                FocusScope.of(context).unfocus();// Update the current page index
                 _pageController.jumpToPage(index); // Change page when tab is tapped
                 setState(() {
                   _selectedTabIndex = index; // Update selected tab index

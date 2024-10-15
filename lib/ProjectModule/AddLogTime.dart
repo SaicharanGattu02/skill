@@ -58,7 +58,6 @@ class _AddlogtimeState extends State<Addlogtime> {
   }
 
   List<Data> tasks = [];
-
   Future<void> projecttasklist() async {
     var res = await Userapi.getprojectusertasksApi(widget.projectId);
     setState(() {
@@ -227,12 +226,13 @@ class _AddlogtimeState extends State<Addlogtime> {
           _startTimeController.text.isEmpty ? "Please select start time" : "";
       _validateendtime =
           _endtTimeController.text.isEmpty ? "Please select end time" : "";
-      _validatetask = taskid=="" ? "Please select atsk" : "";
+      _validatetask = taskid=="" ? "Please select task" : "";
 
       _isLoading = _validateStartDate.isEmpty &&
           _validateDeadline.isEmpty &&
           _validatestarttime.isEmpty &&
           _validateendtime.isEmpty &&
+          _validatetask.isEmpty &&
           _validatenote.isEmpty;
 
       if (_isLoading) {

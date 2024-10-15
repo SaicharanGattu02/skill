@@ -37,6 +37,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
   XFile? _imageFile;
   File? filepath;
   bool _isLoading = true;
+  bool isLoading = false;
   final spinkit=Spinkits();
 
   @override
@@ -78,48 +79,29 @@ class _ProjectNotesState extends State<ProjectNotes> {
   }
 
   Future<void> PostAddNoteApi(String editid) async {
-    setState(() {
-      _isLoading = false;
-
-    });
     var res;
     if (editid != "") {
-      setState(() {
-        _isLoading = false;
-
-      });
       res = await Userapi.PutEditNote(
         editid,
         _titleController.text,
         _descriptionController.text,
         File(_imageFile!.path),
         widget.id,
-
       );
     } else {
-      setState(() {
-        _isLoading = false;
-
-      });
       res = await await Userapi.PostAddNote(_titleController.text,
           _descriptionController.text, File(_imageFile!.path), widget.id);
     }
     if (res != null) {
       setState(() {
-        _isLoading = false;
+        if (res.settings?.success == 1) {
+          isLoading=false;
+          Navigator.pop(context);
+          GetNote();
+        } else {
+          isLoading=false;
+        }
       });
-      if (res.settings?.success == 1) {
-        setState(() {
-          _isLoading = false;
-
-        });
-        print("PostAddNoteApi>>${res}");
-        CustomSnackBar.show(context, "${res.settings?.message}");
-        Navigator.pop(context);
-        GetNote();
-      } else {
-        print("PostAddNoteApi");
-      }
     } else {
       print("PostAddNoteApi >>>${res?.settings?.message}");
       CustomSnackBar.show(context, "${res?.settings?.message}");
@@ -886,14 +868,16 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               _isLoading = _validateTittle.isEmpty &&
                                   _validateDescription.isEmpty &&
                                   _validatefile.isEmpty;
-                            });
-                            if (_isLoading) {
+                            if (isLoading) {
                               if (mode == "Edit") {
+                                isLoading=true;
                                 PostAddNoteApi(id);
                               } else {
+                                isLoading=true;
                                 PostAddNoteApi("");
                               }
                             }
+                            });
                           },
                           child: Container(
                             height: 40,
@@ -907,7 +891,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child:     _isLoading?spinkit.getFadingCircleSpinner():
+                              child:isLoading?spinkit.getFadingCircleSpinner():
                               Text(
                                 'Save',
                                 style: TextStyle(
