@@ -78,7 +78,7 @@ final spinkit=Spinkits();
 
   Future<void> Updateprofile() async{
     var res =await Userapi.UpdateUserDetails(Fullname,_phoneController.text,_image!);
-    if(res!=null){
+      if(res!=null){
       if (res.settings?.success == 1) {
         Navigator.pop(context,true);
         CustomSnackBar.show(context, "${res.settings?.message}");
