@@ -383,11 +383,6 @@ class _TaskFormState extends State<TaskForm> {
         ),
       );
     }).toList();
-    // var items = [
-    //   DropdownItem(label: 'Alex', value: User(name: 'Alex', id: "1")),
-    //   DropdownItem(label: 'Cani', value: User(name: 'Cani', id: "6")),
-    //   DropdownItem(label: 'kim', value: User(name: 'kim', id: "2")),
-    // ];
 
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),

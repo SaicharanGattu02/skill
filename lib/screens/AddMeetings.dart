@@ -121,7 +121,6 @@ class _AddMeetingsState extends State<AddMeetings> {
   }
 
 
-
   String projectid = "";
 
   List<Employeedata> employeeData = [];
@@ -133,6 +132,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       if (res != null) {
         if (res.settings?.success == 1) {
           employeeData = res.data ?? [];
+          print("Employees data:${employeeData}");
         }
       }
     });
@@ -225,16 +225,17 @@ class _AddMeetingsState extends State<AddMeetings> {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
 
-    var items = employeeData.map((member) {
+    var data = employeeData.map((employee) {
       return DropdownItem<User>(
-        label: member.fullName ?? "",
+        label: employee.fullName ?? "",
         value: User(
-          name: member.fullName ?? "",
-          id: member.id ?? "",
+          name: employee.fullName ?? "",
+          id: employee.id ?? "",
         ),
       );
     }).toList();
 
+    print("Data:${data}");
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
@@ -288,7 +289,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                         decoration: InputDecoration(
                           contentPadding:
                               const EdgeInsets.only(left: 10, top: 10),
-                          hintText: "Type Description",
+                          hintText: "Description",
                           hintStyle: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0,
@@ -544,7 +545,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                     _label(text: 'Collaborators'),
                     SizedBox(height: 4),
                     MultiDropdown<User>(
-                      items: items,
+                      items: data,
                       controller: controller,
                       enabled: true,
                       searchEnabled: true,
@@ -568,13 +569,11 @@ class _AddMeetingsState extends State<AddMeetings> {
                         backgroundColor: Color(0xfffcfaff),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(7),
-                          borderSide:
-                              const BorderSide(color: Color(0xffd0cbdb)),
+                          borderSide: const BorderSide(color: Color(0xffd0cbdb)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(7),
-                          borderSide:
-                              const BorderSide(color: Color(0xffd0cbdb)),
+                          borderSide: const BorderSide(color: Color(0xffd0cbdb)),
                         ),
                       ),
                       dropdownDecoration: const DropdownDecoration(
@@ -593,18 +592,12 @@ class _AddMeetingsState extends State<AddMeetings> {
                         ),
                       ),
                       dropdownItemDecoration: DropdownItemDecoration(
-                        selectedIcon: const Icon(Icons.check_box,
-                            color: Color(0xff8856F4)),
-                        disabledIcon:
-                            Icon(Icons.lock, color: Colors.grey.shade300),
+                        selectedIcon: const Icon(Icons.check_box, color: Color(0xff8856F4)),
+                        disabledIcon: Icon(Icons.lock, color: Colors.grey.shade300),
                       ),
-                      // onSelectionChange: (selectedItems) {
-                      //   debugPrint("OnSelectionChange: $selectedItems");
-                      // },
                       onSelectionChange: (selectedItems) {
                         setState(() {
-                          // Extract only the IDs and store them in selectedIds
-                          // selectedIds = selectedItems.map(() => user.id).toList();
+                          selectedIds = selectedItems.map((user) => user.id).toList();
                           _validateCollaborators = "";
                         });
                         debugPrint("Selected IDs: $selectedIds");
@@ -957,7 +950,7 @@ class _AddMeetingsState extends State<AddMeetings> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate:DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {

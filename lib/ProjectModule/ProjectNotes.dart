@@ -85,12 +85,17 @@ class _ProjectNotesState extends State<ProjectNotes> {
         editid,
         _titleController.text,
         _descriptionController.text,
-        File(_imageFile!.path),
+        filepath,
         widget.id,
       );
     } else {
-      res = await await Userapi.PostAddNote(_titleController.text,
-          _descriptionController.text, File(_imageFile!.path), widget.id);
+      res = await Userapi.PostAddNote(
+        _titleController.text,
+        _descriptionController.text,
+        filepath, // Pass null if no image
+        widget.id,
+      );
+
     }
     if (res != null) {
       setState(() {
@@ -354,25 +359,28 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   SizedBox(
                                     width: w * 0.02,
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      // Check if note.file is not null before showing the bottom sheet
-                                      if (note.file != null &&
-                                          note.file!.isNotEmpty) {
-                                        _showBottomSheet(context, note.file!);
-                                      } else {
-                                        // Optionally, show a message or handle the case when the file is null
-                                        print('No file to display');
-                                      }
-                                    },
-                                    child: Image.asset(
-                                      "assets/eye.png",
-                                      fit: BoxFit.contain,
-                                      width: w * 0.06,
-                                      height: w * 0.05,
-                                      color: Color(0xff8856F4),
+                                  if (note.file != null &&
+                                      note.file!.isNotEmpty)...[
+                                    InkWell(
+                                      onTap: () {
+                                        // Check if note.file is not null before showing the bottom sheet
+                                        if (note.file != null &&
+                                            note.file!.isNotEmpty) {
+                                          _showBottomSheet(context, note.file!);
+                                        } else {
+                                          // Optionally, show a message or handle the case when the file is null
+                                          print('No file to display');
+                                        }
+                                      },
+                                      child: Image.asset(
+                                        "assets/eye.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.06,
+                                        height: w * 0.05,
+                                        color: Color(0xff8856F4),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                   // SizedBox(
                                   //   width: w * 0.02,
                                   // ),
@@ -573,7 +581,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   });
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "Enter Project Name",
+                                  hintText: "Enter title",
                                   hintStyle: const TextStyle(
                                     fontSize: 14,
                                     letterSpacing: 0,
@@ -657,7 +665,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                 decoration: InputDecoration(
                                   contentPadding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  hintText: "Type Description",
+                                  hintText: "Description",
                                   hintStyle: TextStyle(
                                     fontSize: 15,
                                     letterSpacing: 0,
@@ -862,22 +870,19 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   _descriptionController.text.isEmpty
                                       ? "Please enter a description"
                                       : "";
-                              _validatefile = _imageFile == null
-                                  ? "Please choose file."
-                                  : "";
-                              _isLoading = _validateTittle.isEmpty &&
-                                  _validateDescription.isEmpty &&
-                                  _validatefile.isEmpty;
-                            if (isLoading) {
+                              // _validatefile = _imageFile == null
+                              //     ? "Please choose file."
+                              //     : "";
+                              _isLoading = _validateTittle.isEmpty && _validateDescription.isEmpty ;
+                                  // && _validatefile.isEmpty;
+                            });
+                            if (_isLoading) {
                               if (mode == "Edit") {
-                                isLoading=true;
                                 PostAddNoteApi(id);
                               } else {
-                                isLoading=true;
                                 PostAddNoteApi("");
                               }
                             }
-                            });
                           },
                           child: Container(
                             height: 40,

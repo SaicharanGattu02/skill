@@ -718,11 +718,14 @@ class Userapi {
   }
 
   static Future<LoginModel?> PostAddNote(
-      String title, String description, File image, String id) async {
-    String? mimeType = lookupMimeType(image.path);
-    if (mimeType == null || !mimeType.startsWith('image/')) {
-      print('Selected file is not a valid image.');
-      return null;
+      String title, String description, File? image, String id) async {
+    String? mimeType;
+    if (image != null) {
+      mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null;
+      }
     }
 
     try {
@@ -738,14 +741,16 @@ class Userapi {
         ..fields['description'] = description
         ..fields['project_id'] = id;
 
-      // Attach the image file to the request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file', // The field name for the image, make sure it matches your API
-          image.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
+      // Attach the image file to the request if it's provided
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file', // The field name for the image, make sure it matches your API
+            image.path,
+            contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+          ),
+        );
+      }
 
       // Send the request
       var response = await request.send();
@@ -768,15 +773,19 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PutEditNote(String editid, String title,
-      String description, File image, String id) async {
+
+  static Future<LoginModel?> PutEditNote(
+      String editid, String title, String description, File? image, String id) async {
     print("editid2>>${editid}");
 
-    // Validate the file type to ensure it's an image
-    String? mimeType = lookupMimeType(image.path);
-    if (mimeType == null || !mimeType.startsWith('image/')) {
-      print('Selected file is not a valid image.');
-      return null;
+    String? mimeType;
+    if (image != null) {
+      // Validate the file type to ensure it's an image
+      mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null;
+      }
     }
 
     try {
@@ -792,15 +801,16 @@ class Userapi {
         ..fields['description'] = description
         ..fields['project_id'] = id;
 
-      // Attach the image file to the request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          // The field name for the image, adjust it according to the API if needed
-          image.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
+      // Attach the image file to the request if it's provided
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            image.path,
+            contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+          ),
+        );
+      }
 
       // Send the request
       var response = await request.send();
@@ -822,6 +832,7 @@ class Userapi {
       return null;
     }
   }
+
 
   static Future<GetEditProjectNoteModel?> GetProjectEditNotes(editId) async {
     try {
