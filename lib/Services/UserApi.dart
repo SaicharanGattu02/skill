@@ -1486,20 +1486,23 @@ class Userapi {
 
 
   static Future<LoginModel?> UpdateUserDetails(
-      String fullname, String phonenumber, File image) async {
-    // Validate the file type to ensure it's an image
-    String? mimeType = lookupMimeType(image.path);
-    if (mimeType == null || !mimeType.startsWith('image/')) {
-      print('Selected file is not a valid image.');
-      return null;
+      String fullname, String phonenumber, File? image) async {
+    String? mimeType; // Declare mimeType outside the condition
+
+    // Validate the file type if an image is provided
+    if (image != null) {
+      mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null;
+      }
     }
 
     try {
-      final url = Uri.parse("$host/auth/user-detail");
+      final url = Uri.parse("$host/dashboard/user-detail");
 
       // Headers
-      final headers =
-      await getheader(); // Make sure this includes your authorization token
+      final headers = await getheader(); // Ensure this includes your authorization token
 
       // Create multipart request
       var request = http.MultipartRequest('PUT', url)
@@ -1507,15 +1510,18 @@ class Userapi {
         ..fields['full_name'] = fullname
         ..fields['mobile'] = phonenumber;
 
-      print("putProjectFile>>${request}");
-      // Attach the image file to the request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-          contentType: MediaType.parse(mimeType), // Set the MIME type
-        ),
-      );
+      // Attach the image file to the request if it exists
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image',
+            image.path,
+            contentType: MediaType.parse(mimeType!), // Use the non-nullable mimeType
+          ),
+        );
+      }
+
+      print("Request: $request");
 
       // Send the request
       var response = await request.send();
@@ -1538,5 +1544,6 @@ class Userapi {
       return null;
     }
   }
+
 
 }

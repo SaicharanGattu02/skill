@@ -72,10 +72,10 @@ class _TaskListState extends State<TaskList> {
   Future<void> DelateTask(String id) async {
     var data = await Userapi.ProjectDelateTask(id);
     setState(() {
-      _loading = false;
       if (data != null) {
         if (data.settings?.success == 1) {
           GetProjectTasks();
+          _loading=true;
           CustomSnackBar.show(context, "${data.settings?.message}");
         } else {
           CustomSnackBar.show(context, "${data.settings?.message}");
@@ -93,12 +93,12 @@ class _TaskListState extends State<TaskList> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       body:
-      // _loading
-      //     ? Center(
-      //         child: CircularProgressIndicator(
-      //         color: Color(0xff8856F4),
-      //       ))
-      //     :
+      _loading
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Color(0xff8856F4),
+            ))
+          :
         SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),

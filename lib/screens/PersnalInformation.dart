@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:skill/screens/Otp.dart';
 import 'package:skill/screens/dashboard.dart';
 
@@ -42,52 +43,94 @@ class _PersonalInformationState extends State<PersonalInformation> {
     return "${_firstNameController.text} ${_lastNameController.text}".trim();
   }
 
+  final spinkit=Spinkits();
 
-
-  String? _gender;
+  String _gender="";
   bool _loading= false;
   void _validateFields() {
     setState(() {
-      _validateFirstName = _firstNameController.text.isEmpty
-          ? "Please enter a firstName"
-          : "";
-      _validateLastName = _lastNameController.text.isEmpty
-          ? "Please enter a lastName"
-          : "";
-      _validateemail = _emailController.text.isEmpty
-          ? "Please enter a valid email"
-          : "";
-      _validatePhone = _phoneController.text.isEmpty
-          ? "Please enter a phonenumber"
-          : "";
-      _validatePwd = _pwdController.text.isEmpty
-          ? "Please enter a password"
-          : "";
-      _validateGender = _gender == null || _gender!.isEmpty
-          ? "Please select a gender"
-          : "";
-
-
+      _validateFirstName = _validateField(
+          _firstNameController.text,
+          "Please enter a first name"
+      );
+      _validateLastName = _validateField(
+          _lastNameController.text,
+          "Please enter a last name"
+      );
+      _validateemail = _validateEmail(
+          _emailController.text,
+          "Please enter a valid email"
+      );
+      _validatePhone = _validatePhoneNumber(
+          _phoneController.text,
+          "Please enter a valid phone number"
+      );
+      _validatePwd = _validateField(
+          _pwdController.text,
+          "Please enter a password"
+      );
+      _validateGender = _validategender(
+          _gender?.isEmpty == true,
+          "Please select a gender"
+      );
     });
 
-    if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty&&_validatePwd.isEmpty&& _validateGender.isEmpty) {
-
+    if (_areFieldsValid()) {
       RegisterApi();
+    }else{
+      setState(() {
+        _loading= false;
+      });
     }
   }
 
-  Future<void> RegisterApi() async {
+  String _validateField(String value, String errorMessage) {
+    return value.isEmpty ? errorMessage : "";
+  }
 
+  String _validateEmail(String value, String errorMessage) {
+    if (value.isEmpty) {
+      return errorMessage; // Return error if empty
+    } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+      return errorMessage; // Return error if not a valid email
+    }
+    return ""; // Return an empty string if validation passes
+  }
+
+
+  String _validategender(bool value, String errorMessage) {
+    return value ? errorMessage : "";
+  }
+
+  String _validatePhoneNumber(String value, String errorMessage) {
+    return value.isEmpty || value.length < 10 ? errorMessage : "";
+  }
+
+  bool _areFieldsValid() {
+    return _validateFirstName.isEmpty &&
+        _validateLastName.isEmpty &&
+        _validateemail.isEmpty &&
+        _validatePhone.isEmpty &&
+        _validatePwd.isEmpty &&
+        _validateGender.isEmpty;
+  }
+
+
+  Future<void> RegisterApi() async {
     var data = await Userapi.PostRegister(Fullname, _emailController.text, _phoneController.text, _pwdController.text, _gender??"");
     if (data != null) {
-      if (data.settings?.success == 1) {
-        CustomSnackBar.show(context, "${data.settings?.message}");
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LogInScreen()));
-      } else {
-        CustomSnackBar.show(context, "${data.settings?.message}");
-        print("Register failure");
-      }
+      setState(() {
+        if (data.settings?.success == 1) {
+          _loading=false;
+          CustomSnackBar.show(context, "${data.settings?.message}");
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LogInScreen()));
+        } else {
+          _loading=false;
+          CustomSnackBar.show(context, "${data.settings?.message}");
+          print("Register failure");
+        }  
+      });
     } else {
       print("Register >>>${data?.settings?.message}");
     }
@@ -104,11 +147,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
       body:
-
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
       Stack(
-
-
         fit: StackFit.expand,
         children: [
           Column(
@@ -479,6 +518,9 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         focusNode: _focusNodePhone,
                         keyboardType: TextInputType.phone,
                         cursorColor: Color(0xff8856F4),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10)
+                        ],
                         onTap: () {
                           setState(() {
                             _validatePhone = "";
@@ -686,7 +728,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 activeColor: Color(0xff8856F4), // Change the active color
                                 onChanged: (value) {
                                   setState(() {
-                                    _gender = value;
+                                    _gender = value!;
                                   });
                                 },
                               ),
@@ -704,7 +746,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                 activeColor: Color(0xff8856F4), // Change the active color
                                 onChanged: (value) {
                                   setState(() {
-                                    _gender = value;
+                                    _gender = value!;
                                   });
                                 },
                               ),
@@ -740,7 +782,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
                     const SizedBox(height: 8),
                     InkResponse(
                       onTap: () {
-                        _validateFields();
+                        if(_loading){
+
+                        }else{
+                          setState(() {
+                            _loading=true;
+                          });
+                          _validateFields();
+                        }
                       },
                       child: Container(
                         width: w,
@@ -750,7 +799,8 @@ class _PersonalInformationState extends State<PersonalInformation> {
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child:  Center(
-                          child: Text(
+                          child:  _loading?spinkit.getFadingCircleSpinner():
+                          Text(
                             "Continue",
                             style: TextStyle(
                               color: Color(0xffFFFFFF),

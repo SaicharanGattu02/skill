@@ -38,6 +38,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   String _validatePhone="";
   String _validateimage="";
 
+  int image_selected=0;
+
 final spinkit=Spinkits();
 
   String get Fullname {
@@ -61,37 +63,33 @@ final spinkit=Spinkits();
       _validatePhone = _phoneController.text.isEmpty
           ? "Please enter a phonenumber"
           : "";
-
-      _validateimage = _image==null
+      _validateimage = _image==null && image_selected==1
           ? "Please select the image."
           : "";
     });
 
-    if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty) {
-      if(_validateimage==""){
-        CustomSnackBar.show(context,"Please select image");
-      }
+    if (_validateFirstName.isEmpty && _validateLastName.isEmpty&&_validateemail.isEmpty&& _validatePhone.isEmpty && (image_selected==1 || _validateimage.isEmpty)) {
+      UpdateProfile();
     }
   }
 
 
 
-  Future<void> Updateprofile() async{
-    var res =await Userapi.UpdateUserDetails(Fullname,_phoneController.text,_image!);
-      if(res!=null){
+  Future<void> UpdateProfile() async {
+    var res = await Userapi.UpdateUserDetails(Fullname, _phoneController.text, _image);
+    if (res != null) {
       if (res.settings?.success == 1) {
-        Navigator.pop(context,true);
+        Navigator.pop(context, true);
         CustomSnackBar.show(context, "${res.settings?.message}");
       } else {
-        print("Login failure");
+        print("Update failure: ${res.settings?.message}");
         CustomSnackBar.show(context, "${res.settings?.message}");
       }
     } else {
-      print("Login >>>${res?.settings?.message}");
+      print("Update failed: ${res?.settings?.message}");
       CustomSnackBar.show(context, "${res?.settings?.message}");
     }
   }
-
 
 
   Future<void> _pickImage() async {
@@ -99,6 +97,7 @@ final spinkit=Spinkits();
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+        image_selected=1;
       });
     }
   }
@@ -155,431 +154,431 @@ final spinkit=Spinkits();
             ? const Center(child: CircularProgressIndicator())
             : Form(
           key: _formKey,
-          child: Expanded(
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: _image != null
-                              ? FileImage(_image!)
-                              :userdata?.image!=""?
-                           NetworkImage(userdata?.image??""):
-                           AssetImage('assets/avatar_placeholder.png') as ImageProvider,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: InkWell(
-                            onTap: _pickImage,
-                            child: const CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.white,
-                              child: Icon(Icons.edit, color: Colors.purple),
-                            ),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 25,),
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: _image != null
+                            ? FileImage(_image!)
+                            :userdata?.image!=""?
+                         NetworkImage(userdata?.image??""):
+                         AssetImage('assets/avatar_placeholder.png') as ImageProvider,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: _pickImage,
+                          child: const CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.white,
+                            child: Icon(Icons.edit, color: Colors.purple),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  SizedBox(height: 12),
-                  _label(text: 'First Name'),
-                  SizedBox(height: 6),
+                SizedBox(height: 12),
+                _label(text: 'First Name'),
+                SizedBox(height: 6),
 
-                  Container(
-                    height:
-                    MediaQuery.of(context).size.height * 0.055,
-                    child: TextFormField(
-                      controller: _firstNameController,
-                      focusNode: _focusNodeFirstName,
-                      keyboardType: TextInputType.text,
-                      cursorColor: Color(0xff8856F4),
-                      onTap: () {
-                        setState(() {
-                          _validateFirstName = "";
-                        });
-                      },
-                      onChanged: (v) {
-                        setState(() {
-                          _validateFirstName = "";
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                        hintText: "Enter FirstName",
-                        hintStyle: const TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 0,
-                          height: 19.36 / 14,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        prefixIcon: Container(
+                Container(
+                  height:
+                  MediaQuery.of(context).size.height * 0.055,
+                  child: TextFormField(
+                    controller: _firstNameController,
+                    focusNode: _focusNodeFirstName,
+                    keyboardType: TextInputType.text,
+                    cursorColor: Color(0xff8856F4),
+                    onTap: () {
+                      setState(() {
+                        _validateFirstName = "";
+                      });
+                    },
+                    onChanged: (v) {
+                      setState(() {
+                        _validateFirstName = "";
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      hintText: "Enter FirstName",
+                      hintStyle: const TextStyle(
+                        fontSize: 14,
+                        letterSpacing: 0,
+                        height: 19.36 / 14,
+                        color: Color(0xffAFAFAF),
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefixIcon: Container(
+                        width: 18,
+                        height: 18,
+                        padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
+                        child: Image.asset(
+                          "assets/profilep.png",
                           width: 18,
                           height: 18,
-                          padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
-                          child: Image.asset(
-                            "assets/profilep.png",
-                            width: 18,
-                            height: 18,
-                            fit: BoxFit.contain,
-                            color: Color(0xffAFAFAF),
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xffFCFAFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,  // Ensure font size fits within height
-                        overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
-                      ),
-                      textAlignVertical: TextAlignVertical.center,
-                    ),
-                  ),
-                  if (_validateFirstName.isNotEmpty) ...[
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.only(
-                          left: 8, bottom: 10, top: 5),
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: ShakeWidget(
-                        key: Key("value"),
-                        duration: Duration(milliseconds: 700),
-                        child: Text(
-                          _validateFirstName,
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 12,
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(height: 8),
-                  ],
-                  _label(text: 'Last Name'),
-                  SizedBox(height: 6),
-
-                  Container(
-                    height:
-                    MediaQuery.of(context).size.height * 0.050,
-                    child: TextFormField(
-                      controller: _lastNameController,
-                      focusNode: _focusNodeLastName,
-                      keyboardType: TextInputType.text,
-                      cursorColor: Color(0xff8856F4),
-                      onTap: () {
-                        setState(() {
-                          _validateLastName = "";
-                        });
-                      },
-                      onChanged: (v) {
-                        setState(() {
-                          _validateLastName = "";
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                        hintText: "Enter Last Name",
-                        hintStyle: const TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 0,
-                          height: 19.36 / 14,
+                          fit: BoxFit.contain,
                           color: Color(0xffAFAFAF),
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        prefixIcon: Container(
-                          width: 21,
-                          height: 21,
-                          padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                          child: Image.asset(
-                            "assets/profilep.png",
-                            width: 21,
-                            height: 21,
-                            fit: BoxFit.contain,
-                            color: Color(0xffAFAFAF),
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xffFCFAFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
                         ),
                       ),
-                      style: TextStyle(
-                        fontSize: 14,  // Ensure font size fits within height
-                        overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                      filled: true,
+                      fillColor: const Color(0xffFCFAFF),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
                       ),
-                      textAlignVertical: TextAlignVertical.center,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
                     ),
+                    style: TextStyle(
+                      fontSize: 14,  // Ensure font size fits within height
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                    ),
+                    textAlignVertical: TextAlignVertical.center,
                   ),
-                  if (_validateLastName.isNotEmpty) ...[
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.only(
-                          left: 8, bottom: 10, top: 5),
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: ShakeWidget(
-                        key: Key("value"),
-                        duration: Duration(milliseconds: 700),
-                        child: Text(
-                          _validateLastName,
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 12,
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(height: 8),
-                  ],
-
-                  _label(text: 'Phone Number'),
-                  SizedBox(height: 6),
+                ),
+                if (_validateFirstName.isNotEmpty) ...[
                   Container(
-                    height:
-                    MediaQuery.of(context).size.height * 0.050,
-                    child: TextFormField(
-                      controller: _phoneController,
-                      focusNode: _focusNodePhone,
-                      keyboardType: TextInputType.phone,
-                      cursorColor: Color(0xff8856F4),
-                      onTap: () {
-                        setState(() {
-                          _validatePhone = "";
-                        });
-                      },
-                      onChanged: (v) {
-                        setState(() {
-                          _validatePhone = "";
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                        hintText: "Phone Number",
-                        hintStyle: const TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 0,
-                          height: 19.36 / 14,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        prefixIcon: Container(
-                          width: 21,
-                          height: 21,
-                          padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                          child: Image.asset(
-                            "assets/call.png",
-                            width: 21,
-                            height: 21,
-                            fit: BoxFit.contain,
-                            color: Color(0xffAFAFAF),
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xffFCFAFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
+                    alignment: Alignment.topLeft,
+                    margin: EdgeInsets.only(
+                        left: 8, bottom: 10, top: 5),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ShakeWidget(
+                      key: Key("value"),
+                      duration: Duration(milliseconds: 700),
+                      child: Text(
+                        _validateFirstName,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      style: TextStyle(
-                        fontSize: 14,  // Ensure font size fits within height
-                        overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
-                      ),
-                      textAlignVertical: TextAlignVertical.center,
-
                     ),
                   ),
-                  if (_validatePhone.isNotEmpty) ...[
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.only(
-                          left: 8, bottom: 10, top: 5),
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: ShakeWidget(
-                        key: Key("value"),
-                        duration: Duration(milliseconds: 700),
-                        child: Text(
-                          _validatePhone,
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 12,
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(height: 8),
-                  ],
-                  _label(text: 'Email'),
-                  SizedBox(height: 6),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.050,
-                    child: TextFormField(
-                      controller: _emailController,
-                      focusNode: _focusNodeEmail,
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: Color(0xff8856F4),
-                      maxLines: 1,
-                      onTap: () {
-                        setState(() {
-                          _validateemail = "";
-                        });
-                      },
-                      onChanged: (v) {
-                        setState(() {
-                          _validateemail = "";
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                        hintText: "Enter Email Address",
-                        hintStyle: const TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 0,
-                          height: 19.36 / 14,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        prefixIcon: Container(
-                          width: 21,
-                          height: 21,
-                          padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-                          child: Image.asset(
-                            "assets/gmail.png",
-                            width: 21,
-                            height: 21,
-                            fit: BoxFit.contain,
-                            color: Color(0xffAFAFAF),
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xffFCFAFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                              width: 1, color: Color(0xffd0cbdb)),
-                        ),
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,  // Ensure font size fits within height
-                        overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
-                      ),
-                      textAlignVertical: TextAlignVertical.center,  // Vertically center the text
-                    ),
-                  ),
-                  if (_validateemail.isNotEmpty) ...[
-                    Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: ShakeWidget(
-                        key: Key("value"),
-                        duration: Duration(milliseconds: 700),
-                        child: Text(
-                          _validateemail,
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 12,
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(height: 8),
-                  ],
-
-
+                ] else ...[
+                  SizedBox(height: 8),
                 ],
-              ),
+                _label(text: 'Last Name'),
+                SizedBox(height: 6),
+
+                Container(
+                  height:
+                  MediaQuery.of(context).size.height * 0.050,
+                  child: TextFormField(
+                    controller: _lastNameController,
+                    focusNode: _focusNodeLastName,
+                    keyboardType: TextInputType.text,
+                    cursorColor: Color(0xff8856F4),
+                    onTap: () {
+                      setState(() {
+                        _validateLastName = "";
+                      });
+                    },
+                    onChanged: (v) {
+                      setState(() {
+                        _validateLastName = "";
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      hintText: "Enter Last Name",
+                      hintStyle: const TextStyle(
+                        fontSize: 14,
+                        letterSpacing: 0,
+                        height: 19.36 / 14,
+                        color: Color(0xffAFAFAF),
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefixIcon: Container(
+                        width: 21,
+                        height: 21,
+                        padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                        child: Image.asset(
+                          "assets/profilep.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xffFCFAFF),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,  // Ensure font size fits within height
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                    ),
+                    textAlignVertical: TextAlignVertical.center,
+                  ),
+                ),
+                if (_validateLastName.isNotEmpty) ...[
+                  Container(
+                    alignment: Alignment.topLeft,
+                    margin: EdgeInsets.only(
+                        left: 8, bottom: 10, top: 5),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ShakeWidget(
+                      key: Key("value"),
+                      duration: Duration(milliseconds: 700),
+                      child: Text(
+                        _validateLastName,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  SizedBox(height: 8),
+                ],
+
+                _label(text: 'Phone Number'),
+                SizedBox(height: 6),
+                Container(
+                  height:
+                  MediaQuery.of(context).size.height * 0.050,
+                  child: TextFormField(
+                    controller: _phoneController,
+                    focusNode: _focusNodePhone,
+                    keyboardType: TextInputType.phone,
+                    cursorColor: Color(0xff8856F4),
+                    onTap: () {
+                      setState(() {
+                        _validatePhone = "";
+                      });
+                    },
+                    onChanged: (v) {
+                      setState(() {
+                        _validatePhone = "";
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      hintText: "Phone Number",
+                      hintStyle: const TextStyle(
+                        fontSize: 14,
+                        letterSpacing: 0,
+                        height: 19.36 / 14,
+                        color: Color(0xffAFAFAF),
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefixIcon: Container(
+                        width: 21,
+                        height: 21,
+                        padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                        child: Image.asset(
+                          "assets/call.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xffFCFAFF),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,  // Ensure font size fits within height
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                    ),
+                    textAlignVertical: TextAlignVertical.center,
+
+                  ),
+                ),
+                if (_validatePhone.isNotEmpty) ...[
+                  Container(
+                    alignment: Alignment.topLeft,
+                    margin: EdgeInsets.only(
+                        left: 8, bottom: 10, top: 5),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ShakeWidget(
+                      key: Key("value"),
+                      duration: Duration(milliseconds: 700),
+                      child: Text(
+                        _validatePhone,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  SizedBox(height: 8),
+                ],
+                _label(text: 'Email'),
+                SizedBox(height: 6),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.050,
+                  child: TextFormField(
+                    controller: _emailController,
+                    focusNode: _focusNodeEmail,
+                    keyboardType: TextInputType.emailAddress,
+                    cursorColor: Color(0xff8856F4),
+                    maxLines: 1,
+                    onTap: () {
+                      setState(() {
+                        _validateemail = "";
+                      });
+                    },
+                    onChanged: (v) {
+                      setState(() {
+                        _validateemail = "";
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      hintText: "Enter Email Address",
+                      hintStyle: const TextStyle(
+                        fontSize: 14,
+                        letterSpacing: 0,
+                        height: 19.36 / 14,
+                        color: Color(0xffAFAFAF),
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefixIcon: Container(
+                        width: 21,
+                        height: 21,
+                        padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                        child: Image.asset(
+                          "assets/gmail.png",
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
+                          color: Color(0xffAFAFAF),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xffFCFAFF),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7),
+                        borderSide: const BorderSide(
+                            width: 1, color: Color(0xffd0cbdb)),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14,  // Ensure font size fits within height
+                      overflow: TextOverflow.ellipsis,  // Add ellipsis for long text
+                    ),
+                    textAlignVertical: TextAlignVertical.center,  // Vertically center the text
+                  ),
+                ),
+                if (_validateemail.isNotEmpty) ...[
+                  Container(
+                    alignment: Alignment.topLeft,
+                    margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ShakeWidget(
+                      key: Key("value"),
+                      duration: Duration(milliseconds: 700),
+                      child: Text(
+                        _validateemail,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  SizedBox(height: 8),
+                ],
+
+
+              ],
             ),
           ),
         ),
@@ -589,25 +588,30 @@ final spinkit=Spinkits();
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: w * 0.43,
-              decoration: BoxDecoration(
-                color: Color(0xffF8FCFF),
-                border: Border.all(
-                  color: Color(0xff8856F4),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Center(
-                child: Text(
-                  'Close',
-                  style: TextStyle(
+            InkResponse(
+              onTap: (){
+                Navigator.pop(context,true);
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xffF8FCFF),
+                  border: Border.all(
                     color: Color(0xff8856F4),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Inter',
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      color: Color(0xff8856F4),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
               ),

@@ -49,6 +49,7 @@ class _LogInScreenState extends State<LogInScreen> {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Dashboard()));
         } else {
+          _loading = false;
           print("Login failure");
           CustomSnackBar.show(context, "${data.settings?.message}");
         }
