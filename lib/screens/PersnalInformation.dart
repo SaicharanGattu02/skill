@@ -31,6 +31,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePhone = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
+  bool _obscureText = true;
 
   String _validateFirstName="";
   String _validateLastName="";
@@ -613,7 +614,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                       height:
                       MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(
-                        obscureText: true,
+                        obscureText: _obscureText,
                         controller: _pwdController,
                         focusNode: _focusNodePassword,
                         keyboardType: TextInputType.text,
@@ -650,6 +651,17 @@ class _PersonalInformationState extends State<PersonalInformation> {
                               fit: BoxFit.contain,
                               color: Color(0xffAFAFAF),
                             ),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText ? Icons.visibility : Icons.visibility_off,
+                              color: Color(0xffAFAFAF),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText; // Toggle the visibility
+                              });
+                            },
                           ),
                           filled: true,
                           fillColor: const Color(0xffFCFAFF),

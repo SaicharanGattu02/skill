@@ -24,7 +24,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final FocusNode _focusNodePassword = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _loading = false;
-  bool _isPasswordVisible = false;
+  bool _obscureText = true;
   // String token="";
   String _validateEmail = "";
   String _validatePassword = "";
@@ -287,6 +287,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TextFormField(
+                        obscureText: _obscureText,
                         controller: _passwordController,
                         focusNode: _focusNodePassword,
                         keyboardType: TextInputType.text,
@@ -323,6 +324,17 @@ class _LogInScreenState extends State<LogInScreen> {
                               fit: BoxFit.contain,
                               color: Color(0xffAFAFAF),
                             ),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText ? Icons.visibility : Icons.visibility_off,
+                              color: Color(0xffAFAFAF),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText; // Toggle the visibility
+                              });
+                            },
                           ),
                           filled: true,
                           fillColor: const Color(0xffFCFAFF),

@@ -44,11 +44,43 @@ class _TodolistState extends State<Todolist> {
   String labelid = "";
   String labelColorid = "";
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   final spinkit=Spinkits();
   @override
   void initState() {
     super.initState();
+    _taskNameController.addListener(() {
+      setState(() {
+        _validtaskName = "";
+      });
+    });
+    _descriptionController.addListener(() {
+      setState(() {
+        _validdescription = "";
+      });
+    });
+    _DateController.addListener(() {
+      setState(() {
+        _validDate = "";
+      });
+    });
+    _priorityController.addListener(() {
+      setState(() {
+        _validatePriority = "";
+      });
+    });
+
+    _labelnameController.addListener(() {
+      setState(() {
+        _validateLabelName = "";
+      });
+    });
+
+
+
+
+
+
     GetToDoList();
 
     filteredData = data;
@@ -56,20 +88,7 @@ class _TodolistState extends State<Todolist> {
     _searchController.addListener(_filterTasks);
   }
 
-  final List<Map<String, String>> tasks = [
-    {
-      'date': 'September 23, 2024',
-      'title': 'PRPL Application',
-      'subtitle': 'Presentation of new products and cost structure'
-    },
-    {'date': 'September 24, 2024', 'title': 'Raay Project'},
-    {'date': 'September 24, 2024', 'title': 'Dotclinic Project'},
-    {
-      'date': 'October 5, 2024',
-      'title': 'Raay Project',
-      'subtitle': 'Presentation of new products and cost structure'
-    },
-  ];
+
 
   final List<Priorities> priorities = [
     Priorities(priorityValue: 'Priority 1', priorityKey: '1'),
@@ -82,6 +101,7 @@ class _TodolistState extends State<Todolist> {
   Future<void> GetLabel() async {
     var res = await Userapi.GetProjectsLabelApi();
     setState(() {
+      _isLoading=false;
       if (res != null && res.label != null) {
         labels = res.label ?? [];
       }
@@ -92,6 +112,7 @@ class _TodolistState extends State<Todolist> {
   Future<void> GetLabelColor() async {
     var res = await Userapi.GetProjectsLabelColorApi();
     setState(() {
+      _isLoading=false;
       if (res != null && res.data != null) {
         labelcolor = res.data ?? [];
       }
@@ -107,8 +128,8 @@ class _TodolistState extends State<Todolist> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2200),
     );
     if (pickedDate != null) {
       controller.text =
@@ -119,6 +140,7 @@ class _TodolistState extends State<Todolist> {
   Future<void> GetToDoList() async {
     var res = await Userapi.gettodolistApi();
     setState(() {
+      _isLoading=false;
       if (res != null) {
         if (res.settings?.success == 1) {
           data = res.data ?? [];
@@ -216,7 +238,8 @@ class _TodolistState extends State<Todolist> {
           _bottomSheet(context);
         },
       ),
-      body:_isLoading?Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))):
+      body:
+      _isLoading?Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))):
       SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
         child: Column(
@@ -596,7 +619,7 @@ class _TodolistState extends State<Todolist> {
                                   key: Key("value"),
                                   duration: Duration(milliseconds: 700),
                                   child: Text(
-                                    'please enter label name',
+                                    'Please enter label name',
                                     style: TextStyle(
                                       fontFamily: "Poppins",
                                       fontSize: 12,
@@ -774,7 +797,7 @@ class _TodolistState extends State<Todolist> {
                         InkResponse(
                           onTap: () {
                             setState(() {
-                              _isLoading=true;
+
                               _validateLabelName =
                                   _labelnameController.text.isEmpty
                                       ? "Please enter label name"
@@ -788,7 +811,6 @@ class _TodolistState extends State<Todolist> {
                                   _validateLabelColor.isEmpty;
 
                               if (_isLoading) {
-
                                 PostToDoAddLabel();
                               }
                             });
@@ -917,7 +939,7 @@ class _TodolistState extends State<Todolist> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _label(text: 'Task Name'),
+                            _label(text: 'Name'),
                             SizedBox(height: 6),
                             Container(
                               height:
@@ -928,7 +950,7 @@ class _TodolistState extends State<Todolist> {
                                 keyboardType: TextInputType.text,
                                 cursorColor: Color(0xff8856F4),
                                 decoration: InputDecoration(
-                                  hintText: "Enter Task Name",
+                                  hintText: "Name",
                                   hintStyle: const TextStyle(
                                     fontSize: 14,
                                     letterSpacing: 0,
@@ -972,7 +994,7 @@ class _TodolistState extends State<Todolist> {
                                   key: Key("value"),
                                   duration: Duration(milliseconds: 700),
                                   child: Text(
-                                    'please enter task name',
+                                    'Please enter task name',
                                     style: TextStyle(
                                       fontFamily: "Poppins",
                                       fontSize: 12,
@@ -1012,7 +1034,7 @@ class _TodolistState extends State<Todolist> {
                                 decoration: InputDecoration(
                                   contentPadding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  hintText: "Type Description",
+                                  hintText: "Description",
                                   hintStyle: TextStyle(
                                     fontSize: 15,
                                     letterSpacing: 0,
@@ -1046,7 +1068,7 @@ class _TodolistState extends State<Todolist> {
                                   key: Key("value"),
                                   duration: Duration(milliseconds: 700),
                                   child: Text(
-                                    'please type description',
+                                    'Please type description',
                                     style: TextStyle(
                                       fontFamily: "Poppins",
                                       fontSize: 12,
@@ -1075,7 +1097,7 @@ class _TodolistState extends State<Todolist> {
                                   key: Key("value"),
                                   duration: Duration(milliseconds: 700),
                                   child: Text(
-                                    'please select date',
+                                    'Please select date',
                                     style: TextStyle(
                                       fontFamily: "Poppins",
                                       fontSize: 12,
@@ -1347,7 +1369,7 @@ class _TodolistState extends State<Todolist> {
                                       ? "Please enter a description"
                                       : "";
                               _validDate = _DateController.text.isEmpty
-                                  ? "Please enter a deadline"
+                                  ? "Please select date"
                                   : "";
                               _validatePriority =
                                   _priorityController.text.isEmpty
@@ -1426,61 +1448,7 @@ class _TodolistState extends State<Todolist> {
             fontWeight: FontWeight.w400));
   }
 
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-      required FocusNode focusNode,
-      bool obscureText = false,
-      required String hintText,
-      required String validationMessage,
-      TextInputType keyboardType = TextInputType.text,
-      Widget? prefixicon,
-      Widget? suffixicon}) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.050,
-      child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        cursorColor: Color(0xff8856F4),
-        decoration: InputDecoration(
-          hintText: hintText,
-          // prefixIcon: Container(
-          //     width: 21,
-          //     height: 21,
-          //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
-          //     child: prefixicon),
-          suffixIcon: suffixicon,
-          hintStyle: const TextStyle(
-            fontSize: 14,
-            letterSpacing: 0,
-            height: 19.36 / 14,
-            color: Color(0xffAFAFAF),
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-          filled: true,
-          fillColor: const Color(0xffFCFAFF),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildDateField(TextEditingController controller) {
     return Column(

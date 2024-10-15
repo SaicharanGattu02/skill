@@ -60,7 +60,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   final FocusNode _focusNodetitle = FocusNode();
   final FocusNode _focusNodedescription = FocusNode();
   final FocusNode _focusNodemileStone = FocusNode();
-  final FocusNode _focusNode = FocusNode();
   final FocusNode _focusNodeassignedTo = FocusNode();
   final FocusNode _focusNodecollorators = FocusNode();
   final FocusNode _focusNodestatus = FocusNode();

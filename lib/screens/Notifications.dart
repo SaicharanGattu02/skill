@@ -57,10 +57,7 @@ class _NotificationsState extends State<Notifications> {
             height: 29.05 / 24.0,
           ),
         ),
-        actions: [Padding(
-          padding: EdgeInsets.only(right: 20),
-          child: Image.asset("assets/Plus square.png",width: 28,height: 28,fit: BoxFit.contain,),
-        )],
+        actions: [Container()]
       ),
       body:
       _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
