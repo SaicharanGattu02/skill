@@ -26,10 +26,8 @@ class _ProjectNotesState extends State<ProjectNotes> {
   // final TextEditingController _createdDateController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  // final TextEditingController _labelController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNodetitle = FocusNode();
-  final FocusNode _focusNodedescription = FocusNode();
-  final FocusNode _focusNodelable = FocusNode();
 
   String _validateTittle = "";
   String _validateDescription = "";
@@ -43,11 +41,23 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
   @override
   void initState() {
+    filteredData = List.from(data);
+    _searchController.addListener(filterData); // Add listener for search
     GetNote();
     super.initState();
   }
 
-  List<Data> data = [];
+  void filterData() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredData = data.where((item) {
+        return (item.title?.toLowerCase().contains(query) ?? false);
+      }).toList();
+    });
+  }
+
+  List<Data> data = []; // Original list of notes
+  List<Data> filteredData = []; // Filtered list for search
   Future<void> GetNote() async {
     var res = await Userapi.GetProjectNote(widget.id);
     setState(() {
@@ -55,6 +65,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
           if(res.settings?.success==1){
             _isLoading=false;
             data = res.data ?? [];
+            filteredData = res.data ?? [];
           }else{
             _isLoading=false;
             CustomSnackBar.show(context,res.settings?.message??"");
@@ -194,7 +205,8 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             color: const Color(0xffffffff),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Row(
+                          child:
+                          Row(
                             children: [
                               Image.asset(
                                 "assets/search.png",
@@ -203,13 +215,30 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                 fit: BoxFit.contain,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
-                                "Search",
-                                style: TextStyle(
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  fontFamily: "Nunito",
+
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    isCollapsed: true,
+                                    border: InputBorder.none,
+                                    hintText: 'Search',
+                                    hintStyle: const TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: Color(0xff9E7BCA),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      fontFamily: "Nunito",
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                      color: Color(0xff9E7BCA),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      decorationColor: Color(0xff9E7BCA),
+                                      fontFamily: "Nunito",
+                                      overflow: TextOverflow.ellipsis),
+                                  textAlignVertical: TextAlignVertical.center,
                                 ),
                               ),
                             ],
@@ -260,14 +289,11 @@ class _ProjectNotesState extends State<ProjectNotes> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: data.length,
+                      itemCount: filteredData.length,
                       itemBuilder: (context, index) {
-                        final note = data[index];
-
+                        final note = filteredData[index];
                         String isoDate =note.createdTime??"";
                         String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false); // Date only
-
-
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(16),

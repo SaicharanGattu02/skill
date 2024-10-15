@@ -18,15 +18,16 @@ class OverView extends StatefulWidget {
 bool _loading =false;
 class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
-  final FocusNode searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
-  bool _isSearchFocused = false;
+
   bool isloading=true;
   final spinkit=Spinkits();
   @override
   void initState() {
     super.initState();
-
+    setState(() {
+      _searchController.text=="";
+    });
     filteredMembers = List.from(members); // Start with all members
     _searchController.addListener(filterMembers); // Add listener
     GetProjectsOverviewData();
@@ -46,6 +47,7 @@ class _OverViewState extends State<OverView> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchController.removeListener(filterMembers);
     super.dispose();
   }
 
@@ -63,6 +65,7 @@ class _OverViewState extends State<OverView> {
           isloading=false;
           data = res.data;
           members = data?.members ?? [];
+          filteredMembers = data?.members ?? [];
           _updatePieChartData();
         }else{
           isloading=false;
@@ -123,9 +126,7 @@ class _OverViewState extends State<OverView> {
             SliverAppBar(
               backgroundColor: Colors.transparent,
               pinned: true,
-              expandedHeight: _isSearchFocused
-                  ? 0
-                  : MediaQuery.of(context).size.height * 0.36,
+              expandedHeight: MediaQuery.of(context).size.height * 0.36,
               automaticallyImplyLeading: false,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
@@ -551,16 +552,16 @@ class _OverViewState extends State<OverView> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: members.length,
+            itemCount: filteredMembers.length,
             itemBuilder: (context, index) {
               return Column(
                 children: [
                   MemberCard(
-                    name: members[index].fullName ?? "",
-                    profile_image: members[index].image ?? "",
+                    name: filteredMembers[index].fullName ?? "",
+                    profile_image: filteredMembers[index].image ?? "",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < members.length - 1)
+                  if (index < filteredMembers.length - 1)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Divider(

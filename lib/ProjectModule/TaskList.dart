@@ -20,12 +20,35 @@ class TaskList extends StatefulWidget {
 class _TaskListState extends State<TaskList> {
   bool _loading = true;
   final TextEditingController _searchController = TextEditingController();
-  List<Data> data = [];
+  List<Data> data = []; // Original list of Data objects
+  List<Data> filteredData = []; // Filtered list for search
 
   @override
   void initState() {
     super.initState(); // Add this to properly initialize the state
     GetProjectTasks();
+    // Initialize filteredData with all data
+    filteredData = List.from(data);
+    _searchController.addListener(filterData); // Add listener for search
+    // Simulate fetching data (you can replace this with your API call)
+  }
+
+
+  void filterData() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredData = data.where((item) {
+        return (item.title?.toLowerCase().contains(query) ?? false) ||
+            (item.description?.toLowerCase().contains(query) ?? false);
+      }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(filterData); // Remove listener
+    _searchController.dispose(); // Dispose of the controller
+    super.dispose();
   }
 
   Future<void> GetProjectTasks() async {
@@ -34,6 +57,7 @@ class _TaskListState extends State<TaskList> {
       if (Res?.data != null) {
         if (Res?.settings?.success == 1) {
           data = Res?.data ?? [];
+          filteredData = Res?.data ?? [];
           _loading=false;
         } else {
           _loading=false;
@@ -185,9 +209,9 @@ class _TaskListState extends State<TaskList> {
                       shrinkWrap: true,
                       physics:
                           NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                      itemCount: data.length,
+                      itemCount: filteredData.length,
                       itemBuilder: (context, index) {
-                        final task = data[index];
+                        final task = filteredData[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(16),

@@ -39,7 +39,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final spinkit=Spinkits();
   Future<void> LoginApi() async {
     final fcm_token = await PreferenceService().getString("fbstoken") ?? "";
-    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text,fcm_token,"android_token");
+    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text);
     if (data != null) {
       setState(() {
         if (data.settings?.success == 1) {

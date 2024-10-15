@@ -28,10 +28,7 @@ class _ProjectFileState extends State<ProjectFile> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _searchController2 = TextEditingController();
-  // final TextEditingController _labelController = TextEditingController();
   final FocusNode _focusNodetitle = FocusNode();
-  final FocusNode _focusNodedescription = FocusNode();
-  final FocusNode _focusNodelable = FocusNode();
 
   String _validateCategory = "";
   String _validateDescription = "";
@@ -53,6 +50,8 @@ class _ProjectFileState extends State<ProjectFile> {
     super.initState();
     GetFile();
     GetCatagory();
+    filteredRooms = List.from(data);
+    filteredRooms2 = List.from(catagory);
     _searchController.addListener(_onSearchChanged);
     _searchController2.addListener(_onSearchChanged2);
   }
@@ -61,13 +60,13 @@ class _ProjectFileState extends State<ProjectFile> {
 
   @override
   void dispose() {
-
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _searchController2.removeListener(_onSearchChanged2);
     _searchController2.dispose();
     super.dispose();
   }
+
   List<Data> data = [];
   List<Data> filteredRooms = [];
   List<Catagory> catagory = [];
@@ -79,21 +78,19 @@ class _ProjectFileState extends State<ProjectFile> {
     setState(() {
       // Filter the rooms based on title or ID
       filteredRooms = data.where((room) {
-        String title = room.fileName?.toLowerCase() ?? '';
-        String id = room.id?.toLowerCase() ?? '';
-        return title.contains(query) || id.contains(query);
+        String id = room.category?.toLowerCase() ?? '';
+        return id.contains(query);
       }).toList();
     });
   }
 
   void _onSearchChanged2() {
-    String query = _searchController.text.toLowerCase();
+    String query = _searchController2.text.toLowerCase();
     setState(() {
       // Filter the rooms based on title or ID
       filteredRooms2 = catagory.where((room) {
         String title = room.name?.toLowerCase() ?? '';
-        String id = room.id?.toLowerCase() ?? '';
-        return title.contains(query) || id.contains(query);
+        return title.contains(query);
       }).toList();
     });
   }
@@ -106,22 +103,12 @@ class _ProjectFileState extends State<ProjectFile> {
         if(res.settings?.success==1){
           _isLoading = false;
           data = res.data ?? [];
+          filteredRooms = data;  // Initially, show all rooms
         }else{
           _isLoading = false;
           CustomSnackBar.show(context,res.settings?.message??"");
         }
       }
-
-        if (res != null) {
-          if (res.settings?.success == 1) {
-            data = res.data ?? [];
-            filteredRooms = data;  // Initially, show all rooms
-          } else {
-            CustomSnackBar.show(context, res.settings?.message ?? "");
-          }
-        } else {
-          print("Task Failure  ${res?.settings?.message}");
-        }
       });
   }
 
@@ -142,15 +129,10 @@ class _ProjectFileState extends State<ProjectFile> {
 
     if (res != null) {
       if (res.settings?.success == 1) {
-
-
             _isLoading=false;
             Navigator.pop(context, true);
             CustomSnackBar.show(context, "${res.settings?.message}");
             GetFile();
-
-
-
       }
       else {
         CustomSnackBar.show(context, "${res.settings?.message}");
@@ -184,30 +166,17 @@ class _ProjectFileState extends State<ProjectFile> {
   Future<void> GetCatagory() async {
     print("hiii");
     var res = await Userapi.GetProjectCatagory(widget.id);
-
     setState(() {
       if (res != null) {
         _isLoading = false;
         if (res.catagory != null) {
           catagory = res.catagory ?? [];
-
+          filteredRooms2 =  res.catagory ?? [];
           print("sucsesss");
         } else {
           print("Task Failure  ${res.settings?.message}");
         }
       }
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          catagory = res.catagory ?? [];
-          filteredRooms2 = catagory;  // Initially, show all rooms
-        } else {
-          CustomSnackBar.show(context, res.settings?.message ?? "");
-        }
-      } else {
-        print("Task Failure  ${res?.settings?.message}");
-      }
-
-
     });
   }
 
@@ -728,7 +697,6 @@ class _ProjectFileState extends State<ProjectFile> {
                         itemCount: filteredRooms2.length,
                         itemBuilder: (context, index) {
                           final projectcatagory = catagory[index];
-
                           String isoDate = projectcatagory.createdTime ?? "";
                           String formattedDate = DateTimeFormatter.format(
                               isoDate,

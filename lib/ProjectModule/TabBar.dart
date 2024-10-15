@@ -26,6 +26,7 @@ class _MyTabBarState extends State<MyTabBar>
   late TabController _tabController;
   late PageController _pageController;
   int _selectedTabIndex = 0;
+  int _currentPageIndex = 0; // Initial index for the first tab
   bool _loading =true;
 
   @override
@@ -34,21 +35,19 @@ class _MyTabBarState extends State<MyTabBar>
 
     print("idd>>>${widget.id}");
     _tabController = TabController(length: 8, vsync: this); // 8 tabs
-    _pageController = PageController(); // Controller for PageView
-
-    // Sync TabController with PageView
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        setState(() {
-          _selectedTabIndex = _tabController.index;
-        });
-        _pageController.animateToPage(
-          _tabController.index,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
+    // // Sync TabController with PageView
+    // _tabController.addListener(() {
+    //   if (_tabController.indexIsChanging) {
+    //     setState(() {
+    //       _selectedTabIndex = _tabController.index;
+    //     });
+    //     _pageController.animateToPage(
+    //       _tabController.index,
+    //       duration: Duration(milliseconds: 300),
+    //       curve: Curves.easeInOut,
+    //     );
+    //   }
+    // });
     setState(() {
       _loading=false;
     });
@@ -212,26 +211,29 @@ class _MyTabBarState extends State<MyTabBar>
                   ),
                 ),
               ],
+              onTap: (index) {
+                setState(() {
+                  _currentPageIndex = index;
+                  FocusScope.of(context).unfocus();// Update the current page index
+                });
+              },
             ),
           ),
           Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                _tabController.animateTo(index); // Sync TabBar with PageView
-              },
+            child: IndexedStack(
+              index: _currentPageIndex, // Use the current page index here
               children: [
-                OverView(id:widget.id,),
-                TaskList(id1: '${widget.id}',),
-                TaskKanBan(id: '${widget.id}',),
-                MileStone(id: '${widget.id}',),
-                ProjectNotes(id: '${widget.id}',),
-                ProjectFile(id: '${widget.id}',),
-                TimeSheet(id: '${widget.id}',),
-                ProjectComment(id: '${widget.id}',),
+                OverView(id: widget.id),
+                TaskList(id1: '${widget.id}'),
+                TaskKanBan(id: '${widget.id}'),
+                MileStone(id: '${widget.id}'),
+                ProjectNotes(id: '${widget.id}'),
+                ProjectFile(id: '${widget.id}'),
+                TimeSheet(id: '${widget.id}'),
+                ProjectComment(id: '${widget.id}'),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

@@ -14,14 +14,36 @@ class TimeSheet extends StatefulWidget {
 }
 
 class _TimeSheetState extends State<TimeSheet> {
+  final TextEditingController _searchController = TextEditingController();
   void initState() {
+    _searchController.addListener(filterData); // Add listener for search
     TimeSheetDetails();
     super.initState();
   }
+
+  void filterData() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredData = data.where((item) {
+        return (item.member?.toLowerCase().contains(query) ?? false) ||
+            (item.task?.toLowerCase().contains(query) ?? false);
+      }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(filterData); // Remove listener
+    _searchController.dispose(); // Dispose of the controller
+    super.dispose();
+  }
+
+
   int selectedTabIndex = 0;
   bool isloading=true;
 
-  List<Data> data = [];
+  List<Data> data = []; // Original list of notes
+  List<Data> filteredData = []; // Filtered list for search
   Future<void> TimeSheetDetails() async {
     var res = await Userapi.GetProjectTimeSheetDetails(widget.id);
     setState(() {
@@ -29,6 +51,7 @@ class _TimeSheetState extends State<TimeSheet> {
         if(res.settings?.success==1){
           isloading=false;
           data = res.data ?? [];
+          filteredData = res.data ?? [];
         }else{
           isloading=false;
           CustomSnackBar.show(context,res.settings?.message??"");
@@ -226,14 +249,15 @@ class _TimeSheetState extends State<TimeSheet> {
               Row(
                 children: [
                   Container(
-                    width: w * 0.61,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    width: w * 0.63,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xffffffff),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Row(
+                    child:
+                    Row(
                       children: [
                         Image.asset(
                           "assets/search.png",
@@ -242,13 +266,30 @@ class _TimeSheetState extends State<TimeSheet> {
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(width: 10),
-                        const Text(
-                          "Search",
-                          style: TextStyle(
-                            color: Color(0xff9E7BCA),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            fontFamily: "Nunito",
+
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              border: InputBorder.none,
+                              hintText: 'Search',
+                              hintStyle: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Nunito",
+                              ),
+                            ),
+                            style: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                decorationColor: Color(0xff9E7BCA),
+                                fontFamily: "Nunito",
+                                overflow: TextOverflow.ellipsis),
+                            textAlignVertical: TextAlignVertical.center,
                           ),
                         ),
                       ],
@@ -303,9 +344,9 @@ class _TimeSheetState extends State<TimeSheet> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: data.length,
+                  itemCount: filteredData.length,
                   itemBuilder: (context, index) {
-                    final detail = data[index];
+                    final detail = filteredData[index];
                     String isoDate = detail.startTime ?? "";
                     String isoDate1 = detail.endTime ?? "";
 
@@ -602,183 +643,183 @@ class _TimeSheetState extends State<TimeSheet> {
                   },
                 ),
               ],
-              if (selectedTabIndex == 1) ...[
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final detail = data[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (detail.image != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      detail.image.toString() ?? "",
-                                      width: 24,
-                                      height: 24,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              const SizedBox(width: 8),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    detail.member ?? "",
-                                    // "Prashanth Chary",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      height: 24.01 / 14,
-                                      color: Color(0xff1D1C1D),
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    detail.task ?? "",
-                                    // "Task - Admin Backend",
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      height: 18.15 / 15,
-                                      color: Color(0xff1D1C1D),
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                "assets/tasktime.png",
-                                fit: BoxFit.contain,
-                                width: w * 0.04,
-                                height: w * 0.04,
-                                color: Color(0xff6C848F),
-                              ),
-                              SizedBox(
-                                width: w * 0.01,
-                              ),
-                              Text(
-                                // note.createdTime?? "",
-                                "Duration:",
-                                style: TextStyle(
-                                  color: const Color(0xff6C848F),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  height: 16.94 / 12,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                              SizedBox(
-                                width: w * 0.001,
-                              ),
-                              Text(
-                                detail.total ?? "",
-                                // "0245:00 ",
-                                style: TextStyle(
-                                  color: const Color(0xff8856F4),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  height: 16.94 / 13,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                              Spacer(),
-                              Image.asset(
-                                "assets/tasktime.png",
-                                fit: BoxFit.contain,
-                                width: w * 0.04,
-                                height: w * 0.04,
-                                color: Color(0xff6C848F),
-                              ),
-                              SizedBox(
-                                width: w * 0.01,
-                              ),
-                              Text(
-                                // note.createdTime?? "",
-                                "Total Hours:",
-                                style: TextStyle(
-                                  color: const Color(0xff6C848F),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  height: 16.94 / 13,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                              SizedBox(
-                                width: w * 0.002,
-                              ),
-                              Text(
-                                detail.total ?? "",
-                                // "0245:00 ",
-                                style: TextStyle(
-                                  color: const Color(0xff8856F4),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  height: 16.94 / 14,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-
-
-              if (selectedTabIndex == 2) ...[
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: 1,
-                  itemBuilder: (context, index) {
-                    // final detail = data[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ]
+              // if (selectedTabIndex == 1) ...[
+              //   ListView.builder(
+              //     shrinkWrap: true,
+              //     physics: NeverScrollableScrollPhysics(),
+              //     itemCount: data.length,
+              //     itemBuilder: (context, index) {
+              //       final detail = data[index];
+              //       return Container(
+              //         margin: const EdgeInsets.symmetric(vertical: 6),
+              //         padding: const EdgeInsets.all(16),
+              //         decoration: BoxDecoration(
+              //           color: Colors.white,
+              //           borderRadius: BorderRadius.circular(7),
+              //         ),
+              //         child: Column(
+              //           mainAxisAlignment: MainAxisAlignment.start,
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Row(
+              //               mainAxisAlignment: MainAxisAlignment.start,
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 if (detail.image != null)
+              //                   Padding(
+              //                     padding: const EdgeInsets.only(right: 4.0),
+              //                     child: ClipOval(
+              //                       child: Image.network(
+              //                         detail.image.toString() ?? "",
+              //                         width: 24,
+              //                         height: 24,
+              //                         fit: BoxFit.cover,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 const SizedBox(width: 8),
+              //                 Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //                     Text(
+              //                       detail.member ?? "",
+              //                       // "Prashanth Chary",
+              //                       style: const TextStyle(
+              //                         fontSize: 14,
+              //                         height: 24.01 / 14,
+              //                         color: Color(0xff1D1C1D),
+              //                         fontWeight: FontWeight.w500,
+              //                         fontFamily: 'Inter',
+              //                       ),
+              //                     ),
+              //                     const SizedBox(height: 10),
+              //                     Text(
+              //                       detail.task ?? "",
+              //                       // "Task - Admin Backend",
+              //                       style: const TextStyle(
+              //                         fontSize: 15,
+              //                         height: 18.15 / 15,
+              //                         color: Color(0xff1D1C1D),
+              //                         fontWeight: FontWeight.w600,
+              //                         fontFamily: 'Inter',
+              //                       ),
+              //                     ),
+              //                     const SizedBox(height: 6),
+              //                   ],
+              //                 ),
+              //               ],
+              //             ),
+              //             SizedBox(
+              //               height: 16,
+              //             ),
+              //             Row(
+              //               children: [
+              //                 Image.asset(
+              //                   "assets/tasktime.png",
+              //                   fit: BoxFit.contain,
+              //                   width: w * 0.04,
+              //                   height: w * 0.04,
+              //                   color: Color(0xff6C848F),
+              //                 ),
+              //                 SizedBox(
+              //                   width: w * 0.01,
+              //                 ),
+              //                 Text(
+              //                   // note.createdTime?? "",
+              //                   "Duration:",
+              //                   style: TextStyle(
+              //                     color: const Color(0xff6C848F),
+              //                     fontWeight: FontWeight.w400,
+              //                     fontSize: 12,
+              //                     height: 16.94 / 12,
+              //                     fontFamily: "Inter",
+              //                   ),
+              //                 ),
+              //                 SizedBox(
+              //                   width: w * 0.001,
+              //                 ),
+              //                 Text(
+              //                   detail.total ?? "",
+              //                   // "0245:00 ",
+              //                   style: TextStyle(
+              //                     color: const Color(0xff8856F4),
+              //                     fontWeight: FontWeight.w500,
+              //                     fontSize: 13,
+              //                     height: 16.94 / 13,
+              //                     fontFamily: "Inter",
+              //                   ),
+              //                 ),
+              //                 Spacer(),
+              //                 Image.asset(
+              //                   "assets/tasktime.png",
+              //                   fit: BoxFit.contain,
+              //                   width: w * 0.04,
+              //                   height: w * 0.04,
+              //                   color: Color(0xff6C848F),
+              //                 ),
+              //                 SizedBox(
+              //                   width: w * 0.01,
+              //                 ),
+              //                 Text(
+              //                   // note.createdTime?? "",
+              //                   "Total Hours:",
+              //                   style: TextStyle(
+              //                     color: const Color(0xff6C848F),
+              //                     fontWeight: FontWeight.w500,
+              //                     fontSize: 13,
+              //                     height: 16.94 / 13,
+              //                     fontFamily: "Inter",
+              //                   ),
+              //                 ),
+              //                 SizedBox(
+              //                   width: w * 0.002,
+              //                 ),
+              //                 Text(
+              //                   detail.total ?? "",
+              //                   // "0245:00 ",
+              //                   style: TextStyle(
+              //                     color: const Color(0xff8856F4),
+              //                     fontWeight: FontWeight.w700,
+              //                     fontSize: 14,
+              //                     height: 16.94 / 14,
+              //                     fontFamily: "Inter",
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ],
+              //
+              //
+              // if (selectedTabIndex == 2) ...[
+              //   ListView.builder(
+              //     shrinkWrap: true,
+              //     physics: NeverScrollableScrollPhysics(),
+              //     itemCount: 1,
+              //     itemBuilder: (context, index) {
+              //       // final detail = data[index];
+              //       return Container(
+              //         margin: const EdgeInsets.symmetric(vertical: 6),
+              //         padding: const EdgeInsets.all(16),
+              //         decoration: BoxDecoration(
+              //           color: Colors.white,
+              //           borderRadius: BorderRadius.circular(7),
+              //         ),
+              //         child: Column(
+              //           mainAxisAlignment: MainAxisAlignment.start,
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ]
             ],
           ),
         ),
