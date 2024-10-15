@@ -8,6 +8,7 @@ import '../Model/RoomsDetailsModel.dart';
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
+import 'Profiledashboard.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
@@ -276,52 +277,70 @@ class _ChatPageState extends State<ChatPage> {
                   color: Colors.white,
                 )),
             SizedBox(width: 10),
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(userimage),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                username,
-                maxLines: 2,
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
-                  fontSize: 16,
-                  overflow: TextOverflow.ellipsis,
-                ),
+            InkWell(
+              onTap: () async {
+                // var res= await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen(),));
+                // if(res==true){
+                //   _initializeWebSocket();
+                //   RoomDetailsApi();
+                // }
+              },
+              child: CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(userimage),
               ),
             ),
+            SizedBox(width: 10),
+            InkResponse(
+              onTap: () async {
+                // var res= await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen(),));
+                // if(res==true){
+                //   _initializeWebSocket();
+                //   RoomDetailsApi();
+                // }
+              },
+              child: Expanded(
+                child: Text(
+                  username,
+                  maxLines: 2,
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    fontSize: 16,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Image(
-                image: AssetImage("assets/video.png"),
-                color: Colors.white,
-                width: 22,
-                height: 20),
-            onPressed: () {
-              // Handle video call action
-            },
-          ),
-          IconButton(
-            icon: Image(
-                image: AssetImage("assets/call.png"), width: 22, height: 20),
-            onPressed: () {
-              // Handle phone call action
-            },
-          ),
-          IconButton(
-            icon: Image(
-                image: AssetImage("assets/more.png"), width: 22, height: 20),
-            onPressed: () {
-              // Handle more actions
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Image(
+        //         image: AssetImage("assets/video.png"),
+        //         color: Colors.white,
+        //         width: 22,
+        //         height: 20),
+        //     onPressed: () {
+        //       // Handle video call action
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: Image(
+        //         image: AssetImage("assets/call.png"), width: 22, height: 20),
+        //     onPressed: () {
+        //       // Handle phone call action
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: Image(
+        //         image: AssetImage("assets/more.png"), width: 22, height: 20),
+        //     onPressed: () {
+        //       // Handle more actions
+        //     },
+        //   ),
+        // ],
       ),
       body: Column(
         children: [

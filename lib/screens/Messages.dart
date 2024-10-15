@@ -4,6 +4,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
+import 'OneToOneChatPage.dart';
 
 class Messages extends StatefulWidget {
   const Messages({super.key});
@@ -145,7 +146,6 @@ class _MessagesState extends State<Messages> {
                 children: [
                   SizedBox(
                     width: w,
-
                     child: Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
@@ -284,76 +284,93 @@ class _MessagesState extends State<Messages> {
                                 }
                               }
 
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffF7F4FC),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          ClipOval(
-                                            child: Image.network(
-                                              data.otherUserImage ?? "",
-                                              fit: BoxFit.contain,
-                                              width: 32,
-                                              height: 32,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 10),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                              return InkResponse(
+                                onTap: () async {
+                                  var res= await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChatPage(roomId: data.roomId),
+                                    ),
+                                  );
+                                  if(res==true){
+                                    setState(() {
+                                      _loading=true;
+                                      GetRoomsList();
+                                    });
+                                  }
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffF7F4FC),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Stack(
                                           children: [
-                                            Text(
-                                              data.otherUser ?? "",
-                                              style: const TextStyle(
-                                                fontFamily: 'Inter',
-                                                fontSize: 16,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontWeight: FontWeight.w400,
-                                                height: 19.36 / 16,
-                                                color: Color(0xff1C1C1C),
+                                            ClipOval(
+                                              child: Image.network(
+                                                data.otherUserImage ?? "",
+                                                fit: BoxFit.contain,
+                                                width: 32,
+                                                height: 32,
                                               ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Text(
-                                              data.message ?? "",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                height: 14.52 / 12,
-                                                overflow: TextOverflow.ellipsis,
-                                                color: Color(0xff8A8A8A),
-                                              ),
-                                              maxLines: 2,
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        formattedTime,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          height: 14.52 / 12,
-                                          overflow: TextOverflow.ellipsis,
-                                          color: Color(0xff8A8A8A),
+                                        const SizedBox(width: 10),
+                                        SizedBox(
+                                          width:
+                                              MediaQuery.of(context).size.width *
+                                                  0.4,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                data.otherUser ?? "",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Inter',
+                                                  fontSize: 16,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 19.36 / 16,
+                                                  color: Color(0xff1C1C1C),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Text(
+                                                data.message ?? "",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 14.52 / 12,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  color: Color(0xff8A8A8A),
+                                                ),
+                                                maxLines: 2,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        const Spacer(),
+                                        Text(
+                                          formattedTime,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            height: 14.52 / 12,
+                                            overflow: TextOverflow.ellipsis,
+                                            color: Color(0xff8A8A8A),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
