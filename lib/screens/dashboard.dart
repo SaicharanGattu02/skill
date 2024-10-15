@@ -146,13 +146,12 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       if (res != null && res.settings?.success == 1) {
         GetRoomsList();
-        _searchController.text="";
+        _searchController.text = "";
         Navigator.pop(context);
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ChatPage(roomId: res.data?.room??""),
+            builder: (context) => ChatPage(roomId: res.data?.room ?? ""),
           ),
         );
       } else {
@@ -311,18 +310,24 @@ class _DashboardState extends State<Dashboard> {
                 onTap: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
-                child: Image.asset(
-                  "assets/menu.png",
-                  width: 24,
-                  fit: BoxFit.contain,
+                child: Container(
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "assets/menu.png",
+                        width: 24,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 12),
+                      Image.asset(
+                        "assets/skillLogo.png",
+                        width: 80,
+                        height: 35,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Image.asset(
-                "assets/skillLogo.png",
-                width: 80,
-                height: 35,
-                fit: BoxFit.contain,
               ),
               const Spacer(),
               Row(
@@ -1318,7 +1323,8 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     onTap: () async {
                       try {
-                        FocusScope.of(context).unfocus();// Update the current page index
+                        FocusScope.of(context)
+                            .unfocus(); // Update the current page index
                         setState(() {
                           employeeData = [];
                         });
@@ -1345,10 +1351,10 @@ class _DashboardState extends State<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if(_isListVisible)...[
+                          if (_isListVisible) ...[
                             Icon(Icons.arrow_drop_down,
                                 color: Color(0xffffffff), size: 25),
-                          ]else...[
+                          ] else ...[
                             Icon(Icons.arrow_drop_up,
                                 color: Color(0xffffffff), size: 25),
                           ],
@@ -1397,7 +1403,8 @@ class _DashboardState extends State<Dashboard> {
                                       fit: BoxFit.cover,
                                       width: 43,
                                       height: 43,
-                                      errorBuilder: (context, error, stackTrace) {
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
                                         return ClipOval(
                                           child: Icon(Icons.person, size: 43),
                                         );
@@ -1407,7 +1414,8 @@ class _DashboardState extends State<Dashboard> {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           room.otherUser ?? 'No Name',
@@ -1421,7 +1429,7 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                         Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Expanded(
                                               child: Text(
@@ -1430,7 +1438,8 @@ class _DashboardState extends State<Dashboard> {
                                                   color: Color(0xffFFFFFF),
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 14,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   fontFamily: "Inter",
                                                 ),
                                               ),

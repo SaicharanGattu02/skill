@@ -774,10 +774,10 @@ class _ProjectFileState extends State<ProjectFile> {
                                     Text(
                                       projectcatagory.name ?? "",
                                       style: const TextStyle(
-                                        fontSize: 14,
-                                        height: 16 / 14,
+                                        fontSize: 18,
+                                        height: 16 / 18,
                                         color: Color(0xff1D1C1D),
-                                        fontWeight: FontWeight.w400,
+                                        fontWeight: FontWeight.w500,
                                         fontFamily: 'Inter',
                                       ),
                                     ),
