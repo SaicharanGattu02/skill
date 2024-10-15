@@ -698,7 +698,7 @@ class Userapi {
       final url =
           Uri.parse('${host}/project/project-milestone-detail/${editId}');
       final headers = await getheader();
-      final response = await http.post(
+      final response = await http.put(
         url,
         headers: headers,
         body: jsonEncode(data),

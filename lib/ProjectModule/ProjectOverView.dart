@@ -15,12 +15,12 @@ class OverView extends StatefulWidget {
   @override
   State<OverView> createState() => _OverViewState();
 }
-bool _loading =false;
+
 class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
   final TextEditingController _searchController = TextEditingController();
 
-  bool isloading=true;
+  bool _loading =true;
   final spinkit=Spinkits();
   @override
   void initState() {
@@ -62,13 +62,13 @@ class _OverViewState extends State<OverView> {
     setState(() {
       if (res != null && res.data != null) {
         if(res.settings?.success==1){
-          isloading=false;
+          _loading=false;
           data = res.data;
           members = data?.members ?? [];
           filteredMembers = data?.members ?? [];
           _updatePieChartData();
         }else{
-          isloading=false;
+          _loading=false;
           CustomSnackBar.show(context,res.settings?.message??"");
         }
       }
@@ -113,14 +113,9 @@ class _OverViewState extends State<OverView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body:(isloading)?
-    Center(
-      child: 
-      CircularProgressIndicator(
-          color: Color(0xff8856F4),
-        ),
-      // _loading?spinkit.getFadingCircleSpinner(color: Color(0xff8856F4),
-    ): NestedScrollView(
+      body:_loading?
+      Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4))):
+      NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(

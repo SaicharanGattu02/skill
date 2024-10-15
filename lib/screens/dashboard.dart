@@ -51,7 +51,7 @@ class _DashboardState extends State<Dashboard> {
     {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
   ];
 
-  final List<Map<String, String>> items=[
+  final List<Map<String, String>> items = [
     {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
     {'image': 'assets/hrteam.png', 'text': '# Designers'},
     {'image': 'assets/pixl.png', 'text': '# UIUX'},
@@ -176,7 +176,7 @@ class _DashboardState extends State<Dashboard> {
         ..messageTime = messageTime;
 
       // Increment the message count
-      if(sentUser!=userid){
+      if (sentUser != userid) {
         rooms[roomIndex].messageCount++;
       }
     } else {
@@ -204,9 +204,8 @@ class _DashboardState extends State<Dashboard> {
   Future<void> GetRoomsList() async {
     var res = await Userapi.getrommsApi();
     setState(() {
-
       if (res != null) {
-        _loading=false;
+        _loading = false;
         if (res.settings?.success == 1) {
           rooms = res.data ?? [];
           rooms.sort(
@@ -264,13 +263,13 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       if (Res != null) {
         if (Res.settings?.success == 1) {
-          _loading=false;
+          _loading = false;
           userdata = Res.data;
           userid = Res.data?.id ?? "";
           _initializeWebSocket(userdata?.id ?? "");
           PreferenceService().saveString("user_id", userdata?.id ?? "");
         } else {
-          _loading=false;
+          _loading = false;
         }
       }
     });
@@ -284,7 +283,7 @@ class _DashboardState extends State<Dashboard> {
     GetProjectsData();
     setState(() {
       employeeData = [];
-      _loading=true;
+      _loading = true;
     });
   }
 
@@ -372,12 +371,9 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      body:
-      _loading
+      body: _loading
           ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
+              child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
           : RefreshIndicator(
               color: Color(0xff9E7BCA),
               backgroundColor: Colors.white,
@@ -390,7 +386,6 @@ class _DashboardState extends State<Dashboard> {
                       top: 16, left: 16, right: 16, bottom: 8),
                   child: Column(
                     children: [
-                      // Search Container
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 6),
@@ -421,14 +416,17 @@ class _DashboardState extends State<Dashboard> {
                         height: w * 0.03,
                       ),
                       // User Info Container
-                      InkResponse(onTap: () async {
-                        var res= await Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileUpdateScreen()));
-                        if(res==true){
-                          GetUserDeatails();
-                        }
-                      },
-                        child:
-                        Container(
+                      InkResponse(
+                        onTap: () async {
+                          var res = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileUpdateScreen()));
+                          if (res == true) {
+                            GetUserDeatails();
+                          }
+                        },
+                        child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               color: const Color(0xff8856F4),
@@ -500,8 +498,10 @@ class _DashboardState extends State<Dashboard> {
                                             ),
                                             SizedBox(width: 8),
                                             Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 4, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: const Color(0xff2FB035),
                                                 borderRadius:
@@ -549,8 +549,8 @@ class _DashboardState extends State<Dashboard> {
                                                         fontSize: 12,
                                                         height: 16.21 / 12,
                                                         letterSpacing: 0.14,
-                                                        overflow:
-                                                            TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                         fontFamily: "Inter"),
                                                   ),
                                                   const SizedBox(height: 8),
@@ -566,11 +566,12 @@ class _DashboardState extends State<Dashboard> {
                                                               BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(6),
-                                                            color:
-                                                                Color(0xffFFFFFF)
-                                                                    .withOpacity(
-                                                                        0.25),
+                                                                    .circular(
+                                                                        6),
+                                                            color: Color(
+                                                                    0xffFFFFFF)
+                                                                .withOpacity(
+                                                                    0.25),
                                                           ),
                                                           child: Row(
                                                             children: [
@@ -582,7 +583,8 @@ class _DashboardState extends State<Dashboard> {
                                                                 color: Color(
                                                                     0xffffffff),
                                                               ),
-                                                              SizedBox(width: 4),
+                                                              SizedBox(
+                                                                  width: 4),
                                                               Expanded(
                                                                 // Wrap Text with Expanded to avoid overflow
                                                                 child: Text(
@@ -595,7 +597,8 @@ class _DashboardState extends State<Dashboard> {
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
-                                                                    fontSize: 11,
+                                                                    fontSize:
+                                                                        11,
                                                                     height:
                                                                         13.41 /
                                                                             11,
@@ -613,9 +616,9 @@ class _DashboardState extends State<Dashboard> {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(width: w * 0.015),
+                                                      SizedBox(
+                                                          width: w * 0.015),
                                                       Expanded(
-                        
                                                         child: Container(
                                                           padding: EdgeInsets
                                                               .symmetric(
@@ -625,11 +628,12 @@ class _DashboardState extends State<Dashboard> {
                                                               BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(6),
-                                                            color:
-                                                                Color(0xffFFFFFF)
-                                                                    .withOpacity(
-                                                                        0.25),
+                                                                    .circular(
+                                                                        6),
+                                                            color: Color(
+                                                                    0xffFFFFFF)
+                                                                .withOpacity(
+                                                                    0.25),
                                                           ),
                                                           child: Row(
                                                             children: [
@@ -641,7 +645,8 @@ class _DashboardState extends State<Dashboard> {
                                                                 color: Color(
                                                                     0xffffffff),
                                                               ),
-                                                              SizedBox(width: 4),
+                                                              SizedBox(
+                                                                  width: 4),
                                                               Expanded(
                                                                 // Wrap Text with Expanded here too
                                                                 child: Text(
@@ -654,7 +659,8 @@ class _DashboardState extends State<Dashboard> {
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
-                                                                    fontSize: 11,
+                                                                    fontSize:
+                                                                        11,
                                                                     height:
                                                                         13.41 /
                                                                             11,
@@ -850,12 +856,12 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           height: w * 0.78,
                           child: Center(
-                            child: Text("No projects are assigned.",
+                            child: Text(
+                              "No projects are assigned.",
                               style: TextStyle(
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16
-                              ),
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16),
                             ),
                           ),
                         ),

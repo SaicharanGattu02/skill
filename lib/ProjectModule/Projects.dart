@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/ProjectModule/TabBar.dart';
 import 'package:skill/utils/CustomAppBar.dart';
+import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
@@ -104,7 +105,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     });
   }
 
-
+final spinkit=Spinkits();
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -127,7 +128,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         },
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator(color: Color(0xff8856F4)))
+          ? Center(
+          child:spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))
+      )
           : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(

@@ -18,6 +18,7 @@ class TaskList extends StatefulWidget {
 }
 
 class _TaskListState extends State<TaskList> {
+
   bool _loading = true;
   final TextEditingController _searchController = TextEditingController();
   List<Data> data = []; // Original list of Data objects
