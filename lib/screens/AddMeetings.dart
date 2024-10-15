@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
+import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 // import 'package:your_package/multi_select_dropdown.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/EmployeeListModel.dart';
@@ -219,6 +223,21 @@ class _AddMeetingsState extends State<AddMeetings> {
       }
     });
   }
+
+  static List<User> _users = [
+    User(id: "1", name: "Alice"),
+    User(id: "2", name: "Bob"),
+    User(id: "3", name: "Charlie"),
+    User(id: "4", name: "Diana"),
+    User(id: "5", name: "Edward"),
+    User(id: "6", name: "Fiona"),
+  ];
+
+  final List<MultiSelectItem<User>> _items = _users
+      .map((user) => MultiSelectItem<User>(user, user.name))
+      .toList();
+
+  List<User> _selectedUsers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -544,64 +563,121 @@ class _AddMeetingsState extends State<AddMeetings> {
                     ],
                     _label(text: 'Collaborators'),
                     SizedBox(height: 4),
-                    MultiDropdown<User>(
-                      items: data,
-                      controller: controller,
-                      enabled: true,
-                      searchEnabled: true,
-                      chipDecoration: const ChipDecoration(
-                          backgroundColor: Color(0xffE8E4EF),
-                          wrap: true,
-                          runSpacing: 2,
-                          spacing: 10,
-                          borderRadius: BorderRadius.all(Radius.circular(7))),
-                      fieldDecoration: FieldDecoration(
-                        hintText: 'Collaborators',
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                          letterSpacing: 0,
-                          height: 1.2,
-                          color: Color(0xffAFAFAF),
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        showClearIcon: false,
-                        backgroundColor: Color(0xfffcfaff),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(color: Color(0xffd0cbdb)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(color: Color(0xffd0cbdb)),
-                        ),
+                    // MultiDropdown<User>(
+                    //   items: data,
+                    //   controller: controller,
+                    //   enabled: true,
+                    //   searchEnabled: true,
+                    //   chipDecoration: const ChipDecoration(
+                    //       backgroundColor: Color(0xffE8E4EF),
+                    //       wrap: true,
+                    //       runSpacing: 2,
+                    //       spacing: 10,
+                    //       borderRadius: BorderRadius.all(Radius.circular(7))),
+                    //   fieldDecoration: FieldDecoration(
+                    //     hintText: 'Collaborators',
+                    //     hintStyle: TextStyle(
+                    //       fontSize: 15,
+                    //       letterSpacing: 0,
+                    //       height: 1.2,
+                    //       color: Color(0xffAFAFAF),
+                    //       fontFamily: 'Poppins',
+                    //       fontWeight: FontWeight.w400,
+                    //     ),
+                    //     showClearIcon: false,
+                    //     backgroundColor: Color(0xfffcfaff),
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(7),
+                    //       borderSide: const BorderSide(color: Color(0xffd0cbdb)),
+                    //     ),
+                    //     focusedBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(7),
+                    //       borderSide: const BorderSide(color: Color(0xffd0cbdb)),
+                    //     ),
+                    //   ),
+                    //   dropdownDecoration: const DropdownDecoration(
+                    //     marginTop: 2,
+                    //     maxHeight: 500,
+                    //     header: Padding(
+                    //       padding: EdgeInsets.all(8),
+                    //       child: Text(
+                    //         'Select members from the list',
+                    //         textAlign: TextAlign.start,
+                    //         style: TextStyle(
+                    //             fontSize: 16,
+                    //             fontWeight: FontWeight.w500,
+                    //             fontFamily: "Inter"),
+                    //       ),
+                    //     ),
+                    //   ),
+                    //   dropdownItemDecoration: DropdownItemDecoration(
+                    //     selectedIcon: const Icon(Icons.check_box, color: Color(0xff8856F4)),
+                    //     disabledIcon: Icon(Icons.lock, color: Colors.grey.shade300),
+                    //   ),
+                    //   onSelectionChange: (selectedItems) {
+                    //     setState(() {
+                    //       selectedIds = selectedItems.map((user) => user.id).toList();
+                    //       _validateCollaborators = "";
+                    //     });
+                    //     debugPrint("Selected IDs: $selectedIds");
+                    //   },
+                    // ),
+                    // MultiSelectDialogField(
+                    //   items: _items,
+                    //   title: Text("Collaborators"),
+                    //   selectedColor: Colors.purple,
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.purple.withOpacity(0.1),
+                    //     borderRadius: BorderRadius.all(Radius.circular(40)),
+                    //     border: Border.all(
+                    //       color: Colors.purple,
+                    //       width: 2,
+                    //     ),
+                    //   ),
+                    //   buttonIcon: Icon(
+                    //     Icons.people,
+                    //     color: Colors.purple,
+                    //   ),
+                    //   buttonText: Text(
+                    //     "Select Collaborators",
+                    //     style: TextStyle(
+                    //       color: Colors.purple[800],
+                    //       fontSize: 16,
+                    //     ),
+                    //   ),
+                    //   onConfirm: (results) {
+                    //     setState(() {
+                    //       _selectedUsers = results;
+                    //     });
+                    //     debugPrint("Selected Users: ${_selectedUsers.map((user) => user.id).toList()}");
+                    //   },
+                    // ),
+                    // SizedBox(height: 40),
+                    MultiSelectBottomSheetField(
+                      items: _items,
+                      initialChildSize: 0.7,
+                      maxChildSize: 0.95,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        color:Color(0xfffcfaff),
+                        border: Border.all(color:Color(0xffd0cbdb))
                       ),
-                      dropdownDecoration: const DropdownDecoration(
-                        marginTop: 2,
-                        maxHeight: 500,
-                        header: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            'Select members from the list',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: "Inter"),
-                          ),
-                        ),
-                      ),
-                      dropdownItemDecoration: DropdownItemDecoration(
-                        selectedIcon: const Icon(Icons.check_box, color: Color(0xff8856F4)),
-                        disabledIcon: Icon(Icons.lock, color: Colors.grey.shade300),
-                      ),
-                      onSelectionChange: (selectedItems) {
+                      title: Text("Collaborators"),
+                      buttonText: Text("Select Collaborators"),
+                      searchable: true,
+                      onConfirm: (results) {
                         setState(() {
-                          selectedIds = selectedItems.map((user) => user.id).toList();
-                          _validateCollaborators = "";
+                          _selectedUsers = List<User>.from(results.cast<User>());
                         });
-                        debugPrint("Selected IDs: $selectedIds");
+                        debugPrint("Selected Users: ${_selectedUsers.map((user) => user.id).toList()}");
                       },
+                      chipDisplay: MultiSelectChipDisplay(
+                        onTap: (item) {
+                          setState(() {
+                            _selectedUsers.remove(item);
+                          });
+                        },
+                      ),
                     ),
                     if (_validateCollaborators.isNotEmpty) ...[
                       Container(
