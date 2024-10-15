@@ -83,7 +83,6 @@ class _ProjectFileState extends State<ProjectFile> {
       }).toList();
     });
   }
-
   void _onSearchChanged2() {
     String query = _searchController2.text.toLowerCase();
     setState(() {
