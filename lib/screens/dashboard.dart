@@ -1080,10 +1080,10 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) => Task()));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Task()));
                                   },
                                   child: Column(
                                     children: [
