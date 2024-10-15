@@ -5,11 +5,16 @@ class TasklistModel {
   TasklistModel({this.data, this.settings});
 
   TasklistModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
+    if (json['data'] is List) {
       data = <Data>[];
       json['data'].forEach((v) {
         data!.add(Data.fromJson(v));
       });
+    } else if (json['data'] != null) {
+      // Handle the case where data is not a list but not null
+      print("Data is not a list: ${json['data']}");
+      // Optionally, you can initialize data as an empty list
+      data = [];
     }
     settings = json['settings'] != null ? Settings.fromJson(json['settings']) : null;
   }
@@ -25,7 +30,6 @@ class TasklistModel {
     return data;
   }
 }
-
 class Data {
   String? id;
   String? title;

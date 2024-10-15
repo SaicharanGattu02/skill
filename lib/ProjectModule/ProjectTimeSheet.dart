@@ -341,6 +341,34 @@ class _TimeSheetState extends State<TimeSheet> {
               ),
               SizedBox(height: 8),
               if (selectedTabIndex == 0) ...[
+                filteredData.isEmpty
+                    ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height*0.24,),
+                      Image.asset(
+                        'assets/nodata1.png', // Make sure to use the correct image path
+                        width:
+                        150, // Adjust the size according to your design
+                        height: 150,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "No Data Found",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+
+                    :
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),

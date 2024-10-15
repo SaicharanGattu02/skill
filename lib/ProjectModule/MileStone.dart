@@ -106,10 +106,12 @@ class _MileStoneState extends State<MileStone> {
     if (res != null) {
       setState(() {
         if (res.settings?.success == 1) {
-          CustomSnackBar.show(context, "${res.settings?.message}");
+          _isLoading=false;
           Navigator.pop(context);
           GetMileStone();
         } else {
+          _isLoading=false;
+          CustomSnackBar.show(context, "${res.settings?.message}");
           print("PostMilestoneApi");
         }
       });
@@ -123,7 +125,7 @@ class _MileStoneState extends State<MileStone> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000), // Minimum date
+      firstDate:  DateTime.now(),
       lastDate: DateTime(2101), // Maximum date
     );
     if (pickedDate != null) {
@@ -246,6 +248,34 @@ class _MileStoneState extends State<MileStone> {
               ),
               SizedBox(height: 8),
               // Milestones List (Filtered based on search)
+              filteredRooms.isEmpty
+                  ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height*0.24,),
+                    Image.asset(
+                      'assets/nodata1.png', // Make sure to use the correct image path
+                      width:
+                      150, // Adjust the size according to your design
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "No Data Found",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
+                ),
+              )
+
+                  :
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -655,7 +685,6 @@ class _MileStoneState extends State<MileStone> {
                                   : "";
                               deadline =
                               _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
-
                               _isLoading = title.isEmpty && description.isEmpty && deadline.isEmpty;
 
                               if (_isLoading) {
@@ -664,7 +693,6 @@ class _MileStoneState extends State<MileStone> {
                                 }else{
                                   PostMilestoneApi("");
                                 }
-
                               }
                             });
                           },
