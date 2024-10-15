@@ -71,7 +71,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
       }
     });
   }
-
+final spinkit=Spinkits();
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -80,9 +80,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body: _loading
           ? Center(
-        child: CircularProgressIndicator(
-          color: Color(0xff8856F4),
-        ),
+        child:spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))
       )
           : SingleChildScrollView(
         child: Padding(

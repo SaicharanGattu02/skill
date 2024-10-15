@@ -70,6 +70,7 @@ class _ProjectCommentState extends State<ProjectComment> {
           _commentController.text="";
           GetProjectCommentsApi();
         } else {
+          _loading=false;
           CustomSnackBar.show(context,"${res.settings?.message}");
         }
       } else {
@@ -138,6 +139,7 @@ class _ProjectCommentState extends State<ProjectComment> {
   //     print('User canceled the file picking');
   //   }
   // }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -147,10 +149,8 @@ class _ProjectCommentState extends State<ProjectComment> {
       resizeToAvoidBottomInset: true,
       body:
       _loading
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
+          ? Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)),
+            )
           :
       Padding(
               padding: const EdgeInsets.all(16),

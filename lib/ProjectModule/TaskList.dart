@@ -86,7 +86,7 @@ class _TaskListState extends State<TaskList> {
       }
     });
   }
-
+final spinkit=Spinkits();
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +96,7 @@ class _TaskListState extends State<TaskList> {
       body:
       _loading
           ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
+              child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
           :
         SingleChildScrollView(
               child: Padding(
