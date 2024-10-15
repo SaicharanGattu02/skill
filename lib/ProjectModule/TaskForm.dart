@@ -314,16 +314,20 @@ class _TaskFormState extends State<TaskForm> {
           selectedIds,
           File(_imageFile!.path));
     }
-    if (data != null) {
-      if(data.settings.success==1){
-        Navigator.pop(context,true);
-        CustomSnackBar.show(context, "${data.settings.message}");
-      }else{
-        CustomSnackBar.show(context, "${data.settings.message}");
-      }
-    } else {
+    setState(() {
+      _loading = false;
+      if (data != null) {
+        if(data.settings.success==1){
+          Navigator.pop(context,true);
+          CustomSnackBar.show(context, "${data.settings.message}");
+        }else{
+          CustomSnackBar.show(context, "${data.settings.message}");
+        }
+      } else {
 
-    }
+      }
+    });
+
   }
 
   XFile? _imageFile;
@@ -391,7 +395,7 @@ class _TaskFormState extends State<TaskForm> {
         actions: [Container()],
       ),
       body:
-      _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
+      _isLoading?Center(child: spinkits.getFadingCircleSpinner(color: Color(0xff8856F4))):
       Container(
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.all(16),
@@ -1378,7 +1382,7 @@ class _TaskFormState extends State<TaskForm> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
