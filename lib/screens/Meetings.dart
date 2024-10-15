@@ -134,118 +134,146 @@ class _MeetingsState extends State<Meetings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  // Row(
+                  //   children: [
+                  //     Column(
+                  //       mainAxisAlignment: MainAxisAlignment.start,
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Text(
+                  //           "Today",
+                  //           style: TextStyle(
+                  //             fontSize: 16,
+                  //             fontWeight: FontWeight.w400,
+                  //             color: Color(0xff8856F4),
+                  //             height: 19.36 / 16,
+                  //           ),
+                  //         ),
+                  //         Text(
+                  //           DateFormat('MMMM d, y').format(currentMonth),
+                  //           style: const TextStyle(
+                  //             fontSize: 14,
+                  //             fontWeight: FontWeight.w400,
+                  //             color: Color(0xff000000),
+                  //             fontFamily: "Inter",
+                  //             height: 19.36 / 14,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     Spacer(),
+                  //     Image.asset(
+                  //       "assets/sun.png",
+                  //       width: w * 0.05,
+                  //       height: w * 0.04,
+                  //     ),
+                  //     const SizedBox(width: 4),
+                  //     Text(
+                  //       "Now is almost sunny",
+                  //       style: TextStyle(
+                  //         fontFamily: 'Inter',
+                  //         fontSize: 10,
+                  //         color: Color(0xff64748B),
+                  //         height: 16.94 / 10,
+                  //         fontWeight: FontWeight.w400,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(width: 4),
+                  //     Image.asset(
+                  //       "assets/sunn.png",
+                  //       width: 24,
+                  //       height: 24,
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 18),
+                  // SingleChildScrollView(
+                  //   controller: _scrollController,
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: Row(
+                  //     children: List.generate(dates.length, (index) {
+                  //       final isSelected =
+                  //           dates[index].day == selectedDate.day &&
+                  //               dates[index].month == selectedDate.month &&
+                  //               dates[index].year == selectedDate.year;
+                  //
+                  //       return GestureDetector(
+                  //         onTap: () {
+                  //           setState(() {
+                  //             selectedDate = dates[index];
+                  //           });
+                  //           _scrollToSelectedDate();
+                  //         },
+                  //         child: ClipRect(
+                  //           child: Container(
+                  //             padding: const EdgeInsets.symmetric(vertical: 10),
+                  //             width: 55,
+                  //             decoration: BoxDecoration(
+                  //               color: isSelected
+                  //                   ? const Color(0xffF0EAFF)
+                  //                   : Colors.transparent,
+                  //               borderRadius: BorderRadius.circular(16),
+                  //             ),
+                  //             child: Column(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               children: [
+                  //                 Text(
+                  //                   dates[index].day.toString(),
+                  //                   style: TextStyle(
+                  //                     fontSize: 16,
+                  //                     color: isSelected
+                  //                         ? const Color(0xff8856F4)
+                  //                         : const Color(0xff000000),
+                  //                   ),
+                  //                 ),
+                  //                 const SizedBox(height: 2),
+                  //                 Text(
+                  //                   daysOfWeek[dates[index].weekday - 1],
+                  //                   style: const TextStyle(
+                  //                     fontWeight: FontWeight.w400,
+                  //                     color: Color(0xff94A3B8),
+                  //                     fontSize: 12,
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       );
+                  //     }),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child:
+                    meetings.isEmpty
+                        ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "Today",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff8856F4),
-                              height: 19.36 / 16,
-                            ),
+                          SizedBox(height: MediaQuery.of(context).size.height*0.04,),
+                          Image.asset(
+                            'assets/nodata1.png',
+                            width:
+                            150, // Adjust the size according to your design
+                            height: 150,
+                            fit: BoxFit.contain,
                           ),
-                          Text(
-                            DateFormat('MMMM d, y').format(currentMonth),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff000000),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "No Data Found",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
                               fontFamily: "Inter",
-                              height: 19.36 / 14,
                             ),
                           ),
                         ],
                       ),
-                      Spacer(),
-                      Image.asset(
-                        "assets/sun.png",
-                        width: w * 0.05,
-                        height: w * 0.04,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "Now is almost sunny",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: Color(0xff64748B),
-                          height: 16.94 / 10,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Image.asset(
-                        "assets/sunn.png",
-                        width: 24,
-                        height: 24,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(dates.length, (index) {
-                        final isSelected =
-                            dates[index].day == selectedDate.day &&
-                                dates[index].month == selectedDate.month &&
-                                dates[index].year == selectedDate.year;
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedDate = dates[index];
-                            });
-                            _scrollToSelectedDate();
-                          },
-                          child: ClipRect(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              width: 55,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xffF0EAFF)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    dates[index].day.toString(),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: isSelected
-                                          ? const Color(0xff8856F4)
-                                          : const Color(0xff000000),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    daysOfWeek[dates[index].weekday - 1],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff94A3B8),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: ListView.builder(
+                    )
+                        :
+                    ListView.builder(
                       itemCount: meetings.length,
                       itemBuilder: (context, index) {
                         final task = meetings[index];

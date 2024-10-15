@@ -598,7 +598,7 @@ class Userapi {
       print("Image : ${image}");
       final headers = await getheader();
       // Create a multipart request
-      var req = http.MultipartRequest('POST', url)
+      var req = http.MultipartRequest('PUT', url)
         ..headers.addAll(headers)
         ..fields.addAll(body);
 

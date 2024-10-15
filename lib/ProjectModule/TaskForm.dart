@@ -314,13 +314,15 @@ class _TaskFormState extends State<TaskForm> {
           selectedIds,
           File(_imageFile!.path));
     }
+    print("Task data:${data}");
     setState(() {
-      _loading = false;
       if (data != null) {
         if(data.settings.success==1){
+          _loading = false;
           Navigator.pop(context,true);
           CustomSnackBar.show(context, "${data.settings.message}");
         }else{
+          _loading = false;
           CustomSnackBar.show(context, "${data.settings.message}");
         }
       } else {
@@ -395,7 +397,7 @@ class _TaskFormState extends State<TaskForm> {
         actions: [Container()],
       ),
       body:
-      _isLoading?Center(child: spinkits.getFadingCircleSpinner(color: Color(0xff8856F4))):
+      _loading?Center(child: spinkits.getFadingCircleSpinner(color: Color(0xff8856F4))):
       Container(
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.all(16),
@@ -1212,7 +1214,6 @@ class _TaskFormState extends State<TaskForm> {
                 Center(
                   child:
                       _isLoading?spinkits.getFadingCircleSpinner():
-
                   Text(
                     'Save',
                     style: TextStyle(

@@ -14,11 +14,9 @@ class TaskList extends StatefulWidget {
 
   @override
   State<TaskList> createState() => _TaskListState();
-
 }
 
 class _TaskListState extends State<TaskList> {
-
   bool _loading = true;
   final TextEditingController _searchController = TextEditingController();
   List<Data> data = []; // Original list of Data objects
@@ -33,7 +31,6 @@ class _TaskListState extends State<TaskList> {
     _searchController.addListener(filterData); // Add listener for search
     // Simulate fetching data (you can replace this with your API call)
   }
-
 
   void filterData() {
     final query = _searchController.text.toLowerCase();
@@ -59,10 +56,10 @@ class _TaskListState extends State<TaskList> {
         if (Res?.settings?.success == 1) {
           data = Res?.data ?? [];
           filteredData = Res?.data ?? [];
-          _loading=false;
+          _loading = false;
         } else {
-          _loading=false;
-          CustomSnackBar.show(context,Res?.settings?.message??"");
+          _loading = false;
+          CustomSnackBar.show(context, Res?.settings?.message ?? "");
         }
       } else {
         print("Task Failure  ${Res?.settings?.message}");
@@ -71,34 +68,35 @@ class _TaskListState extends State<TaskList> {
   }
 
   Future<void> DelateTask(String id) async {
-    var data = await Userapi.ProjectDelateTask(id);
+    var res = await Userapi.ProjectDelateTask(id);
     setState(() {
-      if (data != null) {
-        if (data.settings?.success == 1) {
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          _loading = true;
+          data=[];
+          filteredData=[];
           GetProjectTasks();
-          _loading=true;
-          CustomSnackBar.show(context, "${data.settings?.message}");
+          CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
-          CustomSnackBar.show(context, "${data.settings?.message}");
+          CustomSnackBar.show(context, "${res.settings?.message}");
         }
       } else {
-        CustomSnackBar.show(context, "${data?.settings?.message}");
+        CustomSnackBar.show(context, "${res?.settings?.message}");
       }
     });
   }
-final spinkit=Spinkits();
+
+  final spinkit = Spinkits();
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body:
-      _loading
+      body: _loading
           ? Center(
               child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
-          :
-        SingleChildScrollView(
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -113,8 +111,7 @@ final spinkit=Spinkits();
                             color: const Color(0xffffffff),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child:
-                          Row(
+                          child: Row(
                             children: [
                               Image.asset(
                                 "assets/search.png",
@@ -123,7 +120,6 @@ final spinkit=Spinkits();
                                 fit: BoxFit.contain,
                               ),
                               const SizedBox(width: 10),
-
                               Expanded(
                                 child: TextField(
                                   controller: _searchController,
@@ -160,8 +156,11 @@ final spinkit=Spinkits();
                               var res = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        TaskForm(title: 'Add Task',projectId: widget.id1,taskid: '',),
+                                    builder: (context) => TaskForm(
+                                      title: 'Add Task',
+                                      projectId: widget.id1,
+                                      taskid: '',
+                                    ),
                                   ));
                               if (res == true) {
                                 setState(() {
@@ -206,195 +205,209 @@ final spinkit=Spinkits();
                     SizedBox(height: 8),
                     filteredData.isEmpty
                         ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: MediaQuery.of(context).size.height*0.24,),
-                          Image.asset(
-                            'assets/nodata1.png', // Make sure to use the correct image path
-                            width:
-                            150, // Adjust the size according to your design
-                            height: 150,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            "No Data Found",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                              fontFamily: "Inter",
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.24,
+                                ),
+                                Image.asset(
+                                  'assets/nodata1.png', // Make sure to use the correct image path
+                                  width:
+                                      150, // Adjust the size according to your design
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No Data Found",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                        :
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics:
-                          NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                      itemCount: filteredData.length,
-                      itemBuilder: (context, index) {
-                        final task = filteredData[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 1),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        color: Color(0xffFFAB00)
-                                            .withOpacity(0.10)),
-                                    child: Text(
-                                      task.status ?? "",
-                                      style: TextStyle(
-                                        color: const Color(0xffFFAB00),
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 12,
-                                        height: 19.41 / 12,
-                                        letterSpacing: 0.14,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontFamily: "Inter",
-                                      ),
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  InkWell( onTap:(){
-                                    DelateTask(task.id??"");
-
-                        },
-                                    child: Image.asset(
-                                      "assets/delate.png",
-                                      fit: BoxFit.contain,
-                                      width: w * 0.04,
-                                      height: w * 0.05,
-                                      color: Color(0xffDE350B),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: w * 0.04,
-                                  ),
-                                  InkWell(onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TaskForm(title:'Edit Task',projectId:widget.id1,taskid:task.id??"")));
-                             
-                                  },
-                                    child: Container(
-                                      child: Image.asset(
-                                        "assets/edit.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.06,
-                                        height: w * 0.05,
-                                        color: Color(0xff8856F4),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                               SizedBox(height: 6),
-                              Text(
-                                task.title ?? "",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff1D1C1D),
-                                  height: 21 / 16,
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics:
+                                NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
+                            itemCount: filteredData.length,
+                            itemBuilder: (context, index) {
+                              final task = filteredData[index];
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                task.description ?? "",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  height: 16 / 12,
-                                  color: Color(0xff787486),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  // Adding the images before the collaborators text
-                                  if (task.assignedToImage != null)
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 4.0),
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          // task.assignedToImage ?? "", // Network image
-                                          task.assignedToImage.toString() ?? "",
-                                          width: 24,
-                                          height: 24,
-                                          fit: BoxFit.cover,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 1),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              color: Color(0xffFFAB00)
+                                                  .withOpacity(0.10)),
+                                          child: Text(
+                                            task.status ?? "",
+                                            style: TextStyle(
+                                              color: const Color(0xffFFAB00),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              height: 19.41 / 12,
+                                              letterSpacing: 0.14,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontFamily: "Inter",
+                                            ),
+                                          ),
                                         ),
+                                        Spacer(),
+                                        InkWell(
+                                          onTap: () {
+                                            DelateTask(task.id ?? "");
+                                          },
+                                          child: Image.asset(
+                                            "assets/delate.png",
+                                            fit: BoxFit.contain,
+                                            width: w * 0.04,
+                                            height: w * 0.05,
+                                            color: Color(0xffDE350B),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: w * 0.04,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        TaskForm(
+                                                            title: 'Edit Task',
+                                                            projectId:
+                                                                widget.id1,
+                                                            taskid: task.id ??
+                                                                "")));
+                                          },
+                                          child: Container(
+                                            child: Image.asset(
+                                              "assets/edit.png",
+                                              fit: BoxFit.contain,
+                                              width: w * 0.06,
+                                              height: w * 0.05,
+                                              color: Color(0xff8856F4),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      task.title ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff1D1C1D),
+                                        height: 21 / 16,
                                       ),
                                     ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    "+6 Collaborators",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xff64748B),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      task.description ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        height: 16 / 12,
+                                        color: Color(0xff787486),
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Start Date: ",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff64748B),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        // Adding the images before the collaborators text
+                                        if (task.assignedToImage != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 4.0),
+                                            child: ClipOval(
+                                              child: Image.network(
+                                                // task.assignedToImage ?? "", // Network image
+                                                task.assignedToImage
+                                                        .toString() ??
+                                                    "",
+                                                width: 24,
+                                                height: 24,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "+6 Collaborators",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Text(
-                                    task.startDate ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff64748B),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Start Date: ",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                        Text(
+                                          task.startDate ?? "",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        const Text(
+                                          "End Date: ",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                        Text(
+                                          task.endDate ?? "25/09/2024",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  const Spacer(),
-                                  const Text(
-                                    "End Date: ",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff64748B),
-                                    ),
-                                  ),
-                                  Text(
-                                    task.endDate ?? "25/09/2024",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff64748B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),

@@ -671,9 +671,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                   validatecomment = _commentController.text.isEmpty
                       ? "Please enter comment"
                       : "";
-                  _validatefile = _imageList.length == 0 ? "Please select a file" : "";
-                   _loading =
-                      validatecomment.isEmpty && _validatefile.isEmpty;
+                  // _validatefile = _imageList.length == 0 ? "Please select a file" : "";
+                   _loading = validatecomment.isEmpty;
                   if (_loading) {
                     SendComments();
                   } else {
