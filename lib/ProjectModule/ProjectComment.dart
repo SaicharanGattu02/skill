@@ -23,7 +23,7 @@ class ProjectComment extends StatefulWidget {
 class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
   bool _loading = true;
-  final spinkit=Spinkits();
+  final spinkit = Spinkits();
 
   XFile? _imageFile;
   File? filepath;
@@ -42,39 +42,56 @@ class _ProjectCommentState extends State<ProjectComment> {
   Future<void> GetProjectCommentsApi() async {
     var res = await Userapi.GetProjectComments(widget.id);
     setState(() {
-
       if (res != null) {
-        _loading=false;
-        if (res.settings?.success==1) {
-
+        _loading = false;
+        if (res.settings?.success == 1) {
           data = res.data ?? [];
         } else {
-
-          CustomSnackBar.show(context,res.settings?.message??"");
+          CustomSnackBar.show(context, res.settings?.message ?? "");
         }
       } else {
-        _loading=false;
+        _loading = false;
         print("not fetch");
       }
     });
   }
 
+  Future<void> DelateApi(id) async {
+    var res = await Userapi.ProjectDelateComments(id);
+    if (res != null) {
+      setState(() {
+        if (res.settings?.success == 1) {
+          _loading=true;
+          data = [];
+          GetProjectCommentsApi();
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }
+      });
+    } else {
+      print("ProjectDelateComments >>>${res?.settings?.message}");
+      CustomSnackBar.show(context, "${res?.settings?.message}");
+    }
+  }
+
   Future<void> SendComments() async {
-    var res = await Userapi.sendComment(_commentController.text,widget.id,_imageList);
+    var res = await Userapi.sendComment(
+        _commentController.text, widget.id, _imageList);
     setState(() {
       if (res != null) {
-        _loading=false;
+        _loading = false;
         if (res.data != null) {
-          CustomSnackBar.show(context,"${res.settings?.message}");
-          _imageList=[];
-          _commentController.text="";
+          CustomSnackBar.show(context, "${res.settings?.message}");
+          _imageList = [];
+          _commentController.text = "";
           GetProjectCommentsApi();
         } else {
-          _loading=false;
-          CustomSnackBar.show(context,"${res.settings?.message}");
+          _loading = false;
+          CustomSnackBar.show(context, "${res.settings?.message}");
         }
       } else {
-        _loading=false;
+        _loading = false;
         print("not fetch");
       }
     });
@@ -147,12 +164,11 @@ class _ProjectCommentState extends State<ProjectComment> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       resizeToAvoidBottomInset: true,
-      body:
-      _loading
-          ? Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)),
+      body: _loading
+          ? Center(
+              child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)),
             )
-          :
-      Padding(
+          : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -430,7 +446,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                     ),
                                   ),
                                 ),
-                              ]else...[
+                              ] else ...[
                                 Center(
                                   child: Text(
                                     'No File Chosen',
@@ -443,7 +459,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                                   ),
                                 ),
                               ],
-
                             ],
                           ),
                         ),
@@ -477,160 +492,189 @@ class _ProjectCommentState extends State<ProjectComment> {
                     height: 8,
                   ),
                   Expanded(
-                    child:
-                    data.isEmpty
+                    child: data.isEmpty
                         ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: MediaQuery.of(context).size.height*0.1,),
-                          Image.asset(
-                            'assets/nodata1.png', // Make sure to use the correct image path
-                            width:
-                            150, // Adjust the size according to your design
-                            height: 150,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            "No Data Found",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                              fontFamily: "Inter",
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-
-                        :
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final comments = data[index];
-
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Display user image and name
-                              Row(
-                                children: [
-                                  if (comments.commentByImage != null)
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 4.0),
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          comments.commentByImage ?? "",
-                                          width: w * 0.08,
-                                          height: w * 0.08,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  SizedBox(
-                                    width: w * 0.01,
-                                  ),
-                                  Text(
-                                    comments.commentBy ?? "",
-                                    style: TextStyle(
-                                      color: Color(0xff000000),
-                                      fontFamily: 'Inter',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      height: 18.36 / 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                comments.comment ?? "",
-                                style: TextStyle(
-                                  color: Color(0xff6C848F),
-                                  fontFamily: 'Inter',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  height: 20 / 14,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
                                 ),
-                              ),
-                              SizedBox(height: 20),
-                              if (comments.commentFiles != null &&
-                                  comments.commentFiles!.isNotEmpty)
-                                Row(
+                                Image.asset(
+                                  'assets/nodata1.png', // Make sure to use the correct image path
+                                  width:
+                                      150, // Adjust the size according to your design
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No Data Found",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              final comments = data[index];
+
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      height: 30,
-                                      width: 30,
-                                      padding: EdgeInsets.all(7),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffF5E6FE),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Image.asset(
-                                        "assets/gallery.png",
-                                        fit: BoxFit.contain,
-                                        color: Color(0xffBE63F9),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      width: w * 0.45,
-                                      child: Text(
-                                        comments.commentFiles![0].fileName ??
-                                            "",
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          height: 21.78 / 15,
-                                          color: Color(0xff1D1C1D),
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Inter',
+                                    // Display user image and name
+                                    Row(
+                                      children: [
+                                        if (comments.commentByImage != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 4.0),
+                                            child: ClipOval(
+                                              child: Image.network(
+                                                comments.commentByImage ?? "",
+                                                width: w * 0.08,
+                                                height: w * 0.08,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+
+                                        SizedBox(
+                                          width: w * 0.01,
                                         ),
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        _showBottomSheet(
-                                            context,
-                                            comments.commentFiles!,
-                                            comments.createdTime,
-                                            comments.comment);
-                                      },
-                                      child: Text(
-                                        "Click to view",
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          height: 16.94 / 14,
-                                          color: Color(0xff8856F4),
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Inter',
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: Color(0xff8856F4),
+                                        Text(
+                                          comments.commentBy ?? "",
+                                          style: TextStyle(
+                                            color: Color(0xff000000),
+                                            fontFamily: 'Inter',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            height: 18.36 / 16,
+                                          ),
                                         ),
+                                        Spacer(),
+                                        InkWell(
+                                          onTap: () {
+                                            DelateApi(comments.id);
+                                          },
+                                          child: Image.asset(
+                                            "assets/delete_icon.png",
+                                            fit: BoxFit.contain,
+                                            width: w * 0.06,
+                                            height: w * 0.045,
+                                          ),
+                                        ),
+                                        // SizedBox(
+                                        //   width: w * 0.025,
+                                        // ),
+                                        // Image.asset(
+                                        //   "assets/download.png",
+                                        //   fit: BoxFit.contain,
+                                        //   width: w * 0.06,
+                                        //   height: w * 0.05,
+                                        //   color: Color(0xff8856F4),
+                                        // ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      comments.comment ?? "",
+                                      style: TextStyle(
+                                        color: Color(0xff6C848F),
+                                        fontFamily: 'Inter',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        height: 20 / 14,
                                       ),
                                     ),
+                                    SizedBox(height: 20),
+                                    if (comments.commentFiles != null &&
+                                        comments.commentFiles!.isNotEmpty)
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 30,
+                                            width: 30,
+                                            padding: EdgeInsets.all(7),
+                                            decoration: BoxDecoration(
+                                              color: Color(0xffF5E6FE),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Image.asset(
+                                              "assets/gallery.png",
+                                              fit: BoxFit.contain,
+                                              color: Color(0xffBE63F9),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            width: w * 0.45,
+                                            child: Text(
+                                              comments.commentFiles![0]
+                                                      .fileName ??
+                                                  "",
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                height: 21.78 / 15,
+                                                color: Color(0xff1D1C1D),
+                                                fontWeight: FontWeight.w500,
+                                                fontFamily: 'Inter',
+                                              ),
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _showBottomSheet(
+                                                  context,
+                                                  comments.commentFiles!,
+                                                  comments.createdTime,
+                                                  comments.comment);
+                                            },
+                                            child: Text(
+                                              "Click to view",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                height: 16.94 / 14,
+                                                color: Color(0xff8856F4),
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Inter',
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationColor:
+                                                    Color(0xff8856F4),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                   ],
                                 ),
-                            ],
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -667,17 +711,14 @@ class _ProjectCommentState extends State<ProjectComment> {
             InkResponse(
               onTap: () {
                 setState(() {
-
                   validatecomment = _commentController.text.isEmpty
                       ? "Please enter comment"
                       : "";
                   // _validatefile = _imageList.length == 0 ? "Please select a file" : "";
-                   _loading = validatecomment.isEmpty;
+                  _loading = validatecomment.isEmpty;
                   if (_loading) {
                     SendComments();
-                  } else {
-
-                  }
+                  } else {}
                 });
               },
               child: Container(
@@ -692,17 +733,17 @@ class _ProjectCommentState extends State<ProjectComment> {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(
-                  child:
-                  _loading?spinkit.getFadingCircleSpinner():
-                  Text(
-                    'Submit',
-                    style: TextStyle(
-                      color: Color(0xffffffff),
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
+                  child: _loading
+                      ? spinkit.getFadingCircleSpinner()
+                      : Text(
+                          'Submit',
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -871,115 +912,93 @@ class _ProjectCommentState extends State<ProjectComment> {
                           )
                         : Container(), // Show empty container if no image is selected
                   ),
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Image.asset(
-                        "assets/delete_icon.png",
-                        fit: BoxFit.contain,
-                        width: w * 0.06,
-                        height: w * 0.045,
-                      ),
-                      SizedBox(
-                        width: w * 0.025,
-                      ),
-                      Image.asset(
-                        "assets/download.png",
-                        fit: BoxFit.contain,
-                        width: w * 0.06,
-                        height: w * 0.05,
-                        color: Color(0xff8856F4),
-                      ),
-                    ],
-                  ),
 
-                  Spacer(),
-                  Positioned(
-                    bottom: 0,
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: w * 0.43,
-                          decoration: BoxDecoration(
-                            color: Color(0xffF8FCFF),
-                            border: Border.all(
-                              color: Color(0xff8856F4),
-                              width: 1.0,
-                            ),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/conatainer_close.png",
-                                fit: BoxFit.contain,
-                                width: w * 0.06,
-                                height: w * 0.05,
-                                color: Color(0xff8856F4),
-                              ),
-                              SizedBox(
-                                width: 0.02,
-                              ),
-                              Text(
-                                'Close',
-                                style: TextStyle(
-                                  color: Color(0xff8856F4),
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        InkResponse(
-                          onTap: () {
-                            // _validateFields();
-                          },
-                          child: Container(
-                            height: 40,
-                            width: w * 0.43,
-                            decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              border: Border.all(
-                                color: Color(0xff8856F4),
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/container_correct.png",
-                                  fit: BoxFit.contain,
-                                  width: w * 0.06,
-                                  height: w * 0.05,
-                                ),
-                                SizedBox(
-                                  width: 0.01,
-                                ),
-                                _loading?spinkit.getFadingCircleSpinner():
-                                Text(
-                                  'Okay',
-                                  style: TextStyle(
-                                    color: Color(0xffffffff),
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: 'Inter',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Spacer(),
+                  // Positioned(
+                  //   bottom: 0,
+                  //   child: Row(
+                  //     children: [
+                  //       Container(
+                  //         height: 40,
+                  //         width: w * 0.43,
+                  //         decoration: BoxDecoration(
+                  //           color: Color(0xffF8FCFF),
+                  //           border: Border.all(
+                  //             color: Color(0xff8856F4),
+                  //             width: 1.0,
+                  //           ),
+                  //           borderRadius: BorderRadius.circular(7),
+                  //         ),
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           children: [
+                  //             Image.asset(
+                  //               "assets/conatainer_close.png",
+                  //               fit: BoxFit.contain,
+                  //               width: w * 0.06,
+                  //               height: w * 0.05,
+                  //               color: Color(0xff8856F4),
+                  //             ),
+                  //             SizedBox(
+                  //               width: 0.02,
+                  //             ),
+                  //             Text(
+                  //               'Close',
+                  //               style: TextStyle(
+                  //                 color: Color(0xff8856F4),
+                  //                 fontSize: 16.0,
+                  //                 fontWeight: FontWeight.w400,
+                  //                 fontFamily: 'Inter',
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       Spacer(),
+                  //       InkResponse(
+                  //         onTap: () {
+                  //           // _validateFields();
+                  //         },
+                  //         child: Container(
+                  //           height: 40,
+                  //           width: w * 0.43,
+                  //           decoration: BoxDecoration(
+                  //             color: Color(0xff8856F4),
+                  //             border: Border.all(
+                  //               color: Color(0xff8856F4),
+                  //               width: 1.0,
+                  //             ),
+                  //             borderRadius: BorderRadius.circular(7),
+                  //           ),
+                  //           child: Row(
+                  //             mainAxisAlignment: MainAxisAlignment.center,
+                  //             children: [
+                  //               Image.asset(
+                  //                 "assets/container_correct.png",
+                  //                 fit: BoxFit.contain,
+                  //                 width: w * 0.06,
+                  //                 height: w * 0.05,
+                  //               ),
+                  //               SizedBox(
+                  //                 width: 0.01,
+                  //               ),
+                  //               _loading?spinkit.getFadingCircleSpinner():
+                  //               Text(
+                  //                 'Okay',
+                  //                 style: TextStyle(
+                  //                   color: Color(0xffffffff),
+                  //                   fontSize: 16.0,
+                  //                   fontWeight: FontWeight.w400,
+                  //                   fontFamily: 'Inter',
+                  //                 ),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             );

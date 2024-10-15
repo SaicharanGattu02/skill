@@ -129,7 +129,7 @@ class _MileStoneState extends State<MileStone> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000), // Minimum date
+      firstDate:DateTime.now(), // Minimum date
       lastDate: DateTime(2101), // Maximum date
     );
     if (pickedDate != null) {

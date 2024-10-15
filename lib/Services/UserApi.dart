@@ -870,6 +870,24 @@ class Userapi {
     }
   }
 
+  static Future<LoginModel?> ProjectDelateComments(id) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/project/project-comment-detail/${id}");
+      final res = await http.delete(url, headers: headers);
+      if (res != null) {
+        print("ProjectDelateComments Response:${res.body}");
+        return LoginModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
   static Future<LoginModel?> ProjectDelateTask(id) async {
     try {
       final headers = await getheader();

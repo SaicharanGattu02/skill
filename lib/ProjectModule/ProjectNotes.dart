@@ -143,16 +143,13 @@ class _ProjectNotesState extends State<ProjectNotes> {
   }
 
   Future<void> DelateApi(String id) async {
-    setState(() {
-      _isLoading = true;
-    });
 
     var res = await Userapi.ProjectDelateNotes(id);
 
     if (res != null) {
       setState(() {
         _isLoading=false;
-        if (res.settings == 1) {
+        if (res.settings?.success == 1) {
           GetNote();
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {

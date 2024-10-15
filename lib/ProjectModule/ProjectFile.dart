@@ -771,27 +771,37 @@ class _ProjectFileState extends State<ProjectFile> {
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "assets/calendar.png",
-                                      fit: BoxFit.contain,
-                                      width: w * 0.06,
-                                      height: w * 0.05,
-                                      color: Color(0xff6C848F),
-                                    ),
-                                    SizedBox(
-                                      width: w * 0.004,
-                                    ),
                                     Text(
-                                      " ${formattedDate}",
-                                      style: TextStyle(
-                                        color: const Color(0xff1D1C1D),
+                                      projectcatagory.name ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        height: 16 / 14,
+                                        color: Color(0xff1D1C1D),
                                         fontWeight: FontWeight.w400,
-                                        fontSize: 15,
-                                        height: 19.41 / 15,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontFamily: "Inter",
+                                        fontFamily: 'Inter',
                                       ),
                                     ),
+                                    // Image.asset(
+                                    //   "assets/calendar.png",
+                                    //   fit: BoxFit.contain,
+                                    //   width: w * 0.06,
+                                    //   height: w * 0.05,
+                                    //   color: Color(0xff6C848F),
+                                    // ),
+                                    // SizedBox(
+                                    //   width: w * 0.004,
+                                    // ),
+                                    // Text(
+                                    //   " ${formattedDate}",
+                                    //   style: TextStyle(
+                                    //     color: const Color(0xff1D1C1D),
+                                    //     fontWeight: FontWeight.w400,
+                                    //     fontSize: 15,
+                                    //     height: 19.41 / 15,
+                                    //     overflow: TextOverflow.ellipsis,
+                                    //     fontFamily: "Inter",
+                                    //   ),
+                                    // ),
                                     Spacer(),
                                     InkWell(
                                       onTap: () {
@@ -809,11 +819,12 @@ class _ProjectFileState extends State<ProjectFile> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                                // const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+
                                     // Container(
                                     //   height: 30,
                                     //   width: 30,
@@ -848,17 +859,8 @@ class _ProjectFileState extends State<ProjectFile> {
                                         //     ),
                                         //   ),
                                         // ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          projectcatagory.name ?? "",
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            height: 16 / 14,
-                                            color: Color(0xff1D1C1D),
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'Inter',
-                                          ),
-                                        ),
+                                        // const SizedBox(height: 10),
+
                                         // const SizedBox(height: 10),
                                         // Row(
                                         //   children: [
@@ -1390,7 +1392,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             ),
                             child: Center(
                               child:
-                              // _isLoading?spinkit.getFadingCircleSpinner():
+                              _isLoading?spinkit.getFadingCircleSpinner():
                               Text(
                                 'Save',
                                 style: TextStyle(

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Leave.dart';
@@ -1074,10 +1075,10 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Task()));
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => Task()));
                                   },
                                   child: Column(
                                     children: [
