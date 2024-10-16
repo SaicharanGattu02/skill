@@ -217,6 +217,15 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  Future<void>Notifyuser(String id) async {
+    var res = await Userapi.notifyUser(id);
+    setState(() {
+      if (res != null) {
+
+      }
+    });
+  }
+
   Future<void> _requestLocationPermission() async {
     var status = await Permission.location.request();
     if (status.isDenied) {
@@ -1352,7 +1361,7 @@ class _DashboardState extends State<Dashboard> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
+                        Expanded(
                           child: Text(
                             employee.fullName ?? "",
                             style: const TextStyle(
@@ -1364,13 +1373,17 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Image.asset(
-                          "assets/notify.png",
-                          fit: BoxFit.contain,
-                          width: 24,
-                          height: 24,
-                          color: Color(0xffFFFFFF).withOpacity(0.7),
+                        InkResponse(
+                          onTap:() async {
+                            Notifyuser(employee.id??"");
+                          },
+                          child: Image.asset(
+                            "assets/notify.png",
+                            fit: BoxFit.contain,
+                            width: 24,
+                            height: 24,
+                            color: Color(0xffFFFFFF).withOpacity(0.7),
+                          ),
                         ),
 
                       ],
@@ -1534,40 +1547,40 @@ class _DashboardState extends State<Dashboard> {
             //     ],
             //   ),
             // ),
-            Container(
-              padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
-              child: Row(
-                children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: Color(0xffFFFFFF1A).withOpacity(0.10),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/add.png",
-                        fit: BoxFit.contain,
-                        height: 9,
-                        width: 9,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    "Add channels",
-                    style: const TextStyle(
-                      color: Color(0xffFFFFFF),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         width: 20,
+            //         height: 20,
+            //         decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(4),
+            //           color: Color(0xffFFFFFF1A).withOpacity(0.10),
+            //         ),
+            //         child: Center(
+            //           child: Image.asset(
+            //             "assets/add.png",
+            //             fit: BoxFit.contain,
+            //             height: 9,
+            //             width: 9,
+            //           ),
+            //         ),
+            //       ),
+            //       SizedBox(width: 8),
+            //       Text(
+            //         "Add channels",
+            //         style: const TextStyle(
+            //           color: Color(0xffFFFFFF),
+            //           fontWeight: FontWeight.w400,
+            //           fontSize: 14,
+            //           overflow: TextOverflow.ellipsis,
+            //           fontFamily: "Inter",
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/ForgotPassword.dart';
 import 'package:skill/screens/PersnalInformation.dart';
@@ -28,6 +31,8 @@ class _LogInScreenState extends State<LogInScreen> {
   // String token="";
   String _validateEmail = "";
   String _validatePassword = "";
+  String fcm_token="";
+  String tokentype="";
   @override
   void dispose() {
     _focusNodeEmail.dispose();
@@ -38,8 +43,23 @@ class _LogInScreenState extends State<LogInScreen> {
 
   final spinkit=Spinkits();
   Future<void> LoginApi() async {
-    final fcm_token = await PreferenceService().getString("fbstoken") ?? "";
-    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text);
+    if (Platform.isAndroid) {
+      FirebaseMessaging.instance.getToken().then((value) {
+        fcm_token = value!;
+        tokentype = "android_token";
+        print("Androidfbstoken:{$fcm_token} ");
+        PreferenceService().saveString("fbstoken", fcm_token!);
+        // toast(BuildContext , token);
+      });
+    } else {
+      FirebaseMessaging.instance.getToken().then((value) {
+        fcm_token = value!;
+        tokentype = "ios_token";
+        print("IOSfbstoken:{$fcm_token}");
+        PreferenceService().saveString("fbstoken", fcm_token!);
+      });
+    }
+    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text,fcm_token,tokentype);
     if (data != null) {
       setState(() {
         if (data.settings?.success == 1) {

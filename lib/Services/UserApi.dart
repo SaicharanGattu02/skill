@@ -44,8 +44,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  // static String host = "http://192.168.0.56:8000";
-  static String host = "https://stage.skil.in";
+  static String host = "http://192.168.0.56:8000";
+  // static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
@@ -79,12 +79,15 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> PostLogin(String mail, String password) async {
+  static Future<LoginModel?> PostLogin(String mail, String password,String fcm_token,String token_type) async {
     try {
       Map<String, String> data = {
         "email": mail,
         "password": password,
+        "fcm_token": fcm_token,
+        "token_type": token_type
       };
+      print("PostLogin data:${data}");
       final url = Uri.parse("${host}/auth/login");
       final response = await http.post(
         url,
@@ -1474,46 +1477,6 @@ class Userapi {
     }
   }
 
-
-  // Future<LoginModel?> UpdateUserDetails(String fullname, String phonenumber, String email, File image) async {
-  //   final url = Uri.parse('$host/auth/user-detail');
-  //   final headers = await getheader(); // Ensure this returns the correct authorization headers
-  //
-  //   var request = http.MultipartRequest('PUT', url)
-  //     ..headers.addAll(headers) // Add headers to the request
-  //     ..fields['full_name'] = fullname
-  //     ..fields['mobile'] = phonenumber;
-  //
-  //   // Add the selected image file
-  //   if (image != null) {
-  //     request.files.add(await http.MultipartFile.fromPath(
-  //       'image',
-  //       image.path,
-  //       filename: p.basename(image.path),
-  //     ));
-  //   }
-  //
-  //   try {
-  //     var response = await request.send();
-  //
-  //     final responseBody = await response.stream.bytesToString();
-  //
-  //     if (response.statusCode == 200) {
-  //       final jsonResponse = jsonDecode(responseBody);
-  //       print("UpdateUserDetails response: $responseBody");
-  //       return LoginModel.fromJson(jsonResponse); // Parse response into LoginModel
-  //     } else {
-  //       print('Failed to update user details: ${response.statusCode}');
-  //       print('Response body: $responseBody');
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  //
-  //   return null; // Return null if there's an error or failure
-  // }
-
-
   static Future<LoginModel?> UpdateUserDetails(
       String fullname, String phonenumber, File? image) async {
     String? mimeType; // Declare mimeType outside the condition
@@ -1571,6 +1534,24 @@ class Userapi {
     } catch (e) {
       print("Error occurred: $e");
       return null;
+    }
+  }
+
+  static Future<LoginModel?> notifyUser(String id) async {
+    final url = '${host}/dashboard/notify-user/$id';
+    final headers = await getheader();
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+        // Handle successful response
+        print('Response data: ${response.body}');
+      } else {
+        // Handle error response
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle exception
+      print('Exception: $e');
     }
   }
 
