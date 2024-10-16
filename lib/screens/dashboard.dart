@@ -29,6 +29,7 @@ import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
+import 'package:http/http.dart' as http;
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -81,6 +82,27 @@ class _DashboardState extends State<Dashboard> {
     GetRoomsList();
     GetProjectsData();
     super.initState();
+  }
+
+  Future<void> fetchWeather() async {
+    final lat = 17.4563197;
+    final lon = 78.3728344;
+    final apiKey = '5ea9806af0bf37b08dab840ff3b70c5b';
+    final url = 'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final data = json.decode(response.body);
+        print('Weather data: $data');
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
   }
 
   @override

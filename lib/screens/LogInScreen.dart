@@ -43,42 +43,52 @@ class _LogInScreenState extends State<LogInScreen> {
 
   final spinkit=Spinkits();
   Future<void> LoginApi() async {
+    // Variable to store FCM token
+    String? fcm_token;
+    String tokentype = "";
+
+    // Retrieve FCM token based on the platform
     if (Platform.isAndroid) {
-      FirebaseMessaging.instance.getToken().then((value) {
-        fcm_token = value!;
-        tokentype = "android_token";
-        print("Androidfbstoken:{$fcm_token} ");
-        PreferenceService().saveString("fbstoken", fcm_token!);
-        // toast(BuildContext , token);
-      });
+      fcm_token = await FirebaseMessaging.instance.getToken();
+      tokentype = "android_token";
+      print("Android FCM token: $fcm_token");
     } else {
-      FirebaseMessaging.instance.getToken().then((value) {
-        fcm_token = value!;
-        tokentype = "ios_token";
-        print("IOSfbstoken:{$fcm_token}");
-        PreferenceService().saveString("fbstoken", fcm_token!);
-      });
+      fcm_token = await FirebaseMessaging.instance.getToken();
+      tokentype = "ios_token";
+      print("iOS FCM token: $fcm_token");
     }
-    var data = await Userapi.PostLogin(_emailController.text, _passwordController.text,fcm_token,tokentype);
-    if (data != null) {
-      setState(() {
-        if (data.settings?.success == 1) {
+
+    // Check if FCM token is not empty
+    if (fcm_token != null && fcm_token.isNotEmpty) {
+      // Save FCM token
+      PreferenceService().saveString("fbstoken", fcm_token);
+
+      // Proceed with login API call
+      var data = await Userapi.PostLogin(_emailController.text, _passwordController.text, fcm_token, tokentype);
+
+      if (data != null) {
+        setState(() {
           _loading = false;
-          PreferenceService().saveString("token", data.data?.access ?? "");
-          CustomSnackBar.show(context, "${data.settings?.message}");
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Dashboard()));
-        } else {
-          _loading = false;
-          print("Login failure");
-          CustomSnackBar.show(context, "${data.settings?.message}");
-        }
-      });
+          if (data.settings?.success == 1) {
+            PreferenceService().saveString("token", data.data?.access ?? "");
+            CustomSnackBar.show(context, "${data.settings?.message}");
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Dashboard()));
+          } else {
+            print("Login failure");
+            CustomSnackBar.show(context, "${data.settings?.message}");
+          }
+        });
+      } else {
+        print("Login >>>${data?.settings?.message}");
+        CustomSnackBar.show(context, "${data?.settings?.message}");
+      }
     } else {
-      print("Login >>>${data?.settings?.message}");
-      CustomSnackBar.show(context, "${data?.settings?.message}");
+      print("FCM token is empty");
+      CustomSnackBar.show(context, "Failed to retrieve FCM token. Please try again.");
     }
   }
+
 
   @override
   void initState() {
