@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -34,6 +35,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final AudioPlayer audioPlayer = AudioPlayer();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -158,7 +160,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(
             create: (context) =>
-                ThemeProvider(darkTheme)), // Set initial theme
+                ThemeProvider(lightTheme)), // Set initial theme
         // Add other providers here as needed
       ],
       child: MyApp(),
@@ -169,11 +171,13 @@ Future<void> main() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   // print('A Background message just showed up :  ${message.data}');
+  await audioPlayer.play(AssetSource('assets/sounds/bell_sound.mp3')); // Corrected line
 }
 
 // Function to display local notifications
 void showNotification(RemoteNotification notification,
     AndroidNotification android, Map<String, dynamic> data) async {
+  await audioPlayer.play(AssetSource('assets/sounds/bell_sound.mp3')); // Corrected line
   AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
     'your_channel_id', // Your channel ID
