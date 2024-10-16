@@ -28,7 +28,6 @@ import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
-import 'CropImageScreen.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
@@ -375,7 +374,7 @@ class _DashboardState extends State<Dashboard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CropImageScreen(title:"Crop image",)));
+                              builder: (context) => Notifications()));
                     },
                     child: Container(
                       width:
@@ -448,7 +447,7 @@ class _DashboardState extends State<Dashboard> {
                                 width: 30,
                                 height: 30,
                               ),
-                              SizedBox(width: 15,),
+                              SizedBox(width: 10,),
                               Text(
                                 mainWeatherStatus,
                                 style: TextStyle(

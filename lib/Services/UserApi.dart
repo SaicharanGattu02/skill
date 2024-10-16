@@ -44,8 +44,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  static String host = "http://192.168.0.56:8000";
-  // static String host = "https://stage.skil.in";
+  // static String host = "http://192.168.0.56:8000";
+  static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
