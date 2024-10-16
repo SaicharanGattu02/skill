@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
@@ -27,6 +28,7 @@ import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
+import 'CropImageScreen.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
@@ -72,11 +74,13 @@ class _DashboardState extends State<Dashboard> {
   String userid = "";
   List<Rooms> rooms = [];
   String selectedEmployee = "";
+  String mainWeatherStatus = "";
   final spinkit = Spinkits();
 
   @override
   void initState() {
     GetEmployeeData();
+    fetchWeather();
     _requestLocationPermission();
     GetUserDeatails();
     GetRoomsList();
@@ -88,18 +92,24 @@ class _DashboardState extends State<Dashboard> {
     final lat = 17.4563197;
     final lon = 78.3728344;
     final apiKey = '5ea9806af0bf37b08dab840ff3b70c5b';
-    final url = 'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey';
-
+    final url =
+        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey';
     try {
       final response = await http.get(Uri.parse(url));
+      setState(() {
+        if (response.statusCode == 200) {
+          // Parse the JSON response
+          final data = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        // Parse the JSON response
-        final data = json.decode(response.body);
-        print('Weather data: $data');
-      } else {
-        print('Error: ${response.statusCode}');
-      }
+          // Extract the main weather status
+          mainWeatherStatus = data['weather'][0]['main'];
+
+          // Print the extracted status
+          print('Main weather status: $mainWeatherStatus');
+        } else {
+          print('Error: ${response.statusCode}');
+        }
+      });
     } catch (e) {
       print('Exception: $e');
     }
@@ -239,12 +249,10 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Future<void>Notifyuser(String id) async {
+  Future<void> Notifyuser(String id) async {
     var res = await Userapi.notifyUser(id);
     setState(() {
-      if (res != null) {
-
-      }
+      if (res != null) {}
     });
   }
 
@@ -308,6 +316,7 @@ class _DashboardState extends State<Dashboard> {
     GetUserDeatails();
     GetRoomsList();
     GetProjectsData();
+    fetchWeather();
     setState(() {
       employeeData = [];
       _loading = true;
@@ -319,6 +328,8 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MMMM d, y').format(now);
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -364,7 +375,7 @@ class _DashboardState extends State<Dashboard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Notifications()));
+                              builder: (context) => CropImageScreen(title:"Crop image",)));
                     },
                     child: Container(
                       width:
@@ -423,26 +434,35 @@ class _DashboardState extends State<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Search \nApril 23,2024",
+                            "Today \n$formattedDate",
                             style: TextStyle(
-                                color: Color(0xff9E7BCA),
+                                color: Colors.black,
                                 fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                fontFamily: "Nunito"),
+                                fontSize: 14,
+                                fontFamily: "Inter"),
                           ),
-
                           Row(
                             children: [
-                              Image.asset("assets/sun1.png",width: 30,height: 30,),
-                              Text(
-                                "Search April 23,2024",
-                                style: TextStyle(
-                                    color: Color(0xff9E7BCA),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                    fontFamily: "Nunito"),
+                              Image.asset(
+                                "assets/sun1.png",
+                                width: 30,
+                                height: 30,
                               ),
-                              Image.asset("assets/sun2.png",width: 30,height: 30,),
+                              SizedBox(width: 15,),
+                              Text(
+                                mainWeatherStatus,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                    fontFamily: "Inter"),
+                              ),
+                              SizedBox(width: 10,),
+                              // Image.asset(
+                              //   "assets/sun2.png",
+                              //   width: 25,
+                              //   height: 25,
+                              // ),
                             ],
                           )
                         ],
@@ -1379,8 +1399,7 @@ class _DashboardState extends State<Dashboard> {
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(employee.image ?? ""),
                     ),
-                    title:
-                    Row(
+                    title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
@@ -1396,8 +1415,8 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ),
                         InkResponse(
-                          onTap:() async {
-                            Notifyuser(employee.id??"");
+                          onTap: () async {
+                            Notifyuser(employee.id ?? "");
                           },
                           child: Image.asset(
                             "assets/notify.png",
@@ -1407,7 +1426,6 @@ class _DashboardState extends State<Dashboard> {
                             color: Color(0xffFFFFFF).withOpacity(0.7),
                           ),
                         ),
-
                       ],
                     ),
                     onTap: () async {

@@ -103,13 +103,13 @@ Future<void> main() async {
     carPlay: false,
     criticalAlert: false,
     provisional: false,
-    sound: true,
+    sound: false,
   );
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
-    sound: true,
+    sound: false,
   );
 
   await flutterLocalNotificationsPlugin
@@ -171,21 +171,21 @@ Future<void> main() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   // print('A Background message just showed up :  ${message.data}');
-  await audioPlayer.play(AssetSource('assets/sounds/bell_sound.mp3')); // Corrected line
+  await audioPlayer.play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
 }
 
 // Function to display local notifications
 void showNotification(RemoteNotification notification,
     AndroidNotification android, Map<String, dynamic> data) async {
-  await audioPlayer.play(AssetSource('assets/sounds/bell_sound.mp3')); // Corrected line
+  await audioPlayer.play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
   AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
     'your_channel_id', // Your channel ID
     'your_channel_name', // Your channel name
     importance: Importance.max,
     priority: Priority.high,
-    playSound: true,
-    icon: '@mipmap/ic_launcher',
+    playSound: false,
+    icon: '@mipmap/skillicon',
   );
   NotificationDetails platformChannelSpecifics =
       NotificationDetails(android: androidPlatformChannelSpecifics);

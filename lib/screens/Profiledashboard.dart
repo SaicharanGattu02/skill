@@ -1,6 +1,8 @@
 
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/utils/CustomAppBar.dart';
@@ -15,6 +17,14 @@ class ProfileUpdateScreen extends StatefulWidget {
 
   @override
   _ProfileUpdateScreenState createState() => _ProfileUpdateScreenState();
+}
+
+class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
+  @override
+  (int, int)? get data => (2, 3);
+
+  @override
+  String get name => '2x3 (customized)';
 }
 
 class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
@@ -48,6 +58,10 @@ final spinkit=Spinkits();
 
 
   File? _image;
+  XFile? _pickedFile;
+  CroppedFile? _croppedFile;
+
+
   bool _isLoading= false;
   void _validateFields() {
     setState(() {
@@ -76,7 +90,7 @@ final spinkit=Spinkits();
 
 
   Future<void> UpdateProfile() async {
-    var res = await Userapi.UpdateUserDetails(Fullname, _phoneController.text, _image);
+    var res = await Userapi.UpdateUserDetails(Fullname, _phoneController.text,File(_croppedFile!.path));
     if (res != null) {
       if (res.settings?.success == 1) {
         Navigator.pop(context, true);
@@ -97,8 +111,64 @@ final spinkit=Spinkits();
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+        _pickedFile = pickedFile;
         image_selected=1;
       });
+    }
+  }
+
+
+  void _clear() {
+    setState(() {
+      _pickedFile = null;
+      _croppedFile = null;
+    });
+  }
+
+  Future<void> _cropImage() async {
+    if (_pickedFile != null) {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: _pickedFile!.path,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 100,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Color(0xff8856F4),
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: false,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPresetCustom(),
+            ],
+          ),
+          IOSUiSettings(
+            title: 'Cropper',
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPresetCustom(),
+            ],
+          ),
+          WebUiSettings(
+            context: context,
+            presentStyle: WebPresentStyle.dialog,
+            size: const CropperSize(
+              width: 520,
+              height: 520,
+            ),
+          ),
+        ],
+      );
+      if (croppedFile != null) {
+        setState(() {
+          _croppedFile = croppedFile;
+        });
+      }
     }
   }
 
@@ -166,28 +236,59 @@ final spinkit=Spinkits();
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.grey,
-                        backgroundImage: _image != null
-                            ? FileImage(_image!)
-                            :userdata?.image!=""?
-                         NetworkImage(userdata?.image??""):
-                         AssetImage('assets/avatar_placeholder.png') as ImageProvider,
+                        backgroundImage: _croppedFile != null
+                            ? FileImage(File(_croppedFile!.path))
+                            : _pickedFile != null
+                            ? FileImage(File(_pickedFile!.path))
+                            : userdata?.image != null && userdata!.image!.isNotEmpty
+                            ? NetworkImage(userdata!.image!)
+                            : AssetImage('assets/avatar_placeholder.png') as ImageProvider,
                       ),
+
                       Positioned(
                         bottom: 0,
                         right: 0,
                         child: InkWell(
                           onTap: _pickImage,
                           child: const CircleAvatar(
-                            radius: 20,
+                            radius: 15,
                             backgroundColor: Colors.white,
-                            child: Icon(Icons.edit, color: Colors.purple),
+                            child: Icon(Icons.edit, color:Color(0xFF8856F4),size: 18,),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+                SizedBox(height: 20,),
+                if(_pickedFile!=null)...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      if (_croppedFile == null)
+                        Container(
+                          width: 46, // Adjust the width as needed
+                          height: 46, // Adjust the height as needed
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            color: const Color(0xFF8856F4), // Background color
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              _cropImage();
+                            },
+                            borderRadius: BorderRadius.circular(28), // To match the circular shape
+                            child: const Icon(
+                              Icons.crop,
+                              color: Colors.white, // Icon color
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
 
+                ],
                 SizedBox(height: 12),
                 _label(text: 'First Name'),
                 SizedBox(height: 6),
