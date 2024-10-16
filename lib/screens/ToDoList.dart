@@ -246,64 +246,57 @@ class _TodolistState extends State<Todolist> {
           children: [
             const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16,),
+              padding: const EdgeInsets.only(left: 16, right: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     width: w * 0.58,
                     height: h * 0.043,
-                    child: Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffffffff),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child:
-                        Row(
-                          children: [
-                            Image.asset(
-                              "assets/search.png",
-                              width: 20,
-                              height: 17,
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              child: TextField(
-                                controller:
-                                    _searchController, // Use the controller for search
-                                decoration: InputDecoration(
-                                  isCollapsed: true,
-                                  border: InputBorder.none,
-                                  hintText: 'Search',
-                                  hintStyle: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    color: Color(0xff9E7BCA),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    fontFamily: "Nunito",
-                                  ),
-                                ),
-                                style: TextStyle(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/search.png",
+                            width: 20,
+                            height: 17,
+                            fit: BoxFit.contain,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
+                                isCollapsed: true,
+                                border: InputBorder.none,
+                                hintText: 'Search',
+                                hintStyle: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
                                   color: Color(0xff9E7BCA),
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  decorationColor: Color(0xff9E7BCA),
+                                  fontSize: 14,
                                   fontFamily: "Nunito",
-                                ),   textAlignVertical: TextAlignVertical.center,
-                              
+                                ),
                               ),
+                              style: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                fontFamily: "Nunito",
+                              ),
+                              textAlignVertical: TextAlignVertical.center,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
+                  SizedBox(width: 10),
                   SizedBox(
                     height: w * 0.09,
                     child: InkWell(
@@ -311,36 +304,33 @@ class _TodolistState extends State<Todolist> {
                         GetLabelColor();
                         _showAddLabel(context);
                       },
-                      child: Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              borderRadius: BorderRadius.circular(6)),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/circleadd.png",
-                                fit: BoxFit.contain,
-                                width: w * 0.045,
-                                height: w * 0.05,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/circleadd.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.045,
+                              height: w * 0.05,
+                              color: Color(0xffffffff),
+                            ),
+                            SizedBox(width: w * 0.01),
+                            Text(
+                              "Add Label",
+                              style: TextStyle(
                                 color: Color(0xffffffff),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                fontFamily: "Inter",
+                                height: 16.94 / 12,
+                                letterSpacing: 0.59,
                               ),
-                              SizedBox(
-                                width: w * 0.01,
-                              ),
-                              Text(
-                                "Add Label",
-                                style: TextStyle(
-                                    color: Color(0xffffffff),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                    fontFamily: "Inter",
-                                    height: 16.94 / 12,
-                                    letterSpacing: 0.59),
-                              )
-                            ],
-                          ),
+                            )
+                          ],
                         ),
                       ),
                     ),

@@ -227,7 +227,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Widget _buildMessageBubble(String message, String sender) {
+  Widget _buildMessageBubble(String message, String sender,String datetime) {
     bool isMe = sender == 'you';
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -249,7 +249,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
             SizedBox(height: 5),
             Text(
-              DateTime.now().toLocal().toString().substring(11, 16),
+              datetime,
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 10,
@@ -271,16 +271,17 @@ class _ChatPageState extends State<ChatPage> {
         title: Row(
           children: [
             InkWell(
-                onTap: () => Navigator.pop(context, true),
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                )),
+              onTap: () => Navigator.pop(context, true),
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+            ),
             SizedBox(width: 10),
             InkWell(
               onTap: () async {
-                // var res= await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen(),));
-                // if(res==true){
+                // var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
+                // if(res == true) {
                 //   _initializeWebSocket();
                 //   RoomDetailsApi();
                 // }
@@ -291,15 +292,15 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             SizedBox(width: 10),
-            InkResponse(
-              onTap: () async {
-                // var res= await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen(),));
-                // if(res==true){
-                //   _initializeWebSocket();
-                //   RoomDetailsApi();
-                // }
-              },
-              child: Expanded(
+            Expanded(
+              child: InkResponse(
+                onTap: () async {
+                  // var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
+                  // if(res == true) {
+                  //   _initializeWebSocket();
+                  //   RoomDetailsApi();
+                  // }
+                },
                 child: Text(
                   username,
                   maxLines: 2,
@@ -312,7 +313,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
         // actions: [
@@ -355,7 +356,6 @@ class _ChatPageState extends State<ChatPage> {
                   (_isLoadingMore ? 1 : 0), // Add 1 for the loader
               itemBuilder: (context, index) {
                 if (index == _messages.length && _isLoadingMore) {
-                  // Show a loading indicator only when loading more messages
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -364,9 +364,9 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }
                 final message = _messages[index].msg;
-                final sender =
-                    _messages[index].sentUser == user_id ? "you" : "remote";
-                return _buildMessageBubble(message ?? "", sender);
+                final sender = _messages[index].sentUser == user_id ? "you" : "remote";
+                final datetime = _messages[index].lastUpdated??"";
+                return _buildMessageBubble(message ?? "", sender,datetime);
               },
             ),
           ),

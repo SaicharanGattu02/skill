@@ -7,6 +7,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/screens/Alertscreen2.dart';
 import 'package:skill/screens/GeneralInfo.dart';
 import 'package:skill/screens/Leave.dart';
@@ -14,18 +15,23 @@ import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
+import 'package:skill/utils/constants.dart';
+
+import 'Providers/ThemeProvider.dart';
+
+import 'Providers/ThemeProvider.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
     description:
-    'This channel is used for important notifications.', // description
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
     playSound: true);
 
 // flutter local notification
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -33,13 +39,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Platform.isAndroid
       ? await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI",
-      appId: "1:710798644357:android:9c8595bf181be70423c5ec",
-      messagingSenderId: "710798644357",
-      projectId: "skil-f765f",
-    ),
-  )
+          options: FirebaseOptions(
+            apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI",
+            appId: "1:710798644357:android:9c8595bf181be70423c5ec",
+            messagingSenderId: "710798644357",
+            projectId: "skil-f765f",
+          ),
+        )
       : await Firebase.initializeApp();
 
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
@@ -106,7 +112,7 @@ Future<void> main() async {
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   const InitializationSettings initializationSettings = InitializationSettings(
@@ -116,8 +122,7 @@ Future<void> main() async {
   flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) async {
-    },
+        (NotificationResponse notificationResponse) async {},
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -148,7 +153,17 @@ Future<void> main() async {
     // Optionally report the error to a remote server
   };
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) =>
+                ThemeProvider(darkTheme)), // Set initial theme
+        // Add other providers here as needed
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -160,7 +175,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void showNotification(RemoteNotification notification,
     AndroidNotification android, Map<String, dynamic> data) async {
   AndroidNotificationDetails androidPlatformChannelSpecifics =
-  AndroidNotificationDetails(
+      AndroidNotificationDetails(
     'your_channel_id', // Your channel ID
     'your_channel_name', // Your channel name
     importance: Importance.max,
@@ -169,7 +184,7 @@ void showNotification(RemoteNotification notification,
     icon: '@mipmap/ic_launcher',
   );
   NotificationDetails platformChannelSpecifics =
-  NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails(android: androidPlatformChannelSpecifics);
 
   await flutterLocalNotificationsPlugin.show(
     notification.hashCode,
@@ -179,56 +194,22 @@ void showNotification(RemoteNotification notification,
     payload: jsonEncode(data), // Convert payload data to String
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Skill App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          scaffoldBackgroundColor: Colors.white,
-          dialogBackgroundColor: Colors.white,
-          cardColor: Colors.white,
-          searchBarTheme: const SearchBarThemeData(),
-          tabBarTheme: const TabBarTheme(),
-          dialogTheme: const DialogTheme(
-            shadowColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(5.0)), // Set the border radius of the dialog
-            ),
-          ),
-          buttonTheme: const ButtonThemeData(),
-          popupMenuTheme: const PopupMenuThemeData(
-              color: Colors.white, shadowColor: Colors.white),
-          appBarTheme: const AppBarTheme(
-            surfaceTintColor: Colors.white,
-          ),
-          cardTheme: const CardTheme(
-            shadowColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            color: Colors.white,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-
-            ),
-          ),
-          bottomSheetTheme: const BottomSheetThemeData(
-              surfaceTintColor: Colors.white, backgroundColor: Colors.white),
-          colorScheme: const ColorScheme.light(background: Colors.white)
-              .copyWith(background: Colors.white),
-        ),
-        home:Splash()
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+            title: 'Skill App',
+            debugShowCheckedModeBanner: false,
+            darkTheme: ThemeData.dark(),
+            theme: themeProvider.themeData, // Use the current theme from the provider
+            home: Splash());
+      },
     );
   }
 }

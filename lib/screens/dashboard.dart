@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AllChannels.dart';
@@ -25,6 +26,7 @@ import '../Model/ProjectsModel.dart';
 import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
+import '../Providers/ThemeProvider.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 
@@ -73,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    // GetEmployeeData();
+    GetEmployeeData();
     _requestLocationPermission();
     GetUserDeatails();
     GetRoomsList();
@@ -226,33 +228,27 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  // Future<void> GetEmployeeData() async {
-  //   var Res = await Userapi.GetEmployeeList();
-  //   setState(() {
-  //     if (Res != null) {
-  //       if (Res.data != null) {
-  //         employeeData = Res.data;
-  //
-  //         print("Employee List Get Succesfully  ${Res.settings?.message}");
-  //       } else {
-  //         print("Employee List Failure  ${Res.settings?.message}");
-  //       }
-  //     }
-  //   });
-  // }
-
   List<Employeedata> employeeData = [];
-  Future<void> GetSerachUsersdata(String text) async {
+  List<Employeedata> tempemployeeData = [];
+  Future<void> GetEmployeeData() async {
+    var Res = await Userapi.GetEmployeeList();
+    setState(() {
+      if (Res != null && Res.data != null) {
+        employeeData = Res.data ?? [];
+        tempemployeeData = Res.data ?? [];
+      }
+    });
+  }
+
+  Future<void> GetSearchUsersData(String text) async {
     var Res = await Userapi.GetSearchUsers(text);
     setState(() {
-      if (Res != null) {
-        if (Res.data != null) {
-          employeeData = Res.data ?? [];
-          print("Employee List Get Succesfully  ${Res.settings?.message}");
-        } else {
-          employeeData = [];
-          print("Employee List Failure  ${Res.settings?.message}");
-        }
+      if (Res != null && Res.data != null) {
+        employeeData = Res.data ?? [];
+        print("Employee List Retrieved Successfully: ${Res.settings?.message}");
+      } else {
+        employeeData = [];
+        print("Employee List Retrieval Failed: ${Res?.settings?.message}");
       }
     });
   }
@@ -277,7 +273,7 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> _refreshItems() async {
     await Future.delayed(Duration(seconds: 2));
-    // GetEmployeeData();
+    GetEmployeeData();
     GetUserDeatails();
     GetRoomsList();
     GetProjectsData();
@@ -292,7 +288,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xffF3ECFB),
@@ -392,32 +388,72 @@ class _DashboardState extends State<Dashboard> {
                       top: 16, left: 16, right: 16, bottom: 8),
                   child: Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 6),
-                        decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/search.png",
-                              width: 24,
-                              height: 24,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              "Search",
-                              style: TextStyle(
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  fontFamily: "Nunito"),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Search \nApril 23,2024",
+                            style: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                fontFamily: "Nunito"),
+                          ),
+
+                          Row(
+                            children: [
+                              Image.asset("assets/sun1.png",width: 30,height: 30,),
+                              Text(
+                                "Search April 23,2024",
+                                style: TextStyle(
+                                    color: Color(0xff9E7BCA),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    fontFamily: "Nunito"),
+                              ),
+                              Image.asset("assets/sun2.png",width: 30,height: 30,),
+                            ],
+                          )
+                        ],
                       ),
+                      // SwitchListTile(
+                      //   title: Text('Dark Mode'),
+                      //   value: themeProvider.themeData.brightness == Brightness.dark,
+                      //   onChanged: (bool value) {
+                      //     // Change the theme based on the switch value
+                      //     if (value) {
+                      //       themeProvider.setDarkTheme();
+                      //     } else {
+                      //       themeProvider.setLightTheme();
+                      //     }
+                      //   },
+                      // ),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 16, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //       color: const Color(0xffffffff),
+                      //       borderRadius: BorderRadius.circular(8)),
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         "assets/search.png",
+                      //         width: 24,
+                      //         height: 24,
+                      //         fit: BoxFit.contain,
+                      //       ),
+                      //       const SizedBox(width: 10),
+                      //       const Text(
+                      //         "Search",
+                      //         style: TextStyle(
+                      //             color: Color(0xff9E7BCA),
+                      //             fontWeight: FontWeight.w400,
+                      //             fontSize: 16,
+                      //             fontFamily: "Nunito"),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
                         height: w * 0.03,
                       ),
@@ -1231,79 +1267,80 @@ class _DashboardState extends State<Dashboard> {
       drawer: Drawer(
         backgroundColor: Color(0xff8856F4),
         width: w * 0.65,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 40),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Spacer(),
-                        Image.asset(
-                          "assets/skillLogo.png",
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(left: 16, right: 16, top: 40),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Spacer(),
+                      Image.asset(
+                        "assets/skillLogo.png",
+                        fit: BoxFit.contain,
+                        width: 60,
+                        height: 30,
+                      ),
+                      Spacer(),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/cross.png",
                           fit: BoxFit.contain,
-                          width: 60,
-                          height: 30,
+                          width: 18,
+                          height: 18,
                         ),
-                        Spacer(),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            "assets/cross.png",
-                            fit: BoxFit.contain,
-                            width: 18,
-                            height: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
-              Container(
-                height: 32,
-                margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-                padding: EdgeInsets.only(left: 10, top: 6, bottom: 6),
-                decoration: BoxDecoration(
-                  color: Color(0xffEAE0FF),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (text) {
-                    if (text.length > 2) {
-                      setState(() {
-                        employeeData = []; // Clear previous data
-                      });
-                      GetSerachUsersdata(text); // Fetch new data
-                    } else {
-                      setState(() {
-                        employeeData =
-                            []; // Clear data if input is less than 3 characters
-                      });
-                    }
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    hintStyle: TextStyle(color: Color(0xff9E7BCA)),
-                    border: InputBorder.none,
-                    icon: Icon(
-                      Icons.search,
-                      color: Color(0xff9E7BCA),
-                    ),
+                      ),
+                    ],
                   ),
-                  style: TextStyle(color: Color(0xff9E7BCA)),
-                ),
+                  SizedBox(height: 20),
+                ],
               ),
-              ListView.builder(
+            ),
+            Container(
+              height: 32,
+              margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+              padding: EdgeInsets.only(left: 10, top: 6, bottom: 6),
+              decoration: BoxDecoration(
+                color: Color(0xffEAE0FF),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (text) {
+                  setState(() {
+                    if (text.length > 0) {
+                      employeeData = []; // Clear previous dat
+                      GetSearchUsersData(text); // Fetch new data
+                    } else {
+                      employeeData = [];
+                      employeeData = tempemployeeData;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  hintStyle: TextStyle(color: Color(0xff9E7BCA)),
+                  border: InputBorder.none,
+                  icon: Icon(
+                    Icons.search,
+                    color: Color(0xff9E7BCA),
+                  ),
+                ),
+                style: TextStyle(color: Color(0xff9E7BCA)),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: ListView.builder(
                 padding: EdgeInsets.only(bottom: 10, top: 10),
                 itemCount: employeeData.length,
-                physics: NeverScrollableScrollPhysics(),
+                physics: AlwaysScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final employee = employeeData[index];
@@ -1311,23 +1348,37 @@ class _DashboardState extends State<Dashboard> {
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(employee.image ?? ""),
                     ),
-                    title: Text(
-                      employee.fullName ?? "",
-                      style: const TextStyle(
-                        color: Color(0xffFFFFFF),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                        fontFamily: "Inter",
-                      ),
+                    title:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Text(
+                            employee.fullName ?? "",
+                            style: const TextStyle(
+                              color: Color(0xffFFFFFF),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                              fontFamily: "Inter",
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Image.asset(
+                          "assets/notify.png",
+                          fit: BoxFit.contain,
+                          width: 24,
+                          height: 24,
+                          color: Color(0xffFFFFFF).withOpacity(0.7),
+                        ),
+
+                      ],
                     ),
                     onTap: () async {
                       try {
                         FocusScope.of(context)
                             .unfocus(); // Update the current page index
-                        setState(() {
-                          employeeData = [];
-                        });
                         createRoom(employee.id ?? "");
                       } catch (error) {
                         // Handle error
@@ -1337,187 +1388,187 @@ class _DashboardState extends State<Dashboard> {
                   );
                 },
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                child: Column(
-                  children: [
-                    InkResponse(
-                      onTap: () {
-                        setState(() {
-                          _isListVisible = !_isListVisible; // Toggle visibility
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (_isListVisible) ...[
-                            Icon(Icons.arrow_drop_down,
-                                color: Color(0xffffffff), size: 25),
-                          ] else ...[
-                            Icon(Icons.arrow_drop_up,
-                                color: Color(0xffffffff), size: 25),
-                          ],
-                          SizedBox(width: 15),
-                          Text(
-                            "Direct messages",
-                            style: TextStyle(
-                              color: Color(0xffffffff),
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+            ),
+            // Padding(
+            //   padding: EdgeInsets.only(left: 16, right: 16),
+            //   child: Column(
+            //     children: [
+            //       // InkResponse(
+            //       //   onTap: () {
+            //       //     setState(() {
+            //       //       _isListVisible = !_isListVisible; // Toggle visibility
+            //       //     });
+            //       //   },
+            //       //   child: Row(
+            //       //     mainAxisAlignment: MainAxisAlignment.start,
+            //       //     crossAxisAlignment: CrossAxisAlignment.start,
+            //       //     children: [
+            //       //       if (_isListVisible) ...[
+            //       //         Icon(Icons.arrow_drop_down,
+            //       //             color: Color(0xffffffff), size: 25),
+            //       //       ] else ...[
+            //       //         Icon(Icons.arrow_drop_up,
+            //       //             color: Color(0xffffffff), size: 25),
+            //       //       ],
+            //       //       SizedBox(width: 15),
+            //       //       Text(
+            //       //         "Direct messages",
+            //       //         style: TextStyle(
+            //       //           color: Color(0xffffffff),
+            //       //           fontFamily: "Inter",
+            //       //           fontWeight: FontWeight.w400,
+            //       //           fontSize: 14,
+            //       //         ),
+            //       //       ),
+            //       //     ],
+            //       //   ),
+            //       // ),
+            //       // if (_isListVisible) // Conditionally show the ListView
+            //         ListView.builder(
+            //           padding: EdgeInsets.only(top: 10),
+            //           itemCount: rooms.length,
+            //           shrinkWrap: true,
+            //           physics: NeverScrollableScrollPhysics(),
+            //           itemBuilder: (context, index) {
+            //             final room = rooms[index];
+            //             return InkResponse(
+            //               onTap: () {
+            //                 setState(() {
+            //                   room.messageCount = 0;
+            //                 });
+            //                 Navigator.pop(context);
+            //                 Navigator.push(
+            //                   context,
+            //                   MaterialPageRoute(
+            //                     builder: (context) =>
+            //                         ChatPage(roomId: room.roomId),
+            //                   ),
+            //                 );
+            //               },
+            //               child: Padding(
+            //                 padding: const EdgeInsets.symmetric(vertical: 8),
+            //                 child: Row(
+            //                   children: [
+            //                     ClipOval(
+            //                       child: Image.network(
+            //                         room.otherUserImage ?? '',
+            //                         fit: BoxFit.cover,
+            //                         width: 43,
+            //                         height: 43,
+            //                         errorBuilder:
+            //                             (context, error, stackTrace) {
+            //                           return ClipOval(
+            //                             child: Icon(Icons.person, size: 43),
+            //                           );
+            //                         },
+            //                       ),
+            //                     ),
+            //                     SizedBox(width: 8),
+            //                     Expanded(
+            //                       child: Column(
+            //                         crossAxisAlignment:
+            //                             CrossAxisAlignment.start,
+            //                         children: [
+            //                           Text(
+            //                             room.otherUser ?? 'No Name',
+            //                             style: const TextStyle(
+            //                               color: Color(0xffFFFFFF),
+            //                               fontWeight: FontWeight.w400,
+            //                               fontSize: 14,
+            //                               overflow: TextOverflow.ellipsis,
+            //                               fontFamily: "Inter",
+            //                             ),
+            //                           ),
+            //                           Row(
+            //                             mainAxisAlignment:
+            //                                 MainAxisAlignment.spaceBetween,
+            //                             children: [
+            //                               Expanded(
+            //                                 child: Text(
+            //                                   room.message ?? '',
+            //                                   style: const TextStyle(
+            //                                     color: Color(0xffFFFFFF),
+            //                                     fontWeight: FontWeight.w400,
+            //                                     fontSize: 14,
+            //                                     overflow:
+            //                                         TextOverflow.ellipsis,
+            //                                     fontFamily: "Inter",
+            //                                   ),
+            //                                 ),
+            //                               ),
+            //                               if (room.messageCount > 0)
+            //                                 Container(
+            //                                   padding: EdgeInsets.all(4),
+            //                                   decoration: BoxDecoration(
+            //                                     color: Colors.red,
+            //                                     shape: BoxShape.circle,
+            //                                   ),
+            //                                   child: Text(
+            //                                     '${room.messageCount}',
+            //                                     style: const TextStyle(
+            //                                       color: Colors.white,
+            //                                       fontWeight: FontWeight.bold,
+            //                                       fontSize: 12,
+            //                                     ),
+            //                                   ),
+            //                                 ),
+            //                             ],
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+            //                     SizedBox(width: 8),
+            //                     Image.asset(
+            //                       "assets/notify.png",
+            //                       fit: BoxFit.contain,
+            //                       width: 24,
+            //                       height: 24,
+            //                       color: Color(0xffFFFFFF).withOpacity(0.7),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             );
+            //           },
+            //         ),
+            //     ],
+            //   ),
+            // ),
+            Container(
+              padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Color(0xffFFFFFF1A).withOpacity(0.10),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        "assets/add.png",
+                        fit: BoxFit.contain,
+                        height: 9,
+                        width: 9,
                       ),
                     ),
-                    if (_isListVisible) // Conditionally show the ListView
-                      ListView.builder(
-                        padding: EdgeInsets.only(top: 10),
-                        itemCount: rooms.length,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final room = rooms[index];
-                          return InkResponse(
-                            onTap: () {
-                              setState(() {
-                                room.messageCount = 0;
-                              });
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ChatPage(roomId: room.roomId),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                children: [
-                                  ClipOval(
-                                    child: Image.network(
-                                      room.otherUserImage ?? '',
-                                      fit: BoxFit.cover,
-                                      width: 43,
-                                      height: 43,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return ClipOval(
-                                          child: Icon(Icons.person, size: 43),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          room.otherUser ?? 'No Name',
-                                          style: const TextStyle(
-                                            color: Color(0xffFFFFFF),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontFamily: "Inter",
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                room.message ?? '',
-                                                style: const TextStyle(
-                                                  color: Color(0xffFFFFFF),
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 14,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  fontFamily: "Inter",
-                                                ),
-                                              ),
-                                            ),
-                                            if (room.messageCount > 0)
-                                              Container(
-                                                padding: EdgeInsets.all(4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Text(
-                                                  '${room.messageCount}',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Image.asset(
-                                    "assets/notify.png",
-                                    fit: BoxFit.contain,
-                                    width: 24,
-                                    height: 24,
-                                    color: Color(0xffFFFFFF).withOpacity(0.7),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Add channels",
+                    style: const TextStyle(
+                      color: Color(0xffFFFFFF),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
               ),
-              // Container(
-              //   padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
-              //   child: Row(
-              //     children: [
-              //       Container(
-              //         width: 20,
-              //         height: 20,
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(4),
-              //           color: Color(0xffFFFFFF1A).withOpacity(0.10),
-              //         ),
-              //         child: Center(
-              //           child: Image.asset(
-              //             "assets/add.png",
-              //             fit: BoxFit.contain,
-              //             height: 9,
-              //             width: 9,
-              //           ),
-              //         ),
-              //       ),
-              //       SizedBox(width: 8),
-              //       Text(
-              //         "Add channels",
-              //         style: const TextStyle(
-              //           color: Color(0xffFFFFFF),
-              //           fontWeight: FontWeight.w400,
-              //           fontSize: 14,
-              //           overflow: TextOverflow.ellipsis,
-              //           fontFamily: "Inter",
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       endDrawer: Drawer(

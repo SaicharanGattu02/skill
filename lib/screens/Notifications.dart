@@ -10,24 +10,24 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   final List<Map<String, String>> notifications = [
-    {
-      'title': 'New Project Updated',
-      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      'time': 'Today 10:30 AM',
-      'icon': 'assets/new.png',
-    },
-    {
-      'title': 'Task Assigned',
-      'description': 'You have been assigned a new task.',
-      'time': '11:15 AM',
-      'icon': 'assets/new.png',
-    },
-    {
-      'title': 'Project Deadline',
-      'description': 'The project deadline is approaching.',
-      'time': '12:45 PM',
-      'icon': 'assets/new.png',
-    },
+    // {
+    //   'title': 'New Project Updated',
+    //   'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    //   'time': 'Today 10:30 AM',
+    //   'icon': 'assets/new.png',
+    // },
+    // {
+    //   'title': 'Task Assigned',
+    //   'description': 'You have been assigned a new task.',
+    //   'time': '11:15 AM',
+    //   'icon': 'assets/new.png',
+    // },
+    // {
+    //   'title': 'Project Deadline',
+    //   'description': 'The project deadline is approaching.',
+    //   'time': '12:45 PM',
+    //   'icon': 'assets/new.png',
+    // },
     // Add more items as needed
   ];
   bool _loading= false;
@@ -64,7 +64,19 @@ class _NotificationsState extends State<Notifications> {
 
       Padding(
         padding: EdgeInsets.all(16),
-        child: ListView.builder(
+        child: notifications.isEmpty
+            ? Center(
+          child: Text(
+            'Coming Soon',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 18,
+              color: Color(0xff6C848F),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        )
+            : ListView.builder(
           itemCount: notifications.length,
           itemBuilder: (context, index) {
             final notification = notifications[index];
