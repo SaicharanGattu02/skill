@@ -28,9 +28,12 @@ import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
+import 'EditProfileScreen.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
+
+import 'SliderList.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -374,7 +377,7 @@ class _DashboardState extends State<Dashboard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Notifications()));
+                              builder: (context) => KanbanList()));
                     },
                     child: Container(
                       width:
@@ -513,7 +516,7 @@ class _DashboardState extends State<Dashboard> {
                           var res = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ProfileUpdateScreen()));
+                                  builder: (context) => EditProfileScreen()));
                           if (res == true) {
                             GetUserDeatails();
                           }
@@ -1625,6 +1628,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       endDrawer: Drawer(
         width: w * 0.3,
+        backgroundColor: Colors.white,
         child: Padding(
           padding: EdgeInsets.only(left: 16, right: 16, top: 40),
           child: Container(
@@ -1669,7 +1673,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/msg.png"),
                         ),
@@ -1707,7 +1710,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/folder-plus.png"),
                         ),
@@ -1747,7 +1749,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/Frame.png"),
                         ),
@@ -1822,7 +1823,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/calendar.png"),
                         ),
@@ -1860,7 +1860,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/video.png"),
                         ),
@@ -1932,7 +1931,6 @@ class _DashboardState extends State<Dashboard> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                              color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(4)),
                           child: Image.asset("assets/logout.png"),
                         ),

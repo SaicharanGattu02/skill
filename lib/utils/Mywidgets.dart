@@ -5,8 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:skill/screens/OneToOneChatPage.dart';
 
 import '../ProjectModule/TaskForm.dart';
+import '../Services/UserApi.dart';
+import 'CustomSnackBar.dart';
 
 FadeShimmer_circle(size) {
   return Container(
@@ -141,14 +144,39 @@ class RoundedProgressPainter extends CustomPainter {
     return true; // Repaint when progress changes
   }
 }
-
-class MemberCard extends StatelessWidget {
+class MemberCard extends StatefulWidget {
   final String name;
   final String profile_image;
+  final String id;
 
-  const MemberCard({Key? key, required this.name, required this.profile_image})
-      : super(key: key);
+  const MemberCard({
+    Key? key,
+    required this.name,
+    required this.profile_image,
+    required this.id,
+  }) : super(key: key);
 
+  @override
+  _MemberCardState createState() => _MemberCardState();
+}
+
+class _MemberCardState extends State<MemberCard> {
+
+  Future<void> createRoom(String id) async {
+    var res = await Userapi.CreateChatRoomAPi(id);
+    setState(() {
+      if (res != null && res.settings?.success == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(roomId: res.data?.room ?? ""),
+          ),
+        );
+      } else {
+        CustomSnackBar.show(context, "${res?.settings?.message}");
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -156,55 +184,38 @@ class MemberCard extends StatelessWidget {
       child: Row(
         children: [
           ClipOval(
-              child: Image.network(
-            profile_image,
-            width: 60,
-            height: 60,
-          )
-              // Text(
-              //   name[0],
-              //   style: TextStyle(color: Colors.white, fontSize: 24),
-              // ),
-              ),
+            child: Image.network(
+              widget.profile_image,
+              width: 60,
+              height: 60,
+              // You can add error handling for the image here if needed
+            ),
+          ),
           SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: "Inter",
-                        color: Colors.black)),
-                // Text(profession,
-                //     style: TextStyle(
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w400,
-                //         fontFamily: "Inter",
-                //         color: Color(0xff6c848f))),
+                Text(
+                  widget.name,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Inter",
+                    color: Colors.black,
+                  ),
+                ),
               ],
             ),
           ),
-          // IconButton(
-          //   icon: Image.asset(
-          //     'assets/delete_icon.png',
-          //     width: 16,
-          //     height: 16,
-          //   ),
-          //   onPressed: () {
-          //     // Handle delete action
-          //   },
-          // ),
           IconButton(
             icon: Image.asset(
               'assets/chat_icon.png',
               width: 16,
-              height:
-                  16, // Make sure to use the correct path to your image asset
+              height: 16,
             ),
             onPressed: () {
-              // Handle message action
+              createRoom(widget.id);
             },
           ),
         ],

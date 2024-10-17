@@ -431,7 +431,6 @@ class _OverViewState extends State<OverView> {
           child:
           SizedBox(
             width: w,
-
             child: Center(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
@@ -554,8 +553,8 @@ class _OverViewState extends State<OverView> {
                   MemberCard(
                     name: filteredMembers[index].fullName ?? "",
                     profile_image: filteredMembers[index].image ?? "",
+                    id: filteredMembers[index].id ?? "",
                   ),
-                  // Add a Divider if it's not the last item
                   if (index < filteredMembers.length - 1)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
