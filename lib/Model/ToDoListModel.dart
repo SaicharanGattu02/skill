@@ -4,17 +4,30 @@ class ToDoListModel {
 
   ToDoListModel({this.data, this.settings});
 
+  // ToDoListModel.fromJson(Map<String, dynamic> json) {
+  //   if (json['data'] != null) {
+  //     data = <TODOList>[];
+  //     json['data'].forEach((v) {
+  //       data!.add(new TODOList.fromJson(v));
+  //     });
+  //   }
+  //   settings = json['settings'] != null
+  //       ? new Settings.fromJson(json['settings'])
+  //       : null;
+  // }
+
   ToDoListModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
+    if (json['data'] != null && json['data'] is List) {
       data = <TODOList>[];
       json['data'].forEach((v) {
-        data!.add(new TODOList.fromJson(v));
+        data!.add(TODOList.fromJson(v));
       });
+    } else {
+      data = []; // Initialize to an empty list if data is not a list
     }
-    settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
-        : null;
+    settings = json['settings'] != null ? Settings.fromJson(json['settings']) : null;
   }
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

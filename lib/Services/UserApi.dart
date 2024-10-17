@@ -15,6 +15,7 @@ import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
+import '../Model/DashboardTaksModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/GetCatagoryModel.dart';
 import '../Model/GetEditProjectNoteModel.dart';
@@ -495,25 +496,19 @@ class Userapi {
   }
 
   static Future<TaskAddmodel?> CreateTask(
-    String projectId,
-    String title,
-    String desc,
-    String milestone,
-    String assignedTo,
-    String status,
-    String priority,
-    String startDate,
-    String endDate,
-    List<String> collaborators, // Change type from String to List<String>
-    File image,
-  ) async {
+      String projectId,
+      String title,
+      String desc,
+      String milestone,
+      String assignedTo,
+      String status,
+      String priority,
+      String startDate,
+      String endDate,
+      List<String> collaborators,
+      File? image, // Make image optional
+      ) async {
     try {
-      // Check if the file is an image
-      String? mimeType = lookupMimeType(image.path);
-      if (mimeType == null || !mimeType.startsWith('image/')) {
-        print('Selected file is not a valid image.');
-        return null; // Return null for invalid image
-      }
       final url = Uri.parse("${host}/project/project-tasks");
       Map<String, String> body = {
         "project_id": projectId,
@@ -527,9 +522,11 @@ class Userapi {
         "start_date": startDate,
         "end_date": endDate,
       };
-      print("CreateTask:${body}");
-      print("Image : ${image}");
+
+      print("CreateTask: $body");
+
       final headers = await getheader();
+
       // Create a multipart request
       var req = http.MultipartRequest('POST', url)
         ..headers.addAll(headers)
@@ -537,17 +534,29 @@ class Userapi {
 
       // Add collaborators as a separate field
       for (String collaborator in collaborators) {
-        req.fields['collaborators[]'] = collaborator; // Use array notation
+        req.fields['collaborators[]'] = collaborator;
       }
 
-      // Add the image file to the request
-      req.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
+      // Check if image is provided
+      if (image != null) {
+        // Check if the file is an image
+        String? mimeType = lookupMimeType(image.path);
+        if (mimeType == null || !mimeType.startsWith('image/')) {
+          print('Selected file is not a valid image.');
+          return null; // Return null for invalid image
+        }
+
+        // Add the image file to the request
+        req.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            image.path,
+            contentType: MediaType.parse(mimeType),
+          ),
+        );
+      } else {
+        print('No image provided.');
+      }
 
       // Send the request
       var res = await req.send();
@@ -567,7 +576,9 @@ class Userapi {
       return null; // Handle error case by returning null
     }
   }
-  static Future<TaskAddmodel?> UpdateTask(String taskid,
+
+  static Future<TaskAddmodel?> UpdateTask(
+      String taskid,
       String title,
       String desc,
       String milestone,
@@ -576,15 +587,10 @@ class Userapi {
       String priority,
       String startDate,
       String endDate,
-      List<String> collaborators, // Change type from String to List<String>
-      File image,) async {
+      List<String> collaborators,
+      File? image,
+      ) async {
     try {
-      // Check if the file is an image
-      String? mimeType = lookupMimeType(image.path);
-      if (mimeType == null || !mimeType.startsWith('image/')) {
-        print('Selected file is not a valid image.');
-        return null; // Return null for invalid image
-      }
       final url = Uri.parse("${host}/project/project-task-detail/$taskid");
       Map<String, String> body = {
         "title": title,
@@ -597,9 +603,11 @@ class Userapi {
         "start_date": startDate,
         "end_date": endDate,
       };
-      print("CreateTask:${body}");
-      print("Image : ${image}");
+
+      print("CreateTask: $body");
+
       final headers = await getheader();
+
       // Create a multipart request
       var req = http.MultipartRequest('PUT', url)
         ..headers.addAll(headers)
@@ -607,17 +615,29 @@ class Userapi {
 
       // Add collaborators as a separate field
       for (String collaborator in collaborators) {
-        req.fields['collaborators[]'] = collaborator; // Use array notation
+        req.fields['collaborators[]'] = collaborator;
       }
 
-      // Add the image file to the request
-      req.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
+      // Check if image is provided
+      if (image != null) {
+        // Check if the file is an image
+        String? mimeType = lookupMimeType(image.path);
+        if (mimeType == null || !mimeType.startsWith('image/')) {
+          print('Selected file is not a valid image.');
+          return null; // Return null for invalid image
+        }
+
+        // Add the image file to the request
+        req.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            image.path,
+            contentType: MediaType.parse(mimeType),
+          ),
+        );
+      } else {
+        print('No image provided.');
+      }
 
       // Send the request
       var res = await req.send();
@@ -637,6 +657,7 @@ class Userapi {
       return null; // Handle error case by returning null
     }
   }
+
 
   static Future<UserDetailsModel?> GetUserdetails() async {
     try {
@@ -946,14 +967,32 @@ class Userapi {
     }
   }
 
-  static Future<ToDoListModel?> gettodolistApi() async {
+  static Future<ToDoListModel?> gettodolistApi(String date) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/todo/tasks");
+      final url = Uri.parse("${host}/dashboard/user-todos?date=$date");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("gettodolistApi Response:${res.body}");
         return ToDoListModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<DashboardTaksModel?> gettaskaApi(String date) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/dashboard/user-tasks?date=$date");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("gettaskaApi Response:${res.body}");
+        return DashboardTaksModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

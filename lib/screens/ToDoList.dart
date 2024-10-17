@@ -32,7 +32,7 @@ class _TodolistState extends State<Todolist> {
   FocusNode _focusNodeTaskName = FocusNode();
   FocusNode _focusNodeLabelName = FocusNode();
   FocusNode _focusNodedescription = FocusNode();
-
+  late ScrollController _scrollController;
   String _validtaskName = "";
   String _validdescription = "";
   String _validDate = "";
@@ -45,7 +45,8 @@ class _TodolistState extends State<Todolist> {
   String labelColorid = "";
 
   bool _isLoading = true;
-  final spinkit=Spinkits();
+  final spinkit = Spinkits();
+  String formattedDate = "";
   @override
   void initState() {
     super.initState();
@@ -76,19 +77,19 @@ class _TodolistState extends State<Todolist> {
       });
     });
 
-
-
-
-
-
-    GetToDoList();
+    formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    GetToDoList(formattedDate);
 
     filteredData = data;
 
     _searchController.addListener(_filterTasks);
+
+    _scrollController = ScrollController();
+    _generateDates();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDate();
+    });
   }
-
-
 
   final List<Priorities> priorities = [
     Priorities(priorityValue: 'Priority 1', priorityKey: '1'),
@@ -101,7 +102,7 @@ class _TodolistState extends State<Todolist> {
   Future<void> GetLabel() async {
     var res = await Userapi.GetProjectsLabelApi();
     setState(() {
-      _isLoading=false;
+      _isLoading = false;
       if (res != null && res.label != null) {
         labels = res.label ?? [];
       }
@@ -112,7 +113,7 @@ class _TodolistState extends State<Todolist> {
   Future<void> GetLabelColor() async {
     var res = await Userapi.GetProjectsLabelColorApi();
     setState(() {
-      _isLoading=false;
+      _isLoading = false;
       if (res != null && res.data != null) {
         labelcolor = res.data ?? [];
       }
@@ -137,14 +138,17 @@ class _TodolistState extends State<Todolist> {
     }
   }
 
-  Future<void> GetToDoList() async {
-    var res = await Userapi.gettodolistApi();
+  Future<void> GetToDoList(String date) async {
+    var res = await Userapi.gettodolistApi(date);
     setState(() {
-      _isLoading=false;
+      _isLoading = false;
       if (res != null) {
         if (res.settings?.success == 1) {
           data = res.data ?? [];
           filteredData = data; // Initialize the filtered list to the full list
+        } else {
+          data = [];
+          filteredData = [];
         }
       }
     });
@@ -154,22 +158,19 @@ class _TodolistState extends State<Todolist> {
     var res = await Userapi.PostProjectTodo(_taskNameController.text,
         _descriptionController.text, _DateController.text, priorityid, labelid);
     setState(() {
-      _isLoading=false;
+      _isLoading = false;
       if (res != null) {
-      if (res.settings?.success == 1) {
-        GetToDoList();
-        Navigator.pop(context, true);
-        CustomSnackBar.show(context, "${res.settings?.message}");
+        if (res.settings?.success == 1) {
+          GetToDoList(formattedDate);
+          Navigator.pop(context, true);
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }
       } else {
-        CustomSnackBar.show(context, "${res.settings?.message}");
+        _isLoading = false;
       }
-    } else {
-        _isLoading=false;
-      }
-
-
     });
-
   }
 
   Future<void> PostToDoAddLabel() async {
@@ -177,21 +178,18 @@ class _TodolistState extends State<Todolist> {
         _labelnameController.text, labelColorid);
     setState(() {
       if (res != null) {
-        _isLoading=false;
+        _isLoading = false;
         if (res.settings?.success == 1) {
-          GetToDoList();
+          GetToDoList(formattedDate);
           Navigator.pop(context, true);
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
           CustomSnackBar.show(context, "${res.settings?.message}");
         }
-      }else {
-        _isLoading=false;
+      } else {
+        _isLoading = false;
       }
-
-
     });
-
   }
 
   void _filterTasks() {
@@ -207,7 +205,8 @@ class _TodolistState extends State<Todolist> {
 
   @override
   void dispose() {
-    _searchController.dispose(); // Dispose of the controller
+    _searchController.dispose();
+    _scrollController.dispose(); // Dispose of the controller
     super.dispose();
   }
 
@@ -221,6 +220,41 @@ class _TodolistState extends State<Todolist> {
       throw FormatException("Invalid hex color format");
     }
     return Color(int.parse(buffer.toString(), radix: 16));
+  }
+
+  final List<String> daysOfWeek = ['Mo', 'Tu', 'Wed', 'Th', 'Fr', 'Sa', 'Su'];
+
+  List<DateTime> dates = [];
+  DateTime selectedDate = DateTime.now();
+  DateTime currentMonth = DateTime.now();
+
+  void _scrollToSelectedDate() {
+    final index = dates.indexWhere((date) =>
+        date.day == selectedDate.day &&
+        date.month == selectedDate.month &&
+        date.year == selectedDate.year);
+
+    if (index != -1) {
+      final double offset =
+          index * 55.0; // Adjust the 55.0 based on the item width
+      _scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _generateDates() {
+    final startOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+    final endOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
+
+    setState(() {
+      dates = List.generate(
+        endOfMonth.day,
+        (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+      );
+    });
   }
 
   @override
@@ -239,14 +273,16 @@ class _TodolistState extends State<Todolist> {
         },
       ),
       body:
-      _isLoading?Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))):
-      SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
+          // _isLoading
+          //     ? Center(
+          //         child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
+          //     :
+          SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: Column(
+                    children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -340,135 +376,251 @@ class _TodolistState extends State<Todolist> {
             ),
             const SizedBox(height: 8),
             Container(
-              width: w,
-              height: h*0.78,
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xffFFFFFF),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child:(filteredData.length>0)?
-              ListView.builder(
-                itemCount: filteredData.length,
-                shrinkWrap: true,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  var tododata = filteredData[index];
-                  // Color labelColor = hexToColor(tododata.labelColor ?? "");
+                width: w,
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xffFFFFFF),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5, right: 5),
+                      child: Row(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Today",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff8856F4),
+                                  height: 19.36 / 16,
+                                ),
+                              ),
+                              Text(
+                                DateFormat('MMMM d, y').format(currentMonth),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff000000),
+                                  fontFamily: "Inter",
+                                  height: 19.36 / 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    SingleChildScrollView(
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(dates.length, (index) {
+                          final isSelected =
+                              dates[index].day == selectedDate.day &&
+                                  dates[index].month == selectedDate.month &&
+                                  dates[index].year == selectedDate.year;
 
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              "assets/More-vertical.png",
-                              fit: BoxFit.contain,
-                              width: 20,
-                              height: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            ClipOval(
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedDate = dates[index];
+                                formattedDate =
+                                    DateFormat('yyyy-MM-dd').format(selectedDate);
+                                print("selectedDate: $formattedDate");
+                                data = [];
+                                filteredData = [];
+                                // _isLoading=true;
+                                GetToDoList(formattedDate);
+                              });
+                              _scrollToSelectedDate();
+                            },
+                            child: ClipRect(
                               child: Container(
-                                width: w * 0.045,
-                                height: w * 0.045,
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                width: 55,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(
-                                    color: tododata.labelColor != null
-                                        ? hexToColor(tododata.labelColor??"")
-                                        : Colors.grey, // Fallback color
-                                    width: 3,
-                                  ),
+                                  color: isSelected
+                                      ? const Color(0xffF0EAFF)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      dates[index].day.toString(),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: isSelected
+                                            ? const Color(0xff8856F4)
+                                            : const Color(0xff000000),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      daysOfWeek[dates[index].weekday - 1],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff94A3B8),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    tododata.labelName ?? "",
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 13,
-                                      color: Color(0xff141516),
-                                      height: 16.94 / 13,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  SizedBox(
-                                    width: w * 0.5,
-                                    child: Text(
-                                      tododata.description ?? "",
-                                      style: const TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 11,
-                                        color: Color(0xffB1B5C3),
-                                        height: 12.89 / 11,
+                          );
+                        }),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    (filteredData.length > 0)
+                        ? SizedBox(
+                            height: h*0.7,
+                            child: ListView.builder(
+                              itemCount: filteredData.length,
+                              shrinkWrap: true,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                var tododata = filteredData[index];
+                                // Color labelColor = hexToColor(tododata.labelColor ?? "");
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Image.asset(
+                                            "assets/More-vertical.png",
+                                            fit: BoxFit.contain,
+                                            width: 20,
+                                            height: 20,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          ClipOval(
+                                            child: Container(
+                                              width: w * 0.045,
+                                              height: w * 0.045,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                                border: Border.all(
+                                                  color: tododata.labelColor !=
+                                                          null
+                                                      ? hexToColor(
+                                                          tododata.labelColor ??
+                                                              "")
+                                                      : Colors
+                                                          .grey, // Fallback color
+                                                  width: 3,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  tododata.labelName ?? "",
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 13,
+                                                    color: Color(0xff141516),
+                                                    height: 16.94 / 13,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                SizedBox(
+                                                  width: w * 0.5,
+                                                  child: Text(
+                                                    tododata.description ?? "",
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontWeight: FontWeight.w400,
+                                                      fontSize: 11,
+                                                      color: Color(0xffB1B5C3),
+                                                      height: 12.89 / 11,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                Text(
+                                                  tododata.dateTime ?? "",
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 11,
+                                                    color: Color(0xffB1B5C3),
+                                                    height: 13.31 / 11,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    tododata.dateTime ?? "",
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 11,
-                                      color: Color(0xffB1B5C3),
-                                      height: 13.31 / 11,
+                                    const Divider(
+                                      thickness: 1,
+                                      color: Color(0xffF1F1F1),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                );
+                              },
                             ),
-                          ],
-                        ),
-                      ),
-                      const Divider(
-                        thickness: 1,
-                        color: Color(0xffF1F1F1),
-                      ),
-                    ],
-                  );
-                },
-              ):
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/nodata1.png', // Path to your no data image
-                      width: 150,
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "No Data Found",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                        fontFamily: "Inter",
-                      ),
-                    ),
+                          )
+                        : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 100,
+                                ),
+                                Image.asset(
+                                  'assets/nodata1.png', // Path to your no data image
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No Data Found",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                                SizedBox(height: h*0.3,)
+                              ],
+                            ),
+                          )
                   ],
-                ),
-              )
-            ),
-
-          ],
-        ),
-      ),
-
+                )),
+                    ],
+                  ),
+          ),
     );
   }
 
@@ -683,24 +835,24 @@ class _TodolistState extends State<Todolist> {
                                       .toList();
                                 },
                                 itemBuilder: (context, suggestion) {
-                                  return
-                                    ListTile(
-                                    title:
-                                    Row(
+                                  return ListTile(
+                                    title: Row(
                                       children: [
                                         Container(
                                           width: 20,
                                           height: 20,
                                           decoration: BoxDecoration(
                                             color: Color(
-                                              int.parse(suggestion.colorCode!.replaceFirst('#','0xFF')),
+                                              int.parse(suggestion.colorCode!
+                                                  .replaceFirst('#', '0xFF')),
                                               // This replaces '#' with '0xFF' to make it a valid color value
                                             ),
-                                            borderRadius: BorderRadius.circular(100),
-                                            border: Border.all(color: Colors.grey.shade300),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            border: Border.all(
+                                                color: Colors.grey.shade300),
                                           ),
                                         ),
-
                                         SizedBox(width: 10),
                                         Text(
                                           (suggestion.colorName!),
@@ -787,7 +939,6 @@ class _TodolistState extends State<Todolist> {
                         InkResponse(
                           onTap: () {
                             setState(() {
-
                               _validateLabelName =
                                   _labelnameController.text.isEmpty
                                       ? "Please enter label name"
@@ -817,17 +968,17 @@ class _TodolistState extends State<Todolist> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child:
-                              _isLoading?spinkit.getFadingCircleSpinner():
-                              Text(
-                                'Save',
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
+                              child: _isLoading
+                                  ? spinkit.getFadingCircleSpinner()
+                                  : Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -1354,26 +1505,26 @@ class _TodolistState extends State<Todolist> {
                               _validtaskName = _taskNameController.text.isEmpty
                                   ? "Please enter title"
                                   : "";
-                              _validdescription =
-                                  _descriptionController.text.isEmpty
-                                      ? "Please enter a description"
-                                      : "";
+                              // _validdescription =
+                              //     _descriptionController.text.isEmpty
+                              //         ? "Please enter a description"
+                              //         : "";
                               _validDate = _DateController.text.isEmpty
                                   ? "Please select date"
                                   : "";
-                              _validatePriority =
-                                  _priorityController.text.isEmpty
-                                      ? "Please select a priority"
-                                      : "";
-                              _validateLabel = _labelController.text.isEmpty
-                                  ? "Please select a label"
-                                  : "";
+                              // _validatePriority =
+                              //     _priorityController.text.isEmpty
+                              //         ? "Please select a priority"
+                              //         : "";
+                              // _validateLabel = _labelController.text.isEmpty
+                              //     ? "Please select a label"
+                              //     : "";
 
                               _isLoading = _validtaskName.isEmpty &&
-                                  _validdescription.isEmpty &&
-                                  _validatePriority.isEmpty &&
-                                  _validatePriority.isEmpty &&
-                                  _validateLabel.isEmpty;
+                                  // _validdescription.isEmpty &&
+                                  // _validatePriority.isEmpty &&
+                                  // _validateLabel.isEmpty &&
+                                  _validDate.isEmpty;
 
                               if (_isLoading) {
                                 PostToDo();
@@ -1392,16 +1543,17 @@ class _TodolistState extends State<Todolist> {
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
-                              child:_isLoading?spinkit.getFadingCircleSpinner():
-                              Text(
-                                'Save',
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
+                              child: _isLoading
+                                  ? spinkit.getFadingCircleSpinner()
+                                  : Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -1437,8 +1589,6 @@ class _TodolistState extends State<Todolist> {
             height: 16.36 / 14,
             fontWeight: FontWeight.w400));
   }
-
-
 
   Widget _buildDateField(TextEditingController controller) {
     return Column(

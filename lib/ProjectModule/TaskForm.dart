@@ -269,7 +269,7 @@ class _TaskFormState extends State<TaskForm> {
           _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
           _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
-      _validatefile = _imageFile==null ? "Please choose file." : "";
+      // _validatefile = _imageFile==null ? "Please choose file." : "";
 
       _isLoading = _validateTitle.isEmpty &&
           _validateDescription.isEmpty &&
@@ -299,7 +299,7 @@ class _TaskFormState extends State<TaskForm> {
           _startDateController.text,
           _deadlineController.text,
           selectedIds,
-          File(_imageFile!.path));
+          filepath);
     }else{
       data = await Userapi.CreateTask(
           widget.projectId,
@@ -312,7 +312,7 @@ class _TaskFormState extends State<TaskForm> {
           _startDateController.text,
           _deadlineController.text,
           selectedIds,
-          File(_imageFile!.path));
+          filepath);
     }
     print("Task data:${data}");
     setState(() {
@@ -1165,25 +1165,30 @@ class _TaskFormState extends State<TaskForm> {
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: w * 0.43,
-              decoration: BoxDecoration(
-                color: Color(0xffF8FCFF),
-                border: Border.all(
-                  color: Color(0xff8856F4),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Center(
-                child: Text(
-                  'Close',
-                  style: TextStyle(
+            InkResponse(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xffF8FCFF),
+                  border: Border.all(
                     color: Color(0xff8856F4),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Inter',
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      color: Color(0xff8856F4),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
               ),

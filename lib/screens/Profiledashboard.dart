@@ -90,7 +90,7 @@ final spinkit=Spinkits();
 
 
   Future<void> UpdateProfile() async {
-    var res = await Userapi.UpdateUserDetails(Fullname, _phoneController.text,File(_croppedFile!.path));
+    var res = await Userapi.UpdateUserDetails(Fullname, _phoneController.text,_image);
     if (res != null) {
       if (res.settings?.success == 1) {
         Navigator.pop(context, true);
@@ -167,6 +167,7 @@ final spinkit=Spinkits();
       if (croppedFile != null) {
         setState(() {
           _croppedFile = croppedFile;
+          _image= File(_croppedFile!.path);
         });
       }
     }

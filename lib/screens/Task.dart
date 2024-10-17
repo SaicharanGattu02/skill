@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../Model/TasklistModel.dart';
+import '../Model/DashboardTaksModel.dart';
 import '../Services/UserApi.dart';
 
 class Task extends StatefulWidget {
@@ -21,27 +20,6 @@ class _TaskState extends State<Task> {
   DateTime currentMonth = DateTime.now();
   late ScrollController _scrollController;
 
-
-  // final List<Map<String, String>> tasks = [
-  //   {
-  //     "title": "Plan and conduct user research and competitor analysis.",
-  //     "subtitle":
-  //         "Brainstorming brings team members' diverse experience into play.",
-  //     "collaborators": "+6 Collaborators",
-  //     "startDate": "10-09-2024",
-  //     "endDate": "10-09-2024",
-  //   },
-  //   {
-  //     "title": "Interpret data and qualitative feedback.",
-  //     "subtitle":
-  //         "Brainstorming brings team members' diverse experience into play.",
-  //     "collaborators": "+6 Collaborators",
-  //     "startDate": "10-09-2024",
-  //     "endDate": "10-09-2024",
-  //   },
-  // ];
-
-  // List of image assets for collaborators
   final List<String> imageList = [
     "assets/prashanth.png",
     "assets/prashanth.png",
@@ -49,30 +27,35 @@ class _TaskState extends State<Task> {
     "assets/prashanth.png",
     "assets/prashanth.png",
   ];
+  String formattedDate="";
 
   @override
   void initState() {
-    // GetProjectTasks();
     super.initState();
     _scrollController = ScrollController();
     _generateDates();
+    formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    GetTasksList(formattedDate);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
   }
   List<Data> data=[];
-  // Future<void> GetProjectTasks() async {
-  //   var Res = await Userapi.GetTask();
-  //   setState(() {
-  //     if (Res != null) {
-  //       if (Res.data != null) {
-  //         data = Res.data??[];
-  //       } else {
-  //         print("Task Failure  ${Res.settings?.message}");
-  //       }
-  //     }
-  //   });
-  // }
+  List<Data> filteredData=[];
+  Future<void> GetTasksList(String date) async {
+    var res = await Userapi.gettaskaApi(date);
+    setState(() {
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          data = res.data ?? [];
+          filteredData = data; // Initialize the filtered list to the full list
+        } else {
+          data = [];
+          filteredData = [];
+        }
+      }
+    });
+  }
   @override
   void dispose() {
     _scrollController.dispose();
@@ -139,7 +122,7 @@ class _TaskState extends State<Task> {
       _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
       Container(
         width: w,
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(top: 16,left: 16,right: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xffFFFFFF),
@@ -175,29 +158,6 @@ class _TaskState extends State<Task> {
                     ),
                   ],
                 ),
-                Spacer(),
-                Image.asset(
-                  "assets/sun.png",
-                  width: w * 0.05,
-                  height: w * 0.04,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "Now is almost sunny",
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 10,
-                    color: Color(0xff64748B),
-                    height: 16.94 / 10,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Image.asset(
-                  "assets/sunn.png",
-                  width: 24,
-                  height: 24,
-                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -214,6 +174,13 @@ class _TaskState extends State<Task> {
                     onTap: () {
                       setState(() {
                         selectedDate = dates[index];
+                        formattedDate =
+                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                        print("selectedDate: $formattedDate");
+                        data = [];
+                        filteredData = [];
+                        // _isLoading=true;
+                        GetTasksList(formattedDate);
                       });
                       _scrollToSelectedDate();
                     },
@@ -267,17 +234,9 @@ class _TaskState extends State<Task> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border:
-                          Border.all(color: const Color(0xffD0CBDB), width: 1),
+                          Border.all(color: const Color(0xffD0CBDB), width: 0.5),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     color: Colors.grey.withOpacity(0.2),
-                      //     spreadRadius: 1,
-                      //     blurRadius: 5,
-                      //     offset: const Offset(0, 3),
-                      //   ),
-                      // ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,7 +250,7 @@ class _TaskState extends State<Task> {
                                   borderRadius: BorderRadius.circular(100),
                                   color: Color(0xffFFAB00).withOpacity(0.10)),
                               child: Text(
-                                "In Progress",
+                                task.status??"",
                                 style: TextStyle(
                                     color: const Color(0xffFFAB00),
                                     fontWeight: FontWeight.w400,
@@ -301,14 +260,6 @@ class _TaskState extends State<Task> {
                                     overflow: TextOverflow.ellipsis,
                                     fontFamily: "Inter"),
                               ),
-                            ),
-                            Spacer(),
-                            Image.asset(
-                              "assets/more.png",
-                              fit: BoxFit.contain,
-                              width: w*0.025,
-                              height:w*0.03,
-                              color: Color(0xff000000),
                             ),
                           ],
                         ),

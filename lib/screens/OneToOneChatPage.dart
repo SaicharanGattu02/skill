@@ -9,6 +9,7 @@ import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
 import 'Profiledashboard.dart';
+import 'UserProfile.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
@@ -280,11 +281,11 @@ class _ChatPageState extends State<ChatPage> {
             SizedBox(width: 10),
             InkWell(
               onTap: () async {
-                // var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
-                // if(res == true) {
-                //   _initializeWebSocket();
-                //   RoomDetailsApi();
-                // }
+                var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => Userprofile()));
+                if(res == true) {
+                  _initializeWebSocket();
+                  RoomDetailsApi();
+                }
               },
               child: CircleAvatar(
                 radius: 20,
@@ -295,11 +296,11 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
               child: InkResponse(
                 onTap: () async {
-                  // var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
-                  // if(res == true) {
-                  //   _initializeWebSocket();
-                  //   RoomDetailsApi();
-                  // }
+                  var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => Userprofile()));
+                  if(res == true) {
+                    _initializeWebSocket();
+                    RoomDetailsApi();
+                  }
                 },
                 child: Text(
                   username,
