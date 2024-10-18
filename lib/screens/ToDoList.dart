@@ -44,7 +44,7 @@ class _TodolistState extends State<Todolist> {
   String labelid = "";
   String labelColorid = "";
 
-  bool? isChecked;
+  bool isChecked =false;
 
   bool _isLoading = true;
   final spinkit = Spinkits();
@@ -151,6 +151,21 @@ class _TodolistState extends State<Todolist> {
         } else {
           data = [];
           filteredData = [];
+        }
+      }
+    });
+  }
+
+  Future<void> deleteToDoList(String id) async {
+    var res = await Userapi.deleteTask(id);
+    setState(() {
+      _isLoading = false;
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          GetToDoList(formattedDate);
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${res.settings?.message}");
         }
       }
     });
@@ -513,28 +528,36 @@ class _TodolistState extends State<Todolist> {
                                             width: 20,
                                             height: 20,
                                           ),
-                                          const SizedBox(width: 10),
-                                          Checkbox(
-                                            value: isChecked, // Replace with your boolean state variable
-                                            onChanged: (newValue) {
+                                          InkWell(
+                                            onTap: () {
                                               setState(() {
-                                                isChecked = newValue; // Update your state
+                                                deleteToDoList(tododata.id ?? "");
                                               });
                                             },
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(100), // To give it an oval shape
-                                            ),
-                                            activeColor: tododata.labelColor != null
-                                                ? hexToColor(tododata.labelColor ?? "")
-                                                : Colors.grey, // Fallback color for checked state
-                                            side: BorderSide(
-                                              color: tododata.labelColor != null
-                                                  ? hexToColor(tododata.labelColor ?? "")
-                                                  : Colors.grey, // Fallback color for unchecked state
-                                              width: 3,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left:8,right: 8), // Increase padding for larger tap area
+                                              child: Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: tododata.labelColor != null
+                                                        ? hexToColor(tododata.labelColor ?? "")
+                                                        : Colors.grey, // Border color
+                                                    width: 3,
+                                                  ),
+                                                ),
+                                                child: isChecked
+                                                    ? Icon(
+                                                  Icons.check,
+                                                  size: 10,
+                                                  color: Colors.white, // Color of the check icon
+                                                )
+                                                    : null, // Use null instead of SizedBox.shrink() when unchecked
+                                              ),
                                             ),
                                           ),
-                                          const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:

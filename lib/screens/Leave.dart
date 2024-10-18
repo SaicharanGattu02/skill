@@ -96,6 +96,7 @@ class _LeaveState extends State<Leave> {
           CustomSnackBar.show(context, "${data.message}");
           Navigator.pop(context);
           getleaves();
+          getleavesCount();
         } else {
           CustomSnackBar.show(context, "${data.message}");
         }
@@ -121,14 +122,14 @@ class _LeaveState extends State<Leave> {
     });
   }
 
-  Count data = Count();
+  Count? data;
   Future<void> getleavesCount() async {
     var res = await Userapi.GetLeaveCount();
     setState(() {
       if (res != null) {
         if (res.success==1) {
           _isLoading = false;
-
+          data=res.data;
           CustomSnackBar.show(context, "${res.message}");
         } else {
           CustomSnackBar.show(context, "${res.message}");
@@ -157,64 +158,64 @@ class _LeaveState extends State<Leave> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(onTap: (){
-
-                },
-                  child:
-                  SizedBox(
-                    width: w,
-                    height: h*0.043,
-                    child:
-                    Container(
-                      padding:  EdgeInsets.only(left: 14,right: 14,),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child:
-                      Row(
-                        children: [
-                          Image.asset(
-                            "assets/search.png",
-                            width: 20,
-                            height: 17,
-                            fit: BoxFit.contain,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Search',
-                                  hintStyle: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    color: Color(0xff9E7BCA),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    fontFamily: "Nunito",
-
-                                  ),
-                                ),
-                                style:  TextStyle(
-
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  decorationColor:  Color(0xff9E7BCA),
-
-                                  fontFamily: "Nunito",
-
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // InkWell(onTap: (){
+                //
+                // },
+                //   child:
+                //   SizedBox(
+                //     width: w,
+                //     height: h*0.043,
+                //     child:
+                //     Container(
+                //       padding:  EdgeInsets.only(left: 14,right: 14,),
+                //       decoration: BoxDecoration(
+                //         color: const Color(0xffffffff),
+                //         borderRadius: BorderRadius.circular(8),
+                //       ),
+                //       child:
+                //       Row(
+                //         children: [
+                //           Image.asset(
+                //             "assets/search.png",
+                //             width: 20,
+                //             height: 17,
+                //             fit: BoxFit.contain,
+                //           ),
+                //           Expanded(
+                //             child: Padding(
+                //               padding: const EdgeInsets.all(8.0),
+                //               child: TextField(
+                //                 controller: _searchController,
+                //                 decoration: InputDecoration(
+                //                   border: InputBorder.none,
+                //                   hintText: 'Search',
+                //                   hintStyle: const TextStyle(
+                //                     overflow: TextOverflow.ellipsis,
+                //                     color: Color(0xff9E7BCA),
+                //                     fontWeight: FontWeight.w400,
+                //                     fontSize: 14,
+                //                     fontFamily: "Nunito",
+                //
+                //                   ),
+                //                 ),
+                //                 style:  TextStyle(
+                //
+                //                   color: Color(0xff9E7BCA),
+                //                   fontWeight: FontWeight.w400,
+                //                   fontSize: 16,
+                //                   decorationColor:  Color(0xff9E7BCA),
+                //
+                //                   fontFamily: "Nunito",
+                //
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: 8,
                 ),
@@ -241,9 +242,8 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data.availableLeaves != null && data!.availableLeaves.toString().isNotEmpty)
-                                    ? data.availableLeaves.toString()
-                                    : "0", // Show "0" if null or empty
+                                  (data!.availableLeaves!=null)?
+                                     data?.availableLeaves.toString()??"0":"0",
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -296,9 +296,8 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data?.unusedLeaves != null && data!.unusedLeaves.toString().isNotEmpty)
-                                    ? data.unusedLeaves.toString()
-                                    : "0", // Show "0" if null or empty
+                                (data!.unusedLeaves!=null)?
+                                data?.unusedLeaves.toString()??"0":"0",
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -352,9 +351,8 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data?.pendingLeaves != null && data!.pendingLeaves.toString().isNotEmpty)
-                                    ? data.pendingLeaves.toString()
-                                    : "0", // Show "0" if null or empty
+                                  (data?.pendingLeaves!=null)?
+                                     data?.pendingLeaves.toString()??"0":"0",
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -404,9 +402,8 @@ class _LeaveState extends State<Leave> {
                             ),
                             child: Center(
                               child: Text(
-                                (data.rejectedLeaves != null && data.rejectedLeaves.toString().isNotEmpty)
-                                    ? data.rejectedLeaves.toString()
-                                    : "0", // Show "0" if null or empty
+                                (data?.rejectedLeaves!=null)?
+                                    data?.rejectedLeaves.toString()??"0":"0",
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -994,7 +991,7 @@ class _LeaveState extends State<Leave> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {

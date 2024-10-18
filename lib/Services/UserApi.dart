@@ -46,8 +46,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  static String host = "http://192.168.0.31:8000";
-  // static String host = "https://stage.skil.in";
+  // static String host = "http://192.168.0.31:8000";
+  static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
@@ -1158,22 +1158,22 @@ class Userapi {
       return null;
     }
   }
-
   static Future<LoginModel?> postProjectFile(
-      String id, String category, File image, String description) async {
-    // Validate the file type to ensure it's an image
-    String? mimeType = lookupMimeType(image.path);
-    if (mimeType == null || !mimeType.startsWith('image/')) {
-      print('Selected file is not a valid image.');
-      return null;
+      String id, String category, File? image, String description) async {
+    // Validate the file type if image is provided
+    if (image != null) {
+      String? mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null;
+      }
     }
 
     try {
       final url = Uri.parse("${host}/project/project-files");
 
       // Headers
-      final headers =
-          await getheader(); // Make sure this includes your authorization token
+      final headers = await getheader(); // Ensure this includes your authorization token
 
       // Create multipart request
       var request = http.MultipartRequest('POST', url)
@@ -1182,14 +1182,17 @@ class Userapi {
         ..fields['category_id'] = category
         ..fields['description'] = description;
 
-      // Attach the image file to the request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-          contentType: MediaType.parse(mimeType), // Set the MIME type
-        ),
-      );
+      // Attach the image file to the request if it's not null
+      if (image != null) {
+        String? mimeType = lookupMimeType(image.path);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            image.path,
+            contentType: MediaType.parse(mimeType!), // Set the MIME type
+          ),
+        );
+      }
 
       // Send the request
       var response = await request.send();
@@ -1213,21 +1216,23 @@ class Userapi {
     }
   }
 
+
   static Future<LoginModel?> putProjectFile(
-      String id, String category, File image, String description) async {
-    // Validate the file type to ensure it's an image
-    String? mimeType = lookupMimeType(image.path);
-    if (mimeType == null || !mimeType.startsWith('image/')) {
-      print('Selected file is not a valid image.');
-      return null;
+      String id, String category, File? image, String description) async {
+    // Validate the file type if image is provided
+    if (image != null) {
+      String? mimeType = lookupMimeType(image.path);
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        print('Selected file is not a valid image.');
+        return null;
+      }
     }
 
     try {
       final url = Uri.parse("${host}/project/project-file-detail/${id}");
 
       // Headers
-      final headers =
-          await getheader(); // Make sure this includes your authorization token
+      final headers = await getheader(); // Ensure this includes your authorization token
 
       // Create multipart request
       var request = http.MultipartRequest('PUT', url)
@@ -1235,15 +1240,20 @@ class Userapi {
         ..fields['project_id'] = id
         ..fields['category_id'] = category
         ..fields['description'] = description;
+
       print("putProjectFile>>${request}");
-      // Attach the image file to the request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'file',
-          image.path,
-          contentType: MediaType.parse(mimeType), // Set the MIME type
-        ),
-      );
+
+      // Attach the image file to the request if it's not null
+      if (image != null) {
+        String? mimeType = lookupMimeType(image.path);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            image.path,
+            contentType: MediaType.parse(mimeType!), // Set the MIME type
+          ),
+        );
+      }
 
       // Send the request
       var response = await request.send();
@@ -1266,6 +1276,7 @@ class Userapi {
       return null;
     }
   }
+
 
   static Future<LoginModel?> PostProjectCategory(String name, String id) async {
     try {
@@ -1616,6 +1627,25 @@ class Userapi {
     } catch (e) {
       // Handle exception
       print('Exception: $e');
+    }
+  }
+
+ static Future<LoginModel?> deleteTask(String taskId) async {
+    final url = '${host}/todo/delete-task/$taskId';
+    final headers = await getheader();
+    final response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      // You can include a body if your API expects it
+    );
+
+    if (response.statusCode == 200) {
+      print("UserDetails Response:${response.body}");
+      return LoginModel.fromJson(jsonDecode(response.body));
+    } else {
+      // Handle error
+      print('Failed to delete task: ${response.statusCode}');
+      print('Response: ${response.body}');
     }
   }
 

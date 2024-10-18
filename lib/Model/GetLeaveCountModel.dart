@@ -23,10 +23,10 @@ class GetLeaveCountModel {
 }
 
 class Count {
-  Null? availableLeaves;
+  int? availableLeaves;
   int? rejectedLeaves;
   int? pendingLeaves;
-  Null? unusedLeaves;
+  int? unusedLeaves;
 
   Count(
       {this.availableLeaves,

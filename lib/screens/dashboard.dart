@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -79,31 +81,69 @@ class _DashboardState extends State<Dashboard> {
   String selectedEmployee = "";
   String mainWeatherStatus = "";
   final spinkit = Spinkits();
+  var lattitude;
+  var longitude;
+  var address;
 
   @override
   void initState() {
     GetEmployeeData();
-    fetchWeather();
     _requestLocationPermission();
     GetUserDeatails();
     GetRoomsList();
     GetProjectsData();
+    get_lat_log();
     super.initState();
   }
 
+  void get_lat_log() async {
+    // Check location permission
+    var status = await Permission.location.status;
+
+    // If the permission is denied, request it
+    if (status.isDenied) {
+      if (await Permission.location.request().isGranted) {
+        // Permission granted
+        await _getLocation();
+      } else {
+        // Permission denied
+        // Handle permission denial (show a message, etc.)
+        return;
+      }
+    } else if (status.isGranted) {
+      // Permission already granted
+      await _getLocation();
+    }
+  }
+
+  Future<void> _getLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(position.latitude, position.longitude);
+      setState(() {
+        lattitude = position.latitude;
+        longitude = position.longitude;
+        address = "${placemarks[0].subLocality}, ${placemarks[0].street}, ${placemarks[0].locality}";
+      });
+      fetchWeather();
+    } catch (e) {
+      // Handle any errors
+      print('Error getting location: $e');
+    }
+  }
+
   Future<void> fetchWeather() async {
-    final lat = 17.4563197;
-    final lon = 78.3728344;
     final apiKey = '5ea9806af0bf37b08dab840ff3b70c5b';
     final url =
-        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey';
+        'https://api.openweathermap.org/data/2.5/weather?lat=$lattitude&lon=$longitude&appid=$apiKey';
     try {
       final response = await http.get(Uri.parse(url));
       setState(() {
         if (response.statusCode == 200) {
           // Parse the JSON response
           final data = json.decode(response.body);
-
           // Extract the main weather status
           mainWeatherStatus = data['weather'][0]['main'];
 
@@ -319,7 +359,7 @@ class _DashboardState extends State<Dashboard> {
     GetUserDeatails();
     GetRoomsList();
     GetProjectsData();
-    fetchWeather();
+    get_lat_log();
     setState(() {
       employeeData = [];
       _loading = true;
@@ -352,23 +392,19 @@ class _DashboardState extends State<Dashboard> {
                   _scaffoldKey.currentState?.openDrawer();
                 },
                 child: Container(
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/menu.png",
-                        width: 24,
-                        fit: BoxFit.contain,
-                      ),
-                      const SizedBox(width: 12),
-                      Image.asset(
-                        "assets/skillLogo.png",
-                        width: 80,
-                        height: 35,
-                        fit: BoxFit.contain,
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(right: 10), // Increase padding as needed
+                  child: Image.asset(
+                    "assets/menu.png",
+                    width: 24,
+                    fit: BoxFit.contain,
                   ),
                 ),
+              ),
+              Image.asset(
+                "assets/skillLogo.png",
+                width: 80,
+                height: 35,
+                fit: BoxFit.contain,
               ),
               const Spacer(),
               Row(
@@ -1211,8 +1247,7 @@ class _DashboardState extends State<Dashboard> {
                                                 BorderRadius.circular(8)),
                                         child: Center(
                                           child: Text(
-                                            userdata?.tasksCount.toString() ??
-                                                "",
+                                            userdata?.tasksCount.toString() ?? "",
                                             style: TextStyle(
                                                 color: Color(0xff000000),
                                                 fontSize: 25,

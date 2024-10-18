@@ -6,13 +6,13 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../Model/GetCatagoryModel.dart';
-import '../Model/GetFileModel.dart';
 import '../Model/ProjectFileModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import 'package:path/path.dart' as p;
 import '../utils/ShakeWidget.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProjectFile extends StatefulWidget {
   final String id;
@@ -112,16 +112,80 @@ class _ProjectFileState extends State<ProjectFile> {
       });
   }
 
+  // Future<void> downloadInvoice(String url) async {
+  //   try {
+  //     print("Checking storage permission...");
+  //     var status = await Permission.mediaLibrary.status;
+  //
+  //     if (!status.isGranted) {
+  //       print("Storage permission not granted. Requesting...");
+  //       await Permission.mediaLibrary.request();
+  //     }
+  //     status = await Permission.mediaLibrary.status;
+  //     if (status.isGranted) {
+  //       print("Storage permission granted.");
+  //       Directory dir =
+  //           Directory('/storage/emulated/0/Download/'); // for Android
+  //       if (!await dir.exists()) {
+  //         print(
+  //             "Download directory does not exist. Using external storage directory.");
+  //         dir = await getExternalStorageDirectory() ?? Directory.systemTemp;
+  //       } else {
+  //         print("Download directory exists: ${dir.path}");
+  //       }
+  //       String generateFileName(String originalName) {
+  //         // Extract file extension
+  //         String extension = originalName.split('.').last;
+  //         // Generate unique identifier
+  //         String uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
+  //         // Return unique filename
+  //         String fileName = "Prescription_$uniqueId.$extension";
+  //         print("Generated filename: $fileName");
+  //         return fileName;
+  //       }
+  //
+  //       // Start downloading the file
+  //       print("Starting download from: $url");
+  //       FileDownloader.downloadFile(
+  //         url: url.toString().trim(),
+  //         name: generateFileName("Order_invoice.pdf"),
+  //         notificationType: NotificationType.all,
+  //         downloadDestination: DownloadDestinations.publicDownloads,
+  //         onDownloadRequestIdReceived: (downloadId) {
+  //           print('Download request ID received: $downloadId');
+  //         },
+  //         onProgress: (fileName, progress) {
+  //           print('Downloading $fileName: $progress%');
+  //         },
+  //         onDownloadError: (String error) {
+  //           print('DOWNLOAD ERROR: $error');
+  //         },
+  //         onDownloadCompleted: (path) {
+  //           print('Download completed! File saved at: $path');
+  //           setState(() {
+  //             // Update UI if necessary
+  //           });
+  //         },
+  //       );
+  //     } else {
+  //       print("Storage permission denied.");
+  //     }
+  //   } catch (e, s) {
+  //     print('Exception caught: $e');
+  //     print('Stack trace: $s');
+  //   }
+  // }
+
   Future<void> PostFiles(String editid) async {
     var res;
     if (editid != "") {
 
       res = await Userapi.putProjectFile(editid, categoryID,
-          File(_imageFile!.path), _descriptionController.text);
+          filepath, _descriptionController.text);
       print("putProjectFile>>${res}");
     } else {
       res = await Userapi.postProjectFile(widget.id, categoryID,
-          File(_imageFile!.path), _descriptionController.text);
+          filepath, _descriptionController.text);
     }
 
     print("filee>${File(_imageFile!.path)}");
@@ -469,7 +533,7 @@ class _ProjectFileState extends State<ProjectFile> {
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: filteredRooms.length,
                         itemBuilder: (context, index) {
-                          final projectfile = data[index];
+                          final projectfile = filteredRooms[index];
                           String isoDate =projectfile.createdTime??"";
                           String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false); // Date only
 
@@ -508,13 +572,18 @@ class _ProjectFileState extends State<ProjectFile> {
                                       ),
                                     ),
                                     Spacer(),
-                                    Image.asset(
-                                      "assets/download.png",
-                                      fit: BoxFit.contain,
-                                      width: w * 0.06,
-                                      height: w * 0.05,
-                                      color: Color(0xff8856F4),
-                                    ),
+                                    // InkResponse(
+                                    //   onTap: (){
+                                    //     // downloadInvoice(projectfile.fileUrl??"");
+                                    //   },
+                                    //   child: Image.asset(
+                                    //     "assets/download.png",
+                                    //     fit: BoxFit.contain,
+                                    //     width: w * 0.06,
+                                    //     height: w * 0.05,
+                                    //     color: Color(0xff8856F4),
+                                    //   ),
+                                    // ),
                                     SizedBox(
                                       width: w * 0.025,
                                     ),

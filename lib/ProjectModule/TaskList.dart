@@ -289,17 +289,23 @@ class _TaskListState extends State<TaskList> {
                                           width: w * 0.04,
                                         ),
                                         InkWell(
-                                          onTap: () {
-                                            Navigator.push(
+                                          onTap: () async {
+                                            var res = await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         TaskForm(
                                                             title: 'Edit Task',
                                                             projectId:
-                                                                widget.id1,
+                                                            widget.id1,
                                                             taskid: task.id ??
                                                                 "")));
+                                            if (res == true) {
+                                              setState(() {
+                                                _loading=true;
+                                                GetProjectTasks();
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             child: Image.asset(

@@ -277,10 +277,11 @@ class _AddlogtimeState extends State<Addlogtime> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TypeAheadField<Data>(
+                        controller: _taskController,
                         builder: (context, controller, focusNode) {
                           return TextField(
                             focusNode: focusNode,
-                            controller: _taskController,
+                            controller: controller,
                             onTap: () {
                               setState(() {
                                 _validatetask = "";
