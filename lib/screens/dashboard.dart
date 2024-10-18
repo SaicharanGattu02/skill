@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/Services/UserApi.dart';
+import 'package:skill/screens/AIChatPage.dart';
 import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/LogInScreen.dart';
@@ -377,7 +378,28 @@ class _DashboardState extends State<Dashboard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => KanbanList()));
+                              builder: (context) => AIChatPage()));
+                    },
+                    child: Container(
+                      width:
+                      48, // Increase this size to make the area more tappable
+                      height:
+                      48, // Increase this size to make the area more tappable
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        "assets/robo.png",
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Notifications()));
                     },
                     child: Container(
                       width:
@@ -627,7 +649,6 @@ class _DashboardState extends State<Dashboard> {
                                         // UX/UI and Performance in a Row
                                         Row(
                                           children: [
-                                            // UX/UI and Contact Details
                                             Expanded(
                                               child: Column(
                                                 crossAxisAlignment:
@@ -1959,6 +1980,16 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+      // floatingActionButton: InkResponse(
+      //   onTap: (){
+      //     Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //             builder: (context) => AIChatPage()));
+      //   },
+      //   child: Image(image: AssetImage("assets/AI.png"),width: 60,height: 60,
+      //   ),
+      // ),
     );
   }
 

@@ -40,13 +40,14 @@ import '../Model/TaskKanBanModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
 import '../Model/ToDoListModel.dart';
+import '../Model/UserDetailModel.dart';
 import '../Model/UserDetailsModel.dart';
 import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  // static String host = "http://192.168.0.56:8000";
-  static String host = "https://stage.skil.in";
+  static String host = "http://192.168.0.31:8000";
+  // static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
@@ -1328,37 +1329,43 @@ class Userapi {
       String description,
       String projects,
       String meetingType,
-      String collaborators,
+      List<String> collaborators, // Changed to a List for multiple collaborators
       String datetime,
       String meetingLink) async {
     try {
-      // Prepare the data
-      Map<String, dynamic> data = {
-        'title': title,
-        'description': description,
-        'project': projects,
-        'meeting_type': meetingType,
-        'start_date': datetime,
-        'meeting_link': meetingLink,
-        'collaborators': 'a952174dfa5548628ed606d44e55ddbb',
-      };
-
       // Define the URL
       final url = Uri.parse('${host}/meeting/add-meeting');
 
       // Fetch the headers (including auth headers)
       final headers = await getheader();
 
-      // Send the POST request
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(data),
-      );
+      // Create a MultipartRequest
+      var request = http.MultipartRequest('POST', url);
 
+      // Add headers to the request
+      request.headers.addAll(headers);
+
+      // Add fields to the request
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['project'] = projects;
+      request.fields['meeting_type'] = meetingType;
+      request.fields['start_date'] = datetime;
+      request.fields['meeting_link'] = meetingLink;
+
+      // Add collaborators as separate fields
+      for (var collaborator in collaborators) {
+        request.fields['collaborators'] = collaborator;
+      }
+
+      // Send the request
+      final response = await request.send();
+
+      // Check response status
       if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        print("postAddMeeting: ${response.body}");
+        final responseString = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(responseString);
+        print("postAddMeeting: $responseString");
         return LoginModel.fromJson(jsonResponse);
       } else {
         print("Request failed with status: ${response.statusCode}");
@@ -1484,7 +1491,7 @@ class Userapi {
     }
   }
 
-  Future<LoginModel?> addMeeting() async {
+  static Future<LoginModel?> addMeeting() async {
     final url = Uri.parse('${host}/meeting/add-meeting');
     // Prepare headers
     final headers = await getheader();
@@ -1582,8 +1589,26 @@ class Userapi {
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
-        // Handle successful response
-        print('Response data: ${response.body}');
+        print("notifyUser Response:${response.body}");
+        return LoginModel.fromJson(jsonDecode(response.body));
+      } else {
+        // Handle error response
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle exception
+      print('Exception: $e');
+    }
+  }
+
+  static Future<UserDetailModel?>UserDetails(String id) async {
+    final url = '${host}/chat/user/$id';
+    final headers = await getheader();
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+        print("UserDetails Response:${response.body}");
+        return UserDetailModel.fromJson(jsonDecode(response.body));
       } else {
         // Handle error response
         print('Error: ${response.statusCode}');

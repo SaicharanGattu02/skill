@@ -94,7 +94,7 @@ class _TaskState extends State<Task> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
-
+    var h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
@@ -224,6 +224,33 @@ class _TaskState extends State<Task> {
               ),
             ),
             const SizedBox(height: 24),
+            (data.length == 0)
+                ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 100,
+                  ),
+                  Image.asset(
+                    'assets/nodata1.png', // Path to your no data image
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "No Data Found",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  SizedBox(height: h*0.3,)
+                ],
+              ),
+            ):
             Expanded(
               child: ListView.builder(
                 itemCount: data.length,

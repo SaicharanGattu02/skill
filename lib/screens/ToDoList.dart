@@ -44,6 +44,8 @@ class _TodolistState extends State<Todolist> {
   String labelid = "";
   String labelColorid = "";
 
+  bool? isChecked;
+
   bool _isLoading = true;
   final spinkit = Spinkits();
   String formattedDate = "";
@@ -512,24 +514,24 @@ class _TodolistState extends State<Todolist> {
                                             height: 20,
                                           ),
                                           const SizedBox(width: 10),
-                                          ClipOval(
-                                            child: Container(
-                                              width: w * 0.045,
-                                              height: w * 0.045,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                border: Border.all(
-                                                  color: tododata.labelColor !=
-                                                          null
-                                                      ? hexToColor(
-                                                          tododata.labelColor ??
-                                                              "")
-                                                      : Colors
-                                                          .grey, // Fallback color
-                                                  width: 3,
-                                                ),
-                                              ),
+                                          Checkbox(
+                                            value: isChecked, // Replace with your boolean state variable
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                isChecked = newValue; // Update your state
+                                              });
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(100), // To give it an oval shape
+                                            ),
+                                            activeColor: tododata.labelColor != null
+                                                ? hexToColor(tododata.labelColor ?? "")
+                                                : Colors.grey, // Fallback color for checked state
+                                            side: BorderSide(
+                                              color: tododata.labelColor != null
+                                                  ? hexToColor(tododata.labelColor ?? "")
+                                                  : Colors.grey, // Fallback color for unchecked state
+                                              width: 3,
                                             ),
                                           ),
                                           const SizedBox(width: 12),
@@ -539,7 +541,7 @@ class _TodolistState extends State<Todolist> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  tododata.labelName ?? "",
+                                                  tododata.taskName ?? "",
                                                   style: const TextStyle(
                                                     fontFamily: 'Inter',
                                                     fontWeight: FontWeight.w500,

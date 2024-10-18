@@ -282,7 +282,7 @@ class _MeetingsState extends State<Meetings> {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: const Color(0xffD0CBDB), width: 1),
+                                color: const Color(0xffD0CBDB), width: 0.7),
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [

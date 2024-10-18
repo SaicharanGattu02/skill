@@ -1,25 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../Model/DashboardTaksModel.dart';
+import 'package:skill/utils/CustomSnackBar.dart';
+import '../Model/UserDetailModel.dart';
 import '../Services/UserApi.dart';
 
-class Userprofile extends StatefulWidget {
-  const Userprofile({super.key});
+class UserProfile extends StatefulWidget {
+  final String userID;
+
+  const UserProfile({super.key, required this.userID});
 
   @override
-  State<Userprofile> createState() => _UserprofileState();
+  State<UserProfile> createState() => _UserProfileState();
 }
 
-class _UserprofileState extends State<Userprofile> {
+class _UserProfileState extends State<UserProfile> {
+  bool loading=true;
   @override
   void initState() {
+    updateProfile();
     super.initState();
   }
+  
+  final splinkit=Spinkits();
+
+  Data? data;
+  Future<void> updateProfile() async {
+    final response = await Userapi.UserDetails(widget.userID);
+    if (response != null) {
+      setState(() {
+        if (response.settings?.success == 1) {
+          data = response.data;
+          loading=false;
+          print("Data:${data?.fullName??""}");
+        } else {
+          loading=false;
+          print("Update failure: ${response.settings?.message ?? 'Unknown error'}");
+        }
+      });
+    } else {
+      print("Update failed: No response from server.");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
@@ -33,8 +58,8 @@ class _UserprofileState extends State<Userprofile> {
             color: Color(0xffffffff),
           ),
         ),
-        title: const Text(
-          "Profile Someone",
+        title: Text(
+          "User Profile",
           style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 24.0,
@@ -43,10 +68,11 @@ class _UserprofileState extends State<Userprofile> {
           ),
         ),
       ),
-      body: Container(
+      body:(loading)? Center(child: splinkit.getFadingCircleSpinner(color: Color(0xff8856F4))):
+      Container(
         width: w,
         margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-        padding: const EdgeInsets.only(left: 48,right: 48),
+        padding: const EdgeInsets.only(left: 48, right: 48),
         decoration: BoxDecoration(
           color: const Color(0xffFFFFFF),
           borderRadius: BorderRadius.circular(20),
@@ -60,9 +86,13 @@ class _UserprofileState extends State<Userprofile> {
             CircleAvatar(
               radius: 100,
               backgroundColor: Colors.grey,
+              backgroundImage: NetworkImage(data?.image??""),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Text(
-              "Profile Someone",
+              data?.fullName??"",
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 24.0,
@@ -79,7 +109,9 @@ class _UserprofileState extends State<Userprofile> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            SizedBox(height: 16,),
+            SizedBox(
+              height: 16,
+            ),
             Row(
               children: [
                 // UX/UI and Contact Details
@@ -109,7 +141,7 @@ class _UserprofileState extends State<Userprofile> {
                                   Expanded(
                                     // Wrap Text with Expanded to avoid overflow
                                     child: Text(
-                                      "lkjsbfhkisjvbkshvb",
+                                      data?.mobile??"",
                                       style: TextStyle(
                                         color: Color(0xff36B37E),
                                         fontWeight: FontWeight.w400,
@@ -125,7 +157,7 @@ class _UserprofileState extends State<Userprofile> {
                               ),
                             ),
                           ),
-                          SizedBox(width: w * 0.015),
+                          SizedBox(width: w * 0.05),
                           Expanded(
                             child: Container(
                               padding: EdgeInsets.symmetric(
@@ -146,7 +178,7 @@ class _UserprofileState extends State<Userprofile> {
                                   Expanded(
                                     // Wrap Text with Expanded here too
                                     child: Text(
-                                      "rtjrtmtymtuu,rutr6",
+                                      data?.email??"",
                                       style: TextStyle(
                                         color: const Color(0xff2572ED),
                                         fontWeight: FontWeight.w400,
@@ -164,63 +196,105 @@ class _UserprofileState extends State<Userprofile> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16,),
+                      SizedBox(
+                        height: 20,
+                      ),
                       Divider(
                         height: 1,
                       ),
-                      SizedBox(height: 16,),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(children: [
-                            Image.asset("assets/msg.png",width: 18,height: 18,color: Color(0xff8856F4),),
-                            SizedBox(height: 8,),
-                            Text(
-                              "Message",
-                              style: TextStyle(
-                                color: const Color(0xff000000),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 11,
-                                height: 13.41 / 11,
-                                letterSpacing: 0.14,
-                                overflow: TextOverflow.ellipsis,
-                                fontFamily: "Inter",
+                          Column(
+                            children: [
+                              Image.asset(
+                                "assets/msg.png",
+                                width: 18,
+                                height: 18,
+                                color: Color(0xff8856F4),
                               ),
-                            ),
-                          ],),
-                         Container(width: 1,height: 50,decoration: BoxDecoration(color: Color(0xff1D1C1D).withOpacity(0.2)),),
-                          Column(children: [
-                            Image.asset("assets/call.png",width: 18,height: 18,color: Color(0xff8856F4),),
-                            SizedBox(height: 8,),
-                            Text(
-                              "Call",
-                              style: TextStyle(
-                                color: const Color(0xff000000),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 11,
-                                height: 13.41 / 11,
-                                letterSpacing: 0.14,
-                                overflow: TextOverflow.ellipsis,
-                                fontFamily: "Inter",
+                              SizedBox(
+                                height: 8,
                               ),
-                            ),
-                          ],),
-                          Container(width: 1,height: 50,decoration: BoxDecoration(color: Color(0xff1D1C1D).withOpacity(0.2)),),
-                          Column(children: [
-                            Image.asset("assets/video.png",width: 18,height: 18,color: Color(0xff8856F4),),
-                            SizedBox(height: 8,),
-                            Text(
-                              "Mail",
-                              style: TextStyle(
-                                color: const Color(0xff000000),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 11,
-                                height: 13.41 / 11,
-                                letterSpacing: 0.14,
-                                overflow: TextOverflow.ellipsis,
-                                fontFamily: "Inter",
+                              Text(
+                                "Message",
+                                style: TextStyle(
+                                  color: const Color(0xff000000),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 11,
+                                  height: 13.41 / 11,
+                                  letterSpacing: 0.14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
                               ),
-                            ),
-                          ],),
+                            ],
+                          ),
+                          Container(
+                            width: 1,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Color(0xff1D1C1D).withOpacity(0.2)),
+                          ),
+                          Column(
+                            children: [
+                              Image.asset(
+                                "assets/call.png",
+                                width: 18,
+                                height: 18,
+                                color: Color(0xff8856F4),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "Call",
+                                style: TextStyle(
+                                  color: const Color(0xff000000),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 11,
+                                  height: 13.41 / 11,
+                                  letterSpacing: 0.14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 1,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Color(0xff1D1C1D).withOpacity(0.2)),
+                          ),
+                          Column(
+                            children: [
+                              Image.asset(
+                                "assets/gmail.png",
+                                width: 18,
+                                height: 18,
+                                color: Color(0xff8856F4),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "Mail",
+                                style: TextStyle(
+                                  color: const Color(0xff000000),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 11,
+                                  height: 13.41 / 11,
+                                  letterSpacing: 0.14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       const SizedBox(height: 15),
@@ -230,7 +304,6 @@ class _UserprofileState extends State<Userprofile> {
                     ],
                   ),
                 ),
-
 
                 // Performance Container
               ],

@@ -32,6 +32,7 @@ class _ChatPageState extends State<ChatPage> {
 
   String username = "";
   String userimage = "";
+  String userID = "";
 
   @override
   void initState() {
@@ -43,27 +44,6 @@ class _ChatPageState extends State<ChatPage> {
     print(widget.roomId);
   }
 
-  // Future<void> createRoom() async {
-  //   user_id = await PreferenceService().getString("user_id") ?? "";
-  //   print('Creating room for chat...');
-  //   print('user_id: $user_id');
-  //   var res = await Userapi.CreateChatRoomAPi(widget.userId);
-  //   if (res != null && res.settings?.success == 1) {
-  //     print('Room created successfully: ${res.data?.room}');
-  //     _messages = res.data?.messages ?? [];
-  //     last_msg_id=_messages[0].id??"";
-  //     room_id=res.data?.room??"";
-  //     otherUser = res.data?.otherUser;
-  //     _initializeWebSocket(res.data?.room ?? "");
-  //
-  //     // Scroll to the bottom after messages are loaded
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       _scrollToBottom();
-  //     });
-  //   } else {
-  //     print('Failed to create room');
-  //   }
-  // }
   List<Messages> _messages = [];
 
   Future<void> RoomDetailsApi() async {
@@ -79,6 +59,7 @@ class _ChatPageState extends State<ChatPage> {
         }
         username = res.data?.userName ?? "";
         userimage = res.data?.userImage ?? "";
+        userID = res.data?.userId ?? "";
 
         // Scroll to the bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -281,7 +262,7 @@ class _ChatPageState extends State<ChatPage> {
             SizedBox(width: 10),
             InkWell(
               onTap: () async {
-                var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => Userprofile()));
+                var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(userID: userID)));
                 if(res == true) {
                   _initializeWebSocket();
                   RoomDetailsApi();
@@ -296,7 +277,7 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
               child: InkResponse(
                 onTap: () async {
-                  var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => Userprofile()));
+                  var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(userID: userID)));
                   if(res == true) {
                     _initializeWebSocket();
                     RoomDetailsApi();

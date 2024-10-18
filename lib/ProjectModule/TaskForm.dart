@@ -593,9 +593,10 @@ class _TaskFormState extends State<TaskForm> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TypeAheadField<Milestones>(
+                        controller: _mileStoneController,
                         builder: (context, controller, focusNode) {
                           return TextField(
-                            controller: _mileStoneController,
+                            controller: controller,
                             focusNode: focusNode,
                             onTap: () {
                               setState(() {
@@ -702,10 +703,11 @@ class _TaskFormState extends State<TaskForm> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TypeAheadField<Members>(
+                        controller: _assignedToController,
                         builder: (context, controller, focusNode) {
                           return TextField(
+                            controller: controller,
                             focusNode: focusNode,
-                            controller: _assignedToController,
                             onTap: () {
                               setState(() {
                                 _validateAssignedTo = "";
@@ -894,10 +896,11 @@ class _TaskFormState extends State<TaskForm> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TypeAheadField<Statuses>(
+                        controller: _statusController,
                         builder: (context, controller, focusNode) {
                           return TextField(
+                            controller: controller,
                             focusNode: focusNode,
-                            controller: _statusController,
                             onTap: () {
                               setState(() {
                                 _validateStatus = "";
@@ -998,10 +1001,11 @@ class _TaskFormState extends State<TaskForm> {
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
                       child: TypeAheadField<Priorities>(
+                        controller: _priorityController,
                         builder: (context, controller, focusNode) {
                           return TextField(
+                            controller: controller,
                             focusNode: focusNode,
-                            controller: _priorityController,
                             onTap: () {
                               setState(() {
                                 _validatePriority = "";
