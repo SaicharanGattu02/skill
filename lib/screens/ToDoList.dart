@@ -163,7 +163,7 @@ class _TodolistState extends State<Todolist> {
       if (res != null) {
         if (res.settings?.success == 1) {
           GetToDoList(formattedDate);
-          CustomSnackBar.show(context, "${res.settings?.message}");
+          CustomSnackBar.show(context, "Marked done successfully!");
         } else {
           CustomSnackBar.show(context, "${res.settings?.message}");
         }

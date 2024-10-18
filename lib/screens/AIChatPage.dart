@@ -57,7 +57,7 @@ class _ChatPageState extends State<AIChatPage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Color(0xffF3ECFB),
       appBar: CustomAppBar(
-        title: "Gemini AI Generator",
+        title: "Jarvis",
         actions: [
           Container(),
           // IconButton(
