@@ -173,6 +173,7 @@ class _MessagesState extends State<Messages> {
                                     fontSize: 14,
                                     fontFamily: "Nunito",
                                   ),
+
                                 ),
                                 style: TextStyle(
                                     color: Color(0xff9E7BCA),
