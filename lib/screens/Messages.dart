@@ -41,6 +41,7 @@ class _MessagesState extends State<Messages> {
   bool isSelected = false;
   bool _loading = true;
   final spinkit=Spinkits();
+
   List<Rooms> rooms = [];
   List<Rooms> filteredRooms = []; // To store filtered messages based on the search query
 

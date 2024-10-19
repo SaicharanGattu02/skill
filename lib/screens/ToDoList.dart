@@ -13,6 +13,7 @@ import '../utils/ShakeWidget.dart';
 
 class Todolist extends StatefulWidget {
   const Todolist({super.key});
+
   @override
   State<Todolist> createState() => _TodolistState();
 }
@@ -287,10 +288,6 @@ class _TodolistState extends State<Todolist> {
         },
       ),
       body:
-          // _isLoading
-          //     ? Center(
-          //         child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
-          //     :
           SingleChildScrollView(
             physics: NeverScrollableScrollPhysics(),
             child: Column(
@@ -500,6 +497,7 @@ class _TodolistState extends State<Todolist> {
                     SizedBox(
                       height: 15,
                     ),
+                    _isLoading?_buildShimmerList():
                     (filteredData.length > 0)
                         ? SizedBox(
                             height: h*0.7,
@@ -1665,4 +1663,58 @@ class _TodolistState extends State<Todolist> {
       ],
     );
   }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 6, // Adjust the number of shimmer items as needed
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              shimmerCircle(20), // Shimmer for the icon
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    shimmerText(100, 13), // Shimmer for task name
+                    const SizedBox(height: 5),
+                    shimmerText(150, 11), // Shimmer for description
+                    const SizedBox(height: 5),
+                    shimmerText(80, 11), // Shimmer for date/time
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
+
 }
