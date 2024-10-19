@@ -61,24 +61,22 @@ class _MileStoneState extends State<MileStone> {
       }).toList();
     });
   }
-
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
-      if (res?.data != null) {
-        if (res?.settings?.success == 1) {
-          rooms = res?.data ?? [];
-          filteredRooms = rooms; // Initially, show all rooms
-          _isLoading = false;
-        } else {
-          _isLoading = false;
-          CustomSnackBar.show(context, res?.settings?.message ?? "");
-        }
+      _isLoading = false; // Stop loading
+
+      if (res['success']) {
+        // Handle successful response
+        rooms = res['response'].data ?? []; // Adjust based on your model
+        filteredRooms = rooms; // Initially, show all rooms
       } else {
-        print("Task Failure  ${res?.settings?.message}");
+        CustomSnackBar.show(context, res['response'] ?? "Unknown error occurred");
+        print("Task Failure: ${res['response']}");
       }
     });
   }
+
 
   Future<void> GetMileStoneDetails(String id) async {
     var res = await Userapi.getmilestonedeatilsApi(id);

@@ -42,6 +42,7 @@ import '../Model/TimeSheeetDeatilModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../Model/UserDetailModel.dart';
 import '../Model/UserDetailsModel.dart';
+import '../utils/constants.dart';
 import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
@@ -315,21 +316,44 @@ class Userapi {
     }
   }
 
-  static Future<GetMileStoneModel?> GetMileStoneApi(String id) async {
+  static Future<Map<String, dynamic>> GetMileStoneApi(String id) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project/project-milestones?project_id=${id}");
-      final res = await get(url, headers: headers);
-      if (res != null) {
-        print("GetMileStone Response:${res.body}");
-        return GetMileStoneModel.fromJson(jsonDecode(res.body));
+      final url = Uri.parse("${host}/project/project-milestones?project_id=$id");
+      final res = await http.get(url, headers: headers);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        print("GetMileStone Response: ${res.body}");
+        final result = GetMileStoneModel.fromJson(jsonDecode(res.body));
+        return {'success': true, 'response': result};
       } else {
-        print("Null Response");
-        return null;
+        final errorResponse = jsonDecode(res.body);
+        return {
+          'success': false,
+          'response': errorResponse
+        };
       }
+    } on SocketException {
+      return {
+        'success': false,
+        'response': NO_INTERNET
+      };
+    } on FormatException {
+      return {
+        'success': false,
+        'response':BAD_RESPONSE
+      };
+    } on HttpException {
+      return {
+        'success': false,
+        'response': SOMETHING_WRONG // Server not responding
+      };
     } catch (e) {
       debugPrint('Error: $e');
-      return null;
+      return {
+        'success': false,
+        'response':SOMETHING_WRONG // Handle any other unexpected errors
+      };
     }
   }
 

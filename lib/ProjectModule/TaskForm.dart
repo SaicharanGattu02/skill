@@ -119,6 +119,9 @@ class _TaskFormState extends State<TaskForm> {
     GetStatuses();
     GetPriorities();
     GetMileStone();
+    if (widget.title == "Edit Task") {
+      GetProjectTaskDetails();
+    }
   }
 
   String milestoneid="";
@@ -165,20 +168,23 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   List<Milestones> milestones = [];
+
+
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.projectId);
     setState(() {
-      if (res != null) {
-        if(res.settings?.success==1){
-          if(widget.title=="Edit Task"){
-            GetProjectTaskDetails();
-          }
-          milestones = res.data ?? [];
-          print(milestones);
-        }
+      _isLoading = false; // Stop loading
+      if (res['success']) {
+        // Handle successful response
+        milestones = res['response'].data ?? []; // Adjust based on your model
+        print(milestones);
+        // If editing a task, get project task details
+      } else {
+        CustomSnackBar.show(context, res['response'] ?? "Unknown error occurred"); // Show snackbar with the error
       }
     });
   }
+
 
   String getMilestoneTitleById(String id) {
     final milestone = milestones.firstWhere(

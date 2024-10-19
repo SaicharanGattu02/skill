@@ -52,6 +52,12 @@ String notify_socket_url = "wss://192.168.0.56:8000/ws/notify/";
 
 String geminiApiKey = "AIzaSyCxSSwFx-2e7d8zrBOCdU23gs7pJv0poO4";
 
+
+ const String NO_INTERNET = "No internet connection.";
+ const String BAD_RESPONSE = "Received bad response from the server.";
+ const String SOMETHING_WRONG = "Something went wrong. Please try again.";
+ const String UNAUTHORIZED = "You are not authorized to access this resource.";
+
 /////////Colors
 var notification_val = 0;
 
