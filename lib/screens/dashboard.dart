@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -31,10 +34,12 @@ import '../Model/RoomsModel.dart';
 import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
+import '../Services/otherservices.dart';
 import 'EditProfileScreen.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 
 import 'SliderList.dart';
 
@@ -51,31 +56,6 @@ class _DashboardState extends State<Dashboard> {
   late IOWebSocketChannel _socket;
   late GoogleMapController mapController;
   bool _isListVisible = true; // Variable to track visibility
-  final List<Map<String, String>> items1 = [
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-    {'image': 'assets/ray.png', 'text': 'Raay App', 'value': '0.35'},
-    {'image': 'assets/payjet.png', 'text': 'Payjet App', 'value': '0.85'},
-  ];
-
-  final List<Map<String, String>> items = [
-    {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
-    {'image': 'assets/hrteam.png', 'text': '# Designers'},
-    {'image': 'assets/pixl.png', 'text': '# UIUX'},
-    {'image': 'assets/designers.png', 'text': '# Hr Team'},
-    {'image': 'assets/pixl.png', 'text': '# BDE Team'},
-    {'image': 'assets/developer.png', 'text': '# Developers'},
-    {'image': 'assets/pixl.png', 'text': '# Pixl Team'},
-    {'image': 'assets/hrteam.png', 'text': '# Designers'},
-    {'image': 'assets/pixl.png', 'text': '# UIUX'},
-    {'image': 'assets/designers.png', 'text': '# Hr Team'},
-    {'image': 'assets/pixl.png', 'text': '# BDE Team'},
-  ];
-
   String userid = "";
   List<Rooms> rooms = [];
   String selectedEmployee = "";
@@ -85,6 +65,12 @@ class _DashboardState extends State<Dashboard> {
   var longitude;
   var address;
 
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  var isDeviceConnected = "";
+
   @override
   void initState() {
     GetEmployeeData();
@@ -93,7 +79,44 @@ class _DashboardState extends State<Dashboard> {
     GetRoomsList();
     GetProjectsData();
     get_lat_log();
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
+  }
+
+  Future<void> initConnectivity() async {
+    List<ConnectivityResult> result;
+    try {
+      // Check connectivity and get the result
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    // Update connection status based on the single ConnectivityResult
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+      for (int i = 0; i < _connectionStatus.length; i++) {
+        setState(() {
+          isDeviceConnected = _connectionStatus[i].toString();
+          print("isDeviceConnected:${isDeviceConnected}");
+        });
+      }
+    });
+    print('Connectivity changed: $_connectionStatus');
   }
 
   void get_lat_log() async {
@@ -374,7 +397,8 @@ class _DashboardState extends State<Dashboard> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MMMM d, y').format(now);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Scaffold(
+    return (isDeviceConnected=="ConnectivityResult.wifi" || isDeviceConnected=="ConnectivityResult.mobile" ) ?
+      Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
@@ -2025,7 +2049,8 @@ class _DashboardState extends State<Dashboard> {
       //   child: Image(image: AssetImage("assets/AI.png"),width: 60,height: 60,
       //   ),
       // ),
-    );
+    ):
+    NoInternetWidget();
   }
 
   void showCustomDialog(BuildContext context) {
