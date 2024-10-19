@@ -4,6 +4,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/Mywidgets.dart';
 import 'OneToOneChatPage.dart';
 
 class Messages extends StatefulWidget {
@@ -38,7 +39,7 @@ class _MessagesState extends State<Messages> {
   ];
   bool showNoDataFoundMessage = false;
   bool isSelected = false;
-  bool _loading = false;
+  bool _loading = true;
   final spinkit=Spinkits();
   List<Rooms> rooms = [];
   List<Rooms> filteredRooms = []; // To store filtered messages based on the search query
@@ -58,16 +59,11 @@ class _MessagesState extends State<Messages> {
   }
 
   Future<void> GetRoomsList() async {
-    setState(() {
-      _loading = true; // Show loading spinner while fetching data
-    });
-
     var res = await Userapi.getrommsApi();
-
     setState(() {
-      _loading = false; // Hide loading spinner once data is fetched
       if (res != null) {
         if (res.settings?.success == 1) {
+          _loading = false;
           rooms = res.data ?? [];
           rooms.sort(
               (a, b) => (b.messageTime ?? 0).compareTo(a.messageTime ?? 0));
@@ -83,6 +79,7 @@ class _MessagesState extends State<Messages> {
         } else {
           // If success is not 1, assume no data and show the message
           showNoDataFoundMessage = true;
+          _loading = false;
         }
       } else {
         // Handle null response case, show message
@@ -134,12 +131,8 @@ class _MessagesState extends State<Messages> {
           ),
         ),
       ),
-      body: _loading
-          ? Center(
-              child: spinkit.getFadingCircleSpinner(color:  Color(0xff9E7BCA), // Set the color to purple
-              )
-            )
-          : Padding(
+      body:
+        Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -241,7 +234,8 @@ class _MessagesState extends State<Messages> {
                   // ),
                   SizedBox(height: w * 0.02),
                   Expanded(
-                    child: filteredRooms.isEmpty
+                    child:
+                    _loading ? _buildShimmerGrid() :filteredRooms.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +259,8 @@ class _MessagesState extends State<Messages> {
                               ],
                             ),
                           )
-                        : ListView.builder(
+                        :
+                    ListView.builder(
                             itemCount: filteredRooms.length,
                             itemBuilder: (context, index) {
                               var data = filteredRooms[index];
@@ -382,4 +377,46 @@ class _MessagesState extends State<Messages> {
             ),
     );
   }
+
+  Widget _buildShimmerGrid() {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      itemCount: 6, // Number of shimmer items to display
+      itemBuilder: (context, index) {
+        return InkResponse(
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xffF7F4FC),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  shimmerCircle(32), // Use your shimmer circle
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        shimmerText(100, 16), // Shimmer for user name
+                        const SizedBox(height: 5),
+                        shimmerText(160, 12), // Shimmer for message
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  shimmerText(50, 12), // Shimmer for formatted time
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
-
 import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
-
 import '../Model/ProjectLabelModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../Model/UserDetailsModel.dart';
@@ -15,7 +13,6 @@ import '../utils/ShakeWidget.dart';
 
 class Todolist extends StatefulWidget {
   const Todolist({super.key});
-
   @override
   State<Todolist> createState() => _TodolistState();
 }
@@ -28,7 +25,6 @@ class _TodolistState extends State<Todolist> {
   TextEditingController _labelController = TextEditingController();
   TextEditingController _labelnameController = TextEditingController();
   TextEditingController _labelcolorController = TextEditingController();
-
   FocusNode _focusNodeTaskName = FocusNode();
   FocusNode _focusNodeLabelName = FocusNode();
   FocusNode _focusNodedescription = FocusNode();
@@ -49,6 +45,7 @@ class _TodolistState extends State<Todolist> {
   bool _isLoading = true;
   final spinkit = Spinkits();
   String formattedDate = "";
+
   @override
   void initState() {
     super.initState();

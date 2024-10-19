@@ -55,14 +55,15 @@ class _TaskKanBanState extends State<TaskKanBan> {
   }
 
   Future<void> GetKanBan() async {
-
+    setState(() {
+      _loading = true; // Show loading spinner
+    });
     var res = await Userapi.GetTaskKanBan(widget.id);
 
     setState(() {
-      _loading = false;
+      _loading = false; // Hide loading spinner
       if (res != null && res.settings?.success == 1) {
         data = res.data ?? [];
-        print("data>>${data}");
         data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
         filteredRooms = data; // Initialize with all data
         showNoDataFoundMessage = data.isEmpty;
@@ -71,7 +72,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
       }
     });
   }
-final spinkit=Spinkits();
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -80,7 +81,9 @@ final spinkit=Spinkits();
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body: _loading
           ? Center(
-        child:spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))
+        child: CircularProgressIndicator(
+          color: Color(0xff8856F4),
+        ),
       )
           : SingleChildScrollView(
         child: Padding(
@@ -108,26 +111,10 @@ final spinkit=Spinkits();
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              decoration: InputDecoration(
-                                isCollapsed: true,
-                                border: InputBorder.none,
+                              decoration: const InputDecoration(
                                 hintText: 'Search',
-                                hintStyle: const TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  fontFamily: "Nunito",
-                                ),
+                                border: InputBorder.none,
                               ),
-                              style: TextStyle(
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  decorationColor: Color(0xff9E7BCA),
-                                  fontFamily: "Nunito",
-                                  overflow: TextOverflow.ellipsis),
-                              textAlignVertical: TextAlignVertical.center,
                             ),
                           ),
                         ],
@@ -137,33 +124,8 @@ final spinkit=Spinkits();
                 ],
               ),
               SizedBox(height: 8),
-              filteredRooms.isEmpty
-                  ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: MediaQuery.of(context).size.height*0.24,),
-                    Image.asset(
-                      'assets/nodata1.png', // Make sure to use the correct image path
-                      width:
-                      150, // Adjust the size according to your design
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "No Data Found",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                  ],
-                ),
-              )
-
+              showNoDataFoundMessage
+                  ? Center(child: Text("No data found"))
                   : ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -314,4 +276,7 @@ final spinkit=Spinkits();
     );
   }
 }
+
+
+
 

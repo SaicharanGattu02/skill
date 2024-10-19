@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/ForgotPassword.dart';
 import 'package:skill/screens/PersnalInformation.dart';
 import 'package:skill/screens/Register.dart';
 import 'package:skill/screens/dashboard.dart';
-
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';

@@ -117,11 +117,7 @@ final spinkit=Spinkits();
         title: 'All Projects',
         actions: [Container()],
       ),
-      body: _loading
-          ? Center(
-          child:spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA))
-      )
-          : Padding(
+      body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
@@ -176,7 +172,8 @@ final spinkit=Spinkits();
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: filteredRooms.isEmpty
+              child: _loading?_buildShimmerGrid(w):
+              filteredRooms.isEmpty
                   ? _buildEmptyPlaceholder()
                   : _buildProjectGrid(),
             ),

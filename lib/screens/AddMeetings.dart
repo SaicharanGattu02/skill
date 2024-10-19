@@ -912,6 +912,7 @@ class _AddMeetingsState extends State<AddMeetings> {
           ),
         ),
         if (validationMessage.isNotEmpty) ...[
+
           Container(
             alignment: Alignment.topLeft,
             margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
@@ -930,6 +931,7 @@ class _AddMeetingsState extends State<AddMeetings> {
               ),
             ),
           ),
+
         ] else ...[
           SizedBox(height: 15),
         ]
