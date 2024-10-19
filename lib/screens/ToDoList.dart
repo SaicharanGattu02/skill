@@ -450,7 +450,7 @@ class _TodolistState extends State<Todolist> {
                                 print("selectedDate: $formattedDate");
                                 data = [];
                                 filteredData = [];
-                                // _isLoading=true;
+                                 _isLoading=true;
                                 GetToDoList(formattedDate);
                               });
                               _scrollToSelectedDate();
@@ -1664,51 +1664,39 @@ class _TodolistState extends State<Todolist> {
     );
   }
 
-  Widget _buildShimmerList() {
-    return ListView.builder(
-      itemCount: 6, // Adjust the number of shimmer items as needed
-      shrinkWrap: true,
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              shimmerCircle(20), // Shimmer for the icon
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey,
-                    ),
+    Widget _buildShimmerList() {
+      return ListView.builder(
+        itemCount: 10, // Adjust the number of shimmer items as needed
+        shrinkWrap: true,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                shimmerRectangle(20), // Shimmer for the icon
+                const SizedBox(width: 8),
+                shimmerCircle(20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shimmerText(150, 13), // Shimmer for task name
+                      const SizedBox(height: 5),
+                      shimmerText(200, 11), // Shimmer for description
+                      const SizedBox(height: 5),
+                      shimmerText(120, 11), // Shimmer for date/time
+                    ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    shimmerText(100, 13), // Shimmer for task name
-                    const SizedBox(height: 5),
-                    shimmerText(150, 11), // Shimmer for description
-                    const SizedBox(height: 5),
-                    shimmerText(80, 11), // Shimmer for date/time
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+              ],
+            ),
+          );
+        },
+      );
+    }
 
 
 

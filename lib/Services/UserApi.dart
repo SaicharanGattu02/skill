@@ -167,6 +167,25 @@ class Userapi {
     }
   }
 
+  static Future<MeetingModel?> GetMeetingbydate(String date) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/dashboard/user-meetings?date=$date");
+      print("URL:${url}");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("GetMeeting Response:${res.body}");
+        return MeetingModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
   static Future<TasklistModel?> GetTask(String id) async {
     try {
       final headers = await getheader();

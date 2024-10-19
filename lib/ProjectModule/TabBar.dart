@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:skill/ProjectModule/MileStone.dart';
 import 'package:skill/ProjectModule/ProjectComment.dart';
 import 'package:skill/ProjectModule/ProjectFile.dart';
@@ -6,9 +10,8 @@ import 'package:skill/ProjectModule/ProjectTimeSheet.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/ProjectModule/TaskKanBan.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
-import 'package:skill/screens/Comments.dart';
-import 'package:skill/utils/CustomAppBar.dart';
-
+import 'dart:developer' as developer;
+import '../Services/otherservices.dart';
 import 'ProjectNotes.dart';
 import 'ProjectOverView.dart';
 
@@ -28,10 +31,14 @@ class _MyTabBarState extends State<MyTabBar>
   int _selectedTabIndex = 0;
   bool _loading =true;
 
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  var isDeviceConnected = "";
+
   @override
   void initState() {
     super.initState();
-
     print("idd>>>${widget.id}");
     _tabController = TabController(length: 8, vsync: this); // 8 tabs
     _pageController = PageController(); // Controller for PageView
@@ -52,7 +59,41 @@ class _MyTabBarState extends State<MyTabBar>
     setState(() {
       _loading=false;
     });
+
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
+
+  Future<void> initConnectivity() async {
+    List<ConnectivityResult> result;
+    try {
+      // Check connectivity and get the result
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+      for (int i = 0; i < _connectionStatus.length; i++) {
+        setState(() {
+          isDeviceConnected = _connectionStatus[i].toString();
+          print("isDeviceConnected:${isDeviceConnected}");
+        });
+      }
+    });
+    print('Connectivity changed: $_connectionStatus');
+  }
+
 
   @override
   void dispose() {
@@ -63,7 +104,8 @@ class _MyTabBarState extends State<MyTabBar>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return (isDeviceConnected=="ConnectivityResult.wifi" || isDeviceConnected=="ConnectivityResult.mobile" ) ?
+      Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: const Color(0xff8856F4),
@@ -199,7 +241,8 @@ class _MyTabBarState extends State<MyTabBar>
           ),
         ],
       ),
-    );
+    ):
+    NoInternetWidget();
   }
 
 }

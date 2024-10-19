@@ -187,7 +187,7 @@ final spinkit=Spinkits();
 
   Widget _buildShimmerGrid(double width) {
     return GridView.builder(
-      itemCount: 8, // Number of shimmer placeholders
+      itemCount: 4, // Number of shimmer placeholders
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1,

@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:skill/utils/CustomAppBar.dart';
 
 import '../utils/CustomSnackBar.dart';
+import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 
 class ProjectComment extends StatefulWidget {
@@ -43,14 +44,14 @@ class _ProjectCommentState extends State<ProjectComment> {
     var res = await Userapi.GetProjectComments(widget.id);
     setState(() {
       if (res != null) {
-        _loading = false;
         if (res.settings?.success == 1) {
+          _loading = false;
           data = res.data ?? [];
         } else {
+          _loading = false;
           CustomSnackBar.show(context, res.settings?.message ?? "");
         }
       } else {
-        _loading = false;
         print("not fetch");
       }
     });
@@ -164,11 +165,7 @@ class _ProjectCommentState extends State<ProjectComment> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       resizeToAvoidBottomInset: true,
-      body: _loading
-          ? Center(
-              child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)),
-            )
-          : Padding(
+      body: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -492,7 +489,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                     height: 8,
                   ),
                   Expanded(
-                    child: data.isEmpty
+                    child: _loading?_buildShimmerList():
+                    data.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -752,6 +750,56 @@ class _ProjectCommentState extends State<ProjectComment> {
       ),
     );
   }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 5, // Number of shimmer items
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Shimmer for user image and name
+              Row(
+                children: [
+                  shimmerCircle(30), // Shimmer for user image
+                  const SizedBox(width: 8),
+                  shimmerText(100, 16), // Shimmer for user name
+                  const Spacer(),
+                  shimmerRectangle(20), // Shimmer for delete icon
+                ],
+              ),
+              const SizedBox(height: 12),
+              shimmerText(200, 14), // Shimmer for comment text
+              const SizedBox(height: 20),
+              if (index % 2 == 0) // Show files for some shimmer items
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    shimmerRectangle(20), // Shimmer for file icon
+                    const SizedBox(width: 8),
+                    shimmerText(120, 15), // Shimmer for file name
+                    const Spacer(),
+                    shimmerText(80, 14), // Shimmer for "Click to view" text
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   void _showBottomSheet(BuildContext context, List<CommentFiles> files,
       String? createdTime, String? comment) {

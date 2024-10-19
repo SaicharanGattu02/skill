@@ -48,7 +48,7 @@ class _TimeSheetState extends State<TimeSheet> {
     var res = await Userapi.GetProjectTimeSheetDetails(widget.id);
     setState(() {
       if (res != null) {
-        if(res.settings?.success==1){
+        if(res.settings?.success==1) {
           isloading=false;
           data = res.data ?? [];
           filteredData = res.data ?? [];
@@ -341,6 +341,7 @@ class _TimeSheetState extends State<TimeSheet> {
               ),
               SizedBox(height: 8),
               if (selectedTabIndex == 0) ...[
+                isloading?_buildShimmerList():
                 filteredData.isEmpty
                     ? Center(
                   child: Column(
@@ -854,4 +855,86 @@ class _TimeSheetState extends State<TimeSheet> {
       ),
     );
   }
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 5, // Set the number of shimmer items you want to show
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shimmerText(80, 16), // Shimmer for "Start Time"
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          shimmerRectangle(20), // Shimmer for time icon
+                          const SizedBox(width: 8),
+                          shimmerText(100, 14), // Shimmer for formatted time
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shimmerText(80, 16), // Shimmer for "End Time"
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          shimmerRectangle(20), // Shimmer for time icon
+                          const SizedBox(width: 8),
+                          shimmerText(100, 14), // Shimmer for formatted time
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  shimmerCircle(24), // Shimmer for member image
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shimmerText(120, 14), // Shimmer for member name
+                      const SizedBox(height: 6),
+                      shimmerText(150, 15), // Shimmer for task
+                      const SizedBox(height: 6),
+                      shimmerText(200, 14), // Shimmer for note
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  shimmerRectangle(20), // Shimmer for time icon
+                  const SizedBox(width: 8),
+                  shimmerText(100, 14), // Shimmer for "Total Hours"
+                  const SizedBox(width: 4),
+                  shimmerText(50, 14), // Shimmer for total time value
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 }

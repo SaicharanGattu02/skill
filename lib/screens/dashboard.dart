@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/Services/UserApi.dart';
@@ -35,13 +36,12 @@ import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
+import '../utils/Mywidgets.dart';
 import 'EditProfileScreen.dart';
 import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
-
-import 'SliderList.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -64,6 +64,7 @@ class _DashboardState extends State<Dashboard> {
   var lattitude;
   var longitude;
   var address;
+  bool _loading = true;
 
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
@@ -388,8 +389,6 @@ class _DashboardState extends State<Dashboard> {
       _loading = true;
     });
   }
-
-  bool _loading = true;
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -500,8 +499,7 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
       body: _loading
-          ? Center(
-              child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
+          ? _buildShimmerGrid(w)
           : RefreshIndicator(
               color: Color(0xff9E7BCA),
               backgroundColor: Colors.white,
@@ -2051,6 +2049,151 @@ class _DashboardState extends State<Dashboard> {
       // ),
     ):
     NoInternetWidget();
+  }
+
+  Widget _buildShimmerGrid(double width) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(
+            top: 16, left: 16, right: 16, bottom: 8),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                shimmerText(100, 16),
+                shimmerText(100, 16),
+              ],
+            ),
+            SizedBox(height: 15,),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      shimmerCircle(70), // Shimmer for profile image
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            shimmerText(80, 10), // Shimmer for Skill ID
+                            const SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                shimmerText(120, 16), // Shimmer for full name
+                                shimmerText(50, 12), // Shimmer for status
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            shimmerText(200, 12), // Shimmer for job title
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(child: shimmerText(120, 11)), // Shimmer for mobile
+                                const SizedBox(width: 8),
+                                Expanded(child: shimmerText(120, 11)), // Shimmer for email
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                shimmerText(100, 16),
+                shimmerText(100, 16),
+              ],
+            ),
+            SizedBox(height: 15,),
+            SizedBox(
+              height: width * 0.9,
+              child: GridView.builder(
+                itemCount: 4,
+                scrollDirection: Axis.horizontal,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.985,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                ),
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        shimmerCircle(48), // Shimmer for the circular image
+                        const SizedBox(height: 8),
+                        shimmerText(100, 16), // Shimmer for title text
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            shimmerText(50, 12), // Shimmer for progress label
+                            shimmerText(30, 12), // Shimmer for percentage text
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        shimmerLinearProgress(7), // Shimmer for progress indicator
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 15,),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(4, (index) {
+                      return Expanded(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              shimmerContainer(width * 0.16, width * 0.115), // Shimmer for count
+                              SizedBox(height: 8),
+                              shimmerText(60, 10), // Shimmer for label (e.g., "PROJECTS")
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 20),
+                  shimmerContainer(width, 40, isButton: true), // Shimmer for the "Punch In" button
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   void showCustomDialog(BuildContext context) {

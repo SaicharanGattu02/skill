@@ -37,7 +37,7 @@ class _ProjectFileState extends State<ProjectFile> {
   String _validatename = "";
   XFile? _imageFile;
   File? filepath;
-  bool _isLoading = false;
+  bool _isLoading = true;
   final spinkit=Spinkits();
   bool isFilesSelected = true;
 
@@ -279,12 +279,6 @@ class _ProjectFileState extends State<ProjectFile> {
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body:
-      // _isLoading
-      //     ? Center(
-      //         child: CircularProgressIndicator(
-      //         color: Color(0xff8856F4),
-      //       ))
-      //     :
         SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -500,6 +494,7 @@ class _ProjectFileState extends State<ProjectFile> {
                         ],
                       ),
                       SizedBox(height: 8),
+                      _isLoading? _buildShimmerList():
                       filteredRooms.isEmpty
                           ? Center(
                         child: Column(
@@ -717,7 +712,6 @@ class _ProjectFileState extends State<ProjectFile> {
                                   fit: BoxFit.contain,
                                 ),
                                 const SizedBox(width: 10),
-
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController2,
@@ -977,6 +971,65 @@ class _ProjectFileState extends State<ProjectFile> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 10, // Adjust this number based on how many shimmer items you want
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  shimmerRectangle(20), // Shimmer for calendar icon
+                  const SizedBox(width: 8),
+                  shimmerText(100, 15), // Shimmer for formatted date
+                  const Spacer(),
+                  shimmerRectangle(20), // Shimmer for edit icon
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  shimmerRectangle(20), // Shimmer for gallery icon
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        shimmerText(150, 15), // Shimmer for file name
+                        const SizedBox(height: 10),
+                        shimmerText(100, 14), // Shimmer for category
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            shimmerCircle(24), // Shimmer for user image
+                            const SizedBox(width: 8),
+                            shimmerText(100, 14), // Shimmer for uploaded by
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

@@ -5,16 +5,22 @@ class MeetingModel {
   MeetingModel({this.data, this.settings});
 
   MeetingModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
+    if (json['data'] != null && json['data'] is List) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
+    } else if (json['data'] != null && json['data'] is Map) {
+      // Handle case where 'data' is an empty object or a single object
+      data = [Data.fromJson(json['data'])]; // Add a single Data object if necessary
+    } else {
+      data = [];
     }
     settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
+        ? Settings.fromJson(json['settings'])
         : null;
   }
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

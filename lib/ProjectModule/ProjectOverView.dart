@@ -20,13 +20,13 @@ class _OverViewState extends State<OverView> {
   bool isMembersTab = true; // Track which tab is active
   final TextEditingController _searchController = TextEditingController();
 
-  bool _loading =true;
-  final spinkit=Spinkits();
+  bool _loading = true;
+  final spinkit = Spinkits();
   @override
   void initState() {
     super.initState();
     setState(() {
-      _searchController.text=="";
+      _searchController.text == "";
     });
     filteredMembers = List.from(members); // Start with all members
     _searchController.addListener(filterMembers); // Add listener
@@ -43,14 +43,12 @@ class _OverViewState extends State<OverView> {
     });
   }
 
-
   @override
   void dispose() {
     _searchController.dispose();
     _searchController.removeListener(filterMembers);
     super.dispose();
   }
-
 
   Data? data = Data();
   List<Members> members = [];
@@ -61,15 +59,15 @@ class _OverViewState extends State<OverView> {
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
     setState(() {
       if (res != null && res.data != null) {
-        if(res.settings?.success==1){
-          _loading=false;
+        if (res.settings?.success == 1) {
+          _loading = false;
           data = res.data;
           members = data?.members ?? [];
           filteredMembers = data?.members ?? [];
           _updatePieChartData();
-        }else{
-          _loading=false;
-          CustomSnackBar.show(context,res.settings?.message??"");
+        } else {
+          _loading = false;
+          CustomSnackBar.show(context, res.settings?.message ?? "");
         }
       }
     });
@@ -108,63 +106,190 @@ class _OverViewState extends State<OverView> {
     ];
   }
 
-
   @override
   Widget build(BuildContext context) {
+    var w = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
-      body:_loading?
-      Center(child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4))):
-      NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              pinned: true,
-              expandedHeight: MediaQuery.of(context).size.height * 0.36,
-              automaticallyImplyLeading: false,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        backgroundColor: const Color(0xffF3ECFB),
+        body: _loading
+            ? _buildShimmerGrid(w)
+            : NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      pinned: true,
+                      expandedHeight: MediaQuery.of(context).size.height * 0.36,
+                      automaticallyImplyLeading: false,
+                      elevation: 0,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildProjectStatusCard(context),
+                              _buildTaskStatusCard(context),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(18),
+                          topLeft: Radius.circular(18))),
+                  child: Column(
                     children: [
-                      _buildProjectStatusCard(context),
-                      _buildTaskStatusCard(context),
+                      SizedBox(height: 20),
+                      _buildTabSwitcher(context),
+                      SizedBox(height: 10),
+                      Expanded(
+                        child: isMembersTab
+                            ? _buildMembersTab(context)
+                            : _buildAcitivityTab(
+                                context), // Conditional rendering for Activity Tab
+                      ),
                     ],
                   ),
                 ),
+              ));
+  }
+
+  Widget _buildShimmerGrid(double width) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildShimmerCard(),
+                _buildShimmerCard(),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(18),
+                  topLeft: Radius.circular(18),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      shimmerText(130, 20),
+                      shimmerText(130, 20),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  shimmerText(350, 20),
+                  SizedBox(
+                   height: MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      itemCount: 6,
+                      itemBuilder: (context, index) {
+                        return InkResponse(
+                          onTap: () {},
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xffF7F4FC),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  shimmerCircle(32),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        shimmerText(100, 16),
+                                        const SizedBox(height: 5),
+                                        shimmerText(160, 12),
+                                      ],
+                                    ),
+                                  ),
+                                  shimmerText(50, 12),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ];
-        },
-        body:
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          margin: EdgeInsets.only(left: 16, right: 16, top: 16),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(18), topLeft: Radius.circular(18))),
-          child: Column(
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.45,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          shimmerText(150, 20),
+          const SizedBox(height: 15),
+          shimmerCircle(120),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(height: 20),
-              _buildTabSwitcher(context),
-              SizedBox(height: 10),
-              Expanded(
-                child: isMembersTab
-                    ? _buildMembersTab(context)
-                    : _buildAcitivityTab(
-                    context), // Conditional rendering for Activity Tab
-              ),
+              _buildShimmerColumn(),
+              _buildShimmerColumn(),
             ],
           ),
-        ),
-      )
+        ],
+      ),
     );
-
   }
+
+  Widget _buildShimmerColumn() {
+    return Column(
+      children: [
+        shimmerText(60, 10),
+        const SizedBox(height: 5),
+        shimmerText(60, 10),
+        const SizedBox(height: 5),
+        shimmerText(60, 10),
+        const SizedBox(height: 5),
+        shimmerText(60, 10),
+      ],
+    );
+  }
+
 
   Widget _buildProjectStatusCard(BuildContext context) {
     return Container(
@@ -428,12 +553,11 @@ class _OverViewState extends State<OverView> {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child:
-          SizedBox(
+          child: SizedBox(
             width: w,
             child: Center(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xff9E7BCA).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -582,22 +706,24 @@ class _OverViewState extends State<OverView> {
             itemCount: activitydata.length,
             itemBuilder: (context, index) {
               String isoDate1 = activitydata[index].createdTime ?? "";
-              String isoDate =activitydata[index].createdTime ?? "";
-              String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false); // Date only
+              String isoDate = activitydata[index].createdTime ?? "";
+              String formattedDate = DateTimeFormatter.format(isoDate,
+                  includeDate: true, includeTime: false); // Date only
 
-              String formattedTime = DateTimeFormatter.format(isoDate1, includeDate: false, includeTime: true);
+              String formattedTime = DateTimeFormatter.format(isoDate1,
+                  includeDate: false, includeTime: true);
               return Column(
                 children: [
                   ActivityCard(
                     name: activitydata[index].userName ?? "",
                     user_img: activitydata[index].userImage ?? "",
-                    time:"${formattedTime} | ${formattedDate}",
+                    time: "${formattedTime} | ${formattedDate}",
                     action: activitydata[index].action ?? "",
                     desc: activitydata[index].description ?? "",
                     project_name: activitydata[index].projectName ?? "",
                   ),
                   // Add a Divider if it's not the last item
-                  if (index < activitydata.length-1)
+                  if (index < activitydata.length - 1)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Divider(

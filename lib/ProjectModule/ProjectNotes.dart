@@ -270,6 +270,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                       ],
                     ),
                     SizedBox(height: 8),
+                    _isLoading?_buildShimmerList():
                     filteredData.isEmpty
                         ? Center(
                       child: Column(
@@ -441,6 +442,45 @@ class _ProjectNotesState extends State<ProjectNotes> {
             ),
     );
   }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 10, // Adjust the number of shimmer items as needed
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  shimmerRectangle(20), // Shimmer for calendar icon
+                  const SizedBox(width: 8),
+                  shimmerText(100, 15), // Shimmer for due date
+                  const Spacer(),
+                  shimmerRectangle(20), // Shimmer for edit icon
+                  const SizedBox(width: 8),
+                  shimmerRectangle(20), // Shimmer for eye icon (file)
+                ],
+              ),
+              const SizedBox(height: 20),
+              shimmerText(150, 20), // Shimmer for note title
+              const SizedBox(height: 4),
+              shimmerText(280, 15), // Shimmer for note description
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   void _showBottomSheet1(BuildContext context, String mode, String id,String file) {
     double h = MediaQuery.of(context).size.height * 0.5;

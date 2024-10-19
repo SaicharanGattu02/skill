@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../Model/MileStoneModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
+import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 
 class MileStone extends StatefulWidget {
@@ -32,10 +36,14 @@ class _MileStoneState extends State<MileStone> {
   List<Milestones> rooms = [];
   List<Milestones> filteredRooms = [];
 
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  var isDeviceConnected = "";
+
   @override
   void initState() {
     super.initState();
-
     _searchController
         .addListener(_onSearchChanged); // Listen for search input changes
     GetMileStone(); // Fetch the milestones data
@@ -64,8 +72,7 @@ class _MileStoneState extends State<MileStone> {
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.id);
     setState(() {
-      _isLoading = false; // Stop loading
-
+      _isLoading = false;
       if (res['success']) {
         // Handle successful response
         rooms = res['response'].data ?? []; // Adjust based on your model
@@ -141,10 +148,7 @@ class _MileStoneState extends State<MileStone> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _isLoading
-          ? Center(
-             child:spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -246,7 +250,7 @@ class _MileStoneState extends State<MileStone> {
                       ],
                     ),
                     SizedBox(height: 8),
-                    // Milestones List (Filtered based on search)
+                    _isLoading?_buildShimmerList():
                     filteredRooms.isEmpty
                         ? Center(
                       child: Column(
@@ -395,6 +399,53 @@ class _MileStoneState extends State<MileStone> {
             ),
     );
   }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 10, // Adjust the number of shimmer items as needed
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  shimmerRectangle(20), // Shimmer for calendar icon
+                  const SizedBox(width: 8),
+                  shimmerText(100, 15), // Shimmer for due date
+                  const Spacer(),
+                  shimmerRectangle(20), // Shimmer for edit icon
+                ],
+              ),
+              const SizedBox(height: 20),
+              shimmerText(150, 20), // Shimmer for milestone title
+              const SizedBox(height: 4),
+              shimmerText(300, 14), // Shimmer for milestone description
+              const SizedBox(height: 10),
+              shimmerText(350, 14),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  shimmerText(60, 14), // Shimmer for "Progress" label
+                  shimmerText(40, 14), // Shimmer for percentage
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   void _bottomSheet(
     BuildContext context,

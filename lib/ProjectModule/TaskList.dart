@@ -6,6 +6,7 @@ import 'package:skill/ProjectModule/TaskForm.dart';
 import '../Model/TasklistModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
+import '../utils/Mywidgets.dart';
 
 class TaskList extends StatefulWidget {
   final String id1;
@@ -92,10 +93,7 @@ class _TaskListState extends State<TaskList> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
-      body: _loading
-          ? Center(
-              child: spinkit.getFadingCircleSpinner(color: Color(0xff9E7BCA)))
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -202,6 +200,7 @@ class _TaskListState extends State<TaskList> {
                       ],
                     ),
                     SizedBox(height: 8),
+                    _loading?_buildShimmerList():
                     filteredData.isEmpty
                         ? Center(
                             child: Column(
@@ -419,4 +418,62 @@ class _TaskListState extends State<TaskList> {
             ),
     );
   }
+
+  Widget _buildShimmerList() {
+    return ListView.builder(
+      itemCount: 10, // Adjust the number of shimmer items as needed
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  shimmerText(20, 20), // Shimmer for status label
+                  const Spacer(),
+                  shimmerRectangle(24), // Shimmer for delete icon
+                  const SizedBox(width: 8),
+                  shimmerRectangle(24), // Shimmer for edit icon
+                ],
+              ),
+              const SizedBox(height: 6),
+              shimmerText(150, 16), // Shimmer for task title
+              const SizedBox(height: 8),
+              shimmerText(200, 12), // Shimmer for task description
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  shimmerCircle(24), // Shimmer for assigned user image
+                  const SizedBox(width: 4),
+                  shimmerText(100, 12), // Shimmer for collaborators text
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  shimmerText(50, 12), // Shimmer for "Start Date:"
+                  const SizedBox(width: 4),
+                  shimmerText(90, 12), // Shimmer for start date value
+                  const Spacer(),
+                  shimmerText(50, 12), // Shimmer for "End Date:"
+                  const SizedBox(width: 4),
+                  shimmerText(90, 12), // Shimmer for end date value
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 }

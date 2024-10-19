@@ -69,6 +69,39 @@ shimmerCircle(double size) {
   );
 }
 
+shimmerRectangle(double size) {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        color: Colors.grey,
+      ),
+    ),
+  );
+}
+
+ shimmerContainer(double width, double height, {bool isButton = false}) {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: isButton ? Colors.grey : Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: isButton
+          ? Center(child: shimmerText(80, 18))
+          : SizedBox(),
+    ),
+  );
+}
+
 // Shimmer component for text
 shimmerText(double width, double height) {
   return Shimmer.fromColors(
@@ -188,7 +221,7 @@ class _MemberCardState extends State<MemberCard> {
               widget.profile_image,
               width: 60,
               height: 60,
-              // You can add error handling for the image here if needed
+              fit: BoxFit.cover,
             ),
           ),
           SizedBox(width: 16),
