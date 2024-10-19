@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 
 import '../Model/GetLeaveCountModel.dart';
 import '../Model/GetLeaveModel.dart';
 import '../utils/CustomSnackBar.dart';
+import '../utils/Mywidgets.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
 
@@ -25,7 +27,7 @@ class _LeaveState extends State<Leave> {
   List<Data> rooms = [];
   List<Data> filteredRooms = [];
   bool isSelected = false;
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   @override
   void dispose() {
@@ -48,6 +50,7 @@ class _LeaveState extends State<Leave> {
 
   // All fields are valid, proceed with the API call
   LeaveRequests();
+
   }
 
   final TextEditingController _fromController = TextEditingController();
@@ -68,6 +71,7 @@ class _LeaveState extends State<Leave> {
     getleaves();
     _searchController.addListener(_onSearchChanged);
     getleavesCount();
+
   }
 
 
@@ -110,13 +114,11 @@ class _LeaveState extends State<Leave> {
     var Res = await Userapi.GetLeave();
     setState(() {
       if (Res != null) {
-        _isLoading = false;
-        if (Res.data != null) {
+        if (Res.success == 1) {
+          // _isLoading=false;
           leaves = Res.data ?? [];
           rooms = leaves!; // Set the original data
           filteredRooms = rooms; // Initially filteredRooms is the same as rooms
-        } else {
-          print("GetLeave Failure>>${Res.message}");
         }
       }
     });
@@ -128,7 +130,7 @@ class _LeaveState extends State<Leave> {
     setState(() {
       if (res != null) {
         if (res.success==1) {
-          _isLoading = false;
+          // _isLoading = false;
           data=res.data;
           CustomSnackBar.show(context, "${res.message}");
         } else {
@@ -145,15 +147,12 @@ class _LeaveState extends State<Leave> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: "Apply Leave", actions: [Container()]),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Color(0xff8856F4),
-            ))
-          : Padding(
+      body: _isLoading?_buildShimmerLeaveRequests(w):
+      Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -490,7 +489,8 @@ class _LeaveState extends State<Leave> {
                 ),
                 SizedBox(height: 12),
                 Expanded(
-                  child: ListView.builder(
+                  child:
+                  ListView.builder(
                     itemCount: leaves?.length ?? 0,
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
@@ -609,7 +609,91 @@ class _LeaveState extends State<Leave> {
     );
   }
 
+  Widget _buildShimmerLeaveRequests(double width) {
+    return Column(
+      children: [
+        SizedBox(height: 20,),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              shimmerLeaveStatusCard(width * 0.44),
+              SizedBox(width: width * 0.020),
+              shimmerLeaveStatusCard(width * 0.44),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              shimmerLeaveStatusCard(width * 0.44),
+              SizedBox(width: width * 0.020),
+              shimmerLeaveStatusCard(width * 0.44),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),  // Add some spacing before the list
+        // Use Expanded to make the list take remaining space
+        Expanded(
+          child: ListView.builder(
+            itemCount: 2, // Number of shimmer items
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,  // Background for shimmer container
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shimmerText(150, 16),  // Title shimmer
+                      const SizedBox(height: 4),
+                      shimmerText(200, 14),  // Subtitle shimmer
+                      const SizedBox(height: 8),
+                      shimmerText(180, 12),  // Date and time shimmer
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: shimmerRoundedContainer(80, 28),  // Shimmer for trailing button
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
+
+  Widget shimmerLeaveStatusCard(double width) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,  // Placeholder color
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          shimmerRectangle(50), // Shimmer for task name
+          const SizedBox(height: 10),
+          shimmerText(150, 11), // Shimmer for description
+          const SizedBox(height: 10),
+          shimmerText(80, 11), // Shimmer for date/time
+        ],
+      ),
+    );
+  }
 
   void _bottomSheetApplyLeave(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.55;

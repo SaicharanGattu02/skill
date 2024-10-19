@@ -32,7 +32,16 @@ FadeShimmer_box(height, width, radius) {
     width: width,
   );
 }
-
+Widget shimmerRoundedContainer(double width, double height) {
+  return Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: Colors.grey[300], // Shimmer placeholder color
+      borderRadius: BorderRadius.circular(100), // Rounded edges for button shape
+    ),
+  );
+}
 FadeShimmer_box_elite(height, width, radius) {
   return Container(
     margin: EdgeInsets.all(5),
