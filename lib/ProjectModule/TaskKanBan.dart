@@ -258,7 +258,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                     backgroundColor: Colors.white,
                                     itemRadius: 35,
                                     itemBorderWidth: 3,
-                                  )
+                                  ),
                                 ],
                               ),
                             ),

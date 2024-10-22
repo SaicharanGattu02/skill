@@ -32,6 +32,9 @@ class TaskForm extends StatefulWidget {
   @override
   _TaskFormState createState() => _TaskFormState();
 }
+
+
+
 class _TaskFormState extends State<TaskForm> {
   bool _loading =true;
   final spinkits = Spinkits();
@@ -45,13 +48,6 @@ class _TaskFormState extends State<TaskForm> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
 
-  final FocusNode _focusNodetitle = FocusNode();
-  final FocusNode _focusNodedescription = FocusNode();
-  final FocusNode _focusNodemileStone = FocusNode();
-  final FocusNode _focusNodeassignedTo = FocusNode();
-  final FocusNode _focusNodecollorators = FocusNode();
-  final FocusNode _focusNodestatus = FocusNode();
-  final FocusNode _focusNodepriority = FocusNode();
 
   final controller = MultiSelectController<User>();
 
@@ -88,11 +84,6 @@ class _TaskFormState extends State<TaskForm> {
     _assignedToController.addListener(() {
       setState(() {
         _validateAssignedTo = "";
-      });
-    });
-    _colloratorsController.addListener(() {
-      setState(() {
-        _validateCollaborators = "";
       });
     });
     _statusController.addListener(() {
@@ -137,11 +128,12 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
     setState(() {
       if (res != null && res.data != null) {
-        _loading = false;
+        _loading =false;
         data = res.data;
         members = data?.members ?? [];
         print("members: $members");
       } else {
+
       }
     });
   }
@@ -173,9 +165,7 @@ class _TaskFormState extends State<TaskForm> {
   Future<void> GetMileStone() async {
     var res = await Userapi.GetMileStoneApi(widget.projectId);
     setState(() {
-      _isLoading = false; // Stop loading
       if (res['success']) {
-        // Handle successful response
         milestones = res['response'].data ?? []; // Adjust based on your model
         print(milestones);
         // If editing a task, get project task details
@@ -224,26 +214,25 @@ class _TaskFormState extends State<TaskForm> {
   Future<void> GetProjectTaskDetails() async {
     var res = await Userapi.GetTaskDetail(widget.taskid);
     setState(() {
-      _isLoading = false;
-
       if (res?.taskDetail != null) {
         if (res?.settings?.success == 1) {
-          _loading = false;
           _titleController.text = res?.taskDetail?.title ?? "";
           _descriptionController.text = res?.taskDetail?.description ?? "";
+          milestoneid=res?.taskDetail?.milestone ?? "";
+          assignedid=res?.taskDetail?.assignedToId ?? "";
+          statusid=res?.taskDetail?.status ?? "";
+          priorityid=res?.taskDetail?.priority ?? "";
           _mileStoneController.text = getMilestoneTitleById(res?.taskDetail?.milestone ?? "");
           _assignedToController.text = getAssignedById(res?.taskDetail?.assignedTo ?? "");
           _statusController.text = getStatusById(res?.taskDetail?.status ?? "");
           _priorityController.text = getPriorityById(res?.taskDetail?.priority ?? "");
           _startDateController.text = res?.taskDetail?.startDate ?? "";
           _deadlineController.text = res?.taskDetail?.endDate ?? "";
-
-          // Extract collaborators' IDs
           if (res?.taskDetail?.collaborators != null) {
             selectedIds = res!.taskDetail!.collaborators!.map((collab) => collab.id).whereType<String>().toList();
           }
-
           print("Selected Collaborators' IDs: $selectedIds");
+          _loading = false;
         } else {
           _loading = false;
           CustomSnackBar.show(context, res?.settings?.message ?? "");
@@ -296,7 +285,7 @@ class _TaskFormState extends State<TaskForm> {
   Future<void> CreateTaskApi() async {
     var data;
     if(widget.title=="Edit Task"){
-      data= await Userapi.UpdateTask(widget.taskid, _titleController.text,
+      data= await Userapi.updateTask(widget.taskid, _titleController.text,
           _descriptionController.text,
           milestoneid,
           assignedid,
@@ -389,7 +378,6 @@ class _TaskFormState extends State<TaskForm> {
         ),
       );
     }).toList();
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
@@ -421,8 +409,7 @@ class _TaskFormState extends State<TaskForm> {
                     SizedBox(height: 6),
                     _buildTextFormField(
                       controller: _titleController,
-                      focusNode: _focusNodetitle,
-                      hintText: 'Enter Project Name',
+                      hintText: 'Title',
                       validationMessage: _validateTitle,
                     ),
                     SizedBox(height: 10),
@@ -547,7 +534,7 @@ class _TaskFormState extends State<TaskForm> {
                         decoration: InputDecoration(
                           contentPadding:
                               const EdgeInsets.only(left: 10, top: 10),
-                          hintText: "Type Description",
+                          hintText: "Description",
                           hintStyle: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0,
@@ -624,7 +611,7 @@ class _TaskFormState extends State<TaskForm> {
                             decoration: InputDecoration(
                               contentPadding:
                               EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                              hintText: "Select your milestone",
+                              hintText: "Select milestone",
                               hintStyle: TextStyle(
                                 fontSize: 15,
                                 letterSpacing: 0,
@@ -841,16 +828,16 @@ class _TaskFormState extends State<TaskForm> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(7),
-                          borderSide:    const BorderSide(color: Color(0xffd0cbdb)),
+                          borderSide: BorderSide(color: Color(0xffd0cbdb)),
                         ),
                       ),
                       dropdownDecoration: const DropdownDecoration(
-                        marginTop: 2,
-                        maxHeight: 500,
+                        marginTop: 2, // Adjust this value as needed
+                        maxHeight: 400,
                         header: Padding(
                           padding: EdgeInsets.all(8),
                           child: Text(
-                            'Select members from the list',
+                            'Select collaborators from the list',
                             textAlign: TextAlign.start,
                             style: TextStyle(
                                 fontSize: 16,
@@ -925,7 +912,7 @@ class _TaskFormState extends State<TaskForm> {
                               fontWeight: FontWeight.w400,
                             ),
                             decoration: InputDecoration(
-                              hintText: "Enter your status",
+                              hintText: "Select status",
                               hintStyle: TextStyle(
                                 fontSize: 15,
                                 letterSpacing: 0,
@@ -1244,7 +1231,6 @@ class _TaskFormState extends State<TaskForm> {
 
   Widget _buildTextFormField(
       {required TextEditingController controller,
-      required FocusNode focusNode,
       bool obscureText = false,
       required String hintText,
       required String validationMessage,
@@ -1257,9 +1243,7 @@ class _TaskFormState extends State<TaskForm> {
         Container(
           height: MediaQuery.of(context).size.height * 0.050,
           child: TextFormField(
-
             controller: controller,
-            focusNode: focusNode,
             keyboardType: keyboardType,
             obscureText: obscureText,
             cursorColor: Color(0xff8856F4),
@@ -1273,7 +1257,7 @@ class _TaskFormState extends State<TaskForm> {
               //     padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
               //     child: prefixicon),
               suffixIcon: suffixicon,
-              hintStyle: const TextStyle(
+              hintStyle: TextStyle(
                 overflow: TextOverflow.ellipsis,
                 fontSize: 14,
                 letterSpacing: 0,
@@ -1340,46 +1324,42 @@ class _TaskFormState extends State<TaskForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            _selectDate(context, controller);
-            setState(() {});
-          },
-          child: AbsorbPointer(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: "Select date from date picker",
-                  suffixIcon: Container(
-                      padding: EdgeInsets.only(top: 12, bottom: 12),
-                      child: Image.asset(
-                        "assets/calendar.png",
-                        color: Color(0xff000000),
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.contain,
-                      )),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0,
-                    height: 1.2,
-                    color: Color(0xffAFAFAF),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffFCFAFF),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: () {
+              _selectDate(context, controller);
+            },
+            decoration: InputDecoration(
+              hintText: "Select date",
+              suffixIcon: Container(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Image.asset(
+                    "assets/calendar.png",
+                    color: Color(0xff000000),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
+                  )),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
               ),
             ),
           ),

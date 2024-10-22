@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
 import '../Model/TasklistModel.dart';
@@ -29,7 +30,6 @@ class _TaskListState extends State<TaskList> {
     // Initialize filteredData with all data
     filteredData = List.from(data);
     _searchController.addListener(filterData); // Add listener for search
-    // Simulate fetching data (you can replace this with your API call)
   }
 
   void filterData() {
@@ -237,6 +237,11 @@ class _TaskListState extends State<TaskList> {
                             itemCount: filteredData.length,
                             itemBuilder: (context, index) {
                               final task = filteredData[index];
+                              // Extracting image URLs from collaborators
+                              List<String> collaboratorImages = [];
+                              if (task.collaborators != null) {
+                                collaboratorImages = task.collaborators!.map((collaborator) => collaborator.image ?? "").toList();
+                              }
                               return Container(
                                 margin: const EdgeInsets.symmetric(vertical: 6),
                                 padding: const EdgeInsets.all(16),
@@ -359,7 +364,7 @@ class _TaskListState extends State<TaskList> {
                                           ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          "+6 Collaborators",
+                                          task.assignedTo.toString() ?? "",
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Color(0xff64748B),
@@ -368,6 +373,17 @@ class _TaskListState extends State<TaskList> {
                                       ],
                                     ),
                                     const SizedBox(height: 4),
+                                    FlutterImageStack(
+                                      imageList: collaboratorImages,
+                                      totalCount: collaboratorImages.length,
+                                      showTotalCount: true,
+                                      extraCountTextStyle: TextStyle(
+                                        color: Color(0xff8856F4),
+                                      ),
+                                      backgroundColor: Colors.white,
+                                      itemRadius: 35,
+                                      itemBorderWidth: 3,
+                                    ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,

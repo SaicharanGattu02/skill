@@ -23,6 +23,7 @@ class ProjectComment extends StatefulWidget {
 
 class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
+  final FocusScopeNode focusScopeNode = FocusScopeNode();
   bool _loading = true;
   final spinkit = Spinkits();
 
@@ -251,6 +252,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                             cursorColor: Color(0xff8856F4),
                             scrollPadding: const EdgeInsets.only(top: 5),
                             controller: _commentController,
+                            focusNode: focusScopeNode,
                             textInputAction: TextInputAction.done,
                             maxLines: 100,
                             onTap: () {
@@ -448,7 +450,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                   child: Text(
                                     'No File Chosen',
                                     style: TextStyle(
-                                      color: Color(0xff3C3C3C),
+                                      color: Color(0xffAFAFAF),
                                       fontSize: 14,
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w400,
@@ -645,6 +647,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                           Spacer(),
                                           GestureDetector(
                                             onTap: () {
+                                              focusScopeNode.unfocus();
                                               _showBottomSheet(
                                                   context,
                                                   comments.commentFiles!,
@@ -682,25 +685,36 @@ class _ProjectCommentState extends State<ProjectComment> {
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: w * 0.43,
-              decoration: BoxDecoration(
-                color: Color(0xffF8FCFF),
-                border: Border.all(
-                  color: Color(0xff8856F4),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Center(
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
+            InkResponse(
+              onTap: (){
+               setState(() {
+                 _commentController.text="";
+                 _imageFile = null;
+                 filepath = null;
+                 filename = "";
+                 _imageList=[];
+               });
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xffF8FCFF),
+                  border: Border.all(
                     color: Color(0xff8856F4),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Inter',
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: Color(0xff8856F4),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
               ),

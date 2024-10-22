@@ -307,13 +307,15 @@ class _MessagesState extends State<Messages> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Stack(
                                           children: [
                                             ClipOval(
                                               child: Image.network(
                                                 data.otherUserImage ?? "",
-                                                fit: BoxFit.contain,
+                                                fit: BoxFit.cover,
                                                 width: 32,
                                                 height: 32,
                                               ),
@@ -321,28 +323,25 @@ class _MessagesState extends State<Messages> {
                                           ],
                                         ),
                                         const SizedBox(width: 10),
-                                        SizedBox(
-                                          width:
-                                              MediaQuery.of(context).size.width *
-                                                  0.4,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                data.otherUser ?? "",
-                                                style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 16,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 19.36 / 16,
-                                                  color: Color(0xff1C1C1C),
-                                                ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              data.otherUser ?? "",
+                                              style: const TextStyle(
+                                                fontFamily: 'Inter',
+                                                fontSize: 16,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontWeight: FontWeight.w400,
+                                                height: 19.36 / 16,
+                                                color: Color(0xff1C1C1C),
                                               ),
+                                            ),
+                                            if(data.message!="")...[
                                               const SizedBox(height: 5),
                                               Text(
-                                                data.message ?? "",
+                                                data.message??"",
                                                 style: const TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w400,
@@ -353,7 +352,7 @@ class _MessagesState extends State<Messages> {
                                                 maxLines: 2,
                                               ),
                                             ],
-                                          ),
+                                          ],
                                         ),
                                         const Spacer(),
                                         Text(

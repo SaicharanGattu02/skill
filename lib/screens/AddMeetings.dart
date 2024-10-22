@@ -39,14 +39,6 @@ class _AddMeetingsState extends State<AddMeetings> {
 
   bool _loading = true;
 
-  final FocusNode _focusNodemeetingtitle = FocusNode();
-  final FocusNode _focusNodedescription = FocusNode();
-  final FocusNode _focusNodeProjects = FocusNode();
-  final FocusNode _focusNodeMeetingtype = FocusNode();
-  final FocusNode _focusNodeColabarators = FocusNode();
-  final FocusNode _focusNodeTime = FocusNode();
-  final FocusNode _focusNodeStartDate = FocusNode();
-  final FocusNode _focusNodMeetingLink = FocusNode();
 
   String _validateMeetingTitle = "";
   String _validateDescription = "";
@@ -236,6 +228,9 @@ class _AddMeetingsState extends State<AddMeetings> {
   final List<MultiSelectItem<User>> _items =
       _users.map((user) => MultiSelectItem<User>(user, user.name)).toList();
 
+  List<User> _selectedUsers = [];
+
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.75;
@@ -284,8 +279,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                           SizedBox(height: 6),
                           _buildTextFormField(
                             controller: _meetingtitleController,
-                            focusNode: _focusNodemeetingtitle,
-                            hintText: 'Enter Meeting Name',
+                            hintText: 'Meeting Title',
                             validationMessage: _validateMeetingTitle,
                           ),
                           SizedBox(height: 10),
@@ -380,7 +374,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: "Select your projects",
+                                    hintText: "Select project",
                                     hintStyle: TextStyle(
                                       fontSize: 15,
                                       letterSpacing: 0,
@@ -602,7 +596,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                               header: Padding(
                                 padding: EdgeInsets.all(8),
                                 child: Text(
-                                  'Select members from the list',
+                                  'Select collaborators from the list',
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontSize: 16,
@@ -772,8 +766,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                           SizedBox(height: 6),
                           _buildTextFormField(
                             controller: _meetinglinkController,
-                            focusNode: _focusNodMeetingLink,
-                            hintText: 'Enter Meeting link',
+                            hintText: 'Meeting link',
                             validationMessage: _validateMeetingLink,
                           ),
                           SizedBox(height: 10),
@@ -790,25 +783,30 @@ class _AddMeetingsState extends State<AddMeetings> {
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: w * 0.43,
-              decoration: BoxDecoration(
-                color: Color(0xffF8FCFF),
-                border: Border.all(
-                  color: Color(0xff8856F4),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Center(
-                child: Text(
-                  'Close',
-                  style: TextStyle(
+            InkWell(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xffF8FCFF),
+                  border: Border.all(
                     color: Color(0xff8856F4),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Inter',
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      color: Color(0xff8856F4),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
               ),
@@ -852,7 +850,6 @@ class _AddMeetingsState extends State<AddMeetings> {
 
   Widget _buildTextFormField(
       {required TextEditingController controller,
-      required FocusNode focusNode,
       bool obscureText = false,
       required String hintText,
       required String validationMessage,
@@ -866,7 +863,6 @@ class _AddMeetingsState extends State<AddMeetings> {
           height: MediaQuery.of(context).size.height * 0.050,
           child: TextFormField(
             controller: controller,
-            focusNode: focusNode,
             keyboardType: keyboardType,
             obscureText: obscureText,
             cursorColor: Color(0xff8856F4),
@@ -943,46 +939,42 @@ class _AddMeetingsState extends State<AddMeetings> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            _selectDate(context, controller);
-            setState(() {});
-          },
-          child: AbsorbPointer(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: "Select dob from date picker",
-                  suffixIcon: Container(
-                      padding: EdgeInsets.only(top: 12, bottom: 12),
-                      child: Image.asset(
-                        "assets/calendar.png",
-                        color: Color(0xff000000),
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.contain,
-                      )),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0,
-                    height: 1.2,
-                    color: Color(0xffAFAFAF),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffFCFAFF),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: () {
+              _selectDate(context, controller);
+            },
+            decoration: InputDecoration(
+              hintText: "Select start date",
+              suffixIcon: Container(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Image.asset(
+                    "assets/calendar.png",
+                    color: Color(0xff000000),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
+                  )),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
               ),
             ),
           ),
@@ -996,40 +988,37 @@ class _AddMeetingsState extends State<AddMeetings> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            _selectTime(context, controller);
-          },
-          child: AbsorbPointer(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: "Select time from time picker",
-                  suffixIcon: Icon(
-                    Icons.access_time,
-                    size: 18,
-                  ),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0,
-                    height: 1.2,
-                    color: Color(0xffAFAFAF),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffFCFAFF),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: () {
+              _selectTime(context, controller);
+            },
+            decoration: InputDecoration(
+              hintText: "Select time",
+              suffixIcon: Icon(
+                Icons.access_time,
+                size: 18,
+              ),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
               ),
             ),
           ),

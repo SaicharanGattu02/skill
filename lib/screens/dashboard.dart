@@ -6,29 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-
-import 'package:skill/ProjectModule/TaskList.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AIChatPage.dart';
-import 'package:skill/screens/AllChannels.dart';
 import 'package:skill/screens/Leave.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/ProjectModule/Projects.dart';
-import 'package:skill/screens/Profiledashboard.dart';
+import 'package:skill/screens/PunchInOut.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:web_socket_channel/io.dart';
-import '../Chatbubbledemo.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/ProjectsModel.dart';
 import '../Model/RoomsModel.dart';
@@ -38,10 +33,10 @@ import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
 import 'EditProfileScreen.dart';
-import 'GeneralInfo.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
+import 'package:geocoding/geocoding.dart' as geocoder;
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
@@ -54,7 +49,6 @@ class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   late IOWebSocketChannel _socket;
-  late GoogleMapController mapController;
   bool _isListVisible = true; // Variable to track visibility
   String userid = "";
   List<Rooms> rooms = [];
@@ -65,6 +59,7 @@ class _DashboardState extends State<Dashboard> {
   var longitude;
   var address;
   bool _loading = true;
+  int? _animatingIndex;
 
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
@@ -72,10 +67,25 @@ class _DashboardState extends State<Dashboard> {
 
   var isDeviceConnected = "";
 
+  double lat = 0.0;
+  double lng = 0.0;
+  var latlngs = "";
+  bool valid_address = true;
+  bool punching = true;
+
+  late String _locationName = "";
+  late String _pinCode = "";
+  final nonEditableAddressController = TextEditingController();
+
+  Set<Marker> markers = {};
+  var address_loading = true;
+  bool submit = false;
+
+  String status = "";
+
   @override
   void initState() {
     GetEmployeeData();
-    _requestLocationPermission();
     GetUserDeatails();
     GetRoomsList();
     GetProjectsData();
@@ -85,6 +95,48 @@ class _DashboardState extends State<Dashboard> {
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
   }
+
+
+
+
+  Future<void> _getAddress(double? lat1, double? lng1) async {
+    if (lat1 == null || lng1 == null) return;
+    List<geocoder.Placemark> placemarks =
+        await geocoder.placemarkFromCoordinates(lat1, lng1);
+
+    geocoder.Placemark? validPlacemark;
+    for (var placemark in placemarks) {
+      if (placemark.country == 'India' &&
+          placemark.isoCountryCode == 'IN' &&
+          placemark.postalCode != null &&
+          placemark.postalCode!.isNotEmpty) {
+        validPlacemark = placemark;
+        break;
+      }
+    }
+    if (validPlacemark != null) {
+      setState(() {
+        _locationName =
+            "${validPlacemark?.name},${validPlacemark?.subLocality},${validPlacemark?.subAdministrativeArea},"
+                    "${validPlacemark?.administrativeArea},${validPlacemark?.postalCode}"
+                .toString();
+        _pinCode = validPlacemark!.postalCode.toString();
+        address_loading = false;
+        valid_address = true;
+        _loading = false;
+      });
+    } else {
+      // Handle case where no valid placemark is found
+      setState(() {
+        _locationName =
+            "Whoa there, explorer! \nYou've reached a place we haven't. Our services are unavailable here. \nTry another location!";
+        address_loading = false;
+        valid_address = false;
+        _loading = false;
+      });
+    }
+  }
+
 
   Future<void> initConnectivity() async {
     List<ConnectivityResult> result;
@@ -145,11 +197,12 @@ class _DashboardState extends State<Dashboard> {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       List<Placemark> placemarks =
-      await placemarkFromCoordinates(position.latitude, position.longitude);
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       setState(() {
         lattitude = position.latitude;
         longitude = position.longitude;
-        address = "${placemarks[0].subLocality}, ${placemarks[0].street}, ${placemarks[0].locality}";
+        address =
+            "${placemarks[0].subLocality}, ${placemarks[0].street}, ${placemarks[0].locality}";
       });
       fetchWeather();
     } catch (e) {
@@ -389,6 +442,7 @@ class _DashboardState extends State<Dashboard> {
       _loading = true;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -396,755 +450,523 @@ class _DashboardState extends State<Dashboard> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MMMM d, y').format(now);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return (isDeviceConnected=="ConnectivityResult.wifi" || isDeviceConnected=="ConnectivityResult.mobile" ) ?
-      Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: const Color(0xffF3ECFB),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: null, // Hides the leading icon (for drawer)
-        actions: <Widget>[Container()],
-        toolbarHeight: 58,
-        backgroundColor: const Color(0xff8856F4),
-        title: Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              InkResponse(
-                onTap: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(right: 10), // Increase padding as needed
-                  child: Image.asset(
-                    "assets/menu.png",
-                    width: 24,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Image.asset(
-                "assets/skillLogo.png",
-                width: 80,
-                height: 35,
-                fit: BoxFit.contain,
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AIChatPage()));
-                    },
-                    child: Container(
-                      width:
-                      48, // Increase this size to make the area more tappable
-                      height:
-                      48, // Increase this size to make the area more tappable
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/robo.png",
-                        width: 30,
-                        height: 30,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Notifications()));
-                    },
-                    child: Container(
-                      width:
-                          48, // Increase this size to make the area more tappable
-                      height:
-                          48, // Increase this size to make the area more tappable
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/notify.png",
-                        width: 30,
-                        height: 30,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                    },
-                    child: Container(
-                      width:
-                          48, // Increase this size to make the area more tappable
-                      height:
-                          48, // Increase this size to make the area more tappable
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/dashboard.png",
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: _loading
-          ? _buildShimmerGrid(w)
-          : RefreshIndicator(
-              color: Color(0xff9E7BCA),
-              backgroundColor: Colors.white,
-              displacement: 50,
-              onRefresh: _refreshItems,
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 16, left: 16, right: 16, bottom: 8),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Today \n$formattedDate",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                fontFamily: "Inter"),
-                          ),
-                          Row(
-                            children: [
-                              Image.asset(
-                                "assets/sun1.png",
-                                width: 30,
-                                height: 30,
-                              ),
-                              SizedBox(width: 10,),
-                              Text(
-                                mainWeatherStatus,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                    fontFamily: "Inter"),
-                              ),
-                              SizedBox(width: 10,),
-                              // Image.asset(
-                              //   "assets/sun2.png",
-                              //   width: 25,
-                              //   height: 25,
-                              // ),
-                            ],
-                          )
-                        ],
-                      ),
-                      // SwitchListTile(
-                      //   title: Text('Dark Mode'),
-                      //   value: themeProvider.themeData.brightness == Brightness.dark,
-                      //   onChanged: (bool value) {
-                      //     // Change the theme based on the switch value
-                      //     if (value) {
-                      //       themeProvider.setDarkTheme();
-                      //     } else {
-                      //       themeProvider.setLightTheme();
-                      //     }
-                      //   },
-                      // ),
-                      // Container(
-                      //   padding: const EdgeInsets.symmetric(
-                      //       horizontal: 16, vertical: 6),
-                      //   decoration: BoxDecoration(
-                      //       color: const Color(0xffffffff),
-                      //       borderRadius: BorderRadius.circular(8)),
-                      //   child: Row(
-                      //     children: [
-                      //       Image.asset(
-                      //         "assets/search.png",
-                      //         width: 24,
-                      //         height: 24,
-                      //         fit: BoxFit.contain,
-                      //       ),
-                      //       const SizedBox(width: 10),
-                      //       const Text(
-                      //         "Search",
-                      //         style: TextStyle(
-                      //             color: Color(0xff9E7BCA),
-                      //             fontWeight: FontWeight.w400,
-                      //             fontSize: 16,
-                      //             fontFamily: "Nunito"),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      SizedBox(
-                        height: w * 0.03,
-                      ),
-                      // User Info Container
-                      InkResponse(
-                        onTap: () async {
-                          var res = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EditProfileScreen()));
-                          if (res == true) {
-                            GetUserDeatails();
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: const Color(0xff8856F4),
-                              borderRadius: BorderRadius.circular(8)),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  ClipOval(
-                                    child: Center(
-                                      child: Image.network(
-                                        userdata?.image ?? "",
-                                        width: 70,
-                                        height: 70,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  // User Info and Performance
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.only(
-                                              left: 4,
-                                              right: 4,
-                                              top: 2,
-                                              bottom: 2),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xffFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: const [
-                                              Text(
-                                                "Skil ID - 02",
-                                                style: TextStyle(
-                                                    color: Color(0xff8856F4),
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 10,
-                                                    height: 12.1 / 10,
-                                                    letterSpacing: 0.14,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontFamily: "Nunito"),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                userdata?.fullName ?? "",
-                                                style: const TextStyle(
-                                                    color: Color(0xffFFFFFF),
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontFamily: "Inter"),
-                                              ),
-                                            ),
-                                            SizedBox(width: 8),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4,
-                                                      vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xff2FB035),
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                              ),
-                                              child: const Text(
-                                                "Active",
-                                                style: TextStyle(
-                                                    color: Color(0xffFFFFFF),
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 12,
-                                                    height: 16.36 / 12,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontFamily: "Nunito"),
-                                              ),
-                                            ),
-                                            SizedBox(width: 15),
-                                            Image.asset(
-                                              "assets/edit.png",
-                                              width: 18,
-                                              height: 18,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        // UX/UI and Performance in a Row
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "UX/UI Designer at PIXL Since 2024",
-                                                    style: TextStyle(
-                                                        color: const Color(
-                                                                0xffFFFFFF)
-                                                            .withOpacity(0.7),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 12,
-                                                        height: 16.21 / 12,
-                                                        letterSpacing: 0.14,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        fontFamily: "Inter"),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal: 4,
-                                                                  vertical: 3),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        6),
-                                                            color: Color(
-                                                                    0xffFFFFFF)
-                                                                .withOpacity(
-                                                                    0.25),
-                                                          ),
-                                                          child: Row(
-                                                            children: [
-                                                              Image.asset(
-                                                                "assets/call.png",
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                                width: 12,
-                                                                color: Color(
-                                                                    0xffffffff),
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 4),
-                                                              Expanded(
-                                                                // Wrap Text with Expanded to avoid overflow
-                                                                child: Text(
-                                                                  userdata?.mobile ??
-                                                                      "",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: const Color(
-                                                                        0xffFFFFFF),
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    fontSize:
-                                                                        11,
-                                                                    height:
-                                                                        13.41 /
-                                                                            11,
-                                                                    letterSpacing:
-                                                                        0.14,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    fontFamily:
-                                                                        "Inter",
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                          width: w * 0.015),
-                                                      Expanded(
-                                                        child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal: 4,
-                                                                  vertical: 3),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        6),
-                                                            color: Color(
-                                                                    0xffFFFFFF)
-                                                                .withOpacity(
-                                                                    0.25),
-                                                          ),
-                                                          child: Row(
-                                                            children: [
-                                                              Image.asset(
-                                                                "assets/gmail.png",
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                                width: 12,
-                                                                color: Color(
-                                                                    0xffffffff),
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 4),
-                                                              Expanded(
-                                                                // Wrap Text with Expanded here too
-                                                                child: Text(
-                                                                  userdata?.email ??
-                                                                      "",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: const Color(
-                                                                        0xffFFFFFF),
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    fontSize:
-                                                                        11,
-                                                                    height:
-                                                                        13.41 /
-                                                                            11,
-                                                                    letterSpacing:
-                                                                        0.14,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                    fontFamily:
-                                                                        "Inter",
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 15),
-                                            // Performance Container
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+    return (isDeviceConnected == "ConnectivityResult.wifi" ||
+            isDeviceConnected == "ConnectivityResult.mobile")
+        ? Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: const Color(0xffF3ECFB),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              leading: null, // Hides the leading icon (for drawer)
+              actions: <Widget>[Container()],
+              toolbarHeight: 58,
+              backgroundColor: const Color(0xff8856F4),
+              title: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    InkResponse(
+                      onTap: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            right: 10), // Increase padding as needed
+                        child: Image.asset(
+                          "assets/menu.png",
+                          width: 24,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      SizedBox(
-                        height: w * 0.04,
-                      ),
-                      Row(
-                        children: [
-                          const Text(
-                            "Projects",
-                            style: TextStyle(
-                                color: Color(0xff16192C),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                                height: 24.48 / 18,
-                                fontFamily: "Inter"),
-                          ),
-                          Spacer(),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProjectsScreen()));
-                            },
-                            child: Text(
-                              "See all",
-                              style: TextStyle(
-                                  color: Color(0xff8856F4),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  height: 16.94 / 14,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Color(0xff8856F4),
-                                  fontFamily: "Inter"),
+                    ),
+                    Image.asset(
+                      "assets/skillLogo.png",
+                      width: 80,
+                      height: 35,
+                      fit: BoxFit.contain,
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AIChatPage()));
+                          },
+                          child: Container(
+                            width:
+                                48, // Increase this size to make the area more tappable
+                            height:
+                                48, // Increase this size to make the area more tappable
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              "assets/robo.png",
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.contain,
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: w * 0.02,
-                      ),
-                      if (projectsData.length > 0) ...[
-                        SizedBox(
-                          height: w * 0.78,
-                          child: GridView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: projectsData.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2, // Two items per row
-                                    childAspectRatio:
-                                        0.8, // Adjust this ratio to fit your design
-                                    mainAxisSpacing: 2,
-                                    crossAxisSpacing:
-                                        10 // Space between items horizontally
-                                    ),
-                            itemBuilder: (context, index) {
-                              var data = projectsData[index];
-                              return InkResponse(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MyTabBar(
-                                                titile: '${data.name ?? ""}',
-                                                id: '${data.id}',
-                                              )));
-                                  print('idd>>${data.id}');
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        left: 16,
-                                        right: 16,
-                                        top: 10,
-                                        bottom: 10),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffF7F4FC),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        // Center Image
-                                        Image.network(
-                                          data.icon ?? "",
-                                          width: 48,
-                                          height: 48,
-                                          fit: BoxFit.contain,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        // Bottom Text
-                                        Text(
-                                          data.name ?? "",
-                                          style: const TextStyle(
-                                              color: Color(0xff4F3A84),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16,
-                                              height: 19.36 / 16,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Nunito"),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  "Progress",
-                                                  style: TextStyle(
-                                                      color: Color(0xff000000),
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 12,
-                                                      height: 14.52 / 12,
-                                                      fontFamily: "Inter"),
-                                                ),
-                                                Text(
-                                                  "${data.totalPercent ?? ""}%",
-                                                  style: TextStyle(
-                                                      color: Color(0xff000000),
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 12,
-                                                      fontFamily: "Inter"),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            LinearProgressIndicator(
-                                              value: (data.totalPercent
-                                                          ?.toDouble() ??
-                                                      0) /
-                                                  100.0,
-                                              minHeight: 7,
-                                              backgroundColor:
-                                                  const Color(0xffE0E0E0),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              color: const Color(0xff2FB035),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Notifications()));
+                          },
+                          child: Container(
+                            width:
+                                48, // Increase this size to make the area more tappable
+                            height:
+                                48, // Increase this size to make the area more tappable
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              "assets/notify.png",
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ] else ...[
-                        SizedBox(
-                          height: w * 0.78,
-                          child: Center(
-                            child: Text(
-                              "No projects are assigned.",
-                              style: TextStyle(
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16),
+                        InkWell(
+                          onTap: () {
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: Container(
+                            width:
+                                48, // Increase this size to make the area more tappable
+                            height:
+                                48, // Increase this size to make the area more tappable
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              "assets/dashboard.png",
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
                       ],
-                      // SizedBox(
-                      //   height: w * 0.04,
-                      // ),
-                      // Row(
-                      //   children: [
-                      //     const Text(
-                      //       "Channels",
-                      //       style: TextStyle(
-                      //           color: Color(0xff16192C),
-                      //           fontWeight: FontWeight.w500,
-                      //           fontSize: 18,
-                      //           fontFamily: "Inter"),
-                      //     ),
-                      //     Spacer(),
-                      //     InkWell(
-                      //       onTap: () {
-                      //         Navigator.push(
-                      //             context,
-                      //             MaterialPageRoute(
-                      //                 builder: (context) => Allchannels()));
-                      //       },
-                      //       child: Text(
-                      //         "See all",
-                      //         style: TextStyle(
-                      //             color: Color(0xff8856F4),
-                      //             fontWeight: FontWeight.w500,
-                      //             fontSize: 14,
-                      //             decoration: TextDecoration.underline,
-                      //             decorationColor: Color(0xff8856F4),
-                      //             fontFamily: "Inter"),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      //
-                      // SizedBox(
-                      //   height: w * 0.02,
-                      // ),
-                      // SizedBox(
-                      //   height: w * 0.3,
-                      //   child: GridView.builder(
-                      //     scrollDirection:
-                      //         Axis.horizontal, // Changed to vertical to display in rows
-                      //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      //       crossAxisCount: 2,
-                      //       crossAxisSpacing: 10,
-                      //       mainAxisSpacing: 2,
-                      //       childAspectRatio:
-                      //           0.28, // Adjust this ratio to fit your design
-                      //     ),
-                      //     itemCount: items.length,
-                      //     itemBuilder: (context, index) {
-                      //       return Padding(
-                      //         padding: const EdgeInsets.only(right: 8),
-                      //         child: Container(
-                      //           padding: const EdgeInsets.all(10),
-                      //           decoration: BoxDecoration(
-                      //             color: const Color(0xffF7F4FC),
-                      //             borderRadius: BorderRadius.circular(8),
-                      //           ),
-                      //           child: Row(
-                      //             children: [
-                      //               // Center Image
-                      //               Image.asset(
-                      //                 items[index]['image']!,
-                      //                 width: 32,
-                      //                 height: 32,
-                      //                 fit: BoxFit.contain,
-                      //               ),
-                      //               const SizedBox(width: 8),
-                      //               // Bottom Text
-                      //               Text(
-                      //                 items[index]['text']!,
-                      //                 style: const TextStyle(
-                      //                   color: Color(0xff27272E),
-                      //                   fontWeight: FontWeight.w600,
-                      //                   fontSize: 13,
-                      //                   height: 16.94 / 14,
-                      //                   overflow: TextOverflow.ellipsis,
-                      //                   fontFamily: "Inter",
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       );
-                      //     },
-                      //   ),
-                      // ),
-                      //
-                      SizedBox(
-                        height: w * 0.05,
-                      ),
-
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            color: Color(0xffFFFFFF),
-                            borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            body: _loading
+                ? _buildShimmerGrid(w)
+                : RefreshIndicator(
+                    color: Color(0xff9E7BCA),
+                    backgroundColor: Colors.white,
+                    displacement: 50,
+                    onRefresh: _refreshItems,
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 16, left: 16, right: 16, bottom: 8),
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+                                Text(
+                                  "Today \n$formattedDate",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      fontFamily: "Inter"),
+                                ),
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      "assets/sun1.png",
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      mainWeatherStatus,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          fontFamily: "Inter"),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    // Image.asset(
+                                    //   "assets/sun2.png",
+                                    //   width: 25,
+                                    //   height: 25,
+                                    // ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            // SwitchListTile(
+                            //   title: Text('Dark Mode'),
+                            //   value: themeProvider.themeData.brightness == Brightness.dark,
+                            //   onChanged: (bool value) {
+                            //     // Change the theme based on the switch value
+                            //     if (value) {
+                            //       themeProvider.setDarkTheme();
+                            //     } else {
+                            //       themeProvider.setLightTheme();
+                            //     }
+                            //   },
+                            // ),
+                            // Container(
+                            //   padding: const EdgeInsets.symmetric(
+                            //       horizontal: 16, vertical: 6),
+                            //   decoration: BoxDecoration(
+                            //       color: const Color(0xffffffff),
+                            //       borderRadius: BorderRadius.circular(8)),
+                            //   child: Row(
+                            //     children: [
+                            //       Image.asset(
+                            //         "assets/search.png",
+                            //         width: 24,
+                            //         height: 24,
+                            //         fit: BoxFit.contain,
+                            //       ),
+                            //       const SizedBox(width: 10),
+                            //       const Text(
+                            //         "Search",
+                            //         style: TextStyle(
+                            //             color: Color(0xff9E7BCA),
+                            //             fontWeight: FontWeight.w400,
+                            //             fontSize: 16,
+                            //             fontFamily: "Nunito"),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            SizedBox(
+                              height: w * 0.03,
+                            ),
+                            // User Info Container
+                            InkResponse(
+                              onTap: () async {
+                                var res = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditProfileScreen()));
+                                if (res == true) {
+                                  GetUserDeatails();
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: const Color(0xff8856F4),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        ClipOval(
+                                          child: Center(
+                                            child: Image.network(
+                                              userdata?.image ?? "",
+                                              width: 70,
+                                              height: 70,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        // User Info and Performance
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 4,
+                                                    right: 4,
+                                                    top: 2,
+                                                    bottom: 2),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xffFFFFFF),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: const [
+                                                    Text(
+                                                      "Skil ID - 02",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xff8856F4),
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 10,
+                                                          height: 12.1 / 10,
+                                                          letterSpacing: 0.14,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          fontFamily: "Nunito"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      userdata?.fullName ?? "",
+                                                      style: const TextStyle(
+                                                          color:
+                                                              Color(0xffFFFFFF),
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 16,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          fontFamily: "Inter"),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 4,
+                                                        vertical: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xff2FB035),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                    ),
+                                                    child: const Text(
+                                                      "Active",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xffFFFFFF),
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 12,
+                                                          height: 16.36 / 12,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          fontFamily: "Nunito"),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 15),
+                                                  Image.asset(
+                                                    "assets/edit.png",
+                                                    width: 18,
+                                                    height: 18,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              // UX/UI and Performance in a Row
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "UX/UI Designer at PIXL Since 2024",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  const Color(
+                                                                          0xffFFFFFF)
+                                                                      .withOpacity(
+                                                                          0.7),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              fontSize: 12,
+                                                              height: 16.21 /
+                                                                  12,
+                                                              letterSpacing:
+                                                                  0.14,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              fontFamily:
+                                                                  "Inter"),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 8),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: Container(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            4,
+                                                                        vertical:
+                                                                            3),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              6),
+                                                                  color: Color(
+                                                                          0xffFFFFFF)
+                                                                      .withOpacity(
+                                                                          0.25),
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Image.asset(
+                                                                      "assets/call.png",
+                                                                      fit: BoxFit
+                                                                          .contain,
+                                                                      width: 12,
+                                                                      color: Color(
+                                                                          0xffffffff),
+                                                                    ),
+                                                                    SizedBox(
+                                                                        width:
+                                                                            4),
+                                                                    Expanded(
+                                                                      // Wrap Text with Expanded to avoid overflow
+                                                                      child:
+                                                                          Text(
+                                                                        userdata?.mobile ??
+                                                                            "",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              const Color(0xffFFFFFF),
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                          fontSize:
+                                                                              11,
+                                                                          height:
+                                                                              13.41 / 11,
+                                                                          letterSpacing:
+                                                                              0.14,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          fontFamily:
+                                                                              "Inter",
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                                width:
+                                                                    w * 0.015),
+                                                            Expanded(
+                                                              child: Container(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            4,
+                                                                        vertical:
+                                                                            3),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              6),
+                                                                  color: Color(
+                                                                          0xffFFFFFF)
+                                                                      .withOpacity(
+                                                                          0.25),
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Image.asset(
+                                                                      "assets/gmail.png",
+                                                                      fit: BoxFit
+                                                                          .contain,
+                                                                      width: 12,
+                                                                      color: Color(
+                                                                          0xffffffff),
+                                                                    ),
+                                                                    SizedBox(
+                                                                        width:
+                                                                            4),
+                                                                    Expanded(
+                                                                      // Wrap Text with Expanded here too
+                                                                      child:
+                                                                          Text(
+                                                                        userdata?.email ??
+                                                                            "",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              const Color(0xffFFFFFF),
+                                                                          fontWeight:
+                                                                              FontWeight.w400,
+                                                                          fontSize:
+                                                                              11,
+                                                                          height:
+                                                                              13.41 / 11,
+                                                                          letterSpacing:
+                                                                              0.14,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          fontFamily:
+                                                                              "Inter",
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 15),
+                                                  // Performance Container
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: w * 0.04,
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  "Projects",
+                                  style: TextStyle(
+                                      color: Color(0xff16192C),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                      height: 24.48 / 18,
+                                      fontFamily: "Inter"),
+                                ),
+                                Spacer(),
                                 InkWell(
                                   onTap: () {
                                     Navigator.push(
@@ -1153,909 +975,1241 @@ class _DashboardState extends State<Dashboard> {
                                             builder: (context) =>
                                                 ProjectsScreen()));
                                   },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: w * 0.16,
-                                        height: w * 0.115,
-                                        padding: EdgeInsets.only(
-                                            left: 3,
-                                            right: 3,
-                                            top: 2,
-                                            bottom: 2),
-                                        decoration: BoxDecoration(
-                                            color: Color(0x1A8856F4),
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: Center(
-                                          child: Text(
-                                            userdata?.projectCount.toString() ??
-                                                "",
-                                            style: TextStyle(
-                                                color: Color(0xff000000),
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: "Sarabun"),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "PROJECTS",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: "Inter"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: w * 0.03,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Todolist()));
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: w * 0.16,
-                                        height: w * 0.115,
-                                        padding: EdgeInsets.only(
-                                            left: 3,
-                                            right: 3,
-                                            top: 2,
-                                            bottom: 2),
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffF1FFF3),
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: Center(
-                                          child: Text(
-                                            userdata?.todoCount.toString() ??
-                                                "",
-                                            style: TextStyle(
-                                                color: Color(0xff000000),
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: "Sarabun"),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "TO DO",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: "Inter"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Task()));
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: w * 0.16,
-                                        height: w * 0.115,
-                                        padding: EdgeInsets.only(
-                                            left: 3,
-                                            right: 3,
-                                            top: 2,
-                                            bottom: 2),
-                                        decoration: BoxDecoration(
-                                            color: Color(0x1AFBBC04),
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: Center(
-                                          child: Text(
-                                            userdata?.tasksCount.toString() ?? "",
-                                            style: TextStyle(
-                                                color: Color(0xff000000),
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: "Sarabun"),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "TASKS",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: "Inter"),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Meetings()));
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: w * 0.16,
-                                        height: w * 0.115,
-                                        padding: EdgeInsets.only(
-                                            left: 3,
-                                            right: 3,
-                                            top: 2,
-                                            bottom: 2),
-                                        decoration: BoxDecoration(
-                                            color: Color(0x1A08BED0),
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: Center(
-                                          child: Text(
-                                            userdata?.meetingCount.toString() ??
-                                                "",
-                                            style: TextStyle(
-                                                color: Color(0xff000000),
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: "Sarabun"),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "MEETINGS",
-                                        style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: "Inter"),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    "See all",
+                                    style: TextStyle(
+                                        color: Color(0xff8856F4),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        height: 16.94 / 14,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Color(0xff8856F4),
+                                        fontFamily: "Inter"),
                                   ),
                                 ),
                               ],
                             ),
                             SizedBox(
-                              height: 20,
+                              height: w * 0.02,
                             ),
-                            InkResponse(
-                              onTap: () {
-                                // setState(() {
-                                //   _isLoading=true;
-                                // });
-                                // showCustomDialog(context);
-                                CustomSnackBar.show(context, "Coming soon...");
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(top: 8, bottom: 8),
-                                width: w,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Color(0xff8856F4),
-                                  borderRadius: BorderRadius.circular(8),
+                            if (projectsData.length > 0) ...[
+                              SizedBox(
+                                height: w * 0.78,
+                                child: GridView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: projectsData.length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount:
+                                              2, // Two items per row
+                                          childAspectRatio:
+                                              0.8, // Adjust this ratio to fit your design
+                                          mainAxisSpacing: 2,
+                                          crossAxisSpacing:
+                                              10 // Space between items horizontally
+                                          ),
+                                  itemBuilder: (context, index) {
+                                    var data = projectsData[index];
+                                    return InkResponse(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => MyTabBar(
+                                                      titile:
+                                                          '${data.name ?? ""}',
+                                                      id: '${data.id}',
+                                                    )));
+                                        print('idd>>${data.id}');
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8),
+                                        child: Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 16,
+                                              right: 16,
+                                              top: 10,
+                                              bottom: 10),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xffF7F4FC),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Center Image
+                                              Image.network(
+                                                data.icon ?? "",
+                                                width: 48,
+                                                height: 48,
+                                                fit: BoxFit.contain,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              // Bottom Text
+                                              Text(
+                                                data.name ?? "",
+                                                style: const TextStyle(
+                                                    color: Color(0xff4F3A84),
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 16,
+                                                    height: 19.36 / 16,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    fontFamily: "Nunito"),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        "Progress",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xff000000),
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            fontSize: 12,
+                                                            height: 14.52 / 12,
+                                                            fontFamily:
+                                                                "Inter"),
+                                                      ),
+                                                      Text(
+                                                        "${data.totalPercent ?? ""}%",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xff000000),
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            fontSize: 12,
+                                                            fontFamily:
+                                                                "Inter"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  LinearProgressIndicator(
+                                                    value: (data.totalPercent
+                                                                ?.toDouble() ??
+                                                            0) /
+                                                        100.0,
+                                                    minHeight: 7,
+                                                    backgroundColor:
+                                                        const Color(0xffE0E0E0),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    color:
+                                                        const Color(0xff2FB035),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // _isLoading?spinkit.getFadingCircleSpinner():
-                                    Text(
-                                      "Punch In",
-                                      style: TextStyle(
-                                          color: Color(0xffffffff),
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: "Inter"),
-                                    ),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    // Image.asset(
-                                    //   "assets/fingerPrint.png",
-                                    //   fit: BoxFit.contain,
-                                    // )
-                                  ],
+                              ),
+                            ] else ...[
+                              SizedBox(
+                                height: w * 0.78,
+                                child: Center(
+                                  child: Text(
+                                    "No projects are assigned.",
+                                    style: TextStyle(
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16),
+                                  ),
                                 ),
+                              ),
+                            ],
+                            // SizedBox(
+                            //   height: w * 0.04,
+                            // ),
+                            // Row(
+                            //   children: [
+                            //     const Text(
+                            //       "Channels",
+                            //       style: TextStyle(
+                            //           color: Color(0xff16192C),
+                            //           fontWeight: FontWeight.w500,
+                            //           fontSize: 18,
+                            //           fontFamily: "Inter"),
+                            //     ),
+                            //     Spacer(),
+                            //     InkWell(
+                            //       onTap: () {
+                            //         Navigator.push(
+                            //             context,
+                            //             MaterialPageRoute(
+                            //                 builder: (context) => Allchannels()));
+                            //       },
+                            //       child: Text(
+                            //         "See all",
+                            //         style: TextStyle(
+                            //             color: Color(0xff8856F4),
+                            //             fontWeight: FontWeight.w500,
+                            //             fontSize: 14,
+                            //             decoration: TextDecoration.underline,
+                            //             decorationColor: Color(0xff8856F4),
+                            //             fontFamily: "Inter"),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            //
+                            // SizedBox(
+                            //   height: w * 0.02,
+                            // ),
+                            // SizedBox(
+                            //   height: w * 0.3,
+                            //   child: GridView.builder(
+                            //     scrollDirection:
+                            //         Axis.horizontal, // Changed to vertical to display in rows
+                            //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            //       crossAxisCount: 2,
+                            //       crossAxisSpacing: 10,
+                            //       mainAxisSpacing: 2,
+                            //       childAspectRatio:
+                            //           0.28, // Adjust this ratio to fit your design
+                            //     ),
+                            //     itemCount: items.length,
+                            //     itemBuilder: (context, index) {
+                            //       return Padding(
+                            //         padding: const EdgeInsets.only(right: 8),
+                            //         child: Container(
+                            //           padding: const EdgeInsets.all(10),
+                            //           decoration: BoxDecoration(
+                            //             color: const Color(0xffF7F4FC),
+                            //             borderRadius: BorderRadius.circular(8),
+                            //           ),
+                            //           child: Row(
+                            //             children: [
+                            //               // Center Image
+                            //               Image.asset(
+                            //                 items[index]['image']!,
+                            //                 width: 32,
+                            //                 height: 32,
+                            //                 fit: BoxFit.contain,
+                            //               ),
+                            //               const SizedBox(width: 8),
+                            //               // Bottom Text
+                            //               Text(
+                            //                 items[index]['text']!,
+                            //                 style: const TextStyle(
+                            //                   color: Color(0xff27272E),
+                            //                   fontWeight: FontWeight.w600,
+                            //                   fontSize: 13,
+                            //                   height: 16.94 / 14,
+                            //                   overflow: TextOverflow.ellipsis,
+                            //                   fontFamily: "Inter",
+                            //                 ),
+                            //               ),
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                            //
+                            SizedBox(
+                              height: w * 0.05,
+                            ),
+
+                            Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffFFFFFF),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProjectsScreen()));
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: w * 0.16,
+                                              height: w * 0.115,
+                                              padding: EdgeInsets.only(
+                                                  left: 3,
+                                                  right: 3,
+                                                  top: 2,
+                                                  bottom: 2),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0x1A8856F4),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8)),
+                                              child: Center(
+                                                child: Text(
+                                                  userdata?.projectCount
+                                                          .toString() ??
+                                                      "",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontFamily: "Sarabun"),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              "PROJECTS",
+                                              style: TextStyle(
+                                                  color: Color(0xff000000),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: "Inter"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: w * 0.03,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Todolist()));
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: w * 0.16,
+                                              height: w * 0.115,
+                                              padding: EdgeInsets.only(
+                                                  left: 3,
+                                                  right: 3,
+                                                  top: 2,
+                                                  bottom: 2),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xffF1FFF3),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8)),
+                                              child: Center(
+                                                child: Text(
+                                                  userdata?.todoCount
+                                                          .toString() ??
+                                                      "",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontFamily: "Sarabun"),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              "TO DO",
+                                              style: TextStyle(
+                                                  color: Color(0xff000000),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: "Inter"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Task()));
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: w * 0.16,
+                                              height: w * 0.115,
+                                              padding: EdgeInsets.only(
+                                                  left: 3,
+                                                  right: 3,
+                                                  top: 2,
+                                                  bottom: 2),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0x1AFBBC04),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8)),
+                                              child: Center(
+                                                child: Text(
+                                                  userdata?.tasksCount
+                                                          .toString() ??
+                                                      "",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontFamily: "Sarabun"),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              "TASKS",
+                                              style: TextStyle(
+                                                  color: Color(0xff000000),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: "Inter"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Meetings()));
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: w * 0.16,
+                                              height: w * 0.115,
+                                              padding: EdgeInsets.only(
+                                                  left: 3,
+                                                  right: 3,
+                                                  top: 2,
+                                                  bottom: 2),
+                                              decoration: BoxDecoration(
+                                                  color: Color(0x1A08BED0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8)),
+                                              child: Center(
+                                                child: Text(
+                                                  userdata?.meetingCount
+                                                          .toString() ??
+                                                      "",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontFamily: "Sarabun"),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              "MEETINGS",
+                                              style: TextStyle(
+                                                  color: Color(0xff000000),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: "Inter"),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  InkResponse(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Punching(),
+                                          ));
+                                      // showCustomDialog(context);
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.only(top: 8, bottom: 8),
+                                      width: w,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff8856F4),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Punch In",
+                                            style: TextStyle(
+                                                color: Color(0xffffffff),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: "Inter"),
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          // Image.asset(
+                                          //   "assets/fingerPrint.png",
+                                          //   fit: BoxFit.contain,
+                                          // )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ),
-      drawer: Drawer(
-        backgroundColor: Color(0xff8856F4),
-        width: w * 0.65,
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 16, right: 16, top: 40),
+            drawer: Drawer(
+              backgroundColor: Color(0xff8856F4),
+              width: w * 0.65,
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Spacer(),
-                      Image.asset(
-                        "assets/skillLogo.png",
-                        fit: BoxFit.contain,
-                        width: 60,
-                        height: 30,
-                      ),
-                      Spacer(),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image.asset(
-                          "assets/cross.png",
-                          fit: BoxFit.contain,
-                          width: 18,
-                          height: 18,
+                  Container(
+                    padding: EdgeInsets.only(left: 16, right: 16, top: 40),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Spacer(),
+                            Image.asset(
+                              "assets/skillLogo.png",
+                              fit: BoxFit.contain,
+                              width: 60,
+                              height: 30,
+                            ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Image.asset(
+                                "assets/cross.png",
+                                fit: BoxFit.contain,
+                                width: 18,
+                                height: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 32,
+                    margin: EdgeInsets.only(left: 16, right: 16, top: 12),
+                    padding: EdgeInsets.only(left: 10, top: 6, bottom: 6),
+                    decoration: BoxDecoration(
+                      color: Color(0xffEAE0FF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (text) {
+                        setState(() {
+                          if (text.length > 0) {
+                            employeeData = []; // Clear previous dat
+                            GetSearchUsersData(text); // Fetch new data
+                          } else {
+                            employeeData = [];
+                            employeeData = tempemployeeData;
+                          }
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search...',
+                        hintStyle: TextStyle(color: Color(0xff9E7BCA)),
+                        border: InputBorder.none,
+                        icon: Icon(
+                          Icons.search,
+                          color: Color(0xff9E7BCA),
                         ),
                       ),
-                    ],
+                      style: TextStyle(color: Color(0xff9E7BCA)),
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: employeeData.length == 0
+                        ? Text(
+                            "No Data found!",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w600),
+                          )
+                        : ListView.builder(
+                            padding: EdgeInsets.only(bottom: 10, top: 10),
+                            itemCount: employeeData.length,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              final employee = employeeData[index];
+                              final bool isAnimating = _animatingIndex == index; // Check if the current index is animating
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(employee.image ?? ""),
+                                ),
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        employee.fullName ?? "",
+                                        style: const TextStyle(
+                                          color: Color(0xffFFFFFF),
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          overflow: TextOverflow.ellipsis,
+                                          fontFamily: "Inter",
+                                        ),
+                                      ),
+                                    ),
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        if (isAnimating)
+                                          Lottie.asset(
+                                            'assets/animations/wave.json', // Your Lottie animation file
+                                            width: 40, // Adjust the size as needed
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        InkResponse(
+                                          onTap: () async {
+                                            Notifyuser(employee.id ?? "");
+
+                                            // Start the animation for the tapped index
+                                            setState(() {
+                                              _animatingIndex = index; // Set the current index to animating
+                                            });
+
+                                            // Stop the animation after some time
+                                            await Future.delayed(Duration(seconds: 2));
+                                            setState(() {
+                                              _animatingIndex = null; // Reset the animating index
+                                            });
+                                          },
+                                          child: Image.asset(
+                                            'assets/notify.png',
+                                            fit: BoxFit.contain,
+                                            width: 24,
+                                            height: 24,
+                                            color: Color(0xffFFFFFF)
+                                                .withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                onTap: () async {
+                                  try {
+                                    FocusScope.of(context)
+                                        .unfocus(); // Update the current page index
+                                    createRoom(employee.id ?? "");
+                                  } catch (error) {
+                                    // Handle error
+                                    print(error);
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 16, right: 16),
+                  //   child: Column(
+                  //     children: [
+                  //       // InkResponse(
+                  //       //   onTap: () {
+                  //       //     setState(() {
+                  //       //       _isListVisible = !_isListVisible; // Toggle visibility
+                  //       //     });
+                  //       //   },
+                  //       //   child: Row(
+                  //       //     mainAxisAlignment: MainAxisAlignment.start,
+                  //       //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //       //     children: [
+                  //       //       if (_isListVisible) ...[
+                  //       //         Icon(Icons.arrow_drop_down,
+                  //       //             color: Color(0xffffffff), size: 25),
+                  //       //       ] else ...[
+                  //       //         Icon(Icons.arrow_drop_up,
+                  //       //             color: Color(0xffffffff), size: 25),
+                  //       //       ],
+                  //       //       SizedBox(width: 15),
+                  //       //       Text(
+                  //       //         "Direct messages",
+                  //       //         style: TextStyle(
+                  //       //           color: Color(0xffffffff),
+                  //       //           fontFamily: "Inter",
+                  //       //           fontWeight: FontWeight.w400,
+                  //       //           fontSize: 14,
+                  //       //         ),
+                  //       //       ),
+                  //       //     ],
+                  //       //   ),
+                  //       // ),
+                  //       // if (_isListVisible) // Conditionally show the ListView
+                  //         ListView.builder(
+                  //           padding: EdgeInsets.only(top: 10),
+                  //           itemCount: rooms.length,
+                  //           shrinkWrap: true,
+                  //           physics: NeverScrollableScrollPhysics(),
+                  //           itemBuilder: (context, index) {
+                  //             final room = rooms[index];
+                  //             return InkResponse(
+                  //               onTap: () {
+                  //                 setState(() {
+                  //                   room.messageCount = 0;
+                  //                 });
+                  //                 Navigator.pop(context);
+                  //                 Navigator.push(
+                  //                   context,
+                  //                   MaterialPageRoute(
+                  //                     builder: (context) =>
+                  //                         ChatPage(roomId: room.roomId),
+                  //                   ),
+                  //                 );
+                  //               },
+                  //               child: Padding(
+                  //                 padding: const EdgeInsets.symmetric(vertical: 8),
+                  //                 child: Row(
+                  //                   children: [
+                  //                     ClipOval(
+                  //                       child: Image.network(
+                  //                         room.otherUserImage ?? '',
+                  //                         fit: BoxFit.cover,
+                  //                         width: 43,
+                  //                         height: 43,
+                  //                         errorBuilder:
+                  //                             (context, error, stackTrace) {
+                  //                           return ClipOval(
+                  //                             child: Icon(Icons.person, size: 43),
+                  //                           );
+                  //                         },
+                  //                       ),
+                  //                     ),
+                  //                     SizedBox(width: 8),
+                  //                     Expanded(
+                  //                       child: Column(
+                  //                         crossAxisAlignment:
+                  //                             CrossAxisAlignment.start,
+                  //                         children: [
+                  //                           Text(
+                  //                             room.otherUser ?? 'No Name',
+                  //                             style: const TextStyle(
+                  //                               color: Color(0xffFFFFFF),
+                  //                               fontWeight: FontWeight.w400,
+                  //                               fontSize: 14,
+                  //                               overflow: TextOverflow.ellipsis,
+                  //                               fontFamily: "Inter",
+                  //                             ),
+                  //                           ),
+                  //                           Row(
+                  //                             mainAxisAlignment:
+                  //                                 MainAxisAlignment.spaceBetween,
+                  //                             children: [
+                  //                               Expanded(
+                  //                                 child: Text(
+                  //                                   room.message ?? '',
+                  //                                   style: const TextStyle(
+                  //                                     color: Color(0xffFFFFFF),
+                  //                                     fontWeight: FontWeight.w400,
+                  //                                     fontSize: 14,
+                  //                                     overflow:
+                  //                                         TextOverflow.ellipsis,
+                  //                                     fontFamily: "Inter",
+                  //                                   ),
+                  //                                 ),
+                  //                               ),
+                  //                               if (room.messageCount > 0)
+                  //                                 Container(
+                  //                                   padding: EdgeInsets.all(4),
+                  //                                   decoration: BoxDecoration(
+                  //                                     color: Colors.red,
+                  //                                     shape: BoxShape.circle,
+                  //                                   ),
+                  //                                   child: Text(
+                  //                                     '${room.messageCount}',
+                  //                                     style: const TextStyle(
+                  //                                       color: Colors.white,
+                  //                                       fontWeight: FontWeight.bold,
+                  //                                       fontSize: 12,
+                  //                                     ),
+                  //                                   ),
+                  //                                 ),
+                  //                             ],
+                  //                           ),
+                  //                         ],
+                  //                       ),
+                  //                     ),
+                  //                     SizedBox(width: 8),
+                  //                     Image.asset(
+                  //                       "assets/notify.png",
+                  //                       fit: BoxFit.contain,
+                  //                       width: 24,
+                  //                       height: 24,
+                  //                       color: Color(0xffFFFFFF).withOpacity(0.7),
+                  //                     ),
+                  //                   ],
+                  //                 ),
+                  //               ),
+                  //             );
+                  //           },
+                  //         ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // Container(
+                  //   padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
+                  //   child: Row(
+                  //     children: [
+                  //       Container(
+                  //         width: 20,
+                  //         height: 20,
+                  //         decoration: BoxDecoration(
+                  //           borderRadius: BorderRadius.circular(4),
+                  //           color: Color(0xffFFFFFF1A).withOpacity(0.10),
+                  //         ),
+                  //         child: Center(
+                  //           child: Image.asset(
+                  //             "assets/add.png",
+                  //             fit: BoxFit.contain,
+                  //             height: 9,
+                  //             width: 9,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       SizedBox(width: 8),
+                  //       Text(
+                  //         "Add channels",
+                  //         style: const TextStyle(
+                  //           color: Color(0xffFFFFFF),
+                  //           fontWeight: FontWeight.w400,
+                  //           fontSize: 14,
+                  //           overflow: TextOverflow.ellipsis,
+                  //           fontFamily: "Inter",
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ),
-            Container(
-              height: 32,
-              margin: EdgeInsets.only(left: 16, right: 16, top: 12),
-              padding: EdgeInsets.only(left: 10, top: 6, bottom: 6),
-              decoration: BoxDecoration(
-                color: Color(0xffEAE0FF),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (text) {
-                  setState(() {
-                    if (text.length > 0) {
-                      employeeData = []; // Clear previous dat
-                      GetSearchUsersData(text); // Fetch new data
-                    } else {
-                      employeeData = [];
-                      employeeData = tempemployeeData;
-                    }
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(color: Color(0xff9E7BCA)),
-                  border: InputBorder.none,
-                  icon: Icon(
-                    Icons.search,
-                    color: Color(0xff9E7BCA),
+            endDrawer: Drawer(
+              width: w * 0.3,
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.only(left: 16, right: 16, top: 40),
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(4),
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                            color: Color(0xfff8856F4),
+                            borderRadius: BorderRadius.circular(4)),
+                        child: Image.asset("assets/dashboard.png"),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        "Dashboard",
+                        style: TextStyle(
+                          color: Color(0xff8856F4),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Messages()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/msg.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Messages",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Todolist()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/folder-plus.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "To Do List",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProjectsScreen()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/Frame.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Projects",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // InkWell(
+                      //   onTap: () {
+                      //     Navigator.push(context,
+                      //         MaterialPageRoute(builder: (context) => Allchannels()));
+                      //   },
+                      //   child: Container(
+                      //     child: Column(
+                      //       children: [
+                      //         Container(
+                      //           padding: EdgeInsets.all(4),
+                      //           width: 32,
+                      //           height: 32,
+                      //           decoration: BoxDecoration(
+                      //               color: Color(0xffffffff),
+                      //               borderRadius: BorderRadius.circular(4)),
+                      //           child: Image.asset("assets/Channel.png"),
+                      //         ),
+                      //         SizedBox(
+                      //           height: 4,
+                      //         ),
+                      //         Text(
+                      //           "Channels",
+                      //           style: TextStyle(
+                      //             color: Color(0xff6C848F),
+                      //             fontWeight: FontWeight.w400,
+                      //             fontSize: 14,
+                      //             overflow: TextOverflow.ellipsis,
+                      //             fontFamily: "Inter",
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Leave()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/calendar.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Leaves",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Meetings()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/video.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Meetings",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      // InkResponse(
+                      //   onTap: () {
+                      //     Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //             builder: (context) => MyHomePage(
+                      //                   title: "Demo chat bubble",
+                      //                 ))
+                      //     );
+                      //   },
+                      //   child: Container(
+                      //     padding: EdgeInsets.all(4),
+                      //     width: 32,
+                      //     height: 32,
+                      //     decoration: BoxDecoration(
+                      //         color: Color(0xffffffff),
+                      //         borderRadius: BorderRadius.circular(4)),
+                      //     child: Image.asset("assets/Settings.png"),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   height: 4,
+                      // ),
+                      // Text(
+                      //   "Settings",
+                      //   style: TextStyle(
+                      //     color: Color(0xff6C848F),
+                      //     fontWeight: FontWeight.w400,
+                      //     fontSize: 14,
+                      //     overflow: TextOverflow.ellipsis,
+                      //     fontFamily: "Inter",
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      InkWell(
+                        onTap: () {
+                          PreferenceService().remove("token");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LogInScreen()));
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/logout.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Logout",
+                                style: TextStyle(
+                                  color: Color(0xffDE350B),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 102,
+                      )
+                    ],
                   ),
                 ),
-                style: TextStyle(color: Color(0xff9E7BCA)),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.only(bottom: 10, top: 10),
-                itemCount: employeeData.length,
-                physics: AlwaysScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final employee = employeeData[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(employee.image ?? ""),
-                    ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            employee.fullName ?? "",
-                            style: const TextStyle(
-                              color: Color(0xffFFFFFF),
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              overflow: TextOverflow.ellipsis,
-                              fontFamily: "Inter",
-                            ),
-                          ),
-                        ),
-                        InkResponse(
-                          onTap: () async {
-                            Notifyuser(employee.id ?? "");
-                          },
-                          child: Image.asset(
-                            "assets/notify.png",
-                            fit: BoxFit.contain,
-                            width: 24,
-                            height: 24,
-                            color: Color(0xffFFFFFF).withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                    onTap: () async {
-                      try {
-                        FocusScope.of(context)
-                            .unfocus(); // Update the current page index
-                        createRoom(employee.id ?? "");
-                      } catch (error) {
-                        // Handle error
-                        print(error);
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-            // Padding(
-            //   padding: EdgeInsets.only(left: 16, right: 16),
-            //   child: Column(
-            //     children: [
-            //       // InkResponse(
-            //       //   onTap: () {
-            //       //     setState(() {
-            //       //       _isListVisible = !_isListVisible; // Toggle visibility
-            //       //     });
-            //       //   },
-            //       //   child: Row(
-            //       //     mainAxisAlignment: MainAxisAlignment.start,
-            //       //     crossAxisAlignment: CrossAxisAlignment.start,
-            //       //     children: [
-            //       //       if (_isListVisible) ...[
-            //       //         Icon(Icons.arrow_drop_down,
-            //       //             color: Color(0xffffffff), size: 25),
-            //       //       ] else ...[
-            //       //         Icon(Icons.arrow_drop_up,
-            //       //             color: Color(0xffffffff), size: 25),
-            //       //       ],
-            //       //       SizedBox(width: 15),
-            //       //       Text(
-            //       //         "Direct messages",
-            //       //         style: TextStyle(
-            //       //           color: Color(0xffffffff),
-            //       //           fontFamily: "Inter",
-            //       //           fontWeight: FontWeight.w400,
-            //       //           fontSize: 14,
-            //       //         ),
-            //       //       ),
-            //       //     ],
-            //       //   ),
-            //       // ),
-            //       // if (_isListVisible) // Conditionally show the ListView
-            //         ListView.builder(
-            //           padding: EdgeInsets.only(top: 10),
-            //           itemCount: rooms.length,
-            //           shrinkWrap: true,
-            //           physics: NeverScrollableScrollPhysics(),
-            //           itemBuilder: (context, index) {
-            //             final room = rooms[index];
-            //             return InkResponse(
-            //               onTap: () {
-            //                 setState(() {
-            //                   room.messageCount = 0;
-            //                 });
-            //                 Navigator.pop(context);
-            //                 Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(
-            //                     builder: (context) =>
-            //                         ChatPage(roomId: room.roomId),
-            //                   ),
-            //                 );
-            //               },
-            //               child: Padding(
-            //                 padding: const EdgeInsets.symmetric(vertical: 8),
-            //                 child: Row(
-            //                   children: [
-            //                     ClipOval(
-            //                       child: Image.network(
-            //                         room.otherUserImage ?? '',
-            //                         fit: BoxFit.cover,
-            //                         width: 43,
-            //                         height: 43,
-            //                         errorBuilder:
-            //                             (context, error, stackTrace) {
-            //                           return ClipOval(
-            //                             child: Icon(Icons.person, size: 43),
-            //                           );
-            //                         },
-            //                       ),
-            //                     ),
-            //                     SizedBox(width: 8),
-            //                     Expanded(
-            //                       child: Column(
-            //                         crossAxisAlignment:
-            //                             CrossAxisAlignment.start,
-            //                         children: [
-            //                           Text(
-            //                             room.otherUser ?? 'No Name',
-            //                             style: const TextStyle(
-            //                               color: Color(0xffFFFFFF),
-            //                               fontWeight: FontWeight.w400,
-            //                               fontSize: 14,
-            //                               overflow: TextOverflow.ellipsis,
-            //                               fontFamily: "Inter",
-            //                             ),
-            //                           ),
-            //                           Row(
-            //                             mainAxisAlignment:
-            //                                 MainAxisAlignment.spaceBetween,
-            //                             children: [
-            //                               Expanded(
-            //                                 child: Text(
-            //                                   room.message ?? '',
-            //                                   style: const TextStyle(
-            //                                     color: Color(0xffFFFFFF),
-            //                                     fontWeight: FontWeight.w400,
-            //                                     fontSize: 14,
-            //                                     overflow:
-            //                                         TextOverflow.ellipsis,
-            //                                     fontFamily: "Inter",
-            //                                   ),
-            //                                 ),
-            //                               ),
-            //                               if (room.messageCount > 0)
-            //                                 Container(
-            //                                   padding: EdgeInsets.all(4),
-            //                                   decoration: BoxDecoration(
-            //                                     color: Colors.red,
-            //                                     shape: BoxShape.circle,
-            //                                   ),
-            //                                   child: Text(
-            //                                     '${room.messageCount}',
-            //                                     style: const TextStyle(
-            //                                       color: Colors.white,
-            //                                       fontWeight: FontWeight.bold,
-            //                                       fontSize: 12,
-            //                                     ),
-            //                                   ),
-            //                                 ),
-            //                             ],
-            //                           ),
-            //                         ],
-            //                       ),
-            //                     ),
-            //                     SizedBox(width: 8),
-            //                     Image.asset(
-            //                       "assets/notify.png",
-            //                       fit: BoxFit.contain,
-            //                       width: 24,
-            //                       height: 24,
-            //                       color: Color(0xffFFFFFF).withOpacity(0.7),
-            //                     ),
-            //                   ],
-            //                 ),
-            //               ),
-            //             );
-            //           },
-            //         ),
-            //     ],
+            // floatingActionButton: InkResponse(
+            //   onTap: (){
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => AIChatPage()));
+            //   },
+            //   child: Image(image: AssetImage("assets/AI.png"),width: 60,height: 60,
             //   ),
             // ),
-            // Container(
-            //   padding: EdgeInsets.only(left: 16, right: 16, bottom: 30),
-            //   child: Row(
-            //     children: [
-            //       Container(
-            //         width: 20,
-            //         height: 20,
-            //         decoration: BoxDecoration(
-            //           borderRadius: BorderRadius.circular(4),
-            //           color: Color(0xffFFFFFF1A).withOpacity(0.10),
-            //         ),
-            //         child: Center(
-            //           child: Image.asset(
-            //             "assets/add.png",
-            //             fit: BoxFit.contain,
-            //             height: 9,
-            //             width: 9,
-            //           ),
-            //         ),
-            //       ),
-            //       SizedBox(width: 8),
-            //       Text(
-            //         "Add channels",
-            //         style: const TextStyle(
-            //           color: Color(0xffFFFFFF),
-            //           fontWeight: FontWeight.w400,
-            //           fontSize: 14,
-            //           overflow: TextOverflow.ellipsis,
-            //           fontFamily: "Inter",
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
-        ),
-      ),
-      endDrawer: Drawer(
-        width: w * 0.3,
-        backgroundColor: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 40),
-          child: Container(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(4),
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                      color: Color(0xfff8856F4),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Image.asset("assets/dashboard.png"),
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Dashboard",
-                  style: TextStyle(
-                    color: Color(0xff8856F4),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Messages()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/msg.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Messages",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Todolist()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/folder-plus.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "To Do List",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProjectsScreen()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/Frame.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Projects",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                // InkWell(
-                //   onTap: () {
-                //     Navigator.push(context,
-                //         MaterialPageRoute(builder: (context) => Allchannels()));
-                //   },
-                //   child: Container(
-                //     child: Column(
-                //       children: [
-                //         Container(
-                //           padding: EdgeInsets.all(4),
-                //           width: 32,
-                //           height: 32,
-                //           decoration: BoxDecoration(
-                //               color: Color(0xffffffff),
-                //               borderRadius: BorderRadius.circular(4)),
-                //           child: Image.asset("assets/Channel.png"),
-                //         ),
-                //         SizedBox(
-                //           height: 4,
-                //         ),
-                //         Text(
-                //           "Channels",
-                //           style: TextStyle(
-                //             color: Color(0xff6C848F),
-                //             fontWeight: FontWeight.w400,
-                //             fontSize: 14,
-                //             overflow: TextOverflow.ellipsis,
-                //             fontFamily: "Inter",
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 20,
-                // ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Leave()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/calendar.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Leaves",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Meetings()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/video.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Meetings",
-                          style: TextStyle(
-                            color: Color(0xff6C848F),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Spacer(),
-                // InkResponse(
-                //   onTap: () {
-                //     Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => MyHomePage(
-                //                   title: "Demo chat bubble",
-                //                 ))
-                //     );
-                //   },
-                //   child: Container(
-                //     padding: EdgeInsets.all(4),
-                //     width: 32,
-                //     height: 32,
-                //     decoration: BoxDecoration(
-                //         color: Color(0xffffffff),
-                //         borderRadius: BorderRadius.circular(4)),
-                //     child: Image.asset("assets/Settings.png"),
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 4,
-                // ),
-                // Text(
-                //   "Settings",
-                //   style: TextStyle(
-                //     color: Color(0xff6C848F),
-                //     fontWeight: FontWeight.w400,
-                //     fontSize: 14,
-                //     overflow: TextOverflow.ellipsis,
-                //     fontFamily: "Inter",
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 20,
-                // ),
-                InkWell(
-                  onTap: () {
-                    PreferenceService().remove("token");
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LogInScreen()));
-                  },
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Image.asset("assets/logout.png"),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Logout",
-                          style: TextStyle(
-                            color: Color(0xffDE350B),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: "Inter",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 102,
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-      // floatingActionButton: InkResponse(
-      //   onTap: (){
-      //     Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //             builder: (context) => AIChatPage()));
-      //   },
-      //   child: Image(image: AssetImage("assets/AI.png"),width: 60,height: 60,
-      //   ),
-      // ),
-    ):
-    NoInternetWidget();
+          )
+        : NoInternetWidget();
   }
 
   Widget _buildShimmerGrid(double width) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(
-            top: 16, left: 16, right: 16, bottom: 8),
+        padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
         child: Column(
           children: [
             Row(
@@ -2065,7 +2219,9 @@ class _DashboardState extends State<Dashboard> {
                 shimmerText(100, 16),
               ],
             ),
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -2096,9 +2252,13 @@ class _DashboardState extends State<Dashboard> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Expanded(child: shimmerText(120, 11)), // Shimmer for mobile
+                                Expanded(
+                                    child: shimmerText(
+                                        120, 11)), // Shimmer for mobile
                                 const SizedBox(width: 8),
-                                Expanded(child: shimmerText(120, 11)), // Shimmer for email
+                                Expanded(
+                                    child: shimmerText(
+                                        120, 11)), // Shimmer for email
                               ],
                             ),
                           ],
@@ -2109,7 +2269,9 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -2117,7 +2279,9 @@ class _DashboardState extends State<Dashboard> {
                 shimmerText(100, 16),
               ],
             ),
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             SizedBox(
               height: width * 0.9,
               child: GridView.builder(
@@ -2151,14 +2315,17 @@ class _DashboardState extends State<Dashboard> {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        shimmerLinearProgress(7), // Shimmer for progress indicator
+                        shimmerLinearProgress(
+                            7), // Shimmer for progress indicator
                       ],
                     ),
                   );
                 },
               ),
             ),
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -2176,9 +2343,11 @@ class _DashboardState extends State<Dashboard> {
                           margin: EdgeInsets.symmetric(horizontal: 8),
                           child: Column(
                             children: [
-                              shimmerContainer(width * 0.16, width * 0.115), // Shimmer for count
+                              shimmerContainer(width * 0.16,
+                                  width * 0.115), // Shimmer for count
                               SizedBox(height: 8),
-                              shimmerText(60, 10), // Shimmer for label (e.g., "PROJECTS")
+                              shimmerText(60,
+                                  10), // Shimmer for label (e.g., "PROJECTS")
                             ],
                           ),
                         ),
@@ -2186,7 +2355,8 @@ class _DashboardState extends State<Dashboard> {
                     }),
                   ),
                   SizedBox(height: 20),
-                  shimmerContainer(width, 40, isButton: true), // Shimmer for the "Punch In" button
+                  shimmerContainer(width, 40,
+                      isButton: true), // Shimmer for the "Punch In" button
                 ],
               ),
             )
@@ -2196,56 +2366,71 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void showCustomDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                height: 400,
-                width: double.infinity,
-                child: GoogleMap(
-                  onMapCreated: (controller) {
-                    mapController = controller;
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(37.7749, -122.4194),
-                    zoom: 10,
-                  ),
-                  myLocationEnabled: true,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle Punch In action
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Punch In'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle Cancel action
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // void showCustomDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius:
+  //               BorderRadius.circular(16.0), // Adjust the radius as needed
+  //         ),
+  //         child: Container(
+  //           width: double.infinity, // Adjust the width as needed
+  //           height: 500,
+  //           child: Stack(
+  //             alignment: Alignment.center,
+  //             children: [
+  //               GoogleMap(
+  //                 mapType: MapType.normal,
+  //                 initialCameraPosition: CameraPosition(
+  //                   target: initialPosition,
+  //                   zoom: 17.0,
+  //                 ),
+  //                 onMapCreated: (GoogleMapController controller) {
+  //                   _controller = controller;
+  //                 },
+  //                 markers: markers,
+  //                 circles: circles,
+  //                 myLocationEnabled: true,
+  //                 zoomControlsEnabled: true,
+  //                 myLocationButtonEnabled: false,
+  //                 compassEnabled: false,
+  //                 zoomGesturesEnabled: false,
+  //                 scrollGesturesEnabled: false,
+  //                 rotateGesturesEnabled: false,
+  //                 tiltGesturesEnabled: false,
+  //                 minMaxZoomPreference: MinMaxZoomPreference(16, null),
+  //               ),
+  //               Positioned(
+  //                 bottom: 0,
+  //                 left: 0,
+  //                 right: 0,
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //                   children: [
+  //                     ElevatedButton(
+  //                       onPressed: () {
+  //                         // Handle Punch In action
+  //                         Navigator.of(context).pop();
+  //                       },
+  //                       child: Text('Punch In'),
+  //                     ),
+  //                     ElevatedButton(
+  //                       onPressed: () {
+  //                         // Handle Cancel action
+  //                         Navigator.of(context).pop();
+  //                       },
+  //                       child: Text('Cancel'),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

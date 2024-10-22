@@ -551,6 +551,7 @@ class Userapi {
       String endDate,
       List<String> collaborators,
       File? image, // Make image optional
+          {int points = 3} // Make points dynamic with a default
       ) async {
     try {
       final url = Uri.parse("${host}/project/project-tasks");
@@ -558,7 +559,7 @@ class Userapi {
         "project_id": projectId,
         "title": title,
         "description": desc,
-        "points": '3', // Update as needed
+        "points": points.toString(), // Use dynamic points
         "milestone": milestone,
         "assign_to": assignedTo,
         "status": status,
@@ -571,26 +572,22 @@ class Userapi {
 
       final headers = await getheader();
 
-      // Create a multipart request
       var req = http.MultipartRequest('POST', url)
         ..headers.addAll(headers)
         ..fields.addAll(body);
 
-      // Add collaborators as a separate field
-      for (String collaborator in collaborators) {
-        req.fields['collaborators[]'] = collaborator;
-      }
+      req.fields.addAll({
+        for (int i = 0; i < collaborators.length; i++) 'collaborators[$i]': collaborators[i],
+      });
 
-      // Check if image is provided
+      print("Request fields: ${req.fields}");
+
       if (image != null) {
-        // Check if the file is an image
         String? mimeType = lookupMimeType(image.path);
         if (mimeType == null || !mimeType.startsWith('image/')) {
           print('Selected file is not a valid image.');
-          return null; // Return null for invalid image
+          return null;
         }
-
-        // Add the image file to the request
         req.files.add(
           await http.MultipartFile.fromPath(
             'file',
@@ -602,10 +599,7 @@ class Userapi {
         print('No image provided.');
       }
 
-      // Send the request
       var res = await req.send();
-
-      // Read the response body
       var responseBody = await res.stream.bytesToString();
 
       if (res.statusCode == 200) {
@@ -613,16 +607,16 @@ class Userapi {
         return TaskAddmodel.fromJson(jsonDecode(responseBody));
       } else {
         print('Error: ${res.statusCode}, Response: $responseBody');
-        return null; // Return null for an unsuccessful response
+        return null;
       }
     } catch (e) {
       print('Exception: $e');
-      return null; // Handle error case by returning null
+      return null;
     }
   }
 
-  static Future<TaskAddmodel?> UpdateTask(
-      String taskid,
+  static Future<TaskAddmodel?> updateTask(
+      String taskId,
       String title,
       String desc,
       String milestone,
@@ -635,36 +629,32 @@ class Userapi {
       File? image,
       ) async {
     try {
-      final url = Uri.parse("${host}/project/project-task-detail/$taskid");
-      Map<String, String> body = {
-        "title": title,
-        "description": desc,
-        "points": '3',
-        "milestone": milestone,
-        "assign_to": assignedTo,
-        "status": status,
-        "priority": priority,
-        "start_date": startDate,
-        "end_date": endDate,
-      };
-
-      print("CreateTask: $body");
-
-      final headers = await getheader();
+      print("Collaborators: $collaborators");
+      final url = Uri.parse("${host}/project/project-task-detail/$taskId");
 
       // Create a multipart request
       var req = http.MultipartRequest('PUT', url)
-        ..headers.addAll(headers)
-        ..fields.addAll(body);
+        ..headers.addAll(await getheader())
+        ..fields['title'] = title
+        ..fields['description'] = desc
+        ..fields['points'] = '3' // Adjust as needed
+        ..fields['milestone'] = milestone
+        ..fields['assign_to'] = assignedTo
+        ..fields['status'] = status
+        ..fields['priority'] = priority
+        ..fields['start_date'] = startDate
+        ..fields['end_date'] = endDate;
 
-      // Add collaborators as a separate field
-      for (String collaborator in collaborators) {
-        req.fields['collaborators[]'] = collaborator;
-      }
+      // Use this approach to handle multiple collaborators
+      req.fields.addAll({
+        for (int i = 0; i < collaborators.length; i++) 'collaborators[$i]': collaborators[i],
+      });
 
-      // Check if image is provided
+      // Print the requested fields
+      print("Requested Fields: ${req.fields}");
+
+      // Check if an image is provided
       if (image != null) {
-        // Check if the file is an image
         String? mimeType = lookupMimeType(image.path);
         if (mimeType == null || !mimeType.startsWith('image/')) {
           print('Selected file is not a valid image.');
@@ -1690,6 +1680,54 @@ class Userapi {
       print('Failed to delete task: ${response.statusCode}');
       print('Response: ${response.body}');
     }
+  }
+
+  static Future<LoginModel?> PostPunchOutAPI(
+      String lat, String long,String location,) async {
+    try {
+      Map<String, String> data = {
+        "punch_out_latitude": lat,
+        "punch_out_longitude": long,
+        "punch_out_address": location,
+      };
+      print("PostPunchOutAPI data: $data");
+      final url = Uri.parse("${host}/dashboard/punch");
+      final headers = await getheader();
+      final response = await http.put(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostPunchOutAPI response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
+  }
+
+
+  static Future<LoginModel?> PostPunchInAPI(
+      String lat, String long,String location,) async {
+    try {
+      Map<String, String> data = {
+        "punch_in_latitude": lat,
+        "punch_in_longitude": long,
+        "punch_in_address": location,
+      };
+      print("Punching data: $data");
+
+      final url = Uri.parse("${host}/dashboard/punch");
+      final headers = await getheader();
+      final response = await http.post(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("Punchin response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
   }
 
 
