@@ -28,8 +28,8 @@ class _ProjectFileState extends State<ProjectFile> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _searchController2 = TextEditingController();
-  final FocusNode _focusNodetitle = FocusNode();
-
+  final FocusScopeNode focusScopeNode = FocusScopeNode();
+  final FocusScopeNode focusScopeNode1 = FocusScopeNode();
   String _validateCategory = "";
   String _validateDescription = "";
   String _validatefile = "";
@@ -426,6 +426,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController,
+                                    focusNode: focusScopeNode,
                                     decoration: InputDecoration(
                                       isCollapsed: true,
                                       border: InputBorder.none,
@@ -456,6 +457,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             height: w * 0.09,
                             child: InkWell(
                               onTap: () {
+                                focusScopeNode.unfocus();
                                 GetCatagory();
                                 _showBottomSheet(context, "Add", "", "");
                               },
@@ -715,6 +717,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                 Expanded(
                                   child: TextField(
                                     controller: _searchController2,
+                                    focusNode: focusScopeNode1,
                                     decoration: InputDecoration(
                                       isCollapsed: true,
                                       border: InputBorder.none,
@@ -745,6 +748,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             height: w * 0.09,
                             child: InkWell(
                               onTap: () {
+                                focusScopeNode1.unfocus();
                                 _showBottomSheet1(context, "Add", "");
                               },
                               child: Container(
@@ -1646,7 +1650,6 @@ class _ProjectFileState extends State<ProjectFile> {
                                     MediaQuery.of(context).size.height * 0.050,
                                 child: TextFormField(
                                   controller: _nameController,
-                                  focusNode: _focusNodetitle,
                                   keyboardType: TextInputType.text,
                                   cursorColor: Color(0xff8856F4),
                                   onTap: () {

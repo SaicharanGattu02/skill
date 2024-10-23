@@ -628,7 +628,7 @@ class _MileStoneState extends State<MileStone> {
                                 decoration: InputDecoration(
                                   contentPadding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  hintText: "Type Description",
+                                  hintText: "Description",
                                   hintStyle: TextStyle(
                                     fontSize: 15,
                                     letterSpacing: 0,
@@ -810,46 +810,42 @@ class _MileStoneState extends State<MileStone> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            _selectDate(context, controller);
-            setState(() {});
-          },
-          child: AbsorbPointer(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: "Select date from date picker",
-                  suffixIcon: Container(
-                      padding: EdgeInsets.only(top: 12, bottom: 12),
-                      child: Image.asset(
-                        "assets/calendar.png",
-                        color: Color(0xff000000),
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.contain,
-                      )),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0,
-                    height: 1.2,
-                    color: Color(0xffAFAFAF),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffFCFAFF),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-                  ),
-                ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: () {
+              _selectDate(context, controller);
+            },
+            decoration: InputDecoration(
+              hintText: "Select date from date picker",
+              suffixIcon: Container(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Image.asset(
+                    "assets/calendar.png",
+                    color: Color(0xff000000),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
+                  )),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
               ),
             ),
           ),

@@ -1038,17 +1038,22 @@ class _ProjectNotesState extends State<ProjectNotes> {
                           fontFamily: 'Inter',
                         ),
                       ),
-                      Container(
-                        width: 24,
-                        height: 24,
-                        padding: EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: Color(0xffE5E5E5),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Image.asset(
-                          "assets/crossblue.png",
-                          fit: BoxFit.contain,
+                      InkResponse(
+                        onTap: (){
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          padding: EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            color: Color(0xffE5E5E5),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Image.asset(
+                            "assets/crossblue.png",
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ],

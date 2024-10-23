@@ -89,6 +89,13 @@ class _TodolistState extends State<Todolist> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
+    _setInitialDate();
+  }
+
+  void _setInitialDate() {
+    setState(() {
+      _DateController.text =formattedDate;
+    });
   }
 
   final List<Priorities> priorities = [
@@ -161,7 +168,7 @@ class _TodolistState extends State<Todolist> {
       if (res != null) {
         if (res.settings?.success == 1) {
           GetToDoList(formattedDate);
-          CustomSnackBar.show(context, "Marked done successfully!");
+          CustomSnackBar.show(context, "Deleted successfully!");
         } else {
           CustomSnackBar.show(context, "${res.settings?.message}");
         }
@@ -1611,51 +1618,50 @@ class _TodolistState extends State<Todolist> {
   }
 
   Widget _buildDateField(TextEditingController controller) {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formattedDate = formatter.format(now);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            _selectDate(context, controller);
-            setState(() {
-              // _validateDob="";
-            });
-          },
-          child: AbsorbPointer(
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: "Select date",
-                  suffixIcon: Container(
-                      padding: EdgeInsets.only(top: 12, bottom: 12),
-                      child: Image.asset(
-                        "assets/calendar.png",
-                        color: Color(0xff000000),
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.contain,
-                      )),
-                  hintStyle: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0,
-                    height: 1.2,
-                    color: Color(0xffAFAFAF),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  filled: true,
-                  fillColor: Color(0xffFCFAFF),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(7),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
-                  ),
-                ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            onTap: () {
+              _selectDate(context, controller);
+              setState(() {
+                // _validateDob="";
+              });
+            },
+            decoration: InputDecoration(
+              hintText: "Select date",
+              suffixIcon: Container(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Image.asset(
+                    "assets/calendar.png",
+                    color: Color(0xff000000),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
+                  )),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
               ),
             ),
           ),

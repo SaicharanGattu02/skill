@@ -650,25 +650,30 @@ class _AddlogtimeState extends State<Addlogtime> {
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
-            Container(
-              height: 40,
-              width: w * 0.43,
-              decoration: BoxDecoration(
-                color: Color(0xffF8FCFF),
-                border: Border.all(
-                  color: Color(0xff8856F4),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Center(
-                child: Text(
-                  'Close',
-                  style: TextStyle(
+            InkResponse(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 40,
+                width: w * 0.43,
+                decoration: BoxDecoration(
+                  color: Color(0xffF8FCFF),
+                  border: Border.all(
                     color: Color(0xff8856F4),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Inter',
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Center(
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      color: Color(0xff8856F4),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                 ),
               ),

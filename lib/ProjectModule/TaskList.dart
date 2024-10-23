@@ -232,8 +232,7 @@ class _TaskListState extends State<TaskList> {
                           )
                         : ListView.builder(
                             shrinkWrap: true,
-                            physics:
-                                NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
+                            physics: NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
                             itemCount: filteredData.length,
                             itemBuilder: (context, index) {
                               final task = filteredData[index];
@@ -372,18 +371,31 @@ class _TaskListState extends State<TaskList> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    FlutterImageStack(
-                                      imageList: collaboratorImages,
-                                      totalCount: collaboratorImages.length,
-                                      showTotalCount: true,
-                                      extraCountTextStyle: TextStyle(
-                                        color: Color(0xff8856F4),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      itemRadius: 35,
-                                      itemBorderWidth: 3,
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        FlutterImageStack(
+                                          imageList: collaboratorImages,
+                                          totalCount: collaboratorImages.length,
+                                          showTotalCount: true,
+                                          extraCountTextStyle: TextStyle(
+                                            color: Color(0xff8856F4),
+                                          ),
+                                          backgroundColor: Colors.white,
+                                          itemRadius: 35,
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Text(
+                                          "Collaboraters",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    const SizedBox(height: 8),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,

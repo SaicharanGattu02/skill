@@ -173,11 +173,11 @@ class _AddMeetingsState extends State<AddMeetings> {
     setState(() {
       if (res != null) {
         if (res.settings?.success == 1) {
-          _loading = false;
+          _isLoading=false;
           Navigator.pop(context, true);
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
-          _loading = false;
+          _isLoading=false;
           CustomSnackBar.show(context, "${res.settings?.message}");
         }
       }
@@ -592,7 +592,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                             ),
                             dropdownDecoration: const DropdownDecoration(
                               marginTop: 2,
-                              maxHeight: 500,
+                              maxHeight: 400,
                               header: Padding(
                                 padding: EdgeInsets.all(8),
                                 child: Text(
