@@ -56,8 +56,7 @@ class _TaskState extends State<Task> {
       }
     });
   }
-  @override
-  void dispose() {
+  @override  void dispose() {
     _scrollController.dispose();
     super.dispose();
   }

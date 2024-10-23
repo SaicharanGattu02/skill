@@ -556,7 +556,8 @@ class _OverViewState extends State<OverView> {
           child: SizedBox(
             width: w,
             child: Center(
-              child: Container(
+              child:
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xff9E7BCA).withOpacity(0.1),

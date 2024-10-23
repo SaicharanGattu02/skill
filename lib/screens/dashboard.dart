@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Profile/ProfileDashboard.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AIChatPage.dart';
 import 'package:skill/screens/Leave.dart';
@@ -493,7 +494,7 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AIChatPage()));
+                                    builder: (context) => ProfileDashboard()));
                           },
                           child: Container(
                             width:
@@ -662,7 +663,8 @@ class _DashboardState extends State<Dashboard> {
                                   GetUserDeatails();
                                 }
                               },
-                              child: Container(
+                              child:
+                              Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                     color: const Color(0xff8856F4),

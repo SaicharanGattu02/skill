@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -179,7 +178,8 @@ class _MyTabBarState extends State<MyTabBar>
         children: [
           Container(
             decoration: BoxDecoration(color: Color(0xffffffff)),
-            child: TabBar(
+            child:
+            TabBar(
               dividerColor: Colors.transparent,
               padding: EdgeInsets.zero,
               controller: _tabController,
