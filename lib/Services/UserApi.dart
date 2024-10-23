@@ -279,11 +279,11 @@ class Userapi {
     }
   }
 
-  static Future<GetTaskKanBanModel?> GetTaskKanBan(String id) async {
+  static Future<GetTaskKanBanModel?> GetTaskKanBan(String id,String Status) async {
     try {
       final headers = await getheader();
       final url = Uri.parse(
-          "${host}/project/project-tasks-kanban?project_id=${id}&status=to_do");
+          "${host}/project/project-tasks-kanban?project_id=${id}&status=${Status}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetTaskKanBan Response:${res.body}");

@@ -109,6 +109,7 @@ class _OverViewState extends State<OverView> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
     return Scaffold(
         backgroundColor: const Color(0xffF3ECFB),
         body: _loading
@@ -355,6 +356,7 @@ class _OverViewState extends State<OverView> {
         _buildProjectDetailColumn(
           title: "Start Date",
           value: "${data?.startDate ?? ""}",
+
           secondTitle: "Total Hours",
           secondValue: "${data?.totalTimeWorked ?? ""}",
         ),
@@ -389,6 +391,7 @@ class _OverViewState extends State<OverView> {
                 fontFamily: "Inter",
                 fontSize: 10,
                 color: Color(0xff16192C))),
+        SizedBox(height: 2,),
         Text(secondTitle,
             style: TextStyle(
                 fontWeight: FontWeight.w400,
@@ -553,7 +556,8 @@ class _OverViewState extends State<OverView> {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: SizedBox(
+          child:
+          SizedBox(
             width: w,
             child: Center(
               child:

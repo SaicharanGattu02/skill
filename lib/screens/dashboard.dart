@@ -99,7 +99,6 @@ class _DashboardState extends State<Dashboard> {
 
 
 
-
   Future<void> _getAddress(double? lat1, double? lng1) async {
     if (lat1 == null || lng1 == null) return;
     List<geocoder.Placemark> placemarks =
@@ -1625,9 +1624,11 @@ class _DashboardState extends State<Dashboard> {
                                         if (isAnimating)
                                           Lottie.asset(
                                             'assets/animations/wave.json', // Your Lottie animation file
-                                            width: 40, // Adjust the size as needed
-                                            height: 40,
+                                            width: 24, // Adjust the size as needed
+                                            height: 24,
+
                                             fit: BoxFit.cover,
+
                                           ),
                                         InkResponse(
                                           onTap: () async {
@@ -1643,6 +1644,7 @@ class _DashboardState extends State<Dashboard> {
                                             setState(() {
                                               _animatingIndex = null; // Reset the animating index
                                             });
+
                                           },
                                           child: Image.asset(
                                             'assets/notify.png',

@@ -33,7 +33,9 @@ class _TaskKanBanState extends State<TaskKanBan> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
-    GetKanBan();
+    // GetKanBanTodo();
+    // GetKanBanInProgress();
+    GetKanBanCompleted();
   }
 
   @override
@@ -54,17 +56,55 @@ class _TaskKanBanState extends State<TaskKanBan> {
     });
   }
 
-  Future<void> GetKanBan() async {
+  Future<void> GetKanBanTodo() async {
     setState(() {
       _loading = true; // Show loading spinner
     });
-    var res = await Userapi.GetTaskKanBan(widget.id);
-
+    var res = await Userapi.GetTaskKanBan(widget.id,"to_do");
     setState(() {
       _loading = false; // Hide loading spinner
       if (res != null && res.settings?.success == 1) {
         data = res.data ?? [];
         data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
+
+        filteredRooms = data; // Initialize with all data
+        showNoDataFoundMessage = data.isEmpty;
+      } else {
+        showNoDataFoundMessage = true;
+      }
+    });
+  }
+
+  Future<void> GetKanBanInProgress() async {
+    setState(() {
+      _loading = true; // Show loading spinner
+    });
+    var res = await Userapi.GetTaskKanBan(widget.id,"in_progress");
+    setState(() {
+      _loading = false; // Hide loading spinner
+      if (res != null && res.settings?.success == 1) {
+        data = res.data ?? [];
+        data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
+
+        filteredRooms = data; // Initialize with all data
+        showNoDataFoundMessage = data.isEmpty;
+      } else {
+        showNoDataFoundMessage = true;
+      }
+    });
+  }
+
+  Future<void> GetKanBanCompleted() async {
+    setState(() {
+      _loading = true; // Show loading spinner
+    });
+    var res = await Userapi.GetTaskKanBan(widget.id,"completed");
+    setState(() {
+      _loading = false; // Hide loading spinner
+      if (res != null && res.settings?.success == 1) {
+        data = res.data ?? [];
+        data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
+
         filteredRooms = data; // Initialize with all data
         showNoDataFoundMessage = data.isEmpty;
       } else {
@@ -76,6 +116,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
@@ -88,187 +129,219 @@ class _TaskKanBanState extends State<TaskKanBan> {
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child:
+          Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "assets/search.png",
-                            width: 20,
-                            height: 20,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: const InputDecoration(
-                                hintText: 'Search',
-                                border: InputBorder.none,
+
+              SizedBox(
+                width: w,
+                child: Center(
+                  child:
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/search.png",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              border: InputBorder.none,
+                              hintText: 'Search',
+                              hintStyle: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Nunito",
                               ),
                             ),
+                            style: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                decorationColor: Color(0xff9E7BCA),
+                                fontFamily: "Nunito",
+                                overflow: TextOverflow.ellipsis),
+                            textAlignVertical: TextAlignVertical.center,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
               SizedBox(height: 8),
               showNoDataFoundMessage
                   ? Center(child: Text("No data found"))
-                  : ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: filteredRooms.length,
-                itemBuilder: (context, index) {
-                  final kanBan = filteredRooms[index];
-                  String isoDate = kanBan.startDate ?? "";
-                  String isoDate1 = kanBan.endDate ?? "";
-                  String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
-                  String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
+                  :
 
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: DottedBorder(
-                      color: Color(0xffCFB9FF),
-                      strokeWidth: 1,
-                      dashPattern: [5, 3],
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(7),
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Color(0xffEFE2FF),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  "assets/box.png",
-                                  fit: BoxFit.contain,
-                                  width: w * 0.045,
-                                  height: w * 0.05,
-                                  color: Color(0xff000000),
-                                ),
-                                SizedBox(width: w * 0.02),
-                                Text(
-                                  kanBan.status ?? "",
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff16192C),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(
+                height: h * 0.23, // Set a fixed height for the ListView
+                child: ListView.builder(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: filteredRooms.length,
+                  itemBuilder: (context, index) {
+                    final kanBan = filteredRooms[index];
+                    String isoDate = kanBan.startDate ?? "";
+                    String isoDate1 = kanBan.endDate ?? "";
+                    String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
+                    String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 10,left: 10),
+                      child: DottedBorder(
+                        color: Color(0xffCFB9FF),
+                        strokeWidth: 1,
+                        dashPattern: [5, 3],
+                        borderType: BorderType.RRect,
+                        radius: Radius.circular(7),
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+
+                          width: w*0.87, // Specify a fixed width for each item
+                          decoration: BoxDecoration(
+                            color: Color(0xffEFE2FF),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        kanBan.title ?? "",
-                                        style: TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      Image.asset(
-                                        "assets/More-vertical.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.045,
-                                        height: w * 0.06,
-                                        color: Color(0xff6C848F),
-                                      ),
-                                    ],
+                                  Image.asset(
+                                    "assets/box.png",
+                                    fit: BoxFit.contain,
+                                    width: w * 0.045,
+                                    height: w * 0.05,
+                                    color: Color(0xff000000),
                                   ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        "assets/calendar.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.045,
-                                        height: w * 0.06,
-                                        color: Color(0xff6C848F),
+                                  SizedBox(width: w * 0.02),
+                                  Expanded(
+                                    child: Text(
+                                      kanBan.status ?? "",
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xff16192C),
                                       ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "$formattedDate",
-                                        style: TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff6C848F),
-                                        ),
-                                      ),
-                                      SizedBox(width: 15),
-                                      Image.asset(
-                                        "assets/calendar.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.045,
-                                        height: w * 0.06,
-                                        color: Color(0xff6C848F),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "$formattedDate1",
-                                        style: TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff6C848F),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  FlutterImageStack(
-                                    imageList: _images,
-                                    totalCount: _images.length,
-                                    showTotalCount: true,
-                                    // totalCountTextStyle: TextStyle(
-                                    //   color: Color(0xff8856F4),
-                                    // ),
-                                    extraCountTextStyle: TextStyle(
-                                      color: Color(0xff8856F4),
                                     ),
-                                    backgroundColor: Colors.white,
-                                    itemRadius: 35,
-                                    itemBorderWidth: 3,
-                                  ),
+                                  )
                                 ],
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            kanBan.title ?? "",
+                                            style: TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff000000),
+                                            ),
+                                          ),
+                                        ),
+                                        Image.asset(
+                                          "assets/More-vertical.png",
+                                          fit: BoxFit.contain,
+                                          width: w * 0.045,
+                                          height: w * 0.06,
+                                          color: Color(0xff6C848F),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/calendar.png",
+                                          fit: BoxFit.contain,
+                                          width: w * 0.045,
+                                          height: w * 0.06,
+                                          color: Color(0xff6C848F),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          "$formattedDate",
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff6C848F),
+                                          ),
+                                        ),
+                                        SizedBox(width: 15),
+                                        Image.asset(
+                                          "assets/calendar.png",
+                                          fit: BoxFit.contain,
+                                          width: w * 0.045,
+                                          height: w * 0.06,
+                                          color: Color(0xff6C848F),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          "$formattedDate1",
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff6C848F),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    FlutterImageStack(
+                                      imageList: _images,
+                                      totalCount: _images.length,
+                                      showTotalCount: true,
+                                      extraCountTextStyle: TextStyle(
+                                        color: Color(0xff8856F4),
+                                      ),
+                                      backgroundColor: Colors.white,
+                                      itemRadius: 35,
+                                      itemBorderWidth: 3,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
+
+
+
             ],
           ),
         ),
