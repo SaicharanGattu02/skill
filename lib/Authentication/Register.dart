@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
-import 'package:skill/screens/PersnalInformation.dart';
+import 'package:skill/Authentication/PersnalInformation.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});

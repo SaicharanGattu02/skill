@@ -1628,7 +1628,6 @@ class _DashboardState extends State<Dashboard> {
                                             width: 24, // Adjust the size as needed
                                             height: 24,
                                             fit: BoxFit.cover,
-
                                           ),
                                         InkResponse(
                                           onTap: () async {

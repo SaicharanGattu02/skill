@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:skill/screens/Otp.dart';
+import 'package:skill/Authentication/Otp.dart';
 import 'package:skill/screens/dashboard.dart';
 
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
-import 'LogInScreen.dart';
+import '../screens/LogInScreen.dart';
 
 class PersonalInformation extends StatefulWidget {
 

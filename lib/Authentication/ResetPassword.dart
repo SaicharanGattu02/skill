@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skill/screens/SetPassword.dart';
+import 'package:skill/Authentication/SetPassword.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});

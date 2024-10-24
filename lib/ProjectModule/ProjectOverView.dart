@@ -152,7 +152,7 @@ class _OverViewState extends State<OverView> {
                     children: [
                       SizedBox(height: 20),
                       _buildTabSwitcher(context),
-                      SizedBox(height: 10),
+                      SizedBox(height: 15),
                       Expanded(
                         child: isMembersTab
                             ? _buildMembersTab(context)

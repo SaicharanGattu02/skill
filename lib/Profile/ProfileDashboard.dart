@@ -303,15 +303,16 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                 height: 1.6,
                 letterSpacing: 0.15,
               ),
-              tabs: List.generate(3, (index) {
+              tabs: List.generate(1, (index) {
                 return Tab(
                   child: Center(
                     child: Text(
-                      index == 0
-                          ? 'General Info'
-                          : index == 1
-                              ? 'Job Info'
-                              : 'Payslips',
+                      // index == 0
+                      //     ?
+                          'General Info'
+                          // : index == 1
+                          //     ? 'Job Info'
+                          //     : 'Payslips',
                     ),
                   ),
                 );
