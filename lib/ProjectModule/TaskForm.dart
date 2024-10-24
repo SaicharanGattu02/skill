@@ -105,13 +105,11 @@ class _TaskFormState extends State<TaskForm> {
         _validateDeadline = "";
       });
     });
-    GetProjectsOverviewData();
-    GetStatuses();
-    GetPriorities();
-    GetMileStone();
-    if (widget.title == "Edit Task") {
-      GetProjectTaskDetails();
-    }
+    // GetProjectsOverviewData();
+    // GetStatuses();
+    // GetPriorities();
+    // GetMileStone();
+    loadData(); // Start loading data when the widget initializes
   }
 
   String milestoneid = "";
@@ -121,17 +119,39 @@ class _TaskFormState extends State<TaskForm> {
 
   Data? data = Data();
   List<Members> members = [];
-  List<String> selectedIds = []; // List to store selected user IDs
+  List<String> selectedIds = [];
+
+  Future<void> loadData() async {
+    try {
+      await Future.wait([
+        GetProjectsOverviewData(),
+        GetStatuses(),
+        GetPriorities(),
+        GetMileStone(),
+      ]);
+    } catch (e) {
+      // Handle any errors that occur during the loading
+      print("Error loading data: $e");
+    } finally {
+      setState(() {
+        _loading = false; // Hide loader after all API calls complete
+        if (widget.title == "Edit Task") {
+          GetProjectTaskDetails();
+        }
+      });
+    }
+  }
 
   Future<void> GetProjectsOverviewData() async {
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
     setState(() {
       if (res != null && res.data != null) {
-        _loading = false;
-        data = res.data;
-        members = data?.members ?? [];
-        print("members: $members");
-      } else {}
+        if(res.settings?.success==1){
+          data = res.data;
+          members = data?.members ?? [];
+          print("members: $members");
+        }else {}
+      }
     });
   }
 
@@ -140,7 +160,7 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsStatusesApi();
     setState(() {
       if (res != null && res.data != null) {
-        statuses = res.data ?? [];
+          statuses = res.data ?? [];
       }
     });
   }
@@ -150,7 +170,7 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsPrioritiesApi();
     setState(() {
       if (res != null && res.data != null) {
-        priorities = res.data ?? [];
+          priorities = res.data ?? [];
       }
     });
   }
@@ -173,105 +193,89 @@ class _TaskFormState extends State<TaskForm> {
     });
   }
 
-  String getMilestoneTitleById(String id) {
-    final milestone = milestones.firstWhere(
-      (milestone) => milestone.id == id,
-      orElse: () => Milestones(
-          title: ""), // Return a Milestones object with an empty title
-    );
-    return milestone.title ?? ""; // Now safely access title
-  }
-
-  String getAssignedById(String id) {
-    final member = members.firstWhere(
-      (member) => member.fullName == id,
-      orElse: () => Members(
-          fullName: ""), // Return a Milestones object with an empty title
-    );
-    return member.fullName ?? ""; // Now safely access title
-  }
-
-  String getStatusById(String statusKey) {
-    final status = statuses.firstWhere(
-      (statuses) => statuses.statusKey == statusKey,
-      orElse: () => Statuses(statusValue: ""),
-    );
-    return status.statusValue ?? "";
-  }
-
-  String getPriorityById(String priorityKey) {
-    final priority = priorities.firstWhere(
-      (statuses) => statuses.priorityKey == priorityKey,
-      orElse: () => Priorities(priorityValue: ""),
-    );
-    return priority.priorityValue ?? "";
-  }
+  // String getMilestoneTitleById(String id) {
+  //   final milestone = milestones.firstWhere(
+  //     (milestone) => milestone.id == id,
+  //     orElse: () => Milestones(
+  //         title: ""), // Return a Milestones object with an empty title
+  //   );
+  //   return milestone.title ?? ""; // Now safely access title
+  // }
+  //
+  // String getAssignedById(String id) {
+  //   final member = members.firstWhere(
+  //     (member) => member.fullName == id,
+  //     orElse: () => Members(
+  //         fullName: ""), // Return a Milestones object with an empty title
+  //   );
+  //   return member.fullName ?? ""; // Now safely access title
+  // }
+  //
+  // String getStatusById(String statusKey) {
+  //   final status = statuses.firstWhere(
+  //     (statuses) => statuses.statusKey == statusKey,
+  //     orElse: () => Statuses(statusValue: ""),
+  //   );
+  //   return status.statusValue ?? "";
+  // }
+  //
+  // String getPriorityById(String priorityKey) {
+  //   final priority = priorities.firstWhere(
+  //     (statuses) => statuses.priorityKey == priorityKey,
+  //     orElse: () => Priorities(priorityValue: ""),
+  //   );
+  //   return priority.priorityValue ?? "";
+  // }
 
   Future<void> GetProjectTaskDetails() async {
-    var res = await Userapi.GetTaskDetail(widget.taskid);
-    setState(() {
-      if (res?.taskDetail != null) {
-        if (res?.settings?.success == 1) {
-          _titleController.text = res?.taskDetail?.title ?? "";
-          _descriptionController.text = res?.taskDetail?.description ?? "";
-          milestoneid = res?.taskDetail?.milestone ?? "";
-          assignedid = res?.taskDetail?.assignedToId ?? "";
-          statusid = res?.taskDetail?.status ?? "";
-          priorityid = res?.taskDetail?.priority ?? "";
-          final milestone = milestones.firstWhere(
-                (milestone) => milestone.id == res?.taskDetail?.milestone,
-            orElse: () => Milestones(
-                title: ""), // Return a Milestones object with an empty title
-          );
-          print("milestone:${milestone.title}");
-          _mileStoneController.text =milestone.title??"";
-          // _mileStoneController.text =
-          //     getMilestoneTitleById(res?.taskDetail?.milestone ?? "");
-          final member = members.firstWhere(
-                (member) => member.fullName ==res?.taskDetail?.assignedTo,
-            orElse: () => Members(
-                fullName: ""), // Return a Milestones object with an empty title
-          );
-          print("member:${member.fullName}");
-          _assignedToController.text =member.fullName??"";
-          // _assignedToController.text =
-          //     getAssignedById(res?.taskDetail?.assignedTo ?? "");
+    try {
+      var res = await Userapi.GetTaskDetail(widget.taskid);
+      setState(() {
+        if (res?.taskDetail != null) {
+          if (res?.settings?.success == 1) {
+            _titleController.text = res?.taskDetail?.title ?? "";
+            _descriptionController.text = res?.taskDetail?.description ?? "";
+            milestoneid = res?.taskDetail?.milestone ?? "";
+            assignedid = res?.taskDetail?.assignedToId ?? "";
+            statusid = res?.taskDetail?.status ?? "";
+            priorityid = res?.taskDetail?.priority ?? "";
 
-          final status = statuses.firstWhere(
-                (statuses) => statuses.statusKey == res?.taskDetail?.status,
-            orElse: () => Statuses(statusValue: ""),
-          );
-          print("status:${status.statusValue}");
-          _statusController.text=status.statusValue??"";
-          // _statusController.text = getStatusById(res?.taskDetail?.status ?? "");
-          final priority = priorities.firstWhere(
-                (statuses) => statuses.priorityKey == res?.taskDetail?.priority,
-            orElse: () => Priorities(priorityValue: ""),
-          );
-          print("priority:${priority.priorityValue}");
-          _priorityController.text =priority.priorityValue??"";
-          // _priorityController.text =
-          //     getPriorityById(res?.taskDetail?.priority ?? "");
-          _startDateController.text = res?.taskDetail?.startDate ?? "";
-          _deadlineController.text = res?.taskDetail?.endDate ?? "";
-          if (res?.taskDetail?.collaborators != null) {
-            selectedIds = res!.taskDetail!.collaborators!
-                .map((collab) => collab.id)
-                .whereType<String>()
-                .toList();
+            // Create a map for faster lookups
+            var milestoneMap = {for (var milestone in milestones) milestone.id: milestone.title};
+            _mileStoneController.text = milestoneMap[res?.taskDetail?.milestone] ?? "";
+
+            var memberMap = {for (var member in members) member.id: member.fullName};
+            _assignedToController.text = memberMap[res?.taskDetail?.assignedToId] ?? "";
+
+            var statusMap = {for (var status in statuses) status.statusKey: status.statusValue};
+            _statusController.text = statusMap[res?.taskDetail?.status] ?? "";
+
+            var priorityMap = {for (var priority in priorities) priority.priorityKey: priority.priorityValue};
+            _priorityController.text = priorityMap[res?.taskDetail?.priority] ?? "";
+
+            _startDateController.text = res?.taskDetail?.startDate ?? "";
+            _deadlineController.text = res?.taskDetail?.endDate ?? "";
+
+            if (res?.taskDetail?.collaborators != null) {
+              selectedIds = res!.taskDetail!.collaborators!
+                  .map((collab) => collab.id)
+                  .whereType<String>()
+                  .toList();
+            }
+            print("Selected Collaborators' IDs: $selectedIds");
+          } else {
+            CustomSnackBar.show(context, res?.settings?.message ?? "Unknown error occurred.");
           }
-          print("Selected Collaborators' IDs: $selectedIds");
-          _loading = false;
         } else {
-          _loading = false;
-          CustomSnackBar.show(context, res?.settings?.message ?? "");
+          print("Task GetTaskDetail: ${res?.settings?.message}");
         }
-      } else {
-        _isLoading = false;
-        print("Task GetTaskDetail: ${res?.settings?.message}");
-      }
-    });
+      });
+    } catch (e) {
+      print("Error fetching task details: $e");
+      CustomSnackBar.show(context, "An error occurred while fetching task details.");
+    }
   }
+
 
   void _validateFields() {
     setState(() {
@@ -397,6 +401,8 @@ class _TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
+    print("Selected IDS :${selectedIds}");
+    print("members :${members}");
     var items = members.map((member) {
       return DropdownItem<User>(
         label: member.fullName ?? "",
@@ -404,8 +410,10 @@ class _TaskFormState extends State<TaskForm> {
           name: member.fullName ?? "",
           id: member.id ?? "",
         ),
+        selected: selectedIds.contains(member.id), // Mark as selected
       );
     }).toList();
+
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,

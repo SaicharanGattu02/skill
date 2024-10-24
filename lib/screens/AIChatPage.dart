@@ -24,18 +24,18 @@ class _ChatPageState extends State<AIChatPage> {
   @override
   void initState() {
     super.initState();
-    _loadChatHistory(); // Load chat history on initialization
+    // _loadChatHistory(); // Load chat history on initialization
     _scrollController.addListener(_scrollListener);
   }
 
-  Future<void> _loadChatHistory() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? chatHistory = prefs.getStringList('chatHistory');
-    if (chatHistory != null) {
-      listDatas = chatHistory;
-      setState(() {});
-    }
-  }
+  // Future<void> _loadChatHistory() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   List<String>? chatHistory = prefs.getStringList('chatHistory');
+  //   if (chatHistory != null) {
+  //     listDatas = chatHistory;
+  //     setState(() {});
+  //   }
+  // }
 
   Future<void> _saveChatHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -61,15 +61,15 @@ class _ChatPageState extends State<AIChatPage> {
         title: "Jarvis",
         actions: [
           Container(),
-          // IconButton(
-          //   icon: Icon(Icons.history),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => ChatHistoryScreen()), // Navigate to history screen
-          //     );
-          //   },
-          // ),
+          IconButton(
+            icon: Icon(Icons.history,color: Colors.white,),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatHistoryScreen()), // Navigate to history screen
+              );
+            },
+          ),
         ],
       ),
       body: Column(
@@ -262,7 +262,7 @@ class _ChatPageState extends State<AIChatPage> {
       isLoading.value = false;
       await _saveChatHistory(); // Save chat history
       controller.clear();
-      _scrollToBottom();
+      // _scrollToBottom();
       setState(() {});
     }
   }

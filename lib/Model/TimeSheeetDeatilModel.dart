@@ -6,28 +6,32 @@ class TimeSheetDetailsModel {
   TimeSheetDetailsModel({this.data, this.totalTime, this.settings});
 
   TimeSheetDetailsModel.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
+    // Check if 'data' is a List and not an empty object
+    if (json['data'] is List) {
+      data = (json['data'] as List).map((v) => Data.fromJson(v)).toList();
+    } else if (json['data'] is Map && json['data'].isEmpty) {
+      // If it's an empty object, assign an empty list
+      data = [];
+    } else {
+      data = null; // Handle unexpected formats
     }
+
     totalTime = json['total_time'];
     settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
+        ? Settings.fromJson(json['settings'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> dataMap = {};
+    if (data != null) {
+      dataMap['data'] = data!.map((v) => v.toJson()).toList();
     }
-    data['total_time'] = this.totalTime;
-    if (this.settings != null) {
-      data['settings'] = this.settings!.toJson();
+    dataMap['total_time'] = totalTime;
+    if (settings != null) {
+      dataMap['settings'] = settings!.toJson();
     }
-    return data;
+    return dataMap;
   }
 }
 
@@ -63,16 +67,16 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['member'] = this.member;
-    data['task'] = this.task;
-    data['start_time'] = this.startTime;
-    data['end_time'] = this.endTime;
-    data['note'] = this.note;
-    data['total'] = this.total;
-    data['image'] = this.image;
-    return data;
+    return {
+      'id': id,
+      'member': member,
+      'task': task,
+      'start_time': startTime,
+      'end_time': endTime,
+      'note': note,
+      'total': total,
+      'image': image,
+    };
   }
 }
 
@@ -90,10 +94,10 @@ class Settings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['status'] = this.status;
-    return data;
+    return {
+      'success': success,
+      'message': message,
+      'status': status,
+    };
   }
 }

@@ -73,7 +73,8 @@ dependencies:
   geocoding: ^3.0.0
   connectivity_plus: ^6.1.0
   lottie: ^3.1.2
-#  vibration: ^2.0.1
+  appflowy_board: ^0.1.2
+  vibration: ^2.0.1
 #  flutter_file_downloader: ^2.0.0
 
 dev_dependencies:

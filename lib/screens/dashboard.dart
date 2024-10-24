@@ -24,6 +24,7 @@ import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import 'package:skill/utils/Preferances.dart';
+import 'package:vibration/vibration.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/ProjectsModel.dart';
@@ -1626,14 +1627,13 @@ class _DashboardState extends State<Dashboard> {
                                             'assets/animations/wave.json', // Your Lottie animation file
                                             width: 24, // Adjust the size as needed
                                             height: 24,
-
                                             fit: BoxFit.cover,
 
                                           ),
                                         InkResponse(
                                           onTap: () async {
                                             Notifyuser(employee.id ?? "");
-
+                                            Vibration.vibrate(duration: 300);
                                             // Start the animation for the tapped index
                                             setState(() {
                                               _animatingIndex = index; // Set the current index to animating
