@@ -209,32 +209,61 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Widget _buildMessageBubble(String message, String sender,String datetime) {
+  Widget _buildMessageBubble(String message, String sender, String datetime) {
     bool isMe = sender == 'you';
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.75,
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isMe ? Color(0xffEAE1FF) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Row(
+          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              message,
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 5),
-            Text(
-              datetime,
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 10,
+            if (!isMe)
+
+              Padding(
+                padding: const EdgeInsets.only(top:5.0),
+                child: ClipOval(
+                  child: Image.network(
+                    userimage,
+                    width: 35,
+                    height: 35,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            SizedBox(width: 8),
+
+            Container(
+              width: MediaQuery.of(context).size.width * 0.75,
+              margin: EdgeInsets.symmetric(vertical: 5),
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isMe ? Color(0xffEAE1FF) : Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                  bottomLeft: isMe ? Radius.circular(15) : Radius.circular(0),
+                  bottomRight: isMe ? Radius.circular(0) : Radius.circular(15),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    datetime,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -242,6 +271,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -357,7 +387,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(100),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),

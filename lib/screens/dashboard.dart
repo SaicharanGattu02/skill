@@ -493,7 +493,7 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ProfileDashboard()));
+                                    builder: (context) => AIChatPage()));
                           },
                           child: Container(
                             width:
@@ -657,7 +657,7 @@ class _DashboardState extends State<Dashboard> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            EditProfileScreen()));
+                                            ProfileDashboard()));
                                 if (res == true) {
                                   GetUserDeatails();
                                 }

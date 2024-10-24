@@ -33,10 +33,12 @@ class _TaskKanBanState extends State<TaskKanBan> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
-    GetKanBanTodo();
-    GetKanBanInProgress();
-    GetKanBanCompleted();
+    _fetchAllKanbanData();
+    // GetKanBanTodo();
+    // GetKanBanInProgress();
+    // GetKanBanCompleted();
   }
+
 
   @override
   void dispose() {
@@ -54,6 +56,47 @@ class _TaskKanBanState extends State<TaskKanBan> {
         return otherUser.contains(query) || message.contains(query);
       }).toList();
     });
+  }
+  List<dynamic> _todoData = [];
+  List<dynamic> _inProgressData = [];
+  List<dynamic> _completedData = [];
+
+
+  Future<void> _fetchAllKanbanData() async {
+    setState(() {
+      _loading = true; // Show loading spinner
+    });
+
+    try {
+      var results = await Future.wait([
+        Userapi.GetTaskKanBan(widget.id, "to_do"),
+        Userapi.GetTaskKanBan(widget.id, "in_progress"),
+        Userapi.GetTaskKanBan(widget.id, "completed"),
+      ]);
+
+      // Update the state with the results
+      _todoData = _processResponse(results[0]);
+      _inProgressData = _processResponse(results[1]);
+      _completedData = _processResponse(results[2]);
+
+      showNoDataFoundMessage = _todoData.isEmpty && _inProgressData.isEmpty && _completedData.isEmpty;
+    } catch (error) {
+      // Handle error appropriately
+      print("Error fetching data: $error");
+    } finally {
+      setState(() {
+        _loading = false; // Hide loading spinner
+      });
+    }
+  }
+
+  List<dynamic> _processResponse(res) {
+    if (res != null && res.settings?.success == 1) {
+      var data = res.data ?? [];
+      data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
+      return data; // Return sorted data
+    }
+    return [];
   }
 
   Future<void> GetKanBanTodo() async {
@@ -354,117 +397,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                       )),
                                 )
 
-                                // Expanded(
-                                //   child: ListView.builder(
-                                //     physics: AlwaysScrollableScrollPhysics(),
-                                //     scrollDirection: Axis.horizontal,
-                                //     itemCount: filteredRooms.length,
-                                //     itemBuilder: (context, index) {
-                                //       final kanBan = filteredRooms[index];
-                                //       String isoDate = kanBan.startDate ?? "";
-                                //       String isoDate1 = kanBan.endDate ?? "";
-                                //       String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
-                                //       String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
-                                //
-                                //       return Padding(
-                                //         padding: const EdgeInsets.symmetric(horizontal: 10), // Horizontal padding
-                                //         child:
-                                //         Column(
-                                //           children: [
-                                //             SizedBox(height: 8),
-                                //             Container(
-                                //               width: w * 0.87,
-                                //               padding: const EdgeInsets.all(10),
-                                //               decoration: BoxDecoration(
-                                //                 color: Colors.white,
-                                //                 borderRadius: BorderRadius.circular(7),
-                                //               ),
-                                //               child: Column(
-                                //                 crossAxisAlignment: CrossAxisAlignment.start,
-                                //                 children: [
-                                //                   Row(
-                                //                     children: [
-                                //                       Expanded(
-                                //                         child: Text(
-                                //                           kanBan.title ?? "",
-                                //                           style: TextStyle(
-                                //                             fontFamily: 'Inter',
-                                //                             fontSize: 14,
-                                //                             fontWeight: FontWeight.w500,
-                                //                             color: Color(0xff000000),
-                                //                           ),
-                                //                         ),
-                                //                       ),
-                                //                       Image.asset(
-                                //                         "assets/More-vertical.png",
-                                //                         fit: BoxFit.contain,
-                                //                         width: w * 0.045,
-                                //                         height: w * 0.06,
-                                //                         color: Color(0xff6C848F),
-                                //                       ),
-                                //                     ],
-                                //                   ),
-                                //                   SizedBox(height: 8),
-                                //                   Row(
-                                //                     children: [
-                                //                       Image.asset(
-                                //                         "assets/calendar.png",
-                                //                         fit: BoxFit.contain,
-                                //                         width: w * 0.045,
-                                //                         height: w * 0.06,
-                                //                         color: Color(0xff6C848F),
-                                //                       ),
-                                //                       SizedBox(width: 8),
-                                //                       Text(
-                                //                         formattedDate,
-                                //                         style: TextStyle(
-                                //                           fontFamily: 'Inter',
-                                //                           fontSize: 14,
-                                //                           fontWeight: FontWeight.w400,
-                                //                           color: Color(0xff6C848F),
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(width: 15),
-                                //                       Image.asset(
-                                //                         "assets/calendar.png",
-                                //                         fit: BoxFit.contain,
-                                //                         width: w * 0.045,
-                                //                         height: w * 0.06,
-                                //                         color: Color(0xff6C848F),
-                                //                       ),
-                                //                       SizedBox(width: 8),
-                                //                       Text(
-                                //                         formattedDate1,
-                                //                         style: TextStyle(
-                                //                           fontFamily: 'Inter',
-                                //                           fontSize: 14,
-                                //                           fontWeight: FontWeight.w400,
-                                //                           color: Color(0xff6C848F),
-                                //                         ),
-                                //                       ),
-                                //                     ],
-                                //                   ),
-                                //                   SizedBox(height: 8),
-                                //                   FlutterImageStack(
-                                //                     imageList: _images,
-                                //                     totalCount: _images.length,
-                                //                     showTotalCount: true,
-                                //                     extraCountTextStyle: TextStyle(
-                                //                       color: Color(0xff8856F4),
-                                //                     ),
-                                //                     backgroundColor: Colors.white,
-                                //                     itemRadius: 35,
-                                //                     itemBorderWidth: 3,
-                                //                   ),
-                                //                 ],
-                                //               ),
-                                //             ),
-                                //           ],
-                                //         ),
-                                //       );
-                                //     },
-                                //   ),
-                                // ),
+
                               ],
                             ),
                           ),
@@ -532,93 +465,97 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         Column(
                                           children: [
                                             SizedBox(height: 8),
-                                            Container(
-                                              width: w * 0.75,
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(7),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          kanBan.title ?? "",
+
+                                            if(kanBan.status=="In Progress")...[
+
+                                              Container(
+                                                width: w * 0.75,
+                                                padding: const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(7),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            kanBan.title ?? "",
+                                                            style: TextStyle(
+                                                              fontFamily: 'Inter',
+                                                              fontSize: 14,
+                                                              fontWeight: FontWeight.w500,
+                                                              color: Color(0xff000000),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Image.asset(
+                                                          "assets/More-vertical.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
+                                                          color: Color(0xff6C848F),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Row(
+                                                      children: [
+                                                        Image.asset(
+                                                          "assets/calendar.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
+                                                          color: Color(0xff6C848F),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          formattedDate,
                                                           style: TextStyle(
                                                             fontFamily: 'Inter',
                                                             fontSize: 14,
-                                                            fontWeight: FontWeight.w500,
-                                                            color: Color(0xff000000),
+                                                            fontWeight: FontWeight.w400,
+                                                            color: Color(0xff6C848F),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Image.asset(
-                                                        "assets/More-vertical.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Row(
-                                                    children: [
-                                                      Image.asset(
-                                                        "assets/calendar.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        formattedDate,
-                                                        style: TextStyle(
-                                                          fontFamily: 'Inter',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w400,
+                                                        SizedBox(width: 15),
+                                                        Image.asset(
+                                                          "assets/calendar.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
                                                           color: Color(0xff6C848F),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 15),
-                                                      Image.asset(
-                                                        "assets/calendar.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        formattedDate1,
-                                                        style: TextStyle(
-                                                          fontFamily: 'Inter',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w400,
-                                                          color: Color(0xff6C848F),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          formattedDate1,
+                                                          style: TextStyle(
+                                                            fontFamily: 'Inter',
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w400,
+                                                            color: Color(0xff6C848F),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  FlutterImageStack(
-                                                    imageList: _images,
-                                                    totalCount: _images.length,
-                                                    showTotalCount: true,
-                                                    extraCountTextStyle: TextStyle(
-                                                      color: Color(0xff8856F4),
+                                                      ],
                                                     ),
-                                                    backgroundColor: Colors.white,
-                                                    itemRadius: 35,
-                                                    itemBorderWidth: 3,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                                    SizedBox(height: 8),
+                                                    FlutterImageStack(
+                                                      imageList: _images,
+                                                      totalCount: _images.length,
+                                                      showTotalCount: true,
+                                                      extraCountTextStyle: TextStyle(
+                                                        color: Color(0xff8856F4),
+                                                      ),
+                                                      backgroundColor: Colors.white,
+                                                      itemRadius: 35,
+                                                      itemBorderWidth: 3,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),]
+
                                           ],
                                         ),
                                       );
@@ -630,117 +567,7 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                 )),
                           )
 
-                          // Expanded(
-                          //   child: ListView.builder(
-                          //     physics: AlwaysScrollableScrollPhysics(),
-                          //     scrollDirection: Axis.horizontal,
-                          //     itemCount: filteredRooms.length,
-                          //     itemBuilder: (context, index) {
-                          //       final kanBan = filteredRooms[index];
-                          //       String isoDate = kanBan.startDate ?? "";
-                          //       String isoDate1 = kanBan.endDate ?? "";
-                          //       String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
-                          //       String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
-                          //
-                          //       return Padding(
-                          //         padding: const EdgeInsets.symmetric(horizontal: 10), // Horizontal padding
-                          //         child:
-                          //         Column(
-                          //           children: [
-                          //             SizedBox(height: 8),
-                          //             Container(
-                          //               width: w * 0.87,
-                          //               padding: const EdgeInsets.all(10),
-                          //               decoration: BoxDecoration(
-                          //                 color: Colors.white,
-                          //                 borderRadius: BorderRadius.circular(7),
-                          //               ),
-                          //               child: Column(
-                          //                 crossAxisAlignment: CrossAxisAlignment.start,
-                          //                 children: [
-                          //                   Row(
-                          //                     children: [
-                          //                       Expanded(
-                          //                         child: Text(
-                          //                           kanBan.title ?? "",
-                          //                           style: TextStyle(
-                          //                             fontFamily: 'Inter',
-                          //                             fontSize: 14,
-                          //                             fontWeight: FontWeight.w500,
-                          //                             color: Color(0xff000000),
-                          //                           ),
-                          //                         ),
-                          //                       ),
-                          //                       Image.asset(
-                          //                         "assets/More-vertical.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                     ],
-                          //                   ),
-                          //                   SizedBox(height: 8),
-                          //                   Row(
-                          //                     children: [
-                          //                       Image.asset(
-                          //                         "assets/calendar.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                       SizedBox(width: 8),
-                          //                       Text(
-                          //                         formattedDate,
-                          //                         style: TextStyle(
-                          //                           fontFamily: 'Inter',
-                          //                           fontSize: 14,
-                          //                           fontWeight: FontWeight.w400,
-                          //                           color: Color(0xff6C848F),
-                          //                         ),
-                          //                       ),
-                          //                       SizedBox(width: 15),
-                          //                       Image.asset(
-                          //                         "assets/calendar.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                       SizedBox(width: 8),
-                          //                       Text(
-                          //                         formattedDate1,
-                          //                         style: TextStyle(
-                          //                           fontFamily: 'Inter',
-                          //                           fontSize: 14,
-                          //                           fontWeight: FontWeight.w400,
-                          //                           color: Color(0xff6C848F),
-                          //                         ),
-                          //                       ),
-                          //                     ],
-                          //                   ),
-                          //                   SizedBox(height: 8),
-                          //                   FlutterImageStack(
-                          //                     imageList: _images,
-                          //                     totalCount: _images.length,
-                          //                     showTotalCount: true,
-                          //                     extraCountTextStyle: TextStyle(
-                          //                       color: Color(0xff8856F4),
-                          //                     ),
-                          //                     backgroundColor: Colors.white,
-                          //                     itemRadius: 35,
-                          //                     itemBorderWidth: 3,
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       );
-                          //     },
-                          //   ),
-                          // ),
+
                         ],
                       ),
                     ),
@@ -808,93 +635,97 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                         Column(
                                           children: [
                                             SizedBox(height: 8),
-                                            Container(
-                                              width: w * 0.75,
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(7),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          kanBan.title ?? "",
+
+                                            if(kanBan.status=="Completed")...[
+
+                                              Container(
+                                                width: w * 0.75,
+                                                padding: const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(7),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            kanBan.title ?? "",
+                                                            style: TextStyle(
+                                                              fontFamily: 'Inter',
+                                                              fontSize: 14,
+                                                              fontWeight: FontWeight.w500,
+                                                              color: Color(0xff000000),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Image.asset(
+                                                          "assets/More-vertical.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
+                                                          color: Color(0xff6C848F),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Row(
+                                                      children: [
+                                                        Image.asset(
+                                                          "assets/calendar.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
+                                                          color: Color(0xff6C848F),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          formattedDate,
                                                           style: TextStyle(
                                                             fontFamily: 'Inter',
                                                             fontSize: 14,
-                                                            fontWeight: FontWeight.w500,
-                                                            color: Color(0xff000000),
+                                                            fontWeight: FontWeight.w400,
+                                                            color: Color(0xff6C848F),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Image.asset(
-                                                        "assets/More-vertical.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Row(
-                                                    children: [
-                                                      Image.asset(
-                                                        "assets/calendar.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        formattedDate,
-                                                        style: TextStyle(
-                                                          fontFamily: 'Inter',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w400,
+                                                        SizedBox(width: 15),
+                                                        Image.asset(
+                                                          "assets/calendar.png",
+                                                          fit: BoxFit.contain,
+                                                          width: w * 0.045,
+                                                          height: w * 0.06,
                                                           color: Color(0xff6C848F),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 15),
-                                                      Image.asset(
-                                                        "assets/calendar.png",
-                                                        fit: BoxFit.contain,
-                                                        width: w * 0.045,
-                                                        height: w * 0.06,
-                                                        color: Color(0xff6C848F),
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        formattedDate1,
-                                                        style: TextStyle(
-                                                          fontFamily: 'Inter',
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w400,
-                                                          color: Color(0xff6C848F),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          formattedDate1,
+                                                          style: TextStyle(
+                                                            fontFamily: 'Inter',
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w400,
+                                                            color: Color(0xff6C848F),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  FlutterImageStack(
-                                                    imageList: _images,
-                                                    totalCount: _images.length,
-                                                    showTotalCount: true,
-                                                    extraCountTextStyle: TextStyle(
-                                                      color: Color(0xff8856F4),
+                                                      ],
                                                     ),
-                                                    backgroundColor: Colors.white,
-                                                    itemRadius: 35,
-                                                    itemBorderWidth: 3,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                                    SizedBox(height: 8),
+                                                    FlutterImageStack(
+                                                      imageList: _images,
+                                                      totalCount: _images.length,
+                                                      showTotalCount: true,
+                                                      extraCountTextStyle: TextStyle(
+                                                        color: Color(0xff8856F4),
+                                                      ),
+                                                      backgroundColor: Colors.white,
+                                                      itemRadius: 35,
+                                                      itemBorderWidth: 3,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),]
+
                                           ],
                                         ),
                                       );
@@ -906,272 +737,11 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                 )),
                           )
 
-                          // Expanded(
-                          //   child: ListView.builder(
-                          //     physics: AlwaysScrollableScrollPhysics(),
-                          //     scrollDirection: Axis.horizontal,
-                          //     itemCount: filteredRooms.length,
-                          //     itemBuilder: (context, index) {
-                          //       final kanBan = filteredRooms[index];
-                          //       String isoDate = kanBan.startDate ?? "";
-                          //       String isoDate1 = kanBan.endDate ?? "";
-                          //       String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
-                          //       String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
-                          //
-                          //       return Padding(
-                          //         padding: const EdgeInsets.symmetric(horizontal: 10), // Horizontal padding
-                          //         child:
-                          //         Column(
-                          //           children: [
-                          //             SizedBox(height: 8),
-                          //             Container(
-                          //               width: w * 0.87,
-                          //               padding: const EdgeInsets.all(10),
-                          //               decoration: BoxDecoration(
-                          //                 color: Colors.white,
-                          //                 borderRadius: BorderRadius.circular(7),
-                          //               ),
-                          //               child: Column(
-                          //                 crossAxisAlignment: CrossAxisAlignment.start,
-                          //                 children: [
-                          //                   Row(
-                          //                     children: [
-                          //                       Expanded(
-                          //                         child: Text(
-                          //                           kanBan.title ?? "",
-                          //                           style: TextStyle(
-                          //                             fontFamily: 'Inter',
-                          //                             fontSize: 14,
-                          //                             fontWeight: FontWeight.w500,
-                          //                             color: Color(0xff000000),
-                          //                           ),
-                          //                         ),
-                          //                       ),
-                          //                       Image.asset(
-                          //                         "assets/More-vertical.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                     ],
-                          //                   ),
-                          //                   SizedBox(height: 8),
-                          //                   Row(
-                          //                     children: [
-                          //                       Image.asset(
-                          //                         "assets/calendar.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                       SizedBox(width: 8),
-                          //                       Text(
-                          //                         formattedDate,
-                          //                         style: TextStyle(
-                          //                           fontFamily: 'Inter',
-                          //                           fontSize: 14,
-                          //                           fontWeight: FontWeight.w400,
-                          //                           color: Color(0xff6C848F),
-                          //                         ),
-                          //                       ),
-                          //                       SizedBox(width: 15),
-                          //                       Image.asset(
-                          //                         "assets/calendar.png",
-                          //                         fit: BoxFit.contain,
-                          //                         width: w * 0.045,
-                          //                         height: w * 0.06,
-                          //                         color: Color(0xff6C848F),
-                          //                       ),
-                          //                       SizedBox(width: 8),
-                          //                       Text(
-                          //                         formattedDate1,
-                          //                         style: TextStyle(
-                          //                           fontFamily: 'Inter',
-                          //                           fontSize: 14,
-                          //                           fontWeight: FontWeight.w400,
-                          //                           color: Color(0xff6C848F),
-                          //                         ),
-                          //                       ),
-                          //                     ],
-                          //                   ),
-                          //                   SizedBox(height: 8),
-                          //                   FlutterImageStack(
-                          //                     imageList: _images,
-                          //                     totalCount: _images.length,
-                          //                     showTotalCount: true,
-                          //                     extraCountTextStyle: TextStyle(
-                          //                       color: Color(0xff8856F4),
-                          //                     ),
-                          //                     backgroundColor: Colors.white,
-                          //                     itemRadius: 35,
-                          //                     itemBorderWidth: 3,
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       );
-                          //     },
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
 
-                    // SizedBox(
-                    //   height: h * 0.23, // Set a fixed height for the ListView
-                    //   child:
-                    //   ListView.builder(
-                    //     physics: AlwaysScrollableScrollPhysics(),
-                    //     scrollDirection: Axis.horizontal,
-                    //     itemCount: filteredRooms.length,
-                    //     itemBuilder: (context, index) {
-                    //       final kanBan = filteredRooms[index];
-                    //       String isoDate = kanBan.startDate ?? "";
-                    //       String isoDate1 = kanBan.endDate ?? "";
-                    //       String formattedDate = DateTimeFormatter.format(isoDate, includeDate: true, includeTime: false);
-                    //       String formattedDate1 = DateTimeFormatter.format(isoDate1, includeDate: true, includeTime: false);
-                    //
-                    //       return Padding(
-                    //         padding: const EdgeInsets.only(right: 10,left: 10),
-                    //         child:
-                    //         DottedBorder(
-                    //           color: Color(0xffCFB9FF),
-                    //           strokeWidth: 1,
-                    //           dashPattern: [5, 3],
-                    //           borderType: BorderType.RRect,
-                    //           radius: Radius.circular(7),
-                    //           child: Container(
-                    //             padding: EdgeInsets.all(16),
-                    //
-                    //             width: w*0.87, // Specify a fixed width for each item
-                    //             decoration: BoxDecoration(
-                    //               color: Color(0xffEFE2FF),
-                    //             ),
-                    //             child: Column(
-                    //               children: [
-                    //                 Row(
-                    //                   children: [
-                    //                     Image.asset(
-                    //                       "assets/box.png",
-                    //                       fit: BoxFit.contain,
-                    //                       width: w * 0.045,
-                    //                       height: w * 0.05,
-                    //                       color: Color(0xff000000),
-                    //                     ),
-                    //                     SizedBox(width: w * 0.02),
-                    //                     Expanded(
-                    //                       child: Text(
-                    //                         kanBan.status ?? "",
-                    //                         style: TextStyle(
-                    //                           fontFamily: 'Inter',
-                    //                           fontSize: 16,
-                    //                           fontWeight: FontWeight.w500,
-                    //                           color: Color(0xff16192C),
-                    //                         ),
-                    //                       ),
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //
-                    //                 SizedBox(height: 8),
-                    //                 Container(
-                    //                   padding: const EdgeInsets.all(10),
-                    //                   decoration: BoxDecoration(
-                    //                     color: Colors.white,
-                    //                     borderRadius: BorderRadius.circular(7),
-                    //                   ),
-                    //                   child: Column(
-                    //                     crossAxisAlignment: CrossAxisAlignment.start,
-                    //                     children: [
-                    //                       Row(
-                    //                         children: [
-                    //                           Expanded(
-                    //                             child: Text(
-                    //                               kanBan.title ?? "",
-                    //                               style: TextStyle(
-                    //                                 fontFamily: 'Inter',
-                    //                                 fontSize: 14,
-                    //                                 fontWeight: FontWeight.w500,
-                    //                                 color: Color(0xff000000),
-                    //                               ),
-                    //                             ),
-                    //                           ),
-                    //                           Image.asset(
-                    //                             "assets/More-vertical.png",
-                    //                             fit: BoxFit.contain,
-                    //                             width: w * 0.045,
-                    //                             height: w * 0.06,
-                    //                             color: Color(0xff6C848F),
-                    //                           ),
-                    //                         ],
-                    //                       ),
-                    //                       SizedBox(height: 8),
-                    //                       Row(
-                    //                         children: [
-                    //                           Image.asset(
-                    //                             "assets/calendar.png",
-                    //                             fit: BoxFit.contain,
-                    //                             width: w * 0.045,
-                    //                             height: w * 0.06,
-                    //                             color: Color(0xff6C848F),
-                    //                           ),
-                    //                           SizedBox(width: 8),
-                    //                           Text(
-                    //                             "$formattedDate",
-                    //                             style: TextStyle(
-                    //                               fontFamily: 'Inter',
-                    //                               fontSize: 14,
-                    //                               fontWeight: FontWeight.w400,
-                    //                               color: Color(0xff6C848F),
-                    //                             ),
-                    //                           ),
-                    //                           SizedBox(width: 15),
-                    //                           Image.asset(
-                    //                             "assets/calendar.png",
-                    //                             fit: BoxFit.contain,
-                    //                             width: w * 0.045,
-                    //                             height: w * 0.06,
-                    //                             color: Color(0xff6C848F),
-                    //                           ),
-                    //                           SizedBox(width: 8),
-                    //                           Text(
-                    //                             "$formattedDate1",
-                    //                             style: TextStyle(
-                    //                               fontFamily: 'Inter',
-                    //                               fontSize: 14,
-                    //                               fontWeight: FontWeight.w400,
-                    //                               color: Color(0xff6C848F),
-                    //                             ),
-                    //                           ),
-                    //                         ],
-                    //                       ),
-                    //                       SizedBox(height: 8),
-                    //                       FlutterImageStack(
-                    //                         imageList: _images,
-                    //                         totalCount: _images.length,
-                    //                         showTotalCount: true,
-                    //                         extraCountTextStyle: TextStyle(
-                    //                           color: Color(0xff8856F4),
-                    //                         ),
-                    //                         backgroundColor: Colors.white,
-                    //                         itemRadius: 35,
-                    //                         itemBorderWidth: 3,
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
+
                   ],
                 ),
               ),

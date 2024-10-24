@@ -43,7 +43,8 @@ class _ChatPageState extends State<AIChatPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.atEdge && _scrollController.position.pixels == 0) {
+    if (_scrollController.position.atEdge &&
+        _scrollController.position.pixels == 0) {
       // Load more messages when scrolled to top (if needed)
     }
   }
@@ -73,62 +74,112 @@ class _ChatPageState extends State<AIChatPage> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           listDatas.isEmpty
               ? Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 100,),
-                  Image.asset(
-                    'assets/nodata1.png',
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Explore your doubts here!",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                  SizedBox(height: h * 0.3,)
-                ],
-              ),
-            ),
-          )
-              : Expanded(
-            child: ListView.separated(
-              controller: _scrollController,
-              itemCount: listDatas.length,
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(height: 10);
-              },
-              itemBuilder: (BuildContext context, int index) {
-                return Align(
-                  alignment: index.isOdd ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Card(
-                    color: index.isOdd ? Color(0xffEAE1FF) : Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        listDatas[index],
-                        style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14,
-                          color: Colors.black,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 100,
                         ),
-                      ),
+                        Image.asset(
+                          'assets/nodata1.png',
+                          width: 150,
+                          height: 150,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Explore your doubts here!",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                            fontFamily: "Inter",
+                          ),
+                        ),
+                        SizedBox(
+                          height: h * 0.3,
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
+                )
+              : Expanded(
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    itemCount: listDatas.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10);
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      return Align(
+                        alignment: index.isOdd
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+
+
+                          child: Row(
+                            mainAxisAlignment:  index.isOdd ? MainAxisAlignment.start : MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if ( index.isOdd)
+
+                                Padding(
+                                  padding: const EdgeInsets.only(top:5.0),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      "assets/chatbot.jpeg",
+                                      width: 35,
+                                      height: 35,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              SizedBox(width: 8),
+
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color:
+                                      index.isOdd ? Color(0xffEAE1FF) : Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15),
+                                    bottomRight: index.isOdd
+                                        ? Radius.circular(15)
+                                        : Radius.circular(0),
+                                    bottomLeft: index.isOdd
+                                        ? Radius.circular(0)
+                                        : Radius.circular(15),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    listDatas[index],
+                                    style: TextStyle(
+                                      fontFamily: "Inter",
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
           ValueListenableBuilder(
             valueListenable: isLoading,
             builder: (BuildContext context, dynamic value, Widget? child) {
