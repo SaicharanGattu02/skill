@@ -3,7 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/Authentication/ForgotPassword.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
-import 'package:skill/Authentication/Register.dart';
+import 'package:skill/Authentication/CompanyInformation.dart';
 import 'package:skill/screens/dashboard.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';

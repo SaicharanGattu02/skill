@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:skill/screens/LogInScreen.dart';
 
+import '../Services/UserApi.dart';
 import '../screens/dashboard.dart';
+import '../utils/CustomSnackBar.dart';
 
 class Otp extends StatefulWidget {
-  const Otp({super.key});
+  final String email;
+  final String mobile;
+
+  const Otp({Key? key, required this.email, required this.mobile}) : super(key: key);
 
   @override
   State<Otp> createState() => _OtpState();
@@ -18,11 +24,48 @@ class _OtpState extends State<Otp> {
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodeSms = FocusNode();
 
+  bool email_verified=false;
+  bool mobile_verified=false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> VerifyEmailApi() async {
+    var data = await Userapi.VerifyEmail(widget.email, _emailOtpController.text);
+    if (data != null) {
+      setState(() {
+        if (data.settings?.success == 1) {
+          email_verified=true;
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        }
+      });
+    } else {
+    }
+  }
+
+  Future<void> VerifyMobileApi() async {
+    var data = await Userapi.VerifyMobile(widget.mobile, _smsOtpController.text);
+    if (data != null) {
+      setState(() {
+        if (data.settings?.success == 1) {
+          mobile_verified=true;
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        } else {
+          CustomSnackBar.show(context, "${data.settings?.message}");
+        }
+      });
+    } else {
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
@@ -96,7 +139,6 @@ class _OtpState extends State<Otp> {
                       focusNode: _focusNodeEmail,
                       hintText: "Enter Email Otp",
                       validationMessage: 'Please enter your first name',
-                      keyboardType: TextInputType.text,
                       prefixicon: Image.asset(
                         "assets/gmail.png",
                         width: 21,
@@ -170,10 +212,12 @@ class _OtpState extends State<Otp> {
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LogInScreen()));
+                        if(email_verified && mobile_verified){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LogInScreen()));
+                        }
                       },
                       child: Container(
                         width: w,
@@ -185,7 +229,6 @@ class _OtpState extends State<Otp> {
                         child:  Center(
                           child: Text(
                             "Continue",
-
                             style: TextStyle(
                               color: Color(0xffFFFFFF),
                               fontFamily: "Inter",
@@ -213,7 +256,6 @@ class _OtpState extends State<Otp> {
     bool obscureText = false,
     required String hintText,
     required String validationMessage,
-    TextInputType keyboardType = TextInputType.text,
     Widget? prefixicon,
     Widget? sufexicon,
   }) {
@@ -222,8 +264,12 @@ class _OtpState extends State<Otp> {
       child: TextFormField(
         controller: controller,
         focusNode: focusNode,
-        keyboardType: keyboardType,
+        keyboardType: TextInputType.phone,
         obscureText: obscureText,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(6)
+        ],
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon: Container(

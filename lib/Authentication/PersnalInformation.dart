@@ -116,7 +116,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
         _validateGender.isEmpty;
   }
 
-
   Future<void> RegisterApi() async {
     var data = await Userapi.PostRegister(Fullname, _emailController.text, _phoneController.text, _pwdController.text, _gender??"");
     if (data != null) {
@@ -124,8 +123,10 @@ class _PersonalInformationState extends State<PersonalInformation> {
         if (data.settings?.success == 1) {
           _loading=false;
           CustomSnackBar.show(context, "${data.settings?.message}");
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (context) => Otp(email: _emailController.text,mobile: _phoneController.text,)));
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LogInScreen()));
+              context, MaterialPageRoute(builder: (context) =>LogInScreen()));
         } else {
           _loading=false;
           CustomSnackBar.show(context, "${data.settings?.message}");
@@ -136,8 +137,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
       print("Register >>>${data?.settings?.message}");
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

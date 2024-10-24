@@ -47,7 +47,7 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  // static String host = "http://192.168.0.31:8000";
+  // static String host = "http://192.168.0.32:8000";
   static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
@@ -1728,6 +1728,137 @@ class Userapi {
       }
 
     } catch (e) {}
+  }
+
+  static Future<LoginModel?>VerifyEmail(String email, String otp) async {
+    try {
+      Map<String, String> data = {
+        "email": email,
+        "otp": otp,
+      };
+      print("VerifyEmail data: $data");
+      final url = Uri.parse("${host}/auth/verify-email-otp");
+      final headers = await getheader();
+      final response = await http.post(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("VerifyEmail response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
+  }
+
+  static Future<LoginModel?>resendemail(String email) async {
+    try {
+      Map<String, String> data = {
+        "email": email,
+      };
+      print("resendemail data: $data");
+      final url = Uri.parse("${host}/auth/resend-email-otp");
+      final headers = await getheader();
+      final response = await http.post(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("resendemail response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
+  }
+
+  static Future<LoginModel?>resendMobile(String mobile) async {
+    try {
+      Map<String, String> data = {
+        "mobile": mobile
+      };
+      print("resendMobile data: $data");
+      final url = Uri.parse("${host}/auth/resend-mobile-otp");
+      final headers = await getheader();
+      final response = await http.post(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("resendMobile response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
+  }
+
+  static Future<LoginModel?>VerifyMobile(String mobile, String otp) async {
+    try {
+      Map<String, String> data = {
+        "mobile": mobile,
+        "otp": otp,
+      };
+      print("VerifyMobile data: $data");
+      final url = Uri.parse("${host}/auth/verify-mobile-otp");
+      final headers = await getheader();
+      final response = await http.post(url, headers: headers,body: jsonEncode(data));
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("VerifyMobile response:${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        return null;
+      }
+
+    } catch (e) {}
+  }
+
+
+  Future<LoginModel?> createCompany(String name,String address,String staff,String state,String country,String city) async {
+    Map<String, String> data = {
+      'name': name,
+      'address': address,
+      'staff': staff,
+      'state': state,
+      'country': country,
+      'city': city,
+    };
+    print("createCompany data: $data");
+    final url = Uri.parse("${host}/company/list");
+    final headers = await getheader();
+    final response = await http.post(url, headers: headers,body: jsonEncode(data));
+    if (response!=null) {
+      final jsonResponse = jsonDecode(response.body);
+      print("createCompany response:${response.body}");
+      return LoginModel.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
+  Future<LoginModel?> getcountries() async {
+    final url = Uri.parse("${host}/company/countries");
+    final headers = await getheader();
+    final response = await http.get(url, headers: headers);
+    if (response!=null) {
+      final jsonResponse = jsonDecode(response.body);
+      print("getcountries response:${response.body}");
+      return LoginModel.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
+  Future<LoginModel?> getstates() async {
+    final url = Uri.parse("${host}/company/states");
+    final headers = await getheader();
+    final response = await http.get(url, headers: headers);
+    if (response!=null) {
+      final jsonResponse = jsonDecode(response.body);
+      print("getstates response:${response.body}");
+      return LoginModel.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
   }
 
 

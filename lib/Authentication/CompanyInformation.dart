@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class CompanyInformation extends StatefulWidget {
+  const CompanyInformation({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<CompanyInformation> createState() => _CompanyInformationState();
 }
 
-class _RegisterState extends State<Register> {
+class _CompanyInformationState extends State<CompanyInformation> {
   // Text Controllers
   final TextEditingController _companyController = TextEditingController();
   final TextEditingController _companySizeController = TextEditingController();
@@ -31,7 +31,6 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
