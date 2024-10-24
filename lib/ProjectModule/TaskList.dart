@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
+import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Services/UserApi.dart';
@@ -43,7 +44,8 @@ class _TaskListState extends State<TaskList> {
 
   List<TaskListData> data = [];
   List<TaskListData> filteredData = [];
-
+  List<Members> members = [];
+  Data? assign;
   @override
   void initState() {
     super.initState();
@@ -76,6 +78,7 @@ class _TaskListState extends State<TaskList> {
         _validateDeadline = "";
       });
     });
+    GetProjectsOverviewData();
     GetStatuses();
     GetPriorities();
     GetMileStone();
@@ -96,11 +99,26 @@ class _TaskListState extends State<TaskList> {
     });
   }
 
+
   @override
   void dispose() {
     _searchController.removeListener(filterData); // Remove listener
     _searchController.dispose(); // Dispose of the controller
     super.dispose();
+  }
+
+
+  Future<void> GetProjectsOverviewData() async {
+    var res = await Userapi.GetProjectsOverviewApi(widget.id1);
+    setState(() {
+      if (res != null && res.data != null) {
+        if(res.settings?.success==1){
+          assign = res.data;
+          members = assign?.members ?? [];
+          print("members: $members");
+        }else {}
+      }
+    });
   }
 
   List<Statuses> statuses = [];
@@ -118,7 +136,7 @@ class _TaskListState extends State<TaskList> {
     var res = await Userapi.GetProjectsPrioritiesApi();
     setState(() {
       if (res != null && res.data != null) {
-        // priorities = res.data ?? [];
+        priorities = res.data ?? [];
       }
     });
   }
@@ -141,7 +159,7 @@ class _TaskListState extends State<TaskList> {
   }
 
   Future<void> GetProjectTasks() async {
-    var Res = await Userapi.GetTask(widget.id1);
+    var Res = await Userapi.GetTask(widget.id1,milestoneid,statusid,assignedid,priorityid,_deadlineController.text);
     setState(() {
       if (Res?.data != null) {
         if (Res?.settings?.success == 1) {
@@ -173,34 +191,6 @@ class _TaskListState extends State<TaskList> {
         }
       } else {
         CustomSnackBar.show(context, "${res?.settings?.message}");
-      }
-    });
-  }
-
-  void _validateFields() {
-    setState(() {
-      _validateMileStone =
-          _mileStoneController.text.isEmpty ? "Please enter a milestone" : "";
-      _validateAssignedTo =
-          _assignedToController.text.isEmpty ? "Please assign to someone" : "";
-
-      _validateStatus =
-          _statusController.text.isEmpty ? "Please set a status" : "";
-      _validatePriority =
-          _priorityController.text.isEmpty ? "Please set a priority" : "";
-
-      _validateDeadline =
-          _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
-      // _validatefile = _imageFile==null ? "Please choose file." : "";
-
-      _loading = _validateMileStone.isEmpty &&
-          _validateAssignedTo.isEmpty &&
-          _validateStatus.isEmpty &&
-          _validatePriority.isEmpty &&
-          _validateDeadline.isEmpty;
-
-      if (_loading) {
-        // CreateTaskApi();
       }
     });
   }
@@ -640,8 +630,6 @@ class _TaskListState extends State<TaskList> {
     );
   }
 
-
-
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,9 +702,9 @@ class _TaskListState extends State<TaskList> {
   }
 
   void _bottomSheet(
-      BuildContext context,
-      ) {
-    double h = MediaQuery.of(context).size.height * 0.55;
+    BuildContext context,
+  ) {
+    double h = MediaQuery.of(context).size.height * 0.7;
     double w = MediaQuery.of(context).size.width;
     showModalBottomSheet(
         context: context,
@@ -724,583 +712,542 @@ class _TaskListState extends State<TaskList> {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Padding(
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Container(
+                    height: h,
                     padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Container(
-                        padding: EdgeInsets.all(4),
-                        margin: EdgeInsets.only(left: 16, right: 16, top: 24),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        left: 20, right: 20, top: 10, bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: w * 0.1,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  "Add New Filters",
-                                  style: TextStyle(
-                                      color: Color(0xff1C1D22),
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                      height: 18 / 18,
-                                      fontFamily: 'Inter'),
-                                ),
-                                Spacer(),
-                                InkResponse(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffE5E5E5),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Image.asset(
-                                      "assets/cross.png",
-                                      color: Color(0xff6A2FA5),
-                                      width: 10,
-                                      height: 10,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 24,
-                            ),
-                            _label(text: 'Milestone'),
-                            SizedBox(height: 4),
-                            Container(
-                              height: h* 0.03,
-                              child: TypeAheadField<Milestones>(
-                                controller: _mileStoneController,
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    onTap: () {
-                                      setState(() {
-                                        _validateMileStone = "";
-                                      });
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _validateMileStone = "";
-                                      });
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 0, horizontal: 10),
-                                      hintText: "Select milestone",
-                                      hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          letterSpacing: 0,
-                                          height: 1.2,
-                                          color: Color(0xffAFAFAF),
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w400,
-                                          overflow: TextOverflow.ellipsis),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                    textAlignVertical: TextAlignVertical
-                                        .center, // Vertically center the
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  return milestones
-                                      .where((item) => item.title!
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
-                                      .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.title!,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
-                                  setState(() {
-                                    _mileStoneController.text = suggestion.title!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    milestoneid = suggestion.id!;
-                                    // Call your API with the selected key here if needed
-                                    _validateMileStone = "";
-                                  });
-                                },
+                            Text(
+                              'Filters',
+                              style: TextStyle(
+                                color: Color(0xff1C1D22),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                fontFamily: 'Inter',
+                                height: 18 / 16,
                               ),
                             ),
-                            if (_validateMileStone.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    _validateMileStone,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pop(); // Close the BottomSheet when tapped
+                              },
+                              child: Container(
+                                width: w * 0.05,
+                                height: w * 0.05,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffE5E5E5),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    "assets/crossblue.png",
+                                    fit: BoxFit.contain,
+                                    width: w * 0.023,
+                                    height: w * 0.023,
+                                    color: Color(0xff8856F4),
                                   ),
                                 ),
-                              ),
-                            ] else ...[
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                            _label(text: 'Priority'),
-                            SizedBox(height: 4),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Priorities>(
-                                controller: _priorityController,
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    onTap: () {
-                                      setState(() {
-                                        _validatePriority = "";
-                                      });
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _validatePriority = "";
-                                      });
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Select priority",
-                                      hintStyle: TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        height: 1.2,
-                                        color: Color(0xffAFAFAF),
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  return priorities
-                                      .where((item) => item.priorityValue!
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
-                                      .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.priorityValue!,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
-                                  setState(() {
-                                    _priorityController.text =
-                                    suggestion.priorityValue!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    priorityid = suggestion.priorityKey!;
-                                    // Call your API with the selected key here if needed
-                                    _validatePriority = "";
-                                  });
-                                },
-                              ),
-                            ),
-                            if (_validatePriority.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    _validatePriority,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                            _label(text: 'Assign to'),
-                            SizedBox(height: 4),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Members>(
-                                controller: _assignedToController,
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    onTap: () {
-                                      setState(() {
-                                        _validateAssignedTo = "";
-                                      });
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _validateAssignedTo = "";
-                                      });
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Select assigned to person",
-                                      hintStyle: TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        height: 1.2,
-                                        color: Color(0xffAFAFAF),
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  // return members
-                                  //     .where((item) => item.fullName!
-                                  //     .toLowerCase()
-                                  //     .contains(pattern.toLowerCase()))
-                                  //     .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.fullName!,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
-                                  setState(() {
-                                    _assignedToController.text =
-                                    suggestion.fullName!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    assignedid = suggestion.id!;
-                                    // Call your API with the selected key here if needed
-                                    _validateAssignedTo = "";
-                                  });
-                                },
-                              ),
-                            ),
-                            if (_validateAssignedTo.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    _validateAssignedTo,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                            _label(text: 'Deadline'),
-                            SizedBox(height: 4),
-                            _buildDateField(
-                              _deadlineController,
-                            ),
-                            if (_validateDeadline.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    _validateDeadline,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                            _label(text: 'Status'),
-                            SizedBox(height: 4),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Statuses>(
-                                controller: _statusController,
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    onTap: () {
-                                      setState(() {
-                                        _validateStatus = "";
-                                      });
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _validateStatus = "";
-                                      });
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Select status",
-                                      hintStyle: TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        height: 1.2,
-                                        color: Color(0xffAFAFAF),
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  return statuses
-                                      .where((item) => item.statusValue!
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
-                                      .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.statusValue!,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
-                                  setState(() {
-                                    _statusController.text =
-                                    suggestion.statusValue!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    statusid = suggestion.statusKey!;
-                                    // Call your API with the selected key here if needed
-                                    _validateStatus = "";
-                                  });
-                                },
-                              ),
-                            ),
-                            if (_validateStatus.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    _validateStatus,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              const SizedBox(
-                                height: 15,
-                              ),
-                            ],
-
-                            Container(
-                              padding: EdgeInsets.all(18),
-                              decoration: BoxDecoration(color: Colors.white),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  InkResponse(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Container(
-                                      height: 40,
-                                      width:
-                                      w * 0.4,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffF8FCFF),
-                                        border: Border.all(
-                                          color: Color(0xff8856F4),
-                                          width: 1.0,
-                                        ),
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Close',
-                                          style: TextStyle(
-                                            color: Color(0xff8856F4),
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'Inter',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  InkResponse(
-                                    onTap: () {
-                                      _validateFields();
-                                    },
-                                    child: Container(
-                                      height: 40,
-                                      width:
-                                      w * 0.4,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xff8856F4),
-                                        border: Border.all(
-                                          color: Color(0xff8856F4),
-                                          width: 1.0,
-                                        ),
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                      child: Center(
-                                        child: _loading
-                                            ? spinkits.getFadingCircleSpinner()
-                                            : Text(
-                                          'Save',
-                                          style: TextStyle(
-                                            color: Color(0xffffffff),
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'Inter',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
                           ],
-                        )));
-              });
-        }).whenComplete(() {
+                        ),
+                        SizedBox(
+                          height: 24,
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _label(text: 'Milestone'),
+                                SizedBox(height: 4),
+                                Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.050,
+                                  child: TypeAheadField<Milestones>(
+                                    controller: _mileStoneController,
+                                    builder: (context, controller, focusNode) {
+                                      return TextField(
+                                        controller: controller,
+                                        focusNode: focusNode,
+                                        onTap: () {
+                                          setState(() {
+                                            _validateMileStone = "";
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() {
+                                            _validateMileStone = "";
+                                          });
+                                        },
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 0, horizontal: 10),
+                                          hintText: "Select milestone",
+                                          hintStyle: TextStyle(
+                                              fontSize: 15,
+                                              letterSpacing: 0,
+                                              height: 1.2,
+                                              color: Color(0xffAFAFAF),
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w400,
+                                              overflow: TextOverflow.ellipsis),
+                                          filled: true,
+                                          fillColor: Color(0xffFCFAFF),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                        ),
+                                        textAlignVertical: TextAlignVertical
+                                            .center, // Vertically center the
+                                      );
+                                    },
+                                    suggestionsCallback: (pattern) {
+                                      return milestones
+                                          .where((item) => item.title!
+                                              .toLowerCase()
+                                              .contains(pattern.toLowerCase()))
+                                          .toList();
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(
+                                          suggestion.title!,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    onSelected: (suggestion) {
+                                      setState(() {
+                                        _mileStoneController.text =
+                                            suggestion.title!;
+                                        // You can use suggestion.statusKey to send to the server
+                                        milestoneid = suggestion.id!;
+                                        // Call your API with the selected key here if needed
+                                        _validateMileStone = "";
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                _label(text: 'Priority'),
+                                SizedBox(height: 4),
+                                Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.050,
+                                  child: TypeAheadField<Priorities>(
+                                    controller: _priorityController,
+                                    builder: (context, controller, focusNode) {
+                                      return TextField(
+                                        controller: controller,
+                                        focusNode: focusNode,
+                                        onTap: () {
+                                          setState(() {
+                                            _validatePriority = "";
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() {
+                                            _validatePriority = "";
+                                          });
+                                        },
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: "Select priority",
+                                          hintStyle: TextStyle(
+                                            fontSize: 15,
+                                            letterSpacing: 0,
+                                            height: 1.2,
+                                            color: Color(0xffAFAFAF),
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          filled: true,
+                                          fillColor: Color(0xffFCFAFF),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    suggestionsCallback: (pattern) {
+                                      return priorities
+                                          .where((item) => item.priorityValue!
+                                              .toLowerCase()
+                                              .contains(pattern.toLowerCase()))
+                                          .toList();
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(
+                                          suggestion.priorityValue!,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    onSelected: (suggestion) {
+                                      setState(() {
+                                        _priorityController.text =
+                                            suggestion.priorityValue!;
+                                        // You can use suggestion.statusKey to send to the server
+                                        priorityid = suggestion.priorityKey!;
+                                        // Call your API with the selected key here if needed
+                                        _validatePriority = "";
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                _label(text: 'Assign to'),
+                                SizedBox(height: 4),
+                                Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.050,
+                                  child: TypeAheadField<Members>(
+                                    controller: _assignedToController,
+                                    builder: (context, controller, focusNode) {
+                                      return TextField(
+                                        controller: controller,
+                                        focusNode: focusNode,
+                                        onTap: () {
+                                          setState(() {
+                                            _validateAssignedTo = "";
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() {
+                                            _validateAssignedTo = "";
+                                          });
+                                        },
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: "Select assigned to person",
+                                          hintStyle: TextStyle(
+                                            fontSize: 15,
+                                            letterSpacing: 0,
+                                            height: 1.2,
+                                            color: Color(0xffAFAFAF),
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          filled: true,
+                                          fillColor: Color(0xffFCFAFF),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    suggestionsCallback: (pattern) {
+                                      return members
+                                          .where((item) => item.fullName!
+                                          .toLowerCase()
+                                          .contains(pattern.toLowerCase()))
+                                          .toList();
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(
+                                          suggestion.fullName!,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    onSelected: (suggestion) {
+                                      setState(() {
+                                        _assignedToController.text =
+                                            suggestion.fullName!;
+                                        // You can use suggestion.statusKey to send to the server
+                                        assignedid = suggestion.id!;
+                                        // Call your API with the selected key here if needed
+                                        _validateAssignedTo = "";
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                _label(text: 'Status'),
 
-      _deadlineController.text = "";
-
-    });
-  }}
+                                SizedBox(height: 4),
+                                Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.050,
+                                  child: TypeAheadField<Statuses>(
+                                    controller: _statusController,
+                                    builder: (context, controller, focusNode) {
+                                      return TextField(
+                                        controller: controller,
+                                        focusNode: focusNode,
+                                        onTap: () {
+                                          setState(() {
+                                            _validateStatus = "";
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() {
+                                            _validateStatus = "";
+                                          });
+                                        },
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: "Select status",
+                                          hintStyle: TextStyle(
+                                            fontSize: 15,
+                                            letterSpacing: 0,
+                                            height: 1.2,
+                                            color: Color(0xffAFAFAF),
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          filled: true,
+                                          fillColor: Color(0xffFCFAFF),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(7.0),
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xffD0CBDB)),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    suggestionsCallback: (pattern) {
+                                      return statuses
+                                          .where((item) => item.statusValue!
+                                              .toLowerCase()
+                                              .contains(pattern.toLowerCase()))
+                                          .toList();
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(
+                                          suggestion.statusValue!,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: "Inter",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    onSelected: (suggestion) {
+                                      setState(() {
+                                        _statusController.text =
+                                            suggestion.statusValue!;
+                                        // You can use suggestion.statusKey to send to the server
+                                        statusid = suggestion.statusKey!;
+                                        // Call your API with the selected key here if needed
+                                        _validateStatus = "";
+                                      });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                _label(text: 'Deadline'),
+                                SizedBox(height: 4),
+                                _buildDateField(
+                                  _deadlineController,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(18),
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkResponse(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    statusid="";
+                                    priorityid="";
+                                    milestoneid="";
+                                    assignedid="";
+                                    _deadlineController.text="";
+                                    _statusController.text="";
+                                    _priorityController.text="";
+                                    _mileStoneController.text="";
+                                    _assignedToController.text="";
+                                    data=[];
+                                    filteredData=[];
+                                    GetProjectTasks();
+                                    _loading=true;
+                                  });
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: w * 0.35,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffF8FCFF),
+                                    border: Border.all(
+                                      color: Color(0xff8856F4),
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Close',
+                                      style: TextStyle(
+                                        color: Color(0xff8856F4),
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                              InkResponse(
+                                onTap: () {
+                                  setState((){
+                                    data=[];
+                                    filteredData=[];
+                                    _loading=true;
+                                    GetProjectTasks();
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: w * 0.35,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xff8856F4),
+                                    border: Border.all(
+                                      color: Color(0xff8856F4),
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: _loading
+                                        ? spinkits.getFadingCircleSpinner()
+                                        : Text(
+                                            'Save',
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w400,
+                                              fontFamily: 'Inter',
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )));
+          });
+        });
+  }
+}

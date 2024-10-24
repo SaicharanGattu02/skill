@@ -186,10 +186,10 @@ class Userapi {
     }
   }
 
-  static Future<TasklistModel?> GetTask(String id) async {
+  static Future<TasklistModel?> GetTask(String id,String milestone,String status,String assigned,String priority,String deadline) async {
     try {
       final headers = await getheader();
-      final url = Uri.parse("${host}/project/project-tasks?project_id=${id}");
+      final url = Uri.parse("${host}/project/project-tasks?project_id=${id}&status=${status}&assigned_to=${assigned}&deadline=${deadline}&milestone=${milestone}");
       print(id);
       final res = await get(url, headers: headers);
       if (res != null) {

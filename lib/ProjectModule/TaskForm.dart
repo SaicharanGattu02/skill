@@ -732,6 +732,7 @@ class _TaskFormState extends State<TaskForm> {
                           ],
                           _label(text: 'Assign to'),
                           SizedBox(height: 4),
+
                           Container(
                             height: MediaQuery.of(context).size.height * 0.050,
                             child: TypeAheadField<Members>(

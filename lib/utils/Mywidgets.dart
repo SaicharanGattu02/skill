@@ -420,11 +420,11 @@ class DateTimeFormatter {
 }
 
 
-class Priorities {
+class TodoPriorities {
   final String priorityValue;
   final String priorityKey;
 
-  Priorities({required this.priorityValue, required this.priorityKey});
+  TodoPriorities({required this.priorityValue, required this.priorityKey});
 }
 class MeetingTypess {
   final String meetingtypevalue;

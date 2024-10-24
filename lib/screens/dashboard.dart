@@ -1633,15 +1633,15 @@ class _DashboardState extends State<Dashboard> {
                                           onTap: () async {
                                             Notifyuser(employee.id ?? "");
                                             Vibration.vibrate(duration: 300);
-                                            // Start the animation for the tapped index
+
                                             setState(() {
-                                              _animatingIndex = index; // Set the current index to animating
+                                              _animatingIndex = index;
                                             });
 
                                             // Stop the animation after some time
                                             await Future.delayed(Duration(seconds: 2));
                                             setState(() {
-                                              _animatingIndex = null; // Reset the animating index
+                                              _animatingIndex = null;
                                             });
 
                                           },

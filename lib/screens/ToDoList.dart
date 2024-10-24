@@ -98,11 +98,11 @@ class _TodolistState extends State<Todolist> {
     });
   }
 
-  final List<Priorities> priorities = [
-    Priorities(priorityValue: 'Priority 1', priorityKey: '1'),
-    Priorities(priorityValue: 'Priority 2', priorityKey: '2'),
-    Priorities(priorityValue: 'Priority 3', priorityKey: '3'),
-    Priorities(priorityValue: 'Priority 4', priorityKey: '4'),
+  final List<TodoPriorities> priorities = [
+    TodoPriorities(priorityValue: 'Priority 1', priorityKey: '1'),
+    TodoPriorities(priorityValue: 'Priority 2', priorityKey: '2'),
+    TodoPriorities(priorityValue: 'Priority 3', priorityKey: '3'),
+    TodoPriorities(priorityValue: 'Priority 4', priorityKey: '4'),
   ];
 
   List<Label> labels = [];
@@ -1283,7 +1283,7 @@ class _TodolistState extends State<Todolist> {
                             Container(
                               height:
                                   MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Priorities>(
+                              child: TypeAheadField<TodoPriorities>(
                                 builder: (context, controller, focusNode) {
                                   return TextField(
                                     focusNode: focusNode,
