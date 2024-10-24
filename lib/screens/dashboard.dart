@@ -1854,7 +1854,8 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            endDrawer: Drawer(
+            endDrawer:
+            Drawer(
               width: w * 0.3,
               backgroundColor: Colors.white,
               child: Padding(

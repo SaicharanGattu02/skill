@@ -1,14 +1,14 @@
 class TasklistModel {
-  List<Data>? data;
+  List<TaskListData>? data;
   Settings? settings;
 
   TasklistModel({this.data, this.settings});
 
   TasklistModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] is List) {
-      data = <Data>[];
+      data = <TaskListData>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(TaskListData.fromJson(v));
       });
     } else if (json['data'] != null) {
       // Handle the case where data is not a list but not null
@@ -30,7 +30,7 @@ class TasklistModel {
     return data;
   }
 }
-class Data {
+class TaskListData {
   String? id;
   String? title;
   String? description;
@@ -42,7 +42,7 @@ class Data {
   List<Collaborators>? collaborators;
   String? status;
 
-  Data(
+  TaskListData(
       {this.id,
         this.title,
         this.description,
@@ -54,7 +54,7 @@ class Data {
         this.collaborators,
         this.status});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  TaskListData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];

@@ -2,12 +2,17 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
+import '../Model/MileStoneModel.dart';
+import '../Model/ProjectOverviewModel.dart';
+import '../Model/ProjectStatusModel.dart';
 import '../Model/TasklistModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/ShakeWidget.dart';
 
 class TaskList extends StatefulWidget {
   final String id1;
@@ -18,19 +23,68 @@ class TaskList extends StatefulWidget {
 }
 
 class _TaskListState extends State<TaskList> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loading = true;
+
+  final spinkits = Spinkits();
+
   final TextEditingController _searchController = TextEditingController();
-  List<Data> data = []; // Original list of Data objects
-  List<Data> filteredData = []; // Filtered list for search
+  final TextEditingController _mileStoneController = TextEditingController();
+  final TextEditingController _assignedToController = TextEditingController();
+  final TextEditingController _statusController = TextEditingController();
+  final TextEditingController _priorityController = TextEditingController();
+  final TextEditingController _deadlineController = TextEditingController();
+
+  String _validateDeadline = "";
+  String _validateMileStone = "";
+  String _validateAssignedTo = "";
+  String _validateStatus = "";
+  String _validatePriority = "";
+
+  List<TaskListData> data = [];
+  List<TaskListData> filteredData = [];
 
   @override
   void initState() {
-    super.initState(); // Add this to properly initialize the state
+    super.initState();
     GetProjectTasks();
     // Initialize filteredData with all data
     filteredData = List.from(data);
-    _searchController.addListener(filterData); // Add listener for search
+    _searchController.addListener(filterData);
+    _mileStoneController.addListener(() {
+      setState(() {
+        _validateMileStone = "";
+      });
+    });
+    _assignedToController.addListener(() {
+      setState(() {
+        _validateAssignedTo = "";
+      });
+    });
+    _statusController.addListener(() {
+      setState(() {
+        _validateStatus = "";
+      });
+    });
+    _priorityController.addListener(() {
+      setState(() {
+        _validatePriority = "";
+      });
+    });
+    _deadlineController.addListener(() {
+      setState(() {
+        _validateDeadline = "";
+      });
+    });
+    GetStatuses();
+    GetPriorities();
+    GetMileStone();
   }
+
+  String milestoneid = "";
+  String assignedid = "";
+  String statusid = "";
+  String priorityid = "";
 
   void filterData() {
     final query = _searchController.text.toLowerCase();
@@ -47,6 +101,43 @@ class _TaskListState extends State<TaskList> {
     _searchController.removeListener(filterData); // Remove listener
     _searchController.dispose(); // Dispose of the controller
     super.dispose();
+  }
+
+  List<Statuses> statuses = [];
+  Future<void> GetStatuses() async {
+    var res = await Userapi.GetProjectsStatusesApi();
+    setState(() {
+      if (res != null && res.data != null) {
+        statuses = res.data ?? [];
+      }
+    });
+  }
+
+  List<Priorities> priorities = [];
+  Future<void> GetPriorities() async {
+    var res = await Userapi.GetProjectsPrioritiesApi();
+    setState(() {
+      if (res != null && res.data != null) {
+        // priorities = res.data ?? [];
+      }
+    });
+  }
+
+  List<Milestones> milestones = [];
+  Future<void> GetMileStone() async {
+    var res = await Userapi.GetMileStoneApi(widget.id1);
+    setState(() {
+      if (res['success']) {
+        milestones = res['response'].data ?? []; // Adjust based on your model
+        print(milestones);
+        // If editing a task, get project task details
+      } else {
+        CustomSnackBar.show(
+            context,
+            res['response'] ??
+                "Unknown error occurred"); // Show snackbar with the error
+      }
+    });
   }
 
   Future<void> GetProjectTasks() async {
@@ -73,8 +164,8 @@ class _TaskListState extends State<TaskList> {
       if (res != null) {
         if (res.settings?.success == 1) {
           _loading = true;
-          data=[];
-          filteredData=[];
+          data = [];
+          filteredData = [];
           GetProjectTasks();
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
@@ -86,364 +177,409 @@ class _TaskListState extends State<TaskList> {
     });
   }
 
-  final spinkit = Spinkits();
+  void _validateFields() {
+    setState(() {
+      _validateMileStone =
+          _mileStoneController.text.isEmpty ? "Please enter a milestone" : "";
+      _validateAssignedTo =
+          _assignedToController.text.isEmpty ? "Please assign to someone" : "";
+
+      _validateStatus =
+          _statusController.text.isEmpty ? "Please set a status" : "";
+      _validatePriority =
+          _priorityController.text.isEmpty ? "Please set a priority" : "";
+
+      _validateDeadline =
+          _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
+      // _validatefile = _imageFile==null ? "Please choose file." : "";
+
+      _loading = _validateMileStone.isEmpty &&
+          _validateAssignedTo.isEmpty &&
+          _validateStatus.isEmpty &&
+          _validatePriority.isEmpty &&
+          _validateDeadline.isEmpty;
+
+      if (_loading) {
+        // CreateTaskApi();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
+      key: _scaffoldKey,
       backgroundColor: const Color(0xffF3ECFB),
       body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: w * 0.55,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
                       children: [
-                        Container(
-                          width: w * 0.63,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffffff),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/search.png",
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  decoration: InputDecoration(
-                                    isCollapsed: true,
-                                    border: InputBorder.none,
-                                    hintText: 'Search',
-                                    hintStyle: const TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      color: Color(0xff9E7BCA),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
-                                      fontFamily: "Nunito",
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                      color: Color(0xff9E7BCA),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16,
-                                      decorationColor: Color(0xff9E7BCA),
-                                      fontFamily: "Nunito",
-                                      overflow: TextOverflow.ellipsis),
-                                  textAlignVertical: TextAlignVertical.center,
-                                ),
-                              ),
-                            ],
-                          ),
+                        Image.asset(
+                          "assets/search.png",
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
                         ),
-                        Spacer(),
-                        SizedBox(
-                          height: w * 0.09,
-                          child: InkWell(
-                            onTap: () async {
-                              var res = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TaskForm(
-                                      title: 'Add Task',
-                                      projectId: widget.id1,
-                                      taskid: '',
-                                    ),
-                                  ));
-                              if (res == true) {
-                                setState(() {
-                                  GetProjectTasks();
-                                });
-                              }
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  color: Color(0xff8856F4),
-                                  borderRadius: BorderRadius.circular(6)),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/circleadd.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.045,
-                                    height: w * 0.05,
-                                    color: Color(0xffffffff),
-                                  ),
-                                  SizedBox(
-                                    width: w * 0.01,
-                                  ),
-                                  Text(
-                                    "Add Task",
-                                    style: TextStyle(
-                                        color: Color(0xffffffff),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 12,
-                                        fontFamily: "Inter",
-                                        height: 16.94 / 12,
-                                        letterSpacing: 0.59),
-                                  )
-                                ],
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              border: InputBorder.none,
+                              hintText: 'Search',
+                              hintStyle: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                fontFamily: "Nunito",
                               ),
                             ),
+                            style: TextStyle(
+                                color: Color(0xff9E7BCA),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                decorationColor: Color(0xff9E7BCA),
+                                fontFamily: "Nunito",
+                                overflow: TextOverflow.ellipsis),
+                            textAlignVertical: TextAlignVertical.center,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    _loading?_buildShimmerList():
-                    filteredData.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.24,
-                                ),
-                                Image.asset(
-                                  'assets/nodata1.png', // Make sure to use the correct image path
-                                  width:
-                                      150, // Adjust the size according to your design
-                                  height: 150,
-                                  fit: BoxFit.contain,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  "No Data Found",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey,
-                                    fontFamily: "Inter",
-                                  ),
-                                ),
-                              ],
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    height: w * 0.09,
+                    child: InkWell(
+                      onTap: () async {
+                        var res = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TaskForm(
+                                title: 'Add Task',
+                                projectId: widget.id1,
+                                taskid: '',
+                              ),
+                            ));
+                        if (res == true) {
+                          setState(() {
+                            GetProjectTasks();
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xff8856F4),
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "assets/circleadd.png",
+                              fit: BoxFit.contain,
+                              width: w * 0.045,
+                              height: w * 0.05,
+                              color: Color(0xffffffff),
                             ),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                            itemCount: filteredData.length,
-                            itemBuilder: (context, index) {
-                              final task = filteredData[index];
-                              // Extracting image URLs from collaborators
-                              List<String> collaboratorImages = [];
-                              if (task.collaborators != null) {
-                                collaboratorImages = task.collaborators!.map((collaborator) => collaborator.image ?? "").toList();
-                              }
-                              return Container(
-                                margin: const EdgeInsets.symmetric(vertical: 6),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(7),
+                            SizedBox(
+                              width: w * 0.01,
+                            ),
+                            Text(
+                              "Add Task",
+                              style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  fontFamily: "Inter",
+                                  height: 16.94 / 12,
+                                  letterSpacing: 0.59),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      _bottomSheet(context);
+                    },
+                    child: Image.asset(
+                      "assets/filter.png",
+                      width: 20,
+                      height: 20,
+                      color: Color(0xff9E7BCA),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              _loading
+                  ? _buildShimmerList()
+                  : filteredData.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.24,
+                              ),
+                              Image.asset(
+                                'assets/nodata1.png', // Make sure to use the correct image path
+                                width:
+                                    150, // Adjust the size according to your design
+                                height: 150,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                "No Data Found",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                  fontFamily: "Inter",
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 1),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              color: Color(0xffFFAB00)
-                                                  .withOpacity(0.10)),
-                                          child: Text(
-                                            task.status ?? "",
-                                            style: TextStyle(
-                                              color: const Color(0xffFFAB00),
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 12,
-                                              height: 19.41 / 12,
-                                              letterSpacing: 0.14,
-                                              overflow: TextOverflow.ellipsis,
-                                              fontFamily: "Inter",
-                                            ),
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        InkWell(
-                                          onTap: () {
-                                            DelateTask(task.id ?? "");
-                                          },
-                                          child: Image.asset(
-                                            "assets/delate.png",
-                                            fit: BoxFit.contain,
-                                            width: w * 0.04,
-                                            height: w * 0.05,
-                                            color: Color(0xffDE350B),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: w * 0.04,
-                                        ),
-                                        InkWell(
-                                          onTap: () async {
-                                            var res = await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TaskForm(
-                                                            title: 'Edit Task',
-                                                            projectId:
-                                                            widget.id1,
-                                                            taskid: task.id ??
-                                                                "")));
-                                            if (res == true) {
-                                              setState(() {
-                                                _loading=true;
-                                                GetProjectTasks();
-                                              });
-                                            }
-                                          },
-                                          child: Container(
-                                            child: Image.asset(
-                                              "assets/edit.png",
-                                              fit: BoxFit.contain,
-                                              width: w * 0.06,
-                                              height: w * 0.05,
-                                              color: Color(0xff8856F4),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      task.title ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xff1D1C1D),
-                                        height: 21 / 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      task.description ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        height: 16 / 12,
-                                        color: Color(0xff787486),
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        // Adding the images before the collaborators text
-                                        if (task.assignedToImage != null)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 4.0),
-                                            child: ClipOval(
-                                              child: Image.network(
-                                                // task.assignedToImage ?? "", // Network image
-                                                task.assignedToImage
-                                                        .toString() ??
-                                                    "",
-                                                width: 24,
-                                                height: 24,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          task.assignedTo.toString() ?? "",
-                                          style: const TextStyle(
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics:
+                              NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
+                          itemCount: filteredData.length,
+                          itemBuilder: (context, index) {
+                            final task = filteredData[index];
+                            // Extracting image URLs from collaborators
+                            List<String> collaboratorImages = [];
+                            if (task.collaborators != null) {
+                              collaboratorImages = task.collaborators!
+                                  .map((collaborator) =>
+                                      collaborator.image ?? "")
+                                  .toList();
+                            }
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 1),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            color: Color(0xffFFAB00)
+                                                .withOpacity(0.10)),
+                                        child: Text(
+                                          task.status ?? "",
+                                          style: TextStyle(
+                                            color: const Color(0xffFFAB00),
+                                            fontWeight: FontWeight.w400,
                                             fontSize: 12,
-                                            color: Color(0xff64748B),
+                                            height: 19.41 / 12,
+                                            letterSpacing: 0.14,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: "Inter",
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        FlutterImageStack(
-                                          imageList: collaboratorImages,
-                                          totalCount: collaboratorImages.length,
-                                          showTotalCount: true,
-                                          extraCountTextStyle: TextStyle(
+                                      ),
+                                      Spacer(),
+                                      InkWell(
+                                        onTap: () {
+                                          DelateTask(task.id ?? "");
+                                        },
+                                        child: Image.asset(
+                                          "assets/delate.png",
+                                          fit: BoxFit.contain,
+                                          width: w * 0.04,
+                                          height: w * 0.05,
+                                          color: Color(0xffDE350B),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: w * 0.04,
+                                      ),
+                                      InkWell(
+                                        onTap: () async {
+                                          var res = await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TaskForm(
+                                                          title: 'Edit Task',
+                                                          projectId: widget.id1,
+                                                          taskid:
+                                                              task.id ?? "")));
+                                          if (res == true) {
+                                            setState(() {
+                                              _loading = true;
+                                              GetProjectTasks();
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                          child: Image.asset(
+                                            "assets/edit.png",
+                                            fit: BoxFit.contain,
+                                            width: w * 0.06,
+                                            height: w * 0.05,
                                             color: Color(0xff8856F4),
                                           ),
-                                          backgroundColor: Colors.white,
-                                          itemRadius: 35,
                                         ),
-                                        SizedBox(width: 10,),
-                                        Text(
-                                          "Collaboraters",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color(0xff64748B),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 6),
+                                  Text(
+                                    task.title ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff1D1C1D),
+                                      height: 21 / 16,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "Start Date: ",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color(0xff64748B),
-                                          ),
-                                        ),
-                                        Text(
-                                          task.startDate ?? "",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff64748B),
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        const Text(
-                                          "End Date: ",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color(0xff64748B),
-                                          ),
-                                        ),
-                                        Text(
-                                          task.endDate ?? "25/09/2024",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xff64748B),
-                                          ),
-                                        ),
-                                      ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    task.description ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      height: 16 / 12,
+                                      color: Color(0xff787486),
+                                      fontWeight: FontWeight.w400,
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                  ],
-                ),
-              ),
-            ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      // Adding the images before the collaborators text
+                                      if (task.assignedToImage != null)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4.0),
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              // task.assignedToImage ?? "", // Network image
+                                              task.assignedToImage.toString() ??
+                                                  "",
+                                              width: 24,
+                                              height: 24,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        task.assignedTo.toString() ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      FlutterImageStack(
+                                        imageList: collaboratorImages,
+                                        totalCount: collaboratorImages.length,
+                                        showTotalCount: true,
+                                        extraCountTextStyle: TextStyle(
+                                          color: Color(0xff8856F4),
+                                        ),
+                                        backgroundColor: Colors.white,
+                                        itemRadius: 35,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Collaboraters",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Start Date: ",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                      Text(
+                                        task.startDate ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      const Text(
+                                        "End Date: ",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                      Text(
+                                        task.endDate ?? "25/09/2024",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -504,4 +640,667 @@ class _TaskListState extends State<TaskList> {
     );
   }
 
-}
+
+
+  Widget _buildDateField(TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: () {
+              _selectDate(context, controller);
+            },
+            decoration: InputDecoration(
+              hintText: "Select date",
+              suffixIcon: Container(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Image.asset(
+                    "assets/calendar.png",
+                    color: Color(0xff000000),
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
+                  )),
+              hintStyle: TextStyle(
+                fontSize: 14,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: Color(0xffFCFAFF),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+    }
+  }
+
+  static Widget _label({required String text}) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: Color(0xff141516),
+        fontSize: 14,
+      ),
+    );
+  }
+
+  void _bottomSheet(
+      BuildContext context,
+      ) {
+    double h = MediaQuery.of(context).size.height * 0.55;
+    double w = MediaQuery.of(context).size.width;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Container(
+                        padding: EdgeInsets.all(4),
+                        margin: EdgeInsets.only(left: 16, right: 16, top: 24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Add New Filters",
+                                  style: TextStyle(
+                                      color: Color(0xff1C1D22),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                      height: 18 / 18,
+                                      fontFamily: 'Inter'),
+                                ),
+                                Spacer(),
+                                InkResponse(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffE5E5E5),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset(
+                                      "assets/cross.png",
+                                      color: Color(0xff6A2FA5),
+                                      width: 10,
+                                      height: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            _label(text: 'Milestone'),
+                            SizedBox(height: 4),
+                            Container(
+                              height: h* 0.03,
+                              child: TypeAheadField<Milestones>(
+                                controller: _mileStoneController,
+                                builder: (context, controller, focusNode) {
+                                  return TextField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    onTap: () {
+                                      setState(() {
+                                        _validateMileStone = "";
+                                      });
+                                    },
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _validateMileStone = "";
+                                      });
+                                    },
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      height: 1.2,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 0, horizontal: 10),
+                                      hintText: "Select milestone",
+                                      hintStyle: TextStyle(
+                                          fontSize: 15,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Color(0xffAFAFAF),
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w400,
+                                          overflow: TextOverflow.ellipsis),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                    textAlignVertical: TextAlignVertical
+                                        .center, // Vertically center the
+                                  );
+                                },
+                                suggestionsCallback: (pattern) {
+                                  return milestones
+                                      .where((item) => item.title!
+                                      .toLowerCase()
+                                      .contains(pattern.toLowerCase()))
+                                      .toList();
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(
+                                      suggestion.title!,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onSelected: (suggestion) {
+                                  setState(() {
+                                    _mileStoneController.text = suggestion.title!;
+                                    // You can use suggestion.statusKey to send to the server
+                                    milestoneid = suggestion.id!;
+                                    // Call your API with the selected key here if needed
+                                    _validateMileStone = "";
+                                  });
+                                },
+                              ),
+                            ),
+                            if (_validateMileStone.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateMileStone,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Priority'),
+                            SizedBox(height: 4),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.050,
+                              child: TypeAheadField<Priorities>(
+                                controller: _priorityController,
+                                builder: (context, controller, focusNode) {
+                                  return TextField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    onTap: () {
+                                      setState(() {
+                                        _validatePriority = "";
+                                      });
+                                    },
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _validatePriority = "";
+                                      });
+                                    },
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      height: 1.2,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "Select priority",
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        letterSpacing: 0,
+                                        height: 1.2,
+                                        color: Color(0xffAFAFAF),
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                suggestionsCallback: (pattern) {
+                                  return priorities
+                                      .where((item) => item.priorityValue!
+                                      .toLowerCase()
+                                      .contains(pattern.toLowerCase()))
+                                      .toList();
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(
+                                      suggestion.priorityValue!,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onSelected: (suggestion) {
+                                  setState(() {
+                                    _priorityController.text =
+                                    suggestion.priorityValue!;
+                                    // You can use suggestion.statusKey to send to the server
+                                    priorityid = suggestion.priorityKey!;
+                                    // Call your API with the selected key here if needed
+                                    _validatePriority = "";
+                                  });
+                                },
+                              ),
+                            ),
+                            if (_validatePriority.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validatePriority,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Assign to'),
+                            SizedBox(height: 4),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.050,
+                              child: TypeAheadField<Members>(
+                                controller: _assignedToController,
+                                builder: (context, controller, focusNode) {
+                                  return TextField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    onTap: () {
+                                      setState(() {
+                                        _validateAssignedTo = "";
+                                      });
+                                    },
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _validateAssignedTo = "";
+                                      });
+                                    },
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      height: 1.2,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "Select assigned to person",
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        letterSpacing: 0,
+                                        height: 1.2,
+                                        color: Color(0xffAFAFAF),
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                suggestionsCallback: (pattern) {
+                                  // return members
+                                  //     .where((item) => item.fullName!
+                                  //     .toLowerCase()
+                                  //     .contains(pattern.toLowerCase()))
+                                  //     .toList();
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(
+                                      suggestion.fullName!,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onSelected: (suggestion) {
+                                  setState(() {
+                                    _assignedToController.text =
+                                    suggestion.fullName!;
+                                    // You can use suggestion.statusKey to send to the server
+                                    assignedid = suggestion.id!;
+                                    // Call your API with the selected key here if needed
+                                    _validateAssignedTo = "";
+                                  });
+                                },
+                              ),
+                            ),
+                            if (_validateAssignedTo.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateAssignedTo,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Deadline'),
+                            SizedBox(height: 4),
+                            _buildDateField(
+                              _deadlineController,
+                            ),
+                            if (_validateDeadline.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateDeadline,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Status'),
+                            SizedBox(height: 4),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.050,
+                              child: TypeAheadField<Statuses>(
+                                controller: _statusController,
+                                builder: (context, controller, focusNode) {
+                                  return TextField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    onTap: () {
+                                      setState(() {
+                                        _validateStatus = "";
+                                      });
+                                    },
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _validateStatus = "";
+                                      });
+                                    },
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      height: 1.2,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "Select status",
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        letterSpacing: 0,
+                                        height: 1.2,
+                                        color: Color(0xffAFAFAF),
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffFCFAFF),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                            width: 1, color: Color(0xffD0CBDB)),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                suggestionsCallback: (pattern) {
+                                  return statuses
+                                      .where((item) => item.statusValue!
+                                      .toLowerCase()
+                                      .contains(pattern.toLowerCase()))
+                                      .toList();
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(
+                                      suggestion.statusValue!,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onSelected: (suggestion) {
+                                  setState(() {
+                                    _statusController.text =
+                                    suggestion.statusValue!;
+                                    // You can use suggestion.statusKey to send to the server
+                                    statusid = suggestion.statusKey!;
+                                    // Call your API with the selected key here if needed
+                                    _validateStatus = "";
+                                  });
+                                },
+                              ),
+                            ),
+                            if (_validateStatus.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateStatus,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+
+                            Container(
+                              padding: EdgeInsets.all(18),
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  InkResponse(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width:
+                                      w * 0.4,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffF8FCFF),
+                                        border: Border.all(
+                                          color: Color(0xff8856F4),
+                                          width: 1.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Close',
+                                          style: TextStyle(
+                                            color: Color(0xff8856F4),
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  InkResponse(
+                                    onTap: () {
+                                      _validateFields();
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width:
+                                      w * 0.4,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff8856F4),
+                                        border: Border.all(
+                                          color: Color(0xff8856F4),
+                                          width: 1.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: Center(
+                                        child: _loading
+                                            ? spinkits.getFadingCircleSpinner()
+                                            : Text(
+                                          'Save',
+                                          style: TextStyle(
+                                            color: Color(0xffffffff),
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )));
+              });
+        }).whenComplete(() {
+
+      _deadlineController.text = "";
+
+    });
+  }}

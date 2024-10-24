@@ -139,7 +139,8 @@ class _NotificationsState extends State<Notifications> {
                   SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {},
-                    child: Container(
+                    child:
+                    Container(
                       padding: EdgeInsets.all(7),
                       decoration: BoxDecoration(
                         color: Color(0xffE5E5E5),
