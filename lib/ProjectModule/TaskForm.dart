@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -146,11 +147,11 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsOverviewApi(widget.projectId);
     setState(() {
       if (res != null && res.data != null) {
-        if(res.settings?.success==1){
+        if (res.settings?.success == 1) {
           data = res.data;
           members = data?.members ?? [];
           print("members: $members");
-        }else {}
+        } else {}
       }
     });
   }
@@ -160,7 +161,7 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsStatusesApi();
     setState(() {
       if (res != null && res.data != null) {
-          statuses = res.data ?? [];
+        statuses = res.data ?? [];
       }
     });
   }
@@ -170,7 +171,7 @@ class _TaskFormState extends State<TaskForm> {
     var res = await Userapi.GetProjectsPrioritiesApi();
     setState(() {
       if (res != null && res.data != null) {
-          priorities = res.data ?? [];
+        priorities = res.data ?? [];
       }
     });
   }
@@ -241,17 +242,29 @@ class _TaskFormState extends State<TaskForm> {
             priorityid = res?.taskDetail?.priority ?? "";
 
             // Create a map for faster lookups
-            var milestoneMap = {for (var milestone in milestones) milestone.id: milestone.title};
-            _mileStoneController.text = milestoneMap[res?.taskDetail?.milestone] ?? "";
+            var milestoneMap = {
+              for (var milestone in milestones) milestone.id: milestone.title
+            };
+            _mileStoneController.text =
+                milestoneMap[res?.taskDetail?.milestone] ?? "";
 
-            var memberMap = {for (var member in members) member.id: member.fullName};
-            _assignedToController.text = memberMap[res?.taskDetail?.assignedToId] ?? "";
+            var memberMap = {
+              for (var member in members) member.id: member.fullName
+            };
+            _assignedToController.text =
+                memberMap[res?.taskDetail?.assignedToId] ?? "";
 
-            var statusMap = {for (var status in statuses) status.statusKey: status.statusValue};
+            var statusMap = {
+              for (var status in statuses) status.statusKey: status.statusValue
+            };
             _statusController.text = statusMap[res?.taskDetail?.status] ?? "";
 
-            var priorityMap = {for (var priority in priorities) priority.priorityKey: priority.priorityValue};
-            _priorityController.text = priorityMap[res?.taskDetail?.priority] ?? "";
+            var priorityMap = {
+              for (var priority in priorities)
+                priority.priorityKey: priority.priorityValue
+            };
+            _priorityController.text =
+                priorityMap[res?.taskDetail?.priority] ?? "";
 
             _startDateController.text = res?.taskDetail?.startDate ?? "";
             _deadlineController.text = res?.taskDetail?.endDate ?? "";
@@ -264,7 +277,8 @@ class _TaskFormState extends State<TaskForm> {
             }
             print("Selected Collaborators' IDs: $selectedIds");
           } else {
-            CustomSnackBar.show(context, res?.settings?.message ?? "Unknown error occurred.");
+            CustomSnackBar.show(
+                context, res?.settings?.message ?? "Unknown error occurred.");
           }
         } else {
           print("Task GetTaskDetail: ${res?.settings?.message}");
@@ -272,10 +286,10 @@ class _TaskFormState extends State<TaskForm> {
       });
     } catch (e) {
       print("Error fetching task details: $e");
-      CustomSnackBar.show(context, "An error occurred while fetching task details.");
+      CustomSnackBar.show(
+          context, "An error occurred while fetching task details.");
     }
   }
-
 
   void _validateFields() {
     setState(() {
@@ -732,86 +746,125 @@ class _TaskFormState extends State<TaskForm> {
                           ],
                           _label(text: 'Assign to'),
                           SizedBox(height: 4),
-
                           Container(
                             height: MediaQuery.of(context).size.height * 0.050,
-                            child: TypeAheadField<Members>(
-                              controller: _assignedToController,
-                              builder: (context, controller, focusNode) {
-                                return TextField(
-                                  controller: controller,
-                                  focusNode: focusNode,
-                                  onTap: () {
-                                    setState(() {
-                                      _validateAssignedTo = "";
-                                    });
-                                  },
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _validateAssignedTo = "";
-                                    });
-                                  },
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    letterSpacing: 0,
-                                    height: 1.2,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400,
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton2<Members>(
+                                isExpanded: true,
+                                hint: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.list,
+                                      size: 16,
+                                      color: Colors.yellow,
+                                    ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        'Select Item',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.yellow,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                items: members
+                                    .map((member) => DropdownMenuItem(
+                                          value: member,
+                                          child: Text(
+                                            member.fullName ?? '',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                                value: members.firstWhere(
+                                  (member) => member.id == assignedid,
+                                  orElse: () =>
+                                      members[0], // Default to first member
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    assignedid = value!.id!; // Store the ID
+                                  });
+                                },
+                                buttonStyleData: ButtonStyleData(
+                                  height: 50,
+                                  width: 160,
+                                  padding: const EdgeInsets.only(left: 14, right: 14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: Colors.black26,
+                                    ),
+                                    color: Colors.redAccent,
                                   ),
-                                  decoration: InputDecoration(
-                                    hintText: "Select assigned to person",
-                                    hintStyle: TextStyle(
-                                      fontSize: 15,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Color(0xffAFAFAF),
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    filled: true,
-                                    fillColor: Color(0xffFCFAFF),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(7),
-                                      borderSide: BorderSide(
-                                          width: 1, color: Color(0xffD0CBDB)),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(7.0),
-                                      borderSide: BorderSide(
-                                          width: 1, color: Color(0xffD0CBDB)),
+                                  elevation: 2,
+                                ),
+                                iconStyleData: const IconStyleData(
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                  ),
+                                  iconSize: 14,
+                                  iconEnabledColor: Colors.yellow,
+                                  iconDisabledColor: Colors.grey,
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    color: Colors.redAccent,
+                                  ),
+                                  scrollbarTheme: ScrollbarThemeData(
+                                    radius: const Radius.circular(40),
+                                    thickness: MaterialStateProperty.all<double>(6),
+                                    thumbVisibility: MaterialStateProperty.all<bool>(true),
+                                  ),
+                                ),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  height: 40,
+                                  padding: EdgeInsets.only(left: 14, right: 14),
+                                ),
+                                dropdownSearchData: DropdownSearchData(
+                                  searchController: _assignedToController,
+                                  searchInnerWidgetHeight: 50,
+                                  searchInnerWidget: Container(
+                                    height: 50,
+                                    padding: const EdgeInsets.all(8),
+                                    child: TextFormField(
+                                      controller: _assignedToController,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8,),
+                                        hintText: 'Search for a user...',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 12),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                );
-                              },
-                              suggestionsCallback: (pattern) {
-                                return members
-                                    .where((item) => item.fullName!
+                                  searchMatchFn: (item, searchValue) {
+                                    return item.value!.fullName!
                                         .toLowerCase()
-                                        .contains(pattern.toLowerCase()))
-                                    .toList();
-                              },
-                              itemBuilder: (context, suggestion) {
-                                return ListTile(
-                                  title: Text(
-                                    suggestion.fullName!,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                );
-                              },
-                              onSelected: (suggestion) {
-                                setState(() {
-                                  _assignedToController.text =
-                                      suggestion.fullName!;
-                                  // You can use suggestion.statusKey to send to the server
-                                  assignedid = suggestion.id!;
-                                  // Call your API with the selected key here if needed
-                                  _validateAssignedTo = "";
-                                });
-                              },
+                                        .contains(searchValue.toLowerCase());
+                                  },
+                                ),
+                                onMenuStateChange: (isOpen) {
+                                  if (!isOpen) {
+                                    _assignedToController.clear();
+                                  }
+                                },
+                              ),
                             ),
                           ),
                           if (_validateAssignedTo.isNotEmpty) ...[

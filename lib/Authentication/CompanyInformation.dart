@@ -1,6 +1,9 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
+
+import '../utils/ShakeWidget.dart';
 
 class CompanyInformation extends StatefulWidget {
   const CompanyInformation({super.key});
@@ -25,6 +28,103 @@ class _CompanyInformationState extends State<CompanyInformation> {
   final FocusNode _focusNodeCity = FocusNode();
   final FocusNode _focusNodeState = FocusNode();
   final FocusNode _focusNodeCountry = FocusNode();
+
+  // Validation messages
+  String _validateCompanyName = "";
+  String _validateCompanySize = "";
+  String _validateCategory = "";
+  String _validateCity = "";
+  String _validateState = "";
+  String _validateCountry = "";
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _companyController.addListener(() {
+      setState(() {
+        _validateCompanyName = "";
+      });
+    });
+    _companySizeController.addListener(() {
+      setState(() {
+        _validateCompanySize = "";
+      });
+    });
+    _selectCategory.addListener(() {
+      setState(() {
+        _validateCategory = "";
+      });
+    });
+    _enterCityController.addListener(() {
+      setState(() {
+        _validateCity = "";
+      });
+    });
+    _stateController.addListener(() {
+      setState(() {
+        _validateState = "";
+      });
+    });
+    _countryController.addListener(() {
+      setState(() {
+        _validateCountry = "";
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose of controllers
+    _companyController.dispose();
+    _companySizeController.dispose();
+    _selectCategory.dispose();
+    _enterCityController.dispose();
+    _stateController.dispose();
+    _countryController.dispose();
+    super.dispose();
+  }
+
+  void _validateFields() {
+    setState(() {
+      _validateCompanyName =
+      _companyController.text.isEmpty ? "Please enter company name" : "";
+      _validateCompanySize =
+      _companySizeController.text.isEmpty ? "Please enter company size" : "";
+      _validateCategory =
+      _selectCategory.text.isEmpty ? "Please enter your category" : "";
+      _validateCity =
+      _enterCityController.text.isEmpty ? "Please enter city" : "";
+      _validateState =
+      _stateController.text.isEmpty ? "Please select state" : "";
+      _validateCountry =
+      _countryController.text.isEmpty ? "Please select country" : "";
+
+      // Check if all validations are passed
+      _isLoading = _validateCompanyName.isEmpty &&
+          _validateCompanySize.isEmpty &&
+          _validateCategory.isEmpty &&
+          _validateCity.isEmpty &&
+          _validateState.isEmpty &&
+          _validateCountry.isEmpty;
+
+      if (_isLoading) {
+        // Proceed with your API call or next steps
+        // CreateTaskApi();
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => PersonalInformation()));
+      }
+    });
+  }
+
+
+  final List<String> items = List.generate(100, (index) => 'Item ${index + 1}');
+
+  String? selectedValue;
+  final TextEditingController textEditingController = TextEditingController();
 
 
   @override
@@ -110,11 +210,71 @@ class _CompanyInformationState extends State<CompanyInformation> {
                 ),
                 child: Column(
                   children: [
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton2<String>(
+                        isExpanded: true,
+                        hint: Text(
+                          'Select Item',
+                          style: TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
+                        ),
+                        items: items
+                            .map((item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item, style: const TextStyle(fontSize: 14)),
+                        ))
+                            .toList(),
+                        value: selectedValue,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedValue = value;
+                          });
+                        },
+                        buttonStyleData: const ButtonStyleData(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          height: 40,
+                          width: 200,
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 300,
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(
+                          height: 40,
+                        ),
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: textEditingController,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: TextFormField(
+                              controller: textEditingController,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                hintText: 'Search for an item...',
+                                hintStyle: const TextStyle(fontSize: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            return item.value!.toLowerCase().contains(searchValue.toLowerCase());
+                          },
+                        ),
+                        onMenuStateChange: (isOpen) {
+                          if (!isOpen) {
+                            textEditingController.clear(); // Clear search when menu closes
+                          }
+                        },
+                      ),
+                    ),
                     _buildTextFormField(
                         controller: _companyController,
                         focusNode: _focusNodeCompany,
                         hintText: "Company Name",
-                        validationMessage: 'Please enter your company name',
+                        validationMessage: _validateCompanyName,
                         keyboardType: TextInputType.text,
                         prefixicon: Image.asset(
                           "assets/company.png",
@@ -127,7 +287,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                         controller: _companySizeController,
                         focusNode: _focusNodeCompanySize,
                         hintText: "Enter Company Size",
-                        validationMessage: 'Please enter your company size',
+                        validationMessage: _validateCompanySize,
                         prefixicon: Image.asset(
                           "assets/csize.png",
                           width: 21,
@@ -140,7 +300,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                         controller: _selectCategory,
                         focusNode: _focusNodeSelectCategory,
                         hintText: "Select Category",
-                        validationMessage: 'Please enter your category',
+                        validationMessage: _validateCategory,
                         prefixicon: Image.asset(
                           "assets/categoryselect.png",
                           width: 21,
@@ -153,7 +313,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                         controller: _enterCityController,
                         focusNode: _focusNodeCity,
                         hintText: "Enter City",
-                        validationMessage: 'Please select your city',
+                        validationMessage: _validateCity,
                         prefixicon: Image.asset(
                           "assets/city.png",
                           width: 21,
@@ -166,7 +326,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                         controller: _stateController,
                         focusNode: _focusNodeState,
                         hintText: "State",
-                        validationMessage: 'Please select your state',
+                        validationMessage: _validateState,
                         prefixicon: Image.asset(
                           "assets/state.png",
                           width: 21,
@@ -179,7 +339,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                         controller: _countryController,
                         focusNode: _focusNodeCountry,
                         hintText: "Country",
-                        validationMessage: 'Please select your country',
+                        validationMessage:_validateCountry,
                         prefixicon: Image.asset(
                           "assets/country.png",
                           width: 21,
@@ -190,10 +350,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => PersonalInformation()));
+                        _validateFields();
                       },
                       child: Container(
                         width: w,
@@ -269,48 +426,73 @@ class _CompanyInformationState extends State<CompanyInformation> {
       required String validationMessage,
       TextInputType keyboardType = TextInputType.text,
       Widget? prefixicon}) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.045,
-      child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: Container(
-              width: 21,
-              height: 21,
-              padding: EdgeInsets.only(top: 8, bottom: 8, left: 6),
-              child: prefixicon),
-          hintStyle: const TextStyle(
-            fontSize: 15,
-            letterSpacing: 0,
-            height: 1.2,
-            color: Color(0xffAFAFAF),
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-          ),
-          filled: true,
-          fillColor: const Color(0xffffffff),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7),
-            borderSide: const BorderSide(width: 1, color: Colors.red),
+    return Column(
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.045,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            decoration: InputDecoration(
+              hintText: hintText,
+              prefixIcon: Container(
+                  width: 21,
+                  height: 21,
+                  padding: EdgeInsets.only(top: 8, bottom: 8, left: 6),
+                  child: prefixicon),
+              hintStyle: const TextStyle(
+                fontSize: 15,
+                letterSpacing: 0,
+                height: 1.2,
+                color: Color(0xffAFAFAF),
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+              ),
+              filled: true,
+              fillColor: const Color(0xffffffff),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: const BorderSide(width: 1, color: Color(0xffCDE2FB)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: const BorderSide(width: 1, color: Colors.red),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7),
+                borderSide: const BorderSide(width: 1, color: Colors.red),
+              ),
+            ),
           ),
         ),
-      ),
+        if (validationMessage.isNotEmpty) ...[
+          Container(
+            alignment: Alignment.topLeft,
+            margin: EdgeInsets.only(
+                left: 8,top: 5),
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: ShakeWidget(
+              key: Key("value"),
+              duration: Duration(milliseconds: 700),
+              child: Text(
+                validationMessage,
+                style: TextStyle(
+                  fontFamily: "Poppins",
+                  fontSize: 12,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ]
+      ],
     );
   }
 }

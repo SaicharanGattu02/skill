@@ -1,6 +1,8 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/ProjectOverviewModel.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 
@@ -32,6 +34,15 @@ class _GeneralInfoState extends State<GeneralInfo> {
 
   // Default gender selection
   String gender = 'Male';
+
+  final List<Members> members = [
+    Members(id: '1', fullName: 'Alice Johnson', image: 'url1'),
+    Members(id: '2', fullName: 'Bob Smith', image: 'url2'),
+    Members(id: '3', fullName: 'Charlie Brown', image: 'url3'),
+  ];
+
+  String? selectedMemberId;
+  final TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -117,6 +128,107 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton2<Members>(
+                              isExpanded: true,
+                              hint: Text(
+                                'Select User',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).hintColor,
+                                ),
+                              ),
+                              items: members
+                                  .map((member) => DropdownMenuItem(
+                                value: member,
+                                child: Text(
+                                  member.fullName ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ))
+                                  .toList(),
+                              value: members.firstWhere(
+                                    (member) => member.id == selectedMemberId,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedMemberId = value?.id; // Store the ID
+                                });
+                              },
+                              buttonStyleData: ButtonStyleData(
+                                height: 50,
+                                width: 160,
+                                padding: const EdgeInsets.only(left: 14, right: 14),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.black26,
+                                  ),
+                                  color: Colors.redAccent,
+                                ),
+                                elevation: 2,
+                              ),
+                              iconStyleData: const IconStyleData(
+                                icon: Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                ),
+                                iconSize: 14,
+                                iconEnabledColor: Colors.yellow,
+                                iconDisabledColor: Colors.grey,
+                              ),
+                              dropdownStyleData: DropdownStyleData(
+                                maxHeight: 200,
+                                width: 200,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  color: Colors.redAccent,
+                                ),
+                                offset: const Offset(-20, 0),
+                                scrollbarTheme: ScrollbarThemeData(
+                                  radius: const Radius.circular(40),
+                                  thickness: MaterialStateProperty.all<double>(6),
+                                  thumbVisibility: MaterialStateProperty.all<bool>(true),
+                                ),
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                height: 40,
+                                padding: EdgeInsets.only(left: 14, right: 14),
+                              ),
+                              dropdownSearchData: DropdownSearchData(
+                                searchController: textEditingController,
+                                searchInnerWidgetHeight: 50,
+                                searchInnerWidget: Container(
+                                  height: 50,
+                                  padding: const EdgeInsets.all(8),
+                                  child: TextFormField(
+                                    controller: textEditingController,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 8,
+                                      ),
+                                      hintText: 'Search for a user...',
+                                      hintStyle: const TextStyle(fontSize: 12),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                searchMatchFn: (item, searchValue) {
+                                  return item.value!.fullName!.toLowerCase().contains(searchValue.toLowerCase());
+                                },
+                              ),
+                              onMenuStateChange: (isOpen) {
+                                if (!isOpen) {
+                                  textEditingController.clear();
+                                }
+                              },
+                            ),
+                          ),
                           _label(text: 'First Name'),
                           const SizedBox(height: 8),
                           _buildTextFormField(
