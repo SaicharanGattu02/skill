@@ -209,6 +209,30 @@ class _AddMeetingsState extends State<AddMeetings> {
     });
   }
 
+
+  Future<void> CreateZoomMeeting() async {
+    var res = await Userapi.postAddMeeting(
+        _meetingtitleController.text,
+        _descriptionController.text,
+        projectid,
+        _meetingTypeController.text,
+        selectedIds,
+        dateAndTime,
+        _meetinglinkController.text);
+    setState(() {
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          _isLoading = false;
+          Navigator.pop(context, true);
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        } else {
+          _isLoading = false;
+          CustomSnackBar.show(context, "${res.settings?.message}");
+        }
+      }
+    });
+  }
+
   void _validateFields() {
     setState(() {
       _validateMeetingTitle = _meetingtitleController.text.isEmpty
