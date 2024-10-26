@@ -14,6 +14,7 @@ import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
+import '../Model/CompanyRegisteration.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/DashboardTaksModel.dart';
 import '../Model/EmployeeListModel.dart';
@@ -1861,5 +1862,49 @@ class Userapi {
     }
   }
 
+  static Future<Companyregisteration?> registerCompany(
+      String name,
+      String address,
+      String staff,
+      String state,
+      String country,
+      String city,
+      ) async {
+    try {
+      Map<String, String> data = {
+        "name": name,
+        "address": address,
+        "staff": staff,
+        "state": state,
+        "country": country,
+        "city": city,
+      };
 
+      final url = Uri.parse("$host/company/countries");
+
+      final response = await http.post(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        print("PostRegister Status: ${response.body}");
+        return Companyregisteration.fromJson(jsonResponse);
+      } else {
+        print("Request failed with status: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      return null;
+    }
+  }
 }
+
+
+

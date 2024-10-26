@@ -180,10 +180,6 @@ class _LeaveState extends State<Leave> {
     );
   }
 
-
-
-
-
   // Helper widget for leave overview
   Widget _buildLeaveOverview(double width) {
     return Row(
@@ -245,5 +241,4 @@ class _LeaveState extends State<Leave> {
       ),
     );
   }
-
 }
