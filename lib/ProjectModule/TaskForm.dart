@@ -106,10 +106,6 @@ class _TaskFormState extends State<TaskForm> {
         _validateDeadline = "";
       });
     });
-    // GetProjectsOverviewData();
-    // GetStatuses();
-    // GetPriorities();
-    // GetMileStone();
     loadData(); // Start loading data when the widget initializes
   }
 

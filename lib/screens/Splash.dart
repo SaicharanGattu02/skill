@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill/Authentication/CompanyInformation.dart';
+import 'package:skill/Authentication/PersnalInformation.dart';
 import 'package:skill/screens/LogInScreen.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
@@ -31,7 +32,7 @@ class _SplashState extends State<Splash> {
     Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => (token.isEmpty) ? CompanyInformation() : Dashboard(),
+          builder: (context) => (token.isEmpty) ? LogInScreen() : Dashboard(),
         ),
       );
     });

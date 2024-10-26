@@ -210,66 +210,6 @@ class _CompanyInformationState extends State<CompanyInformation> {
                 ),
                 child: Column(
                   children: [
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton2<String>(
-                        isExpanded: true,
-                        hint: Text(
-                          'Select Item',
-                          style: TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
-                        ),
-                        items: items
-                            .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item, style: const TextStyle(fontSize: 14)),
-                        ))
-                            .toList(),
-                        value: selectedValue,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedValue = value;
-                          });
-                        },
-                        buttonStyleData: const ButtonStyleData(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          height: 40,
-                          width: 200,
-                        ),
-                        dropdownStyleData: DropdownStyleData(
-                          maxHeight: 300,
-                        ),
-                        menuItemStyleData: const MenuItemStyleData(
-                          height: 40,
-                        ),
-                        dropdownSearchData: DropdownSearchData(
-                          searchController: textEditingController,
-                          searchInnerWidgetHeight: 50,
-                          searchInnerWidget: Container(
-                            height: 50,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: TextFormField(
-                              controller: textEditingController,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                hintText: 'Search for an item...',
-                                hintStyle: const TextStyle(fontSize: 12),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                          searchMatchFn: (item, searchValue) {
-                            return item.value!.toLowerCase().contains(searchValue.toLowerCase());
-                          },
-                        ),
-                        onMenuStateChange: (isOpen) {
-                          if (!isOpen) {
-                            textEditingController.clear(); // Clear search when menu closes
-                          }
-                        },
-                      ),
-                    ),
                     _buildTextFormField(
                         controller: _companyController,
                         focusNode: _focusNodeCompany,

@@ -15,6 +15,7 @@ import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateRoomModel.dart';
+import '../Model/CreateZoomMeeting.dart';
 import '../Model/DashboardTaksModel.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/GetCatagoryModel.dart';
@@ -25,6 +26,7 @@ import '../Model/GetMilestonedetailsModel.dart';
 import '../Model/GetFileModel.dart';
 import '../Model/LeaveRequestModel.dart';
 import '../Model/LoginModel.dart';
+import '../Model/MeetingProviders.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectFileModel.dart';
 import '../Model/ProjectLabelModel.dart';
@@ -1812,8 +1814,7 @@ class Userapi {
     } catch (e) {}
   }
 
-
-  Future<LoginModel?> createCompany(String name,String address,String staff,String state,String country,String city) async {
+  static Future<LoginModel?> createCompany(String name,String address,String staff,String state,String country,String city) async {
     Map<String, String> data = {
       'name': name,
       'address': address,
@@ -1835,7 +1836,7 @@ class Userapi {
     }
   }
 
-  Future<LoginModel?> getcountries() async {
+  static Future<LoginModel?> getcountries() async {
     final url = Uri.parse("${host}/company/countries");
     final headers = await getheader();
     final response = await http.get(url, headers: headers);
@@ -1848,7 +1849,7 @@ class Userapi {
     }
   }
 
-  Future<LoginModel?> getstates() async {
+  static Future<LoginModel?> getstates() async {
     final url = Uri.parse("${host}/company/states");
     final headers = await getheader();
     final response = await http.get(url, headers: headers);
@@ -1858,6 +1859,52 @@ class Userapi {
       return LoginModel.fromJson(jsonResponse);
     } else {
       return null;
+    }
+  }
+
+  static  Future<MeetingProviders?> fetchMeetingProviders() async {
+    final url = Uri.parse("${host}/meeting/meeting-providers");
+    final headers = await getheader();
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("fetchMeetingProviders response:${response.body}");
+        return MeetingProviders.fromJson(jsonResponse);
+      } else {
+        print('Error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+
+  Future<CreateZoomMeeting?> createZoomMeeting() async {
+    final url = Uri.parse("${host}/meeting/zoom-meeting");
+    final headers = await getheader();
+    final body = {
+      'title': 'Test Meeting',
+      'description': 'description for creating test meeting',
+      'start_date': '2024-10-25T18:03:00Z',
+      'collaborators': ['nagagopi@pixl.in', 'balaji@pixl.in'],
+      'meeting_type': 'external',
+      'external': 'balaji2002chappidi@gmail.com',
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+      if (response!=null) {
+        final jsonResponse = jsonDecode(response.body);
+        print("fetchMeetingProviders response:${response.body}");
+        return CreateZoomMeeting.fromJson(jsonResponse);
+      } else {
+        print('Error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
     }
   }
 

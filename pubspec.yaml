@@ -76,6 +76,7 @@ dependencies:
   appflowy_board: ^0.1.2
   vibration: ^2.0.1
   dropdown_button2: ^2.3.9
+  dropdown_search: ^6.0.1
 #  flutter_file_downloader: ^2.0.0
 
 dev_dependencies:
