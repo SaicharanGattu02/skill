@@ -484,6 +484,7 @@ class _TaskFormState extends State<TaskForm> {
                                                   _pickImage(
                                                       ImageSource.camera);
                                                   Navigator.pop(context);
+                                                  Navigator.pop(context);
                                                 },
                                               ),
                                               ListTile(
