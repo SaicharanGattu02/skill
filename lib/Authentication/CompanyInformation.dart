@@ -108,7 +108,6 @@ class _CompanyInformationState extends State<CompanyInformation> {
           _validateCity.isEmpty &&
           _validateState.isEmpty &&
           _validateCountry.isEmpty;
-
       if (_isLoading) {
         // Proceed with your API call or next steps
         // CreateTaskApi();
