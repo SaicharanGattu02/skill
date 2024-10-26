@@ -1377,7 +1377,9 @@ class Userapi {
       String meetingType,
       List<String> collaborators, // Changed to a List for multiple collaborators
       String datetime,
-      String meetingLink) async {
+      String meetingLink,
+      String mail
+      ) async {
     try {
       // Define the URL
       final url = Uri.parse('${host}/meeting/add-meeting');
@@ -1398,11 +1400,14 @@ class Userapi {
       request.fields['meeting_type'] = meetingType;
       request.fields['start_date'] = datetime;
       request.fields['meeting_link'] = meetingLink;
+      request.fields['external'] = mail;
 
       // Add collaborators as separate fields
       for (var collaborator in collaborators) {
         request.fields['collaborators'] = collaborator;
       }
+
+      print(" request.fields :${request.fields}");
 
       // Send the request
       final response = await request.send();
@@ -1879,26 +1884,35 @@ class Userapi {
     }
   }
 
-  Future<CreateZoomMeeting?> createZoomMeeting() async {
+  static Future<CreateZoomMeeting?> createZoomMeeting(
+      String title,
+      String description,
+      String start_date,
+      String collaborators,
+      String meeting_type,
+      String external) async {
     final url = Uri.parse("${host}/meeting/zoom-meeting");
     final headers = await getheader();
-    final body = {
-      'title': 'Test Meeting',
-      'description': 'description for creating test meeting',
-      'start_date': '2024-10-25T18:03:00Z',
-      'collaborators': ['nagagopi@pixl.in', 'balaji@pixl.in'],
-      'meeting_type': 'external',
-      'external': 'balaji2002chappidi@gmail.com',
-    };
+
+    // Create the body as a JSON string
+    final body = jsonEncode({
+      'title': title,
+      'description': description,
+      'start_date': start_date,
+      'collaborators': ['nagagopi@pixl.in', 'balaji@pixl.in'], // Use your variable if needed
+      'meeting_type': meeting_type,
+      'external': external,
+    });
+
     try {
       final response = await http.post(
         url,
-        headers: headers,
-        body: body,
+        headers:headers,
+        body: body, // Send the JSON string as the body
       );
-      if (response!=null) {
+      if (response.statusCode == 200) { // Check for successful response
         final jsonResponse = jsonDecode(response.body);
-        print("fetchMeetingProviders response:${response.body}");
+        print("createZoomMeeting response: ${response.body}");
         return CreateZoomMeeting.fromJson(jsonResponse);
       } else {
         print('Error: ${response.statusCode} ${response.body}');
@@ -1906,6 +1920,7 @@ class Userapi {
     } catch (e) {
       print('Error occurred: $e');
     }
+    return null; // Return null if an error occurs
   }
 
 

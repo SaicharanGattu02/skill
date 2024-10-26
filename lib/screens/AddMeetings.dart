@@ -9,6 +9,7 @@ import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 // import 'package:your_package/multi_select_dropdown.dart';
 import 'package:skill/Model/ProjectsModel.dart';
+import '../Model/CreateZoomMeeting.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/MeetingProviders.dart';
 import '../Services/UserApi.dart';
@@ -38,7 +39,7 @@ class _AddMeetingsState extends State<AddMeetings> {
 
   bool _loading = true;
 
-  bool isProviderDropdownOpen=false;
+  bool isProviderDropdownOpen = false;
 
   String _validateMeetingTitle = "";
   String _validateDescription = "";
@@ -69,6 +70,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   }
 
   bool _isLoading = false;
+  bool isLoading = false;
   final List<String> items = [
     'Internal',
     'External',
@@ -126,9 +128,9 @@ class _AddMeetingsState extends State<AddMeetings> {
   Future<void> loadData() async {
     try {
       await Future.wait([
-      GetUsersdata(),
-      GetProjectsData(),
-      GetMeetingProviders(),
+        GetUsersdata(),
+        GetProjectsData(),
+        GetMeetingProviders(),
       ]);
     } catch (e) {
       // Handle any errors that occur during the loading
@@ -139,6 +141,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       });
     }
   }
+
   String projectid = "";
   final spinkit = Spinkits();
 
@@ -169,8 +172,8 @@ class _AddMeetingsState extends State<AddMeetings> {
     });
   }
 
-  List<Providers> providers=[];
-  List<Providers> filteredProviders=[];
+  List<Providers> providers = [];
+  List<Providers> filteredProviders = [];
   Future<void> GetMeetingProviders() async {
     var res = await Userapi.fetchMeetingProviders();
     setState(() {
@@ -178,23 +181,31 @@ class _AddMeetingsState extends State<AddMeetings> {
         if (res.settings?.success == 1) {
           providers = res.data ?? [];
           filteredProviders = res.data ?? [];
-        } else {
-
-        }
+        } else {}
       }
     });
   }
 
   Future<void> AddMeeting() async {
     print("Date Time:${dateAndTime}");
+    String? meeting_type;
+    setState(() {
+      if(selectedValue=="External"){
+        meeting_type="external";
+      }else if(selectedValue=="Internal"){
+        meeting_type="internal";
+      }
+    });
     var res = await Userapi.postAddMeeting(
         _meetingtitleController.text,
         _descriptionController.text,
         projectid,
-        _meetingTypeController.text,
+        meeting_type!,
         selectedIds,
         dateAndTime,
-        _meetinglinkController.text);
+        _meetinglinkController.text,
+       _clientEmailController.text
+    );
     setState(() {
       if (res != null) {
         if (res.settings?.success == 1) {
@@ -209,24 +220,27 @@ class _AddMeetingsState extends State<AddMeetings> {
     });
   }
 
-
+  String meeting_url = "";
+  bool meeting_created = false;
+  MeetingData? meetingData;
   Future<void> CreateZoomMeeting() async {
-    var res = await Userapi.postAddMeeting(
-        _meetingtitleController.text,
-        _descriptionController.text,
-        projectid,
-        _meetingTypeController.text,
-        selectedIds,
-        dateAndTime,
-        _meetinglinkController.text);
+    var res = await Userapi.createZoomMeeting(
+      _meetingtitleController.text,
+      _descriptionController.text,
+      dateAndTime,
+      dateAndTime,
+      _meetingTypeController.text,
+      _clientEmailController.text,
+    );
     setState(() {
       if (res != null) {
         if (res.settings?.success == 1) {
-          _isLoading = false;
-          Navigator.pop(context, true);
+          meetingData = res.data;
+          meeting_created = true;
+          isLoading = false;
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
-          _isLoading = false;
+          isLoading = false;
           CustomSnackBar.show(context, "${res.settings?.message}");
         }
       }
@@ -243,21 +257,22 @@ class _AddMeetingsState extends State<AddMeetings> {
           : "";
       _validateProjects =
           _PriojectController.text.isEmpty ? "Please select a project" : "";
-      _validateMeetingType = _meetingTypeController.text.isEmpty
-          ? "Please select a meeting type"
-          : "";
-      _validateCollaborators =
-          selectedIds.isEmpty ? "Please add collaborators" : "";
-      _validateCollaborators =
-          selectedIds.length == 0 ? "Please select  a collabarators" : "";
+      _validateMeetingType =
+          selectedValue == "" ? "Please select a meeting type" : "";
+      // _validateCollaborators =
+      //     selectedIds.isEmpty ? "Please add collaborators" : "";
+      // _validateCollaborators =
+      //     selectedIds.length == 0 ? "Please select  a collabarators" : "";
       _validateStartDate =
           _dateController.text.isEmpty ? "Please select a date" : "";
       _validateTime =
           _timeController.text.isEmpty ? "Please select a time" : "";
-
-      _validateMeetingLink = _meetinglinkController.text.isEmpty
-          ? "Please enter a meeting link"
-          : "";
+      // Validate meeting link only if provider is not Zoom
+      if (selectedprovidervalue != "Zoom") {
+        _validateMeetingLink = _meetinglinkController.text.isEmpty ? "Please enter a meeting link" : "";
+      } else {
+        _validateMeetingLink = ""; // Clear validation message if provider is Zoom
+      }
 
       _isLoading = _validateMeetingTitle.isEmpty &&
           _validateDescription.isEmpty &&
@@ -270,6 +285,43 @@ class _AddMeetingsState extends State<AddMeetings> {
 
       if (_isLoading) {
         AddMeeting();
+      }
+    });
+  }
+
+  void _validateFields1() {
+    setState(() {
+      _validateMeetingTitle = _meetingtitleController.text.isEmpty
+          ? "Please enter a meetingtitle"
+          : "";
+      _validateDescription = _descriptionController.text.isEmpty
+          ? "Please enter a description"
+          : "";
+      _validateMeetingType =
+          selectedValue == "" ? "Please select a meeting type" : "";
+      // _validateCollaborators = selectedIds.length == 0 ? "Please select  a collabarators" : "";
+      _validateStartDate =
+          _dateController.text.isEmpty ? "Please select a date" : "";
+      _validateTime =
+          _timeController.text.isEmpty ? "Please select a time" : "";
+      _validateClientEmail = _clientEmailController.text.isEmpty
+          ? "Please enter a valid email."
+          : "";
+
+      isLoading = _validateMeetingTitle.isEmpty &&
+          _validateDescription.isEmpty &&
+          _validateMeetingType.isEmpty &&
+          // _validateCollaborators.isEmpty &&
+          _validateStartDate.isEmpty &&
+          _validateClientEmail.isEmpty &&
+          _validateTime.isEmpty;
+
+      if (isLoading) {
+        CreateZoomMeeting();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
       }
     });
   }
@@ -324,8 +376,8 @@ class _AddMeetingsState extends State<AddMeetings> {
           ? Center(
               child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)))
           : InkResponse(
-           onTap: closeDropdown, // Close dropdown on tapping anywhere
-            child: Container(
+              onTap: closeDropdown, // Close dropdown on tapping anywhere
+              child: Container(
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -418,7 +470,8 @@ class _AddMeetingsState extends State<AddMeetings> {
                             _label(text: 'Projects'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Data>(
                                 builder: (context, controller, focusNode) {
                                   return TextField(
@@ -459,7 +512,8 @@ class _AddMeetingsState extends State<AddMeetings> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
@@ -541,30 +595,33 @@ class _AddMeetingsState extends State<AddMeetings> {
                                   ],
                                 ),
                                 items: items
-                                    .map((String item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ))
+                                    .map((String item) =>
+                                        DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(
+                                            item,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ))
                                     .toList(),
                                 value: selectedValue,
                                 onChanged: (value) {
                                   setState(() {
                                     selectedValue = value;
+                                    _validateMeetingType = "";
                                     print(selectedValue);
                                   });
                                 },
                                 buttonStyleData: ButtonStyleData(
                                   height: 45,
                                   width: double.infinity,
-                                  padding: const EdgeInsets.only(left: 14, right: 14),
+                                  padding: const EdgeInsets.only(
+                                      left: 14, right: 14),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(7),
                                     border: Border.all(
@@ -591,7 +648,8 @@ class _AddMeetingsState extends State<AddMeetings> {
                                   scrollbarTheme: ScrollbarThemeData(
                                     radius: const Radius.circular(40),
                                     thickness: MaterialStateProperty.all(6),
-                                    thumbVisibility: MaterialStateProperty.all(true),
+                                    thumbVisibility:
+                                        MaterialStateProperty.all(true),
                                   ),
                                 ),
                                 menuItemStyleData: const MenuItemStyleData(
@@ -623,7 +681,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 height: 15,
                               ),
                             ],
-                            if(selectedValue=="External")...[
+                            if (selectedValue == "External") ...[
                               _label(text: 'Email of joinee'),
                               SizedBox(height: 4),
                               _buildTextFormField(
@@ -660,13 +718,13 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 backgroundColor: Color(0xfffcfaff),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(7),
-                                  borderSide:
-                                      const BorderSide(color: Color(0xffd0cbdb)),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xffd0cbdb)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(7),
-                                  borderSide:
-                                      const BorderSide(color: Color(0xffd0cbdb)),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xffd0cbdb)),
                                 ),
                               ),
                               dropdownDecoration: const DropdownDecoration(
@@ -687,8 +745,8 @@ class _AddMeetingsState extends State<AddMeetings> {
                               dropdownItemDecoration: DropdownItemDecoration(
                                 selectedIcon: const Icon(Icons.check_box,
                                     color: Color(0xff8856F4)),
-                                disabledIcon:
-                                    Icon(Icons.lock, color: Colors.grey.shade300),
+                                disabledIcon: Icon(Icons.lock,
+                                    color: Colors.grey.shade300),
                               ),
                               onSelectionChange: (selectedItems) {
                                 setState(() {
@@ -781,23 +839,30 @@ class _AddMeetingsState extends State<AddMeetings> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  isProviderDropdownOpen = !isProviderDropdownOpen;
-                                  filteredProviders=[];
-                                  filteredProviders=providers;
+                                  isProviderDropdownOpen =
+                                      !isProviderDropdownOpen;
+                                  filteredProviders = [];
+                                  filteredProviders = providers;
                                 });
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(7.0),
-                                  border:Border.all(color: Color(0xffD0CBDB)),
-                                  color: Color(0xffFCFAFF)
-                                ),
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                        Border.all(color: Color(0xffD0CBDB)),
+                                    color: Color(0xffFCFAFF)),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(selectedprovidervalue??"Select a Provider"),
-                                    Icon(isProviderDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                                    Text(selectedprovidervalue ??
+                                        "Select a Provider"),
+                                    Icon(isProviderDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
                                   ],
                                 ),
                               ),
@@ -805,65 +870,80 @@ class _AddMeetingsState extends State<AddMeetings> {
                             if (isProviderDropdownOpen) ...[
                               SizedBox(height: 5),
                               Card(
-                                elevation: 4, // Optional elevation for shadow effect
+                                elevation:
+                                    4, // Optional elevation for shadow effect
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8), // Optional rounded corners
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0), // Padding inside the card
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start, // Align items to the start
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
                                     children: [
                                       Container(
                                         height: 40,
                                         child: TextField(
-                                          onChanged: (query) => filterProviders(query),
+                                          onChanged: (query) =>
+                                              filterProviders(query),
                                           decoration: InputDecoration(
                                             hintText: "Search providers",
                                             hintStyle: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w400,
-                                              fontFamily: "Inter"
-                                            ),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
                                             filled: true,
                                             fillColor: Color(0xffffffff),
                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(7),
-                                              borderSide: BorderSide(width: 1, color: Color(0xff000000)),
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
                                             ),
                                             focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(7.0),
-                                              borderSide: BorderSide(width: 1, color: Color(0xff000000)),
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 10), // Space between TextField and ListView
+                                      SizedBox(
+                                          height:
+                                              10), // Space between TextField and ListView
                                       Container(
-                                        height: 150, // Set a fixed height for the dropdown list
+                                        height:
+                                            150, // Set a fixed height for the dropdown list
                                         child: ListView.builder(
                                           itemCount: filteredProviders.length,
                                           itemBuilder: (context, index) {
                                             var data = filteredProviders[index];
                                             return ListTile(
                                               minTileHeight: 30,
-                                              title: Text(data.providerValue ?? "",
+                                              title: Text(
+                                                data.providerValue ?? "",
                                                 style: TextStyle(
-                                                  fontFamily: "Inter",
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w400
-                                                ),
+                                                    fontFamily: "Inter",
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.w400),
                                               ),
                                               onTap: () {
                                                 setState(() {
-                                                  isProviderDropdownOpen = false;
-                                                  selectedprovidervalue=data.providerValue;
-                                                  selectedproviderkey=data.providerKey;
+                                                  isProviderDropdownOpen =
+                                                      false;
+                                                  selectedprovidervalue =
+                                                      data.providerValue;
+                                                  selectedproviderkey = data.providerKey;
                                                 });
                                               },
                                             );
-
                                           },
                                         ),
                                       ),
@@ -895,7 +975,52 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 height: 15,
                               ),
                             ],
-                            if(selectedprovidervalue=="Zoom")...[
+                            if (meetingData?.content?.meetingUrl != "") ...[
+                              Text(
+                                  "Created Zoom Link :\n ${meetingData?.content?.meetingUrl}")
+                            ],
+                            if (selectedprovidervalue == "Zoom" &&
+                                !meeting_created) ...[
+                              InkResponse(
+                                onTap: () {
+                                  _validateFields1();
+                                  // if(isLoading){
+                                  //
+                                  // }else{
+                                  //   setState(() {
+                                  //     isLoading=true;
+                                  //   });
+                                  //   _validateFields1();
+                                  // }
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Color(
+                                            0xff8856F4), // Replace with your desired color
+                                        borderRadius: BorderRadius.circular(
+                                            7), // Set border radius
+                                      ),
+                                      padding: EdgeInsets.all(8),
+                                      child: isLoading
+                                          ? spinkits.getFadingCircleSpinner()
+                                          : Text(
+                                              "Create Meeting",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            if (selectedprovidervalue == "Others") ...[
                               _label(text: 'Meeting Link'),
                               SizedBox(height: 6),
                               _buildTextFormField(
@@ -913,7 +1038,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                   ],
                 ),
               ),
-          ),
+            ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
         decoration: BoxDecoration(color: Colors.white),
@@ -1001,8 +1126,9 @@ class _AddMeetingsState extends State<AddMeetings> {
             controller: controller,
             keyboardType: keyboardType,
             obscureText: obscureText,
+            readOnly: !meeting_created,
             cursorColor: Color(0xff8856F4),
-            onTap: (){
+            onTap: () {
               closeDropdown();
             },
             decoration: InputDecoration(
@@ -1083,7 +1209,7 @@ class _AddMeetingsState extends State<AddMeetings> {
             readOnly: true,
             onTap: () {
               _selectDate(context, controller);
-                closeDropdown();
+              closeDropdown();
             },
             decoration: InputDecoration(
               hintText: "Select start date",

@@ -1,11 +1,11 @@
 class CreateZoomMeeting {
-  Data? data;
+  MeetingData? data;
   Settings? settings;
 
   CreateZoomMeeting({this.data, this.settings});
 
   CreateZoomMeeting.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? new MeetingData.fromJson(json['data']) : null;
     settings = json['settings'] != null
         ? new Settings.fromJson(json['settings'])
         : null;
@@ -23,12 +23,12 @@ class CreateZoomMeeting {
   }
 }
 
-class Data {
+class MeetingData {
   Content? content;
 
-  Data({this.content});
+  MeetingData({this.content});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  MeetingData.fromJson(Map<String, dynamic> json) {
     content =
     json['content'] != null ? new Content.fromJson(json['content']) : null;
   }
