@@ -45,7 +45,8 @@ class _SplashState extends State<Splash> {
 
     return Scaffold(
       backgroundColor: Color(0xff8856F4),
-      body: Center(
+      body:
+      Center(
         child:
         Container(
           height:376,
