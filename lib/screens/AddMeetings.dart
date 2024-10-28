@@ -375,8 +375,8 @@ class _AddMeetingsState extends State<AddMeetings> {
       body: _loading
           ? Center(
               child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)))
-          : InkResponse(
-              onTap: closeDropdown, // Close dropdown on tapping anywhere
+          : GestureDetector(
+              onTap: closeDropdown,
               child: Container(
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
@@ -919,8 +919,9 @@ class _AddMeetingsState extends State<AddMeetings> {
                                               10), // Space between TextField and ListView
                                       Container(
                                         height:
-                                            150, // Set a fixed height for the dropdown list
-                                        child: ListView.builder(
+                                            180, // Set a fixed height for the dropdown list
+                                        child:filteredProviders.length>0?
+                                        ListView.builder(
                                           itemCount: filteredProviders.length,
                                           itemBuilder: (context, index) {
                                             var data = filteredProviders[index];
@@ -945,7 +946,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                               },
                                             );
                                           },
-                                        ),
+                                        ):Center(child: Text("No Data found!"))
                                       ),
                                     ],
                                   ),
@@ -1126,7 +1127,7 @@ class _AddMeetingsState extends State<AddMeetings> {
             controller: controller,
             keyboardType: keyboardType,
             obscureText: obscureText,
-            readOnly: !meeting_created,
+            readOnly: false,
             cursorColor: Color(0xff8856F4),
             onTap: () {
               closeDropdown();

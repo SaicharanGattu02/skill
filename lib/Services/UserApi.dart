@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:mime/mime.dart';
+import 'package:skill/Model/CountriesModel.dart';
 import 'package:skill/Model/GetLeaveCountModel.dart';
 import 'package:skill/Model/GetLeaveModel.dart';
 import 'package:skill/Model/GetTaskDetailModel.dart';
@@ -14,6 +15,7 @@ import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:skill/Model/ProjectLabelColorModel.dart';
 import 'package:skill/Model/ProjectStatusModel.dart';
 import 'package:skill/Model/ProjectsModel.dart';
+import 'package:skill/Model/StatesModel.dart';
 import '../Model/CreateRoomModel.dart';
 import '../Model/CreateZoomMeeting.dart';
 import '../Model/DashboardTaksModel.dart';
@@ -1841,27 +1843,27 @@ class Userapi {
     }
   }
 
-  static Future<LoginModel?> getcountries() async {
+  static Future<CountriesModel?> getcountries() async {
     final url = Uri.parse("${host}/company/countries");
     final headers = await getheader();
     final response = await http.get(url, headers: headers);
     if (response!=null) {
       final jsonResponse = jsonDecode(response.body);
       print("getcountries response:${response.body}");
-      return LoginModel.fromJson(jsonResponse);
+      return CountriesModel.fromJson(jsonResponse);
     } else {
       return null;
     }
   }
 
-  static Future<LoginModel?> getstates() async {
+  static Future<StatesModel?> getstates() async {
     final url = Uri.parse("${host}/company/states");
     final headers = await getheader();
     final response = await http.get(url, headers: headers);
     if (response!=null) {
       final jsonResponse = jsonDecode(response.body);
       print("getstates response:${response.body}");
-      return LoginModel.fromJson(jsonResponse);
+      return StatesModel.fromJson(jsonResponse);
     } else {
       return null;
     }
