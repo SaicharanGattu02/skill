@@ -32,7 +32,7 @@ class _SplashState extends State<Splash> {
     Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => (token.isEmpty) ? LogInScreen() : CompanyInformation(),
+          builder: (context) => (token.isEmpty) ? LogInScreen() : Dashboard(),
         ),
       );
     });

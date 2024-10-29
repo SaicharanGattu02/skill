@@ -14,6 +14,7 @@ import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import 'AddTask.dart';
 
 class TaskList extends StatefulWidget {
   final String id1;
@@ -262,7 +263,7 @@ class _TaskListState extends State<TaskList> {
                         var res = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TaskForm(
+                              builder: (context) => AddTask(
                                 title: 'Add Task',
                                 projectId: widget.id1,
                                 taskid: '',

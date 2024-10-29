@@ -447,7 +447,8 @@ class _TaskFormState extends State<TaskForm> {
         ),
         body: _loading
             ? Center(
-                child: spinkits.getFadingCircleSpinner(color: Color(0xff8856F4)))
+                child:
+                    spinkits.getFadingCircleSpinner(color: Color(0xff8856F4)))
             : Container(
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
@@ -492,7 +493,8 @@ class _TaskFormState extends State<TaskForm> {
                                             child: Wrap(
                                               children: <Widget>[
                                                 ListTile(
-                                                  leading: Icon(Icons.camera_alt),
+                                                  leading:
+                                                      Icon(Icons.camera_alt),
                                                   title: Text('Take a photo'),
                                                   onTap: () {
                                                     _pickImage(
@@ -504,8 +506,8 @@ class _TaskFormState extends State<TaskForm> {
                                                 ListTile(
                                                   leading:
                                                       Icon(Icons.photo_library),
-                                                  title:
-                                                      Text('Choose from gallery'),
+                                                  title: Text(
+                                                      'Choose from gallery'),
                                                   onTap: () {
                                                     _pickImage(
                                                         ImageSource.gallery);
@@ -527,7 +529,8 @@ class _TaskFormState extends State<TaskForm> {
                                           color: Color(0xff8856F4),
                                           width: 1.0,
                                         ),
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                       ),
                                       child: Center(
                                         child: Text(
@@ -649,7 +652,8 @@ class _TaskFormState extends State<TaskForm> {
                             _label(text: 'Milestone'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Milestones>(
                                 controller: _mileStoneController,
                                 builder: (context, controller, focusNode) {
@@ -693,7 +697,8 @@ class _TaskFormState extends State<TaskForm> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
@@ -723,7 +728,8 @@ class _TaskFormState extends State<TaskForm> {
                                 },
                                 onSelected: (suggestion) {
                                   setState(() {
-                                    _mileStoneController.text = suggestion.title!;
+                                    _mileStoneController.text =
+                                        suggestion.title!;
                                     // You can use suggestion.statusKey to send to the server
                                     milestoneid = suggestion.id!;
                                     // Call your API with the selected key here if needed
@@ -758,7 +764,8 @@ class _TaskFormState extends State<TaskForm> {
                             _label(text: 'Assign to'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton2<Members>(
                                   isExpanded: true,
@@ -809,7 +816,8 @@ class _TaskFormState extends State<TaskForm> {
                                   buttonStyleData: ButtonStyleData(
                                     height: 50,
                                     width: 160,
-                                    padding: const EdgeInsets.only(left: 14, right: 14),
+                                    padding: const EdgeInsets.only(
+                                        left: 14, right: 14),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(14),
                                       border: Border.all(
@@ -835,13 +843,16 @@ class _TaskFormState extends State<TaskForm> {
                                     ),
                                     scrollbarTheme: ScrollbarThemeData(
                                       radius: const Radius.circular(40),
-                                      thickness: MaterialStateProperty.all<double>(6),
-                                      thumbVisibility: MaterialStateProperty.all<bool>(true),
+                                      thickness:
+                                          MaterialStateProperty.all<double>(6),
+                                      thumbVisibility:
+                                          MaterialStateProperty.all<bool>(true),
                                     ),
                                   ),
                                   menuItemStyleData: const MenuItemStyleData(
                                     height: 40,
-                                    padding: EdgeInsets.only(left: 14, right: 14),
+                                    padding:
+                                        EdgeInsets.only(left: 14, right: 14),
                                   ),
                                   dropdownSearchData: DropdownSearchData(
                                     searchController: _assignedToController,
@@ -853,7 +864,11 @@ class _TaskFormState extends State<TaskForm> {
                                         controller: _assignedToController,
                                         decoration: InputDecoration(
                                           isDense: true,
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8,),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
                                           hintText: 'Search for a user...',
                                           hintStyle:
                                               const TextStyle(fontSize: 12),
@@ -929,8 +944,8 @@ class _TaskFormState extends State<TaskForm> {
                                 backgroundColor: Color(0xfffcfaff),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(7),
-                                  borderSide:
-                                      const BorderSide(color: Color(0xffd0cbdb)),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xffd0cbdb)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(7),
@@ -956,8 +971,8 @@ class _TaskFormState extends State<TaskForm> {
                               dropdownItemDecoration: DropdownItemDecoration(
                                 selectedIcon: const Icon(Icons.check_box,
                                     color: Color(0xff8856F4)),
-                                disabledIcon:
-                                    Icon(Icons.lock, color: Colors.grey.shade300),
+                                disabledIcon: Icon(Icons.lock,
+                                    color: Colors.grey.shade300),
                               ),
                               onSelectionChange: (selectedItems) {
                                 setState(() {
@@ -996,7 +1011,8 @@ class _TaskFormState extends State<TaskForm> {
                             _label(text: 'Status'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Statuses>(
                                 controller: _statusController,
                                 builder: (context, controller, focusNode) {
@@ -1038,7 +1054,8 @@ class _TaskFormState extends State<TaskForm> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
@@ -1102,7 +1119,8 @@ class _TaskFormState extends State<TaskForm> {
                             _label(text: 'Priority'),
                             SizedBox(height: 4),
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.050,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
                               child: TypeAheadField<Priorities>(
                                 controller: _priorityController,
                                 builder: (context, controller, focusNode) {
@@ -1144,7 +1162,8 @@ class _TaskFormState extends State<TaskForm> {
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderRadius:
+                                            BorderRadius.circular(7.0),
                                         borderSide: BorderSide(
                                             width: 1, color: Color(0xffD0CBDB)),
                                       ),
