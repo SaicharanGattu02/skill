@@ -40,6 +40,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   bool _loading = true;
 
   bool isProviderDropdownOpen = false;
+  bool isProjectDropdownOpen = false;
 
   String _validateMeetingTitle = "";
   String _validateDescription = "";
@@ -79,6 +80,12 @@ class _AddMeetingsState extends State<AddMeetings> {
   String? selectedValue;
   String? selectedprovidervalue;
   String? selectedproviderkey;
+
+  String? selectedprojectvalue;
+  String? selectedprojectkey;
+
+
+
   @override
   void initState() {
     super.initState();
@@ -347,6 +354,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   void closeDropdown() {
     setState(() {
       isProviderDropdownOpen = false; // Close the dropdown
+      isProjectDropdownOpen = false; // Close the dropdown
     });
   }
 
@@ -469,87 +477,228 @@ class _AddMeetingsState extends State<AddMeetings> {
                             ],
                             _label(text: 'Projects'),
                             SizedBox(height: 4),
-                            Container(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Data>(
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: _PriojectController,
-                                    focusNode: focusNode,
-                                    onTap: () {
-                                      setState(() {
-                                        _validateProjects = "";
-                                      });
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {
-                                        _validateProjects = "";
-                                      });
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Select project",
-                                      hintStyle: TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        height: 1.2,
-                                        color: Color(0xffAFAFAF),
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  return projectsData
-                                      .where((item) => item.name!
-                                          .toLowerCase()
-                                          .contains(pattern.toLowerCase()))
-                                      .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.name!,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
-                                  setState(() {
-                                    _PriojectController.text = suggestion.name!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    projectid = suggestion.id!;
-                                    // Call your API with the selected key here if needed
-                                    _validateProjects = "";
-                                  });
-                                },
+                            // Container(
+                            //   height:
+                            //       MediaQuery.of(context).size.height * 0.050,
+                            //   child: TypeAheadField<Data>(
+                            //     builder: (context, controller, focusNode) {
+                            //       return TextField(
+                            //         controller: _PriojectController,
+                            //         focusNode: focusNode,
+                            //         onTap: () {
+                            //           setState(() {
+                            //             _validateProjects = "";
+                            //           });
+                            //         },
+                            //         onChanged: (v) {
+                            //           setState(() {
+                            //             _validateProjects = "";
+                            //           });
+                            //         },
+                            //         style: TextStyle(
+                            //           fontSize: 16,
+                            //           letterSpacing: 0,
+                            //           height: 1.2,
+                            //           color: Colors.black,
+                            //           fontWeight: FontWeight.w400,
+                            //         ),
+                            //         decoration: InputDecoration(
+                            //           hintText: "Select project",
+                            //           hintStyle: TextStyle(
+                            //             fontSize: 15,
+                            //             letterSpacing: 0,
+                            //             height: 1.2,
+                            //             color: Color(0xffAFAFAF),
+                            //             fontFamily: 'Poppins',
+                            //             fontWeight: FontWeight.w400,
+                            //           ),
+                            //           filled: true,
+                            //           fillColor: Color(0xffFCFAFF),
+                            //           enabledBorder: OutlineInputBorder(
+                            //             borderRadius: BorderRadius.circular(7),
+                            //             borderSide: BorderSide(
+                            //                 width: 1, color: Color(0xffD0CBDB)),
+                            //           ),
+                            //           focusedBorder: OutlineInputBorder(
+                            //             borderRadius:
+                            //                 BorderRadius.circular(7.0),
+                            //             borderSide: BorderSide(
+                            //                 width: 1, color: Color(0xffD0CBDB)),
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //     suggestionsCallback: (pattern) {
+                            //       return projectsData
+                            //           .where((item) => item.name!
+                            //               .toLowerCase()
+                            //               .contains(pattern.toLowerCase()))
+                            //           .toList();
+                            //     },
+                            //     itemBuilder: (context, suggestion) {
+                            //       return ListTile(
+                            //         title: Text(
+                            //           suggestion.name!,
+                            //           style: TextStyle(
+                            //             fontSize: 15,
+                            //             fontFamily: "Inter",
+                            //             fontWeight: FontWeight.w400,
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //     onSelected: (suggestion) {
+                            //       setState(() {
+                            //         _PriojectController.text = suggestion.name!;
+                            //         // You can use suggestion.statusKey to send to the server
+                            //         projectid = suggestion.id!;
+                            //         // Call your API with the selected key here if needed
+                            //         _validateProjects = "";
+                            //       });
+                            //     },
+                            //   ),
+                            // ),
+                            // if (_validateProjects.isNotEmpty) ...[
+                            //   Container(
+                            //     alignment: Alignment.topLeft,
+                            //     margin: EdgeInsets.only(bottom: 5),
+                            //     child: ShakeWidget(
+                            //       key: Key("value"),
+                            //       duration: Duration(milliseconds: 700),
+                            //       child: Text(
+                            //         _validateProjects,
+                            //         style: TextStyle(
+                            //           fontFamily: "Poppins",
+                            //           fontSize: 12,
+                            //           color: Colors.red,
+                            //           fontWeight: FontWeight.w500,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ] else ...[
+                            //   const SizedBox(
+                            //     height: 15,
+                            //   ),
+                            // ],
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isProjectDropdownOpen =
+                                  !isProjectDropdownOpen;
+                                  filteredProjectsData = [];
+                                  filteredProjectsData = projectsData;
+                                });
+                              },
+                              child:
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                    Border.all(color: Color(0xffD0CBDB)),
+                                    color: Color(0xffFCFAFF)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(selectedprojectvalue ??
+                                        "Select a Project"),
+                                    Icon(isProjectDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
+                                  ],
+                                ),
                               ),
                             ),
+                            if (isProjectDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                elevation:
+                                4, // Optional elevation for shadow effect
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextField(
+                                          onChanged: (query) =>
+                                              filterProjects(query),
+                                          decoration: InputDecoration(
+                                            hintText: "Search Projects",
+                                            hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
+                                            filled: true,
+                                            fillColor: Color(0xffffffff),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                          10), // Space between TextField and ListView
+                                      Container(
+                                          height:
+                                          180, // Set a fixed height for the dropdown list
+                                          child:filteredProjectsData.length>0?
+                                          ListView.builder(
+                                            itemCount: filteredProjectsData.length,
+                                            itemBuilder: (context, index) {
+                                              var data = filteredProjectsData[index];
+                                              return ListTile(
+                                                minTileHeight: 30,
+                                                title: Text(
+                                                  data.name ?? "",
+                                                  style: TextStyle(
+                                                      fontFamily: "Inter",
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                      FontWeight.w400),
+                                                ),
+                                                onTap: () {
+                                                  setState(() {
+                                                    isProjectDropdownOpen =
+                                                    false;
+                                                    selectedprojectvalue =
+                                                        data.name;
+                                                    selectedprojectkey = data.name;
+                                                  });
+                                                },
+                                              );
+                                            },
+                                          ):Center(child: Text("No Data found!"))
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                             if (_validateProjects.isNotEmpty) ...[
                               Container(
                                 alignment: Alignment.topLeft,
@@ -573,6 +722,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 height: 15,
                               ),
                             ],
+
                             _label(text: 'Meeting Type'),
                             SizedBox(height: 4),
                             DropdownButtonHideUnderline(
@@ -840,12 +990,13 @@ class _AddMeetingsState extends State<AddMeetings> {
                               onTap: () {
                                 setState(() {
                                   isProviderDropdownOpen =
-                                      !isProviderDropdownOpen;
+                                  !isProviderDropdownOpen;
                                   filteredProviders = [];
                                   filteredProviders = providers;
                                 });
                               },
-                              child: Container(
+                              child:
+                              Container(
                                 width: double.infinity,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8),
@@ -976,6 +1127,9 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 height: 15,
                               ),
                             ],
+
+
+
                             if (meetingData?.content?.meetingUrl != "") ...[
                               Text(
                                   "Created Zoom Link :\n ${meetingData?.content?.meetingUrl}")
