@@ -361,7 +361,6 @@ class _OtpState extends State<Otp> {
 
                      SizedBox(height: 18),
                     mobile_verified?
-
                     Container(
                       height: h*0.051,
                       width: w*0.5,
@@ -371,15 +370,11 @@ class _OtpState extends State<Otp> {
                           borderRadius: BorderRadius.circular(100)),
                       child:
                       Center(
-                        child: verifying_mobile
-                            ? spinkit.getFadingCircleSpinner(color: Color(0xff2A9266))
-                            : Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            verifying_mobile
-                                ? Row(
+                           Row(
                               children: [
-
                                 Text(
                                   'SMS OTP Verified',
                                   style: TextStyle(
@@ -398,17 +393,6 @@ class _OtpState extends State<Otp> {
                                   fit: BoxFit.contain,
                                 ),
                               ],
-                            )
-                                : Text(
-                              'Verify',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
-                                height: 19.2 / 10,
-                                letterSpacing: 0.14,
-                                color: Color(0xff2A9266),
-                              ),
                             ),
                           ],
                         ),

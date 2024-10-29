@@ -31,6 +31,8 @@ class UserData {
   String? status;
   String? mobile;
   String? userNumber;
+  String? gender;
+  Employee? employee;
   int? projectCount;
   int? todoCount;
   int? tasksCount;
@@ -44,6 +46,8 @@ class UserData {
         this.status,
         this.mobile,
         this.userNumber,
+        this.gender,
+        this.employee,
         this.projectCount,
         this.todoCount,
         this.tasksCount,
@@ -57,6 +61,10 @@ class UserData {
     status = json['status'];
     mobile = json['mobile'];
     userNumber = json['user_number'];
+    gender = json['gender'];
+    employee = json['employee'] != null
+        ? new Employee.fromJson(json['employee'])
+        : null;
     projectCount = json['project_count'];
     todoCount = json['todo_count'];
     tasksCount = json['tasks_count'];
@@ -72,6 +80,10 @@ class UserData {
     data['status'] = this.status;
     data['mobile'] = this.mobile;
     data['user_number'] = this.userNumber;
+    data['gender'] = this.gender;
+    if (this.employee != null) {
+      data['employee'] = this.employee!.toJson();
+    }
     data['project_count'] = this.projectCount;
     data['todo_count'] = this.todoCount;
     data['tasks_count'] = this.tasksCount;
@@ -79,6 +91,96 @@ class UserData {
     return data;
   }
 }
+
+class Employee {
+  String? id;
+  Company? company;
+  String? email;
+  String? joiningDate;
+  String? designation;
+  String? resignedDate;
+  String? releasedDate;
+  bool? isReleased;
+  String? lastUpdated;
+
+  Employee(
+      {this.id,
+        this.company,
+        this.email,
+        this.joiningDate,
+        this.designation,
+        this.resignedDate,
+        this.releasedDate,
+        this.isReleased,
+        this.lastUpdated});
+
+  Employee.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    company =
+    json['company'] != null ? new Company.fromJson(json['company']) : null;
+    email = json['email'];
+    joiningDate = json['joining_date'];
+    designation = json['designation'];
+    resignedDate = json['resigned_date'];
+    releasedDate = json['released_date'];
+    isReleased = json['is_released'];
+    lastUpdated = json['last_updated'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.company != null) {
+      data['company'] = this.company!.toJson();
+    }
+    data['email'] = this.email;
+    data['joining_date'] = this.joiningDate;
+    data['designation'] = this.designation;
+    data['resigned_date'] = this.resignedDate;
+    data['released_date'] = this.releasedDate;
+    data['is_released'] = this.isReleased;
+    data['last_updated'] = this.lastUpdated;
+    return data;
+  }
+}
+
+class Company {
+  String? id;
+  String? name;
+  String? address;
+  String? city;
+  int? staff;
+  String? lastUpdated;
+
+  Company(
+      {this.id,
+        this.name,
+        this.address,
+        this.city,
+        this.staff,
+        this.lastUpdated});
+
+  Company.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    address = json['address'];
+    city = json['city'];
+    staff = json['staff'];
+    lastUpdated = json['last_updated'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['address'] = this.address;
+    data['city'] = this.city;
+    data['staff'] = this.staff;
+    data['last_updated'] = this.lastUpdated;
+    return data;
+  }
+}
+
 
 class Settings {
   int? success;

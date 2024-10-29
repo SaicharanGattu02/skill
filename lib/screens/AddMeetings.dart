@@ -129,6 +129,12 @@ class _AddMeetingsState extends State<AddMeetings> {
         _validateMeetingLink = "";
       });
     });
+
+    _clientEmailController.addListener(() {
+      setState(() {
+        _validateClientEmail = "";
+      });
+    });
     loadData();
   }
 
@@ -149,7 +155,6 @@ class _AddMeetingsState extends State<AddMeetings> {
     }
   }
 
-  String projectid = "";
   final spinkit = Spinkits();
 
   List<Employeedata> employeeData = [];
@@ -196,21 +201,28 @@ class _AddMeetingsState extends State<AddMeetings> {
   Future<void> AddMeeting() async {
     print("Date Time:${dateAndTime}");
     String? meeting_type;
+    String? meeting_link;
     setState(() {
       if(selectedValue=="External"){
         meeting_type="external";
       }else if(selectedValue=="Internal"){
         meeting_type="internal";
       }
+
+      if(selectedprovidervalue=="Zoom"){
+        meeting_link= meetingData?.content?.meetingUrl??"";
+      }else{
+        meeting_link= _meetinglinkController.text;
+      }
     });
     var res = await Userapi.postAddMeeting(
         _meetingtitleController.text,
         _descriptionController.text,
-        projectid,
+        selectedprojectkey!,
         meeting_type!,
         selectedIds,
         dateAndTime,
-        _meetinglinkController.text,
+        meeting_link!,
        _clientEmailController.text
     );
     setState(() {
@@ -228,7 +240,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   }
 
   String meeting_url = "";
-  bool meeting_created = false;
+  bool meeting_created = true;
   MeetingData? meetingData;
   Future<void> CreateZoomMeeting() async {
     var res = await Userapi.createZoomMeeting(
@@ -243,7 +255,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       if (res != null) {
         if (res.settings?.success == 1) {
           meetingData = res.data;
-          meeting_created = true;
+          meeting_created = false;
           isLoading = false;
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
@@ -262,14 +274,11 @@ class _AddMeetingsState extends State<AddMeetings> {
       _validateDescription = _descriptionController.text.isEmpty
           ? "Please enter a description"
           : "";
-      _validateProjects =
-          _PriojectController.text.isEmpty ? "Please select a project" : "";
+      _validateProjects = selectedprojectvalue==null ? "Please select a project" : "";
       _validateMeetingType =
-          selectedValue == "" ? "Please select a meeting type" : "";
-      // _validateCollaborators =
-      //     selectedIds.isEmpty ? "Please add collaborators" : "";
-      // _validateCollaborators =
-      //     selectedIds.length == 0 ? "Please select  a collabarators" : "";
+          selectedValue == null ? "Please select a meeting type" : "";
+      _validateCollaborators =
+          selectedIds.length == 0 ? "Please select  a collabarators" : "";
       _validateStartDate =
           _dateController.text.isEmpty ? "Please select a date" : "";
       _validateTime =
@@ -285,7 +294,7 @@ class _AddMeetingsState extends State<AddMeetings> {
           _validateDescription.isEmpty &&
           _validateProjects.isEmpty &&
           _validateMeetingType.isEmpty &&
-          // _validateCollaborators.isEmpty &&
+          _validateCollaborators.isEmpty &&
           _validateStartDate.isEmpty &&
           _validateTime.isEmpty &&
           _validateMeetingLink.isEmpty;
@@ -305,8 +314,8 @@ class _AddMeetingsState extends State<AddMeetings> {
           ? "Please enter a description"
           : "";
       _validateMeetingType =
-          selectedValue == "" ? "Please select a meeting type" : "";
-      // _validateCollaborators = selectedIds.length == 0 ? "Please select  a collabarators" : "";
+          selectedValue == null ? "Please select a meeting type" : "";
+      _validateCollaborators = selectedIds.length == 0 ? "Please select  a collabarators" : "";
       _validateStartDate =
           _dateController.text.isEmpty ? "Please select a date" : "";
       _validateTime =
@@ -318,7 +327,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       isLoading = _validateMeetingTitle.isEmpty &&
           _validateDescription.isEmpty &&
           _validateMeetingType.isEmpty &&
-          // _validateCollaborators.isEmpty &&
+          _validateCollaborators.isEmpty &&
           _validateStartDate.isEmpty &&
           _validateClientEmail.isEmpty &&
           _validateTime.isEmpty;
@@ -368,7 +377,7 @@ class _AddMeetingsState extends State<AddMeetings> {
         label: employee.name ?? "",
         value: User(
           name: employee.name ?? "",
-          id: employee.id ?? "",
+          id: employee.email ?? "",
         ),
       );
     }).toList();
@@ -424,6 +433,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 scrollPadding: const EdgeInsets.only(top: 5),
                                 controller: _descriptionController,
                                 textInputAction: TextInputAction.done,
+                                readOnly: meeting_created,
                                 maxLines: 100,
                                 decoration: InputDecoration(
                                   contentPadding:
@@ -687,7 +697,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                                     false;
                                                     selectedprojectvalue =
                                                         data.name;
-                                                    selectedprojectkey = data.name;
+                                                    selectedprojectkey = data.id;
                                                   });
                                                 },
                                               );
@@ -886,8 +896,8 @@ class _AddMeetingsState extends State<AddMeetings> {
                                     'Select collaborators from the list',
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
                                         fontFamily: "Inter"),
                                   ),
                                 ),
@@ -1133,12 +1143,11 @@ class _AddMeetingsState extends State<AddMeetings> {
 
 
 
-                            if (meetingData?.content?.meetingUrl != "") ...[
+                            if (meetingData?.content?.meetingUrl!=null) ...[
                               Text(
                                   "Created Zoom Link :\n ${meetingData?.content?.meetingUrl}")
                             ],
-                            if (selectedprovidervalue == "Zoom" &&
-                                !meeting_created) ...[
+                            if (selectedprovidervalue == "Zoom" && meetingData?.content?.meetingUrl==null) ...[
                               InkResponse(
                                 onTap: () {
                                   _validateFields1();
@@ -1284,7 +1293,7 @@ class _AddMeetingsState extends State<AddMeetings> {
             controller: controller,
             keyboardType: keyboardType,
             obscureText: obscureText,
-            readOnly: false,
+            readOnly: meeting_created,
             cursorColor: Color(0xff8856F4),
             onTap: () {
               closeDropdown();
@@ -1364,10 +1373,12 @@ class _AddMeetingsState extends State<AddMeetings> {
           height: MediaQuery.of(context).size.height * 0.05,
           child: TextField(
             controller: controller,
-            readOnly: true,
+            readOnly: meeting_created,
             onTap: () {
-              _selectDate(context, controller);
-              closeDropdown();
+              if(meeting_created){
+                _selectDate(context, controller);
+                closeDropdown();
+              }
             },
             decoration: InputDecoration(
               hintText: "Select start date",
@@ -1414,10 +1425,12 @@ class _AddMeetingsState extends State<AddMeetings> {
           height: MediaQuery.of(context).size.height * 0.05,
           child: TextField(
             controller: controller,
-            readOnly: true,
+            readOnly: meeting_created,
             onTap: () {
-              _selectTime(context, controller);
-              closeDropdown();
+              if(meeting_created){
+                _selectTime(context, controller);
+                closeDropdown();
+              }
             },
             decoration: InputDecoration(
               hintText: "Select time",

@@ -376,16 +376,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Future<void> _requestLocationPermission() async {
-    var status = await Permission.location.request();
-    if (status.isDenied) {
-      // Handle the case when the user denies the permission
-      // Optionally, show a dialog or a snackbar
-    } else {
-      // Permission granted, you can proceed
-      setState(() {});
-    }
-  }
 
   List<Employeedata> employeeData = [];
   List<Employeedata> tempemployeeData = [];
@@ -704,9 +694,9 @@ class _DashboardState extends State<Dashboard> {
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
-                                                  children: const [
+                                                  children: [
                                                     Text(
-                                                      "Skil ID - 02",
+                                                      userdata?.userNumber??"",
                                                       style: TextStyle(
                                                           color:
                                                               Color(0xff8856F4),
@@ -751,8 +741,8 @@ class _DashboardState extends State<Dashboard> {
                                                           BorderRadius.circular(
                                                               100),
                                                     ),
-                                                    child: const Text(
-                                                      "Active",
+                                                    child: Text(
+                                                      userdata?.status ?? "",
                                                       style: TextStyle(
                                                           color:
                                                               Color(0xffFFFFFF),
@@ -785,7 +775,7 @@ class _DashboardState extends State<Dashboard> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          "UX/UI Designer at PIXL Since 2024",
+                                                          userdata?.employee?.designation ?? "",
                                                           style: TextStyle(
                                                               color:
                                                                   const Color(

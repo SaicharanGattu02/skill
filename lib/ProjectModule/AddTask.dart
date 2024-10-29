@@ -114,6 +114,7 @@ class _AddTaskState extends State<AddTask> {
   Data? data = Data();
   List<Members> members = [];
   List<Members> filteredmembers = [];
+  List<Members> filteredCollaboraters = [];
   List<String> selectedIds = [];
   List<String> selectedNames = [];
 
@@ -146,6 +147,7 @@ class _AddTaskState extends State<AddTask> {
           data = res.data;
           members = data?.members ?? [];
           filteredmembers = data?.members ?? [];
+          filteredCollaboraters = data?.members ?? [];
           print("members: $members");
         } else {}
       }
@@ -235,12 +237,20 @@ class _AddTaskState extends State<AddTask> {
             _startDateController.text = res?.taskDetail?.startDate ?? "";
             _deadlineController.text = res?.taskDetail?.endDate ?? "";
 
+            // Ensure that `members` is a list containing all available collaborators
             if (res?.taskDetail?.collaborators != null) {
+              // Step 1: Populate selectedIds with IDs of the collaborators
               selectedIds = res!.taskDetail!.collaborators!
                   .map((collab) => collab.id)
                   .whereType<String>()
                   .toList();
+              // Step 2: Populate selectedNames directly by filtering `members`
+              selectedNames = members
+                  .where((member) => selectedIds.contains(member.id))
+                  .map((member) => member.fullName ?? '')
+                  .toList();
             }
+
             print("Selected Collaborators' IDs: $selectedIds");
           } else {
             CustomSnackBar.show(
@@ -410,6 +420,15 @@ class _AddTaskState extends State<AddTask> {
       filteredpriorities = priorities.where((provider) {
         return provider.priorityValue != null &&
             provider.priorityValue!.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
+
+  void FilterCollaboraters(String query) {
+    setState(() {
+      filteredCollaboraters = members.where((provider) {
+        return provider.fullName != null &&
+            provider.fullName!.toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
@@ -1132,7 +1151,7 @@ class _AddTaskState extends State<AddTask> {
                                   height: 40,
                                   child: TextField(
                                     onChanged: (query) {
-                                      filterMembers(query);
+                                      FilterCollaboraters(query);
                                     },
                                     decoration: InputDecoration(
                                       hintText: "Search member",
@@ -1159,11 +1178,11 @@ class _AddTaskState extends State<AddTask> {
                                 SizedBox(height: 10),
                                 Container(
                                   height: 180,
-                                  child: members.length>0
+                                  child: filteredCollaboraters.length>0
                                       ? ListView.builder(
-                                    itemCount: members.length,
+                                    itemCount: filteredCollaboraters.length,
                                     itemBuilder: (context, index) {
-                                      var data = members[index];
+                                      var data = filteredCollaboraters[index];
                                       bool isSelected = selectedIds.contains(data.id);
                                       return ListTile(
                                         minVerticalPadding: 0,
@@ -1178,6 +1197,9 @@ class _AddTaskState extends State<AddTask> {
                                         trailing: Checkbox(
                                           value: isSelected,
                                           onChanged: (value) {
+                                            setState(() {
+                                              isCollaboraterDropdownOpen=false;
+                                            });
                                             toggleSelection(data.id!, data.fullName!);
                                           },
                                         ),

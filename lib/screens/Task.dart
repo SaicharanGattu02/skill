@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import '../Model/DashboardTaksModel.dart';
 import '../Services/UserApi.dart';
@@ -255,6 +256,14 @@ class _TaskState extends State<Task> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final task = data[index];
+                  // Extracting image URLs from collaborators
+                  List<String> collaboratorImages = [];
+                  if (task.collaborators != null) {
+                    collaboratorImages = task.collaborators!
+                        .map((collaborator) =>
+                    collaborator.image ?? "")
+                        .toList();
+                  }
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     padding: const EdgeInsets.all(16),
@@ -303,7 +312,7 @@ class _TaskState extends State<Task> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          task.title ?? "",
+                          task.description ?? "",
                           style: const TextStyle(
                             fontSize: 12,
                             height: 16 / 12,
@@ -314,22 +323,21 @@ class _TaskState extends State<Task> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            // Adding the images before the collaborators text
-                            ...List.generate(1, (index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 4.0),
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    imageList[index],
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              );
-                            }),
-                            const SizedBox(width: 4),
+                            FlutterImageStack(
+                              imageList: collaboratorImages,
+                              totalCount: collaboratorImages.length,
+                              showTotalCount: true,
+                              extraCountTextStyle: TextStyle(
+                                color: Color(0xff8856F4),
+                              ),
+                              backgroundColor: Colors.white,
+                              itemRadius: 25,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
                             Text(
-                              "+6 Collaborators",
+                              "Collaborators",
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xff64748B),

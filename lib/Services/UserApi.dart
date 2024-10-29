@@ -51,8 +51,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  static String host = "http://192.168.0.32:8000";
-  // static String host = "https://stage.skil.in";
+  // static String host = "http://192.168.0.32:8000";
+  static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
@@ -1404,10 +1404,10 @@ class Userapi {
       request.fields['meeting_link'] = meetingLink;
       request.fields['external'] = mail;
 
-      // Add collaborators as separate fields
-      for (var collaborator in collaborators) {
-        request.fields['collaborators'] = collaborator;
-      }
+      // Use this approach to handle multiple collaborators
+      request.fields.addAll({
+        for (int i = 0; i < collaborators.length; i++) 'collaborators[$i]': collaborators[i],
+      });
 
       print(" request.fields :${request.fields}");
 

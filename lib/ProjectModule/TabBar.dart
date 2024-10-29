@@ -225,10 +225,10 @@ class _MyTabBarState extends State<MyTabBar>
                                 child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text('Task List'))),
-                            Tab(
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text('Task Kanban'))),
+                            // Tab(
+                            //     child: Align(
+                            //         alignment: Alignment.centerLeft,
+                            //         child: Text('Task Kanban'))),
                             Tab(
                                 child: Align(
                                     alignment: Alignment.centerLeft,
@@ -270,7 +270,7 @@ class _MyTabBarState extends State<MyTabBar>
                           children: [
                             OverView(id: widget.id),
                             TaskList(id1: '${widget.id}'),
-                            TaskKanBan(id: '${widget.id}'),
+                            // TaskKanBan(id: '${widget.id}'),
                             MileStone(id: '${widget.id}'),
                             ProjectNotes(id: '${widget.id}'),
                             ProjectFile(id: '${widget.id}'),

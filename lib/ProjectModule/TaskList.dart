@@ -472,6 +472,14 @@ class _TaskListState extends State<TaskList> {
                                   Row(
                                     children: [
                                       // Adding the images before the collaborators text
+                                      Text("Assigned to :",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Color(0xff64748B),
+                                          fontWeight: FontWeight.w500
+                                        ),
+                                      ),
+                                      SizedBox(width: 10,),
                                       if (task.assignedToImage != null)
                                         Padding(
                                           padding:
@@ -481,8 +489,8 @@ class _TaskListState extends State<TaskList> {
                                               // task.assignedToImage ?? "", // Network image
                                               task.assignedToImage.toString() ??
                                                   "",
-                                              width: 24,
-                                              height: 24,
+                                              width: 20,
+                                              height: 20,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -506,15 +514,16 @@ class _TaskListState extends State<TaskList> {
                                         showTotalCount: true,
                                         extraCountTextStyle: TextStyle(
                                           color: Color(0xff8856F4),
+                                          fontSize: 12,
                                         ),
                                         backgroundColor: Colors.white,
-                                        itemRadius: 35,
+                                        itemRadius: 30,
                                       ),
                                       SizedBox(
                                         width: 10,
                                       ),
                                       Text(
-                                        "Collaboraters",
+                                        "Collaborators",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
