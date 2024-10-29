@@ -14,7 +14,7 @@ import 'package:skill/Profile/ProfileDashboard.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AIChatPage.dart';
 import 'package:skill/screens/Leave.dart';
-import 'package:skill/screens/LogInScreen.dart';
+import 'package:skill/Authentication/LogInScreen.dart';
 import 'package:skill/screens/Meetings.dart';
 import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
@@ -995,20 +995,31 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             if (projectsData.length > 0) ...[
                               SizedBox(
-                                height: w * 0.78,
+                                height:projectsData.length>2? w * 0.78:w*0.45,
                                 child: GridView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: projectsData.length,
                                   gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount:
-                                              2, // Two items per row
-                                          childAspectRatio:
-                                              0.8, // Adjust this ratio to fit your design
-                                          mainAxisSpacing: 2,
-                                          crossAxisSpacing:
-                                              10 // Space between items horizontally
-                                          ),
+                                      // SliverGridDelegateWithFixedCrossAxisCount(
+                                      //     crossAxisCount:
+                                      //         2, // Two items per row
+                                      //     childAspectRatio:
+                                      //         0.8, // Adjust this ratio to fit your design
+                                      //     mainAxisSpacing: 2,
+                                      //     crossAxisSpacing:
+                                      //         10 // Space between items horizontally
+                                      //     ),
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount:  projectsData.length > 2
+                                          ? 2
+                                          : 1,
+                                      childAspectRatio:
+                                      projectsData.length > 2?0.8:0.98,
+                                      // 0.8, // Adjust this ratio to fit your design
+                                      mainAxisSpacing: 2,
+                                      crossAxisSpacing:
+                                      10 // Space between items horizontally
+                                  ),
                                   itemBuilder: (context, index) {
                                     var data = projectsData[index];
                                     return InkResponse(
@@ -1623,8 +1634,8 @@ class _DashboardState extends State<Dashboard> {
                                       children: [
                                         if (isAnimating)
                                           Lottie.asset(
-                                            'assets/animations/wave.json', // Your Lottie animation file
-                                            width: 24, // Adjust the size as needed
+                                            'assets/animations/wave.json',
+                                            width: 24,
                                             height: 24,
                                             fit: BoxFit.cover,
                                           ),
@@ -1637,7 +1648,6 @@ class _DashboardState extends State<Dashboard> {
                                               _animatingIndex = index;
                                             });
 
-                                            // Stop the animation after some time
                                             await Future.delayed(Duration(seconds: 2));
                                             setState(() {
                                               _animatingIndex = null;

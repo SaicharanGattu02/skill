@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:skill/screens/LogInScreen.dart';
+import 'package:skill/Authentication/LogInScreen.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
 
 import '../Model/CountriesModel.dart';

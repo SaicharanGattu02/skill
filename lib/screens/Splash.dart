@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skill/Authentication/CompanyInformation.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
-import 'package:skill/screens/LogInScreen.dart';
+import 'package:skill/Authentication/LogInScreen.dart';
 import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
 

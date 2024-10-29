@@ -29,8 +29,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       backgroundColor: const Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
       body:
-
-
       Stack(
         fit: StackFit.expand,
         children: [

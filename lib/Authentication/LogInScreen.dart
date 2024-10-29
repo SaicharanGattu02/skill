@@ -155,7 +155,7 @@ class _LogInScreenState extends State<LogInScreen> {
                       child: SizedBox(
                         width: 221,
                         child: Text(
-                          'Sign up to your Account',
+                          'Login Your Account',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -168,19 +168,19 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Login Your Account',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 10,
-                        color: Color(0xffEEEEEE),
-                        fontWeight: FontWeight.w500,
-                        height: 16.8 / 10,
-                        letterSpacing: -0.01,
-                      ),
-                    ),
+                    // const SizedBox(height: 8),
+                    // Text(
+                    //
+                    //   textAlign: TextAlign.center,
+                    //   style: TextStyle(
+                    //     fontFamily: 'Inter',
+                    //     fontSize: 10,
+                    //     color: Color(0xffEEEEEE),
+                    //     fontWeight: FontWeight.w500,
+                    //     height: 16.8 / 10,
+                    //     letterSpacing: -0.01,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

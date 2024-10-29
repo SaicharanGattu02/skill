@@ -288,11 +288,55 @@ class _TodolistState extends State<Todolist> {
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(
         title: 'Todo',
-        actions: [],
-        onPlusTap: () {
-          GetLabel();
-          _bottomSheet(context);
-        },
+        actions: [
+          SizedBox(
+            height: w * 0.09,
+            child: InkWell(
+              onTap: () {
+                GetLabelColor();
+                _showAddLabel(context);
+              },
+              child: Padding(
+                padding:  EdgeInsets.only(right: 10),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xffffffff),width: 1),
+                      // color: Color(0xff8856F4),
+                      borderRadius: BorderRadius.circular(6)),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "assets/circleadd.png",
+                        fit: BoxFit.contain,
+                        width: w * 0.045,
+                        height: w * 0.05,
+                        color: Color(0xffffffff),
+                      ),
+                      SizedBox(width: w * 0.01),
+                      Text(
+                        "Add Label",
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          fontFamily: "Inter",
+                          height: 16.94 / 12,
+                          letterSpacing: 0.59,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+        // onPlusTap: () {
+        //   GetLabel();
+        //   _bottomSheet(context);
+        // },
       ),
       body:
           SingleChildScrollView(
@@ -355,8 +399,8 @@ class _TodolistState extends State<Todolist> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () {
-                        GetLabelColor();
-                        _showAddLabel(context);
+                        GetLabel();
+                          _bottomSheet(context);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -374,7 +418,7 @@ class _TodolistState extends State<Todolist> {
                             ),
                             SizedBox(width: w * 0.01),
                             Text(
-                              "Add Label",
+                              "Add To Do",
                               style: TextStyle(
                                 color: Color(0xffffffff),
                                 fontWeight: FontWeight.w500,
@@ -389,6 +433,7 @@ class _TodolistState extends State<Todolist> {
                       ),
                     ),
                   ),
+
                 ],
               ),
             ),

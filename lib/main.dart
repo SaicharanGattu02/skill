@@ -9,18 +9,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:skill/screens/Alertscreen2.dart';
-import 'package:skill/screens/GeneralInfo.dart';
-import 'package:skill/screens/Leave.dart';
-import 'package:skill/screens/Messages.dart';
+import 'package:skill/Authentication/LogInScreen.dart';
+import 'package:skill/Authentication/Otp.dart';
 import 'package:skill/screens/Splash.dart';
-import 'package:skill/screens/dashboard.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:skill/utils/constants.dart';
-
 import 'Providers/ThemeProvider.dart';
 
-import 'Providers/ThemeProvider.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
@@ -30,7 +25,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
     importance: Importance.high,
     playSound: true);
 
-// flutter local notification
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -202,7 +197,6 @@ void showNotification(RemoteNotification notification,
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
@@ -212,7 +206,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             darkTheme: ThemeData.dark(),
             theme: themeProvider.themeData, // Use the current theme from the provider
-            home: Splash());
+            home: Splash()
+        );
       },
     );
   }

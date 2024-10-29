@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:skill/screens/LogInScreen.dart';
+import 'package:skill/Authentication/LogInScreen.dart';
 
 import '../Services/UserApi.dart';
 import '../screens/dashboard.dart';
@@ -73,9 +73,8 @@ class _OtpState extends State<Otp> {
     } else {}
   }
 
-  Future<void>ResendEmailOTP() async {
-    var data =
-    await Userapi.resendemail(widget.email);
+  Future<void> ResendEmailOTP() async {
+    var data = await Userapi.resendemail(widget.email);
     if (data != null) {
       setState(() {
         if (data.settings?.success == 1) {
@@ -87,9 +86,8 @@ class _OtpState extends State<Otp> {
     }
   }
 
-  Future<void>ResendMobileOTP() async {
-    var data =
-    await Userapi.resendMobile(widget.mobile);
+  Future<void> ResendMobileOTP() async {
+    var data = await Userapi.resendMobile(widget.mobile);
     if (data != null) {
       setState(() {
         if (data.settings?.success == 1) {
@@ -119,6 +117,11 @@ class _OtpState extends State<Otp> {
                 width: w,
                 decoration: const BoxDecoration(
                   color: Color(0xff8856F4),
+                  image: DecorationImage(
+                      image: AssetImage(
+                        "assets/Background.png",
+                      ),
+                      fit: BoxFit.cover),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -173,7 +176,61 @@ class _OtpState extends State<Otp> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    email_verified?
                     Container(
+                      height: h*0.051,
+                      width: w*0.5,
+
+                      decoration: BoxDecoration(
+                          color: Color(0xffE2FDF2),
+                          borderRadius: BorderRadius.circular(100)),
+                      child:
+                      Center(
+                        child: verifying_email
+                            ? spinkit.getFadingCircleSpinner(color: Color(0xff2A9266))
+                            : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            email_verified
+                                ? Row(
+                              children: [
+
+                                Text(
+                                  'Email Verified',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    height: 19.2 / 15,
+                                    letterSpacing: 0.14,
+                                    color: Color(0xff2A9266),
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Image.asset(
+                                  'assets/verify.png',
+                                  width: w * 0.05,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            )
+                                : Text(
+                              'Verify',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                height: 19.2 / 10,
+                                letterSpacing: 0.14,
+                                color: Color(0xff2A9266),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    )
+                    :Container(
                       height: MediaQuery.of(context).size.height * 0.045,
                       child: TextFormField(
                         controller: _emailOtpController,
@@ -185,7 +242,8 @@ class _OtpState extends State<Otp> {
                         ],
                         decoration: InputDecoration(
                           hintText: "Enter Email Otp",
-                          prefixIcon: Container(
+                          prefixIcon:
+                          Container(
                             width: 21,
                             height: 21,
                             padding:
@@ -213,7 +271,8 @@ class _OtpState extends State<Otp> {
                                 }
                               }
                             },
-                            child: Container(
+                            child:
+                            Container(
                               height: 20,
                               width: 50,
                               margin:
@@ -238,6 +297,7 @@ class _OtpState extends State<Otp> {
                                       ),
                               ),
                             ),
+
                           ),
                           hintStyle: const TextStyle(
                             fontSize: 12,
@@ -273,7 +333,7 @@ class _OtpState extends State<Otp> {
                       ),
                     ),
                     SizedBox(height: w * 0.006),
-                    Row(
+                    if(!email_verified)...[   Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         InkResponse(
@@ -297,8 +357,65 @@ class _OtpState extends State<Otp> {
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 18),
+                    ),],
+
+                     SizedBox(height: 18),
+                    mobile_verified?
+
+                    Container(
+                      height: h*0.051,
+                      width: w*0.5,
+
+                      decoration: BoxDecoration(
+                          color: Color(0xffE2FDF2),
+                          borderRadius: BorderRadius.circular(100)),
+                      child:
+                      Center(
+                        child: verifying_mobile
+                            ? spinkit.getFadingCircleSpinner(color: Color(0xff2A9266))
+                            : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            verifying_mobile
+                                ? Row(
+                              children: [
+
+                                Text(
+                                  'SMS OTP Verified',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    height: 19.2 / 15,
+                                    letterSpacing: 0.14,
+                                    color: Color(0xff2A9266),
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Image.asset(
+                                  'assets/verify.png',
+                                  width: w * 0.05,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            )
+                                : Text(
+                              'Verify',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                height: 19.2 / 10,
+                                letterSpacing: 0.14,
+                                color: Color(0xff2A9266),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ):
+
                     Container(
                       height: MediaQuery.of(context).size.height * 0.045,
                       child: TextFormField(
@@ -398,7 +515,8 @@ class _OtpState extends State<Otp> {
                         ),
                       ),
                     ),
-                    Row(
+
+                    if(!mobile_verified)...[     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         // Text(
@@ -434,15 +552,16 @@ class _OtpState extends State<Otp> {
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 24),
+                    ),],
+
+                     SizedBox(height: 24),
                     InkWell(
                       onTap: () {
                         if (email_verified && mobile_verified) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>CompanyInformation()),
+                                builder: (context) => CompanyInformation()),
                           );
                         } else {
                           String message = !email_verified

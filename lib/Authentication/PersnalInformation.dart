@@ -7,7 +7,7 @@ import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
-import '../screens/LogInScreen.dart';
+import 'LogInScreen.dart';
 
 class PersonalInformation extends StatefulWidget {
 
@@ -176,9 +176,9 @@ class _PersonalInformationState extends State<PersonalInformation> {
                     const SizedBox(height: 18),
                     SingleChildScrollView(
                       child: SizedBox(
-                        width: 221,
+                        // width: 221,
                         child: Text(
-                          'Sign up to your Account',
+                          'Personal information',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -191,19 +191,19 @@ class _PersonalInformationState extends State<PersonalInformation> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Personal information',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 10,
-                        color: Color(0xffEEEEEE),
-                        fontWeight: FontWeight.w500,
-                        height: 16.8 / 10,
-                        letterSpacing: -0.01,
-                      ),
-                    ),
+                    // const SizedBox(height: 8),
+                    // Text(
+                    //   'Personal information',
+                    //   textAlign: TextAlign.center,
+                    //   style: TextStyle(
+                    //     fontFamily: 'Inter',
+                    //     fontSize: 10,
+                    //     color: Color(0xffEEEEEE),
+                    //     fontWeight: FontWeight.w500,
+                    //     height: 16.8 / 10,
+                    //     letterSpacing: -0.01,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
