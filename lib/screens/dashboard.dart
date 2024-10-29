@@ -1619,7 +1619,7 @@ class _DashboardState extends State<Dashboard> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        employee.fullName ?? "",
+                                        employee.name ?? "",
                                         style: const TextStyle(
                                           color: Color(0xffFFFFFF),
                                           fontWeight: FontWeight.w400,

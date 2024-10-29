@@ -30,7 +30,7 @@ class EmployeeListModel {
 
 class Employeedata {
   String? id;
-  String? fullName;
+  String? name;
   String? image;
   String? email;
   String? status;
@@ -38,7 +38,7 @@ class Employeedata {
 
   Employeedata(
       {this.id,
-        this.fullName,
+        this.name,
         this.image,
         this.email,
         this.status,
@@ -46,7 +46,7 @@ class Employeedata {
 
   Employeedata.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullName = json['full_name'];
+    name = json['name'];
     image = json['image'];
     email = json['email'];
     status = json['status'];
@@ -56,7 +56,7 @@ class Employeedata {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['full_name'] = this.fullName;
+    data['name'] = this.name;
     data['image'] = this.image;
     data['email'] = this.email;
     data['status'] = this.status;

@@ -365,9 +365,9 @@ class _AddMeetingsState extends State<AddMeetings> {
 
     var data = employeeData.map((employee) {
       return DropdownItem<User>(
-        label: employee.fullName ?? "",
+        label: employee.name ?? "",
         value: User(
-          name: employee.fullName ?? "",
+          name: employee.name ?? "",
           id: employee.id ?? "",
         ),
       );
@@ -929,6 +929,9 @@ class _AddMeetingsState extends State<AddMeetings> {
                             ] else ...[
                               const SizedBox(height: 15),
                             ],
+
+
+
                             _label(text: 'Start Date'),
                             SizedBox(height: 4),
                             _buildDateField(
