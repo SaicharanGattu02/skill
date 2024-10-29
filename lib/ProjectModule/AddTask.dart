@@ -49,7 +49,10 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
 
-  final TextEditingController _milestone   = TextEditingController();
+  final TextEditingController _milestoneSearchController = TextEditingController();
+  final TextEditingController _assignedSearchController = TextEditingController();
+  final TextEditingController _statusSearchController = TextEditingController();
+  final TextEditingController _prioritySearchController = TextEditingController();
 
   final controller = MultiSelectController<User>();
 
@@ -82,36 +85,14 @@ class _AddTaskState extends State<AddTask> {
   String? selectedPriorityValue;
   String? selectedPriorityID;
 
+  bool isCollaboraterDropdownOpen = false;
+
+
 
 
   @override
   void initState() {
     super.initState();
-    _titleController.addListener(() {
-      setState(() {
-        _validateTitle = "";
-      });
-    });
-    _mileStoneController.addListener(() {
-      setState(() {
-        _validateMileStone = "";
-      });
-    });
-    _assignedToController.addListener(() {
-      setState(() {
-        _validateAssignedTo = "";
-      });
-    });
-    _statusController.addListener(() {
-      setState(() {
-        _validateStatus = "";
-      });
-    });
-    _priorityController.addListener(() {
-      setState(() {
-        _validatePriority = "";
-      });
-    });
     _startDateController.addListener(() {
       setState(() {
         _validateStartDate = "";
@@ -134,6 +115,7 @@ class _AddTaskState extends State<AddTask> {
   List<Members> members = [];
   List<Members> filteredmembers = [];
   List<String> selectedIds = [];
+  List<String> selectedNames = [];
 
   Future<void> loadData() async {
     try {
@@ -203,8 +185,6 @@ class _AddTaskState extends State<AddTask> {
       if (res['success']) {
         milestones = res['response'].data ?? []; // Adjust based on your model
         filteredMilestones = res['response'].data ?? []; // Adjust based on your model
-        print(milestones);
-        // If editing a task, get project task details
       } else {
         CustomSnackBar.show(
             context,
@@ -223,36 +203,35 @@ class _AddTaskState extends State<AddTask> {
           if (res?.settings?.success == 1) {
             _titleController.text = res?.taskDetail?.title ?? "";
             _descriptionController.text = res?.taskDetail?.description ?? "";
-            milestoneid = res?.taskDetail?.milestone ?? "";
-            assignedid = res?.taskDetail?.assignedToId ?? "";
-            statusid = res?.taskDetail?.status ?? "";
-            priorityid = res?.taskDetail?.priority ?? "";
+            selectedMilestoneID = res?.taskDetail?.milestone ?? "";
+            selectedAssignedID = res?.taskDetail?.assignedToId ?? "";
+            selectedStatusID = res?.taskDetail?.status ?? "";
+            selectedPriorityID = res?.taskDetail?.priority ?? "";
 
-            // Create a map for faster lookups
-            var milestoneMap = {
-              for (var milestone in milestones) milestone.id: milestone.title
-            };
-            _mileStoneController.text =
-                milestoneMap[res?.taskDetail?.milestone] ?? "";
+            final milestone = milestones.firstWhere(
+                  (m) => m.id == selectedMilestoneID,
+              orElse: () => milestones[0],
+            );
+            selectedMilestoneValue=milestone.title;
 
-            var memberMap = {
-              for (var member in members) member.id: member.fullName
-            };
-            _assignedToController.text =
-                memberMap[res?.taskDetail?.assignedToId] ?? "";
+            final assigned = members.firstWhere(
+                  (m) => m.id == selectedAssignedID,
+              orElse: () => members[0],
+            );
+            selectedAssignedValue=assigned.fullName;
 
-            var statusMap = {
-              for (var status in statuses) status.statusKey: status.statusValue
-            };
-            _statusController.text = statusMap[res?.taskDetail?.status] ?? "";
+            final status = statuses.firstWhere(
+                  (m) => m.statusKey == selectedStatusID,
+              orElse: () => statuses[0],
+            );
 
-            var priorityMap = {
-              for (var priority in priorities)
-                priority.priorityKey: priority.priorityValue
-            };
-            _priorityController.text =
-                priorityMap[res?.taskDetail?.priority] ?? "";
+            selectedStatusValue=status.statusValue;
 
+            final priority = priorities.firstWhere(
+                  (m) => m.priorityKey == selectedPriorityID,
+              orElse: () => priorities[0],
+            );
+            selectedPriorityValue=priority.priorityValue;
             _startDateController.text = res?.taskDetail?.startDate ?? "";
             _deadlineController.text = res?.taskDetail?.endDate ?? "";
 
@@ -286,7 +265,7 @@ class _AddTaskState extends State<AddTask> {
           ? "Please enter a description"
           : "";
       _validateMileStone =
-      selectedMilestoneValue==null ? "Please enter a milestone" : "";
+      selectedMilestoneValue ==null ? "Please enter a milestone" : "";
       _validateAssignedTo =
       selectedAssignedValue==null ? "Please assign to someone" : "";
       _validateCollaborators =
@@ -337,10 +316,10 @@ class _AddTaskState extends State<AddTask> {
           widget.projectId,
           _titleController.text,
           _descriptionController.text,
-          milestoneid,
-          assignedid,
-          statusid,
-          priorityid,
+          selectedMilestoneID!,
+          selectedAssignedID!,
+          selectedStatusID!,
+          selectedPriorityID!,
           _startDateController.text,
           _deadlineController.text,
           selectedIds,
@@ -435,12 +414,25 @@ class _AddTaskState extends State<AddTask> {
     });
   }
 
+
   void closeDropdown() {
     setState(() {
       isPriorityDropdownOpen = false;
       isStatusDropdownOpen = false;
       isAssignedtoDropdownOpen = false;
       isMilestoneDropdownOpen = false;
+    });
+  }
+
+  void toggleSelection(String id,String name) {
+    setState(() {
+      if (selectedIds.contains(id)) {
+        selectedIds.remove(id);
+        selectedNames.remove(name);
+      } else {
+        selectedIds.add(id);
+        selectedNames.add(name);
+      }
     });
   }
 
@@ -494,12 +486,83 @@ class _AddTaskState extends State<AddTask> {
                       ),
                       _label(text: 'Title'),
                       SizedBox(height: 6),
-                      _buildTextFormField(
-                        controller: _titleController,
-                        hintText: 'Title',
-                        validationMessage: _validateTitle,
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.050,
+                        child: TextFormField(
+                          controller: _titleController,
+                          keyboardType: TextInputType.text,
+                          cursorColor: Color(0xff8856F4),
+                          onTap:(){
+                            closeDropdown();
+                            setState(() {
+                              _validateTitle="";
+                            });
+                          },
+                          onChanged: (v){
+                            setState(() {
+                              _validateTitle="";
+                            });
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            hintText: "Title",
+                            hintStyle: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 14,
+                              letterSpacing: 0,
+                              height: 19.36 / 14,
+                              color: Color(0xffAFAFAF),
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xffFCFAFF),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide:
+                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide:
+                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide:
+                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide:
+                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            ),
+                          ),
+                          textAlignVertical: TextAlignVertical.center,
+                        ),
                       ),
-                      SizedBox(height: 10),
+                      if (_validateTitle.isNotEmpty) ...[
+                        Container(
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          child: ShakeWidget(
+                            key: Key("value"),
+                            duration: Duration(milliseconds: 700),
+                            child: Text(
+                              _validateTitle,
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 12,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        SizedBox(height: 15),
+                      ],
                       DottedBorder(
                         color: Color(0xffD0CBDB),
                         strokeWidth: 1,
@@ -625,7 +688,17 @@ class _AddTaskState extends State<AddTask> {
                           controller: _descriptionController,
                           textInputAction: TextInputAction.done,
                           maxLines: 100,
-                          onTap: closeDropdown,
+                          onTap:(){
+                            closeDropdown();
+                            setState(() {
+                              _validateDescription="";
+                            });
+                          },
+                          onChanged: (v){
+                            setState(() {
+                              _validateDescription="";
+                            });
+                          },
                           decoration: InputDecoration(
                             contentPadding:
                             const EdgeInsets.only(left: 10, top: 10),
@@ -731,11 +804,12 @@ class _AddTaskState extends State<AddTask> {
                               children: [
                                 Container(
                                   height: 40,
-                                  child: TextField(
+                                  child: TextFormField(
+                                    controller: _milestoneSearchController,
                                     onChanged: (query) =>
                                         filterMilestones(query),
                                     decoration: InputDecoration(
-                                      hintText: "Search providers",
+                                      hintText: "Search milestone",
                                       hintStyle: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w400,
@@ -880,6 +954,7 @@ class _AddTaskState extends State<AddTask> {
                                 Container(
                                   height: 40,
                                   child: TextField(
+                                    controller: _assignedSearchController,
                                     onChanged: (query) =>
                                         filterMembers(query),
                                     decoration: InputDecoration(
@@ -973,73 +1048,153 @@ class _AddTaskState extends State<AddTask> {
                       ],
                       _label(text: 'Collaborators'),
                       SizedBox(height: 4),
-                      MultiDropdown<User>(
-                        items: items,
-                        controller: controller,
-                        enabled: true,
-                        searchEnabled: true,
-                        chipDecoration: const ChipDecoration(
-                            backgroundColor: Color(0xffE8E4EF),
-                            wrap: true,
-                            runSpacing: 2,
-                            spacing: 10,
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(7))),
-                        fieldDecoration: FieldDecoration(
-                          hintText: 'Collaborators',
-                          hintStyle: TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 0,
-                            height: 1.2,
-                            color: Color(0xffAFAFAF),
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isCollaboraterDropdownOpen = !isCollaboraterDropdownOpen;
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(7.0),
+                            border: Border.all(color: Color(0xffD0CBDB)),
+                            color: Color(0xffFCFAFF),
                           ),
-                          showClearIcon: false,
-                          backgroundColor: Color(0xfffcfaff),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7),
-                            borderSide: const BorderSide(
-                                color: Color(0xffd0cbdb)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isCollaboraterDropdownOpen = !isCollaboraterDropdownOpen;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start, // Center content horizontally
+                                  children: [
+                                    Expanded(
+                                      child: selectedNames.isNotEmpty
+                                          ? Wrap(
+                                        alignment: WrapAlignment.start, // Center align chips
+                                        spacing: 4.0, // Space between chips
+                                        children: selectedNames.map((name) {
+                                          return Chip(
+                                            padding: EdgeInsets.all(2),
+                                            label: Text(name,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                              fontFamily: "Inter"
+                                            ),),
+                                            deleteIcon: Icon(Icons.clear, size: 18),
+                                            onDeleted: () {
+                                              setState(() {
+                                                isCollaboraterDropdownOpen=false;
+                                                int index = selectedNames.indexOf(name);
+                                                selectedIds.removeAt(index);
+                                                selectedNames.removeAt(index);
+                                              });
+                                            },
+                                          );
+                                        }).toList(),
+                                      )
+                                          : Text(
+                                            "Select collaborator",
+                                            style: TextStyle(color: Colors.black),
+                                          ),
+                                    ),
+                                    Icon(
+                                      isCollaboraterDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            ],
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7),
-                            borderSide:
-                            BorderSide(color: Color(0xffd0cbdb)),
+                        )
+                      ),
+                      if (isCollaboraterDropdownOpen) ...[
+                        SizedBox(height: 5),
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                        dropdownDecoration: const DropdownDecoration(
-                          marginTop: 2, // Adjust this value as needed
-                          maxHeight: 400,
-                          header: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              'Select collaborators from the list',
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: "Inter"),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 40,
+                                  child: TextField(
+                                    onChanged: (query) {
+                                      filterMembers(query);
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: "Search member",
+                                      filled: true,
+                                      fillColor: Color(0xffffffff),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                        borderSide: BorderSide(
+                                          width: 1,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(7.0),
+                                        borderSide: BorderSide(
+                                          width: 1,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                      contentPadding: EdgeInsets.all(8.0),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Container(
+                                  height: 180,
+                                  child: members.length>0
+                                      ? ListView.builder(
+                                    itemCount: members.length,
+                                    itemBuilder: (context, index) {
+                                      var data = members[index];
+                                      bool isSelected = selectedIds.contains(data.id);
+                                      return ListTile(
+                                        minVerticalPadding: 0,
+                                        title: Text(
+                                          data.fullName ?? "",
+                                          style: TextStyle(
+                                            fontFamily: "Inter",
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        trailing: Checkbox(
+                                          value: isSelected,
+                                          onChanged: (value) {
+                                            toggleSelection(data.id!, data.fullName!);
+                                          },
+                                        ),
+                                        onTap: () {
+                                          toggleSelection(data.id!, data.fullName!);
+                                        },
+                                      );
+                                    },
+                                  )
+                                      : Center(child: Text("No Data found!")),
+                                ),
+                                SizedBox(height: 10),
+                              ],
                             ),
                           ),
                         ),
-                        dropdownItemDecoration: DropdownItemDecoration(
-                          selectedIcon: const Icon(Icons.check_box,
-                              color: Color(0xff8856F4)),
-                          disabledIcon: Icon(Icons.lock,
-                              color: Colors.grey.shade300),
-                        ),
-                        onSelectionChange: (selectedItems) {
-                          setState(() {
-                            // Extract only the IDs and store them in selectedIds
-                            selectedIds = selectedItems
-                                .map((user) => user.id)
-                                .toList();
-                            _validateCollaborators = "";
-                          });
-                          debugPrint("Selected IDs: $selectedIds");
-                        },
-                      ),
+                      ],
                       if (_validateCollaborators.isNotEmpty) ...[
                         Container(
                           alignment: Alignment.topLeft,
@@ -1119,6 +1274,7 @@ class _AddTaskState extends State<AddTask> {
                                 Container(
                                   height: 40,
                                   child: TextField(
+                                    controller: _statusSearchController,
                                     onChanged: (query) =>
                                         filterStatuses(query),
                                     decoration: InputDecoration(
@@ -1174,7 +1330,7 @@ class _AddTaskState extends State<AddTask> {
                                               false;
                                               selectedStatusValue =
                                                   data.statusValue;
-                                              selectedAssignedID = data.statusKey;
+                                              selectedStatusID = data.statusKey;
                                               _validateStatus="";
                                             });
                                           },
@@ -1266,6 +1422,7 @@ class _AddTaskState extends State<AddTask> {
                                 Container(
                                   height: 40,
                                   child: TextField(
+                                    controller: _prioritySearchController,
                                     onChanged: (query) =>
                                         filterPriorities(query),
                                     decoration: InputDecoration(
@@ -1491,91 +1648,6 @@ class _AddTaskState extends State<AddTask> {
       ),
     );
   }
-
-  Widget _buildTextFormField(
-      {required TextEditingController controller,
-        bool obscureText = false,
-        required String hintText,
-        required String validationMessage,
-        TextInputType keyboardType = TextInputType.text,
-        Widget? prefixicon,
-        Widget? suffixicon}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.050,
-          child: TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            cursorColor: Color(0xff8856F4),
-            onTap: closeDropdown,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              hintText: hintText,
-              suffixIcon: suffixicon,
-              hintStyle: TextStyle(
-                overflow: TextOverflow.ellipsis,
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 19.36 / 14,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-              ),
-              filled: true,
-              fillColor: const Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide:
-                const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-              ),
-            ),
-            textAlignVertical: TextAlignVertical.center,
-          ),
-        ),
-        if (validationMessage.isNotEmpty) ...[
-          Container(
-            alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-            width: MediaQuery.of(context).size.width * 0.6,
-            child: ShakeWidget(
-              key: Key("value"),
-              duration: Duration(milliseconds: 700),
-              child: Text(
-                validationMessage,
-                style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontSize: 12,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ] else ...[
-          SizedBox(height: 15),
-        ]
-      ],
-    );
-  }
-
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

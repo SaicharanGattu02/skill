@@ -424,7 +424,7 @@ class _TaskListState extends State<TaskList> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      TaskForm(
+                                                      AddTask(
                                                           title: 'Edit Task',
                                                           projectId: widget.id1,
                                                           taskid:
