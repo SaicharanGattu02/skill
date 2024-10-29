@@ -180,7 +180,6 @@ class _OtpState extends State<Otp> {
                     Container(
                       height: h*0.051,
                       width: w*0.5,
-
                       decoration: BoxDecoration(
                           color: Color(0xffE2FDF2),
                           borderRadius: BorderRadius.circular(100)),
