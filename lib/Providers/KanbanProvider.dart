@@ -42,16 +42,21 @@ class KanbanProvider with ChangeNotifier {
     // Update the task status
     task.status = newStatus;
 
-    // Add the task to the new list
-    if (newStatus == 'To Do') {
-      _todoData.add(task);
-    } else if (newStatus == 'In Progress') {
-      _inProgressData.add(task);
-    } else if (newStatus == 'Done') {
-      _completedData.add(task);
+    // Add the task to the start of the new list
+    switch (newStatus) {
+      case 'To Do':
+        _todoData.insert(0, task);
+        break;
+      case 'In Progress':
+        _inProgressData.insert(0, task);
+        break;
+      case 'Done':
+        _completedData.insert(0, task);
+        break;
     }
 
     notifyListeners();
   }
+
 }
 

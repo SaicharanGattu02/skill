@@ -406,7 +406,6 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                             SizedBox(height: 8),
 
                                             if(kanBan.status=="In Progress")...[
-
                                               Container(
                                                 width: w * 0.75,
                                                 padding: const EdgeInsets.all(10),
