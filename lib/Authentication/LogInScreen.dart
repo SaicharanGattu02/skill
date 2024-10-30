@@ -31,6 +31,7 @@ class _LogInScreenState extends State<LogInScreen> {
   String _validatePassword = "";
   String fcm_token="";
   String tokentype="";
+
   @override
   void dispose() {
     _focusNodeEmail.dispose();

@@ -2,8 +2,10 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TaskKanBanModel.dart';
+import '../Providers/KanbanProvider.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 
@@ -19,24 +21,15 @@ class _TaskKanBanState extends State<TaskKanBan> {
   final TextEditingController _searchController = TextEditingController();
   bool _loading = true;
   bool showNoDataFoundMessage = false;
-  List<Data> data = [];
-  List<Data> filteredRooms = [];
+  List<Kanban> kanbandata=[];
+  List<Kanban> filteredRooms = [];
 
-  final List<String> _images = [
-    'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2250&q=80',
-    'https://images.unsplash.com/photo-1612594305265-86300a9a5b5b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-    'https://images.unsplash.com/photo-1612626256634-991e6e977fc1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1712&q=80',
-    'https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
-  ];
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
     _fetchAllKanbanData();
-    // GetKanBanTodo();
-    // GetKanBanInProgress();
-    // GetKanBanCompleted();
   }
 
 
@@ -50,17 +43,13 @@ class _TaskKanBanState extends State<TaskKanBan> {
   void _onSearchChanged() {
     String query = _searchController.text.toLowerCase();
     setState(() {
-      filteredRooms = data.where((room) {
+      filteredRooms = kanbandata.where((room) {
         String otherUser = room.title?.toLowerCase() ?? '';
         String message = room.id?.toLowerCase() ?? '';
         return otherUser.contains(query) || message.contains(query);
       }).toList();
     });
   }
-  List<dynamic> _todoData = [];
-  List<dynamic> _inProgressData = [];
-  List<dynamic> _completedData = [];
-
 
   Future<void> _fetchAllKanbanData() async {
     setState(() {
@@ -74,12 +63,17 @@ class _TaskKanBanState extends State<TaskKanBan> {
         Userapi.GetTaskKanBan(widget.id, "completed"),
       ]);
 
-      // Update the state with the results
-      _todoData = _processResponse(results[0]);
-      _inProgressData = _processResponse(results[1]);
-      _completedData = _processResponse(results[2]);
+      // Get the provider instance
+      final provider = Provider.of<KanbanProvider>(context, listen: false);
 
-      showNoDataFoundMessage = _todoData.isEmpty && _inProgressData.isEmpty && _completedData.isEmpty;
+      // Update the provider with the results
+      provider.setTodoData(_processResponse(results[0]));
+      provider.setInProgressData(_processResponse(results[1]));
+      provider.setCompletedData(_processResponse(results[2]));
+
+      showNoDataFoundMessage = provider.todoData.isEmpty &&
+          provider.inProgressData.isEmpty &&
+          provider.completedData.isEmpty;
     } catch (error) {
       // Handle error appropriately
       print("Error fetching data: $error");
@@ -90,7 +84,8 @@ class _TaskKanBanState extends State<TaskKanBan> {
     }
   }
 
-  List<dynamic> _processResponse(res) {
+
+  List<Kanban> _processResponse(res) {
     if (res != null && res.settings?.success == 1) {
       var data = res.data ?? [];
       data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
@@ -99,62 +94,6 @@ class _TaskKanBanState extends State<TaskKanBan> {
     return [];
   }
 
-  Future<void> GetKanBanTodo() async {
-    setState(() {
-      _loading = true; // Show loading spinner
-    });
-    var res = await Userapi.GetTaskKanBan(widget.id, "to_do");
-    setState(() {
-      _loading = false; // Hide loading spinner
-      if (res != null && res.settings?.success == 1) {
-        data = res.data ?? [];
-        data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
-
-        filteredRooms = data; // Initialize with all data
-        showNoDataFoundMessage = data.isEmpty;
-      } else {
-        showNoDataFoundMessage = true;
-      }
-    });
-  }
-
-  Future<void> GetKanBanInProgress() async {
-    setState(() {
-      _loading = true; // Show loading spinner
-    });
-    var res = await Userapi.GetTaskKanBan(widget.id, "in_progress");
-    setState(() {
-      _loading = false; // Hide loading spinner
-      if (res != null && res.settings?.success == 1) {
-        data = res.data ?? [];
-        data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
-
-        filteredRooms = data; // Initialize with all data
-        showNoDataFoundMessage = data.isEmpty;
-      } else {
-        showNoDataFoundMessage = true;
-      }
-    });
-  }
-
-  Future<void> GetKanBanCompleted() async {
-    setState(() {
-      _loading = true; // Show loading spinner
-    });
-    var res = await Userapi.GetTaskKanBan(widget.id, "completed");
-    setState(() {
-      _loading = false; // Hide loading spinner
-      if (res != null && res.settings?.success == 1) {
-        data = res.data ?? [];
-        data.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
-
-        filteredRooms = data; // Initialize with all data
-        showNoDataFoundMessage = data.isEmpty;
-      } else {
-        showNoDataFoundMessage = true;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,17 +310,17 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                                           ],
                                                         ),
                                                         SizedBox(height: 8),
-                                                        FlutterImageStack(
-                                                          imageList: _images,
-                                                          totalCount: _images.length,
-                                                          showTotalCount: true,
-                                                          extraCountTextStyle: TextStyle(
-                                                            color: Color(0xff8856F4),
-                                                          ),
-                                                          backgroundColor: Colors.white,
-                                                          itemRadius: 35,
-                                                          itemBorderWidth: 3,
-                                                        ),
+                                                        // FlutterImageStack(
+                                                        //   imageList: _images,
+                                                        //   totalCount: _images.length,
+                                                        //   showTotalCount: true,
+                                                        //   extraCountTextStyle: TextStyle(
+                                                        //     color: Color(0xff8856F4),
+                                                        //   ),
+                                                        //   backgroundColor: Colors.white,
+                                                        //   itemRadius: 35,
+                                                        //   itemBorderWidth: 3,
+                                                        // ),
                                                       ],
                                                     ),
                                                   ),]
@@ -541,17 +480,17 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                                       ],
                                                     ),
                                                     SizedBox(height: 8),
-                                                    FlutterImageStack(
-                                                      imageList: _images,
-                                                      totalCount: _images.length,
-                                                      showTotalCount: true,
-                                                      extraCountTextStyle: TextStyle(
-                                                        color: Color(0xff8856F4),
-                                                      ),
-                                                      backgroundColor: Colors.white,
-                                                      itemRadius: 35,
-                                                      itemBorderWidth: 3,
-                                                    ),
+                                                    // FlutterImageStack(
+                                                    //   imageList: _images,
+                                                    //   totalCount: _images.length,
+                                                    //   showTotalCount: true,
+                                                    //   extraCountTextStyle: TextStyle(
+                                                    //     color: Color(0xff8856F4),
+                                                    //   ),
+                                                    //   backgroundColor: Colors.white,
+                                                    //   itemRadius: 35,
+                                                    //   itemBorderWidth: 3,
+                                                    // ),
                                                   ],
                                                 ),
                                               ),]
@@ -711,17 +650,17 @@ class _TaskKanBanState extends State<TaskKanBan> {
                                                       ],
                                                     ),
                                                     SizedBox(height: 8),
-                                                    FlutterImageStack(
-                                                      imageList: _images,
-                                                      totalCount: _images.length,
-                                                      showTotalCount: true,
-                                                      extraCountTextStyle: TextStyle(
-                                                        color: Color(0xff8856F4),
-                                                      ),
-                                                      backgroundColor: Colors.white,
-                                                      itemRadius: 35,
-                                                      itemBorderWidth: 3,
-                                                    ),
+                                                    // FlutterImageStack(
+                                                    //   imageList: _images,
+                                                    //   totalCount: _images.length,
+                                                    //   showTotalCount: true,
+                                                    //   extraCountTextStyle: TextStyle(
+                                                    //     color: Color(0xff8856F4),
+                                                    //   ),
+                                                    //   backgroundColor: Colors.white,
+                                                    //   itemRadius: 35,
+                                                    //   itemBorderWidth: 3,
+                                                    // ),
                                                   ],
                                                 ),
                                               ),]

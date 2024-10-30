@@ -11,6 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Authentication/LogInScreen.dart';
 import 'package:skill/Authentication/Otp.dart';
+import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:skill/utils/constants.dart';
@@ -154,8 +155,12 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) =>
-                ThemeProvider(lightTheme)), // Set initial theme
+            create: (context) => ThemeProvider(lightTheme)),
+
+        ChangeNotifierProvider(
+            create: (context) => KanbanProvider()),
+
+
         // Add other providers here as needed
       ],
       child: MyApp(),

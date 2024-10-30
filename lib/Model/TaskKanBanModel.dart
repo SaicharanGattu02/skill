@@ -1,14 +1,14 @@
 class GetTaskKanBanModel {
-  List<Data>? data;
+  List<Kanban>? data;
   Settings? settings;
 
   GetTaskKanBanModel({this.data, this.settings});
 
   GetTaskKanBanModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Kanban>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new Kanban.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,7 +28,7 @@ class GetTaskKanBanModel {
   }
 }
 
-class Data {
+class Kanban {
   String? id;
   String? title;
   String? description;
@@ -40,7 +40,7 @@ class Data {
   List<Collaborators>? collaborators;
   String? status;
 
-  Data(
+  Kanban(
       {
         this.id,
         this.title,
@@ -56,7 +56,7 @@ class Data {
       }
       );
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Kanban.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];
