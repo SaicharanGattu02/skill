@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Services/UserApi.dart';
 import '../screens/dashboard.dart';
 
 class SetPassword extends StatefulWidget {
@@ -13,14 +14,54 @@ class SetPassword extends StatefulWidget {
 
 class _SetPasswordState extends State<SetPassword> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   final FocusNode _focusNodePassword = FocusNode();
   final FocusNode _focusNodeConfirmPassword = FocusNode();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  bool _loading=false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void>UpdatePassword() async {
+    var res = await Userapi.changePassword(_passwordController.text,_confirmPasswordController.text);
+    setState(() {
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          _loading = false;
+        } else {
+          _loading = false;
+        }
+      }
+    });
+  }
+
+  String ValidatePassword="";
+  String ValidateConfirmPassword="";
+
+  void _validateFields() {
+    setState(() {
+      // Check if the fields are empty and set validation messages accordingly
+      ValidatePassword = _passwordController.text.isEmpty ? "Please enter password" : "";
+      ValidateConfirmPassword = _passwordController.text!= _passwordController.text  ? "Passwords do not match" : "";
+    });
+
+    // Check if both validations are empty (no errors)
+    if (ValidatePassword.isEmpty && ValidateConfirmPassword.isEmpty) {
+      // Proceed with the API call if validations pass
+
+    }else{
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,20 +97,18 @@ class _SetPasswordState extends State<SetPassword> {
                       alignment: Alignment.topCenter,
                     ),
                     const SizedBox(height: 18),
-                    SingleChildScrollView(
-                      child: SizedBox(
-                        width: w * 0.4,
-                        child: Text(
-                          'Set New Password',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 25,
-                            color: Color(0xffEEEEEE),
-                            fontWeight: FontWeight.w700,
-                            height: 38.4 / 32,
-                            letterSpacing: -0.02,
-                          ),
+                    SizedBox(
+                      width: w * 0.8,
+                      child: Text(
+                        'Set New Password',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 25,
+                          color: Color(0xffEEEEEE),
+                          fontWeight: FontWeight.w700,
+                          height: 38.4 / 32,
+                          letterSpacing: -0.02,
                         ),
                       ),
                     ),
@@ -81,10 +120,10 @@ class _SetPasswordState extends State<SetPassword> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 10,
+                          fontSize: 12,
                           color: Color(0xffEEEEEE),
-                          fontWeight: FontWeight.w500,
-                          height: 16.8 / 10,
+                          fontWeight: FontWeight.w400,
+                          height: 16.8 / 12,
                           letterSpacing: -0.01,
                         ),
                       ),
@@ -152,10 +191,7 @@ class _SetPasswordState extends State<SetPassword> {
                     const SizedBox(height: 24),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Dashboard()),
-                        );
+
                       },
                       child: Container(
                         width: w,
@@ -206,6 +242,8 @@ class _SetPasswordState extends State<SetPassword> {
         keyboardType: keyboardType,
         obscureText: obscureText,
         decoration: InputDecoration(
+          contentPadding:
+          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           hintText: hintText,
           prefixIcon: Container(
             width: 21,
@@ -247,6 +285,7 @@ class _SetPasswordState extends State<SetPassword> {
             borderSide: const BorderSide(width: 1, color: Colors.red),
           ),
         ),
+        textAlignVertical: TextAlignVertical.center,
       ),
     );
   }

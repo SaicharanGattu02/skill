@@ -35,7 +35,6 @@ import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
-import 'EditProfileScreen.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;

@@ -32,6 +32,9 @@ class UserData {
   String? mobile;
   String? userNumber;
   String? gender;
+  String? linkedin;
+  String? address;
+  bool? is_mobile_private;
   Employee? employee;
   int? projectCount;
   int? todoCount;
@@ -51,6 +54,9 @@ class UserData {
         this.projectCount,
         this.todoCount,
         this.tasksCount,
+        this.linkedin,
+        this.is_mobile_private,
+        this.address,
         this.meetingCount});
 
   UserData.fromJson(Map<String, dynamic> json) {
@@ -69,6 +75,9 @@ class UserData {
     todoCount = json['todo_count'];
     tasksCount = json['tasks_count'];
     meetingCount = json['meeting_count'];
+    linkedin = json['linkedin'];
+    is_mobile_private = json['is_mobile_private'];
+    address = json['address'];
   }
 
   Map<String, dynamic> toJson() {
@@ -88,6 +97,9 @@ class UserData {
     data['todo_count'] = this.todoCount;
     data['tasks_count'] = this.tasksCount;
     data['meeting_count'] = this.meetingCount;
+    data['linkedin'] = this.linkedin;
+    data['is_mobile_private'] = this.is_mobile_private;
+    data['address'] = this.address;
     return data;
   }
 }

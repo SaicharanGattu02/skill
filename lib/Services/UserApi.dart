@@ -51,8 +51,8 @@ import 'otherservices.dart';
 import 'package:path/path.dart' as p;
 
 class Userapi {
-  static String host = "http://192.168.0.32:8000";
-  // static String host = "https://stage.skil.in";
+  // static String host = "http://192.168.0.32:8000";
+  static String host = "https://stage.skil.in";
 
   static Future<RegisterModel?> PostRegister(String fullname, String mail,
       String phone, String password, String gender) async {
@@ -1598,7 +1598,7 @@ class Userapi {
   }
 
   static Future<LoginModel?> UpdateUserDetails(
-      String fullname, String phonenumber, File? image) async {
+      String fullname, String phonenumber,String gender,String linkdin,int status,String address,File? image) async {
     String? mimeType; // Declare mimeType outside the condition
 
     // Validate the file type if an image is provided
@@ -1620,7 +1620,11 @@ class Userapi {
       var request = http.MultipartRequest('PUT', url)
         ..headers.addAll(headers)
         ..fields['full_name'] = fullname
-        ..fields['mobile'] = phonenumber;
+        // ..fields['mobile'] = phonenumber
+        ..fields['gender'] = gender
+        ..fields['linkedin'] = linkdin
+        ..fields['is_mobile_private'] = status.toString()
+        ..fields['address'] = address;
 
       // Attach the image file to the request if it exists
       if (image != null) {
@@ -1633,7 +1637,7 @@ class Userapi {
         );
       }
 
-      print("Request: $request");
+      print("Request: ${request.fields}");
 
       // Send the request
       var response = await request.send();
@@ -1937,6 +1941,31 @@ class Userapi {
         final jsonResponse = jsonDecode(response.body);
         print("createZoomMeeting response: ${response.body}");
         return CreateZoomMeeting.fromJson(jsonResponse);
+      } else {
+        print('Error: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+    return null; // Return null if an error occurs
+  }
+
+ static Future<LoginModel?> changePassword(String _password,String _retypePassword) async {
+    try {
+      final url = '${host}/dashboard/change-password';
+      final headers = await getheader();
+      final response = await http.put(
+        Uri.parse(url),
+        headers:headers,
+        body: jsonEncode({
+          'password': _password,
+          'retype_password': _retypePassword,
+        }),
+      );
+      if (response.statusCode == 200) { // Check for successful response
+        final jsonResponse = jsonDecode(response.body);
+        print("changePassword response: ${response.body}");
+        return LoginModel.fromJson(jsonResponse);
       } else {
         print('Error: ${response.statusCode} ${response.body}');
       }

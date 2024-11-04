@@ -10,6 +10,7 @@ import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import 'SetPassword.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -454,7 +455,7 @@ class _LogInScreenState extends State<LogInScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ForgotPassword()));
+                                    builder: (context) => SetPassword()));
                           },
                           child: Text(
                             "Forgot Password?",

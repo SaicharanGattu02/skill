@@ -1,6 +1,8 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/UserDetailsModel.dart';
+import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart';
 
@@ -38,32 +40,113 @@ class _GeneralInfoState extends State<GeneralInfo> {
   final List<String> items = [
     'Public',
     'Private',
-
   ];
   final spinkit = Spinkits();
 
-  void _validateFields() {
+  @override
+  void initState() {
+    super.initState();
+    GetUserDeatails();
+  }
+
+  UserData? userdata;
+  Future<void> GetUserDeatails() async {
+    var res = await Userapi.GetUserdetails();
     setState(() {
-      _validateFirstName =
-          _firstNameController.text.isEmpty ? "Please enter a firstName" : "";
-      _validateLastName =
-          _lastNameController.text.isEmpty ? "Please enter a lastName" : "";
-      _validateLinkdn = _linkdnController.text.isEmpty
-          ? "Please enter a valid linkdn url"
-          : "";
-      _validatePhone =
-          _phoneController.text.isEmpty ? "Please enter a phonenumber" : "";
-      _validateAddress =
-          _addressController.text.isEmpty ? "Please enter a address" : "";
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          _isLoading=false;
+          userdata = res.data;
+          final fullName = res.data?.fullName ?? "";
+          final nameParts = fullName.split(' ');
+
+          // Set first name and last name accordingly
+          if (nameParts.length > 0) {
+            _firstNameController.text = nameParts[0]; // Set first name
+          }
+          if (nameParts.length > 1) {
+            _lastNameController.text = nameParts.sublist(1).join(' '); // Set last name
+          } else {
+            _lastNameController.text = ""; // Clear last name if no last part
+          }
+
+          _phoneController.text = res.data?.mobile ?? "";
+          _linkdnController.text = res.data?.linkedin ?? "";
+          _addressController.text = res.data?.address ?? "";
+          if(res.data?.is_mobile_private==true){
+            selectedValue="Public";
+          }else{
+            selectedValue="Private";
+          }
+
+          if(res.data?.gender=="Male"){
+            _gender="male";
+          }else if(res.data?.gender=="Female"){
+            _gender="female";
+          }else{
+            _gender="other";
+          }
+
+        } else {
+          _isLoading=false;
+        }
+      }
+    });
+  }
+
+  Future<void> UpdateProfile() async {
+    int? status;
+    setState(() {
+      if(selectedValue=="Public"){
+        status=0;
+      }else{
+        status=1;
+      }
     });
 
-    if (_validateFirstName.isEmpty &&
-        _validateLastName.isEmpty &&
-        _validateLinkdn.isEmpty &&
-        _validatePhone.isEmpty) {
-      // UpdateProfile();
+    var res = await Userapi.UpdateUserDetails(
+        "${_firstNameController.text} ${_lastNameController.text}",
+        _phoneController.text,
+        _gender,
+        _linkdnController.text,
+        status!,
+        _addressController.text,
+        null);
+    if (res != null) {
+      if (res.settings?.success == 1) {
+        CustomSnackBar.show(context, "${res.settings?.message}");
+      } else {
+        print("Update failure: ${res.settings?.message}");
+        CustomSnackBar.show(context, "${res.settings?.message}");
+      }
+    } else {
+      print("Update failed: ${res?.settings?.message}");
+      CustomSnackBar.show(context, "${res?.settings?.message}");
     }
   }
+
+  // void _validateFields() {
+  //   setState(() {
+  //     _validateFirstName =
+  //         _firstNameController.text.isEmpty ? "Please enter a firstName" : "";
+  //     _validateLastName =
+  //         _lastNameController.text.isEmpty ? "Please enter a lastName" : "";
+  //     _validateLinkdn = _linkdnController.text.isEmpty
+  //         ? "Please enter a valid linkdn url"
+  //         : "";
+  //     _validatePhone =
+  //         _phoneController.text.isEmpty ? "Please enter a phonenumber" : "";
+  //     _validateAddress =
+  //         _addressController.text.isEmpty ? "Please enter a address" : "";
+  //   });
+  //
+  //   if (_validateFirstName.isEmpty &&
+  //       _validateLastName.isEmpty &&
+  //       _validateLinkdn.isEmpty &&
+  //       _validatePhone.isEmpty) {
+  //     // UpdateProfile();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +154,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xffF3ECFB),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: Container(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.only(left: 24,right: 24,top: 24),
           margin: EdgeInsets.all(16),
           decoration: BoxDecoration(
               color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(7)),
@@ -286,7 +369,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         Transform.scale(
                           scale: 0.9,
                           child: Radio<String>(
-                            value: 'Male',
+                            value: 'male',
                             groupValue: _gender,
                             activeColor:
                                 Color(0xff8856F4), // Change the active color
@@ -311,7 +394,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         Transform.scale(
                           scale: 0.9, // Adjust the scale to decrease the size
                           child: Radio<String>(
-                            value: 'FeMale',
+                            value: 'female',
                             groupValue: _gender,
                             activeColor:
                                 Color(0xff8856F4), // Change the active color
@@ -337,7 +420,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         Transform.scale(
                           scale: 0.9, // Adjust the scale to decrease the size
                           child: Radio<String>(
-                            value: 'Other',
+                            value: 'other',
                             groupValue: _gender,
                             activeColor:
                                 Color(0xff8856F4), // Change the active color
@@ -384,132 +467,11 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 ],
                 _label(text: 'Phone Number'),
                 SizedBox(height: 6),
-                // Row(
-                //   children: [
-                //     Flexible(
-                //       child: Container(
-                //         height: MediaQuery.of(context).size.height * 0.050,
-                //         width: w * 0.45,
-                //         child: TextFormField(
-                //           controller: _phoneController,
-                //           focusNode: _focusNodePhone,
-                //           keyboardType: TextInputType.phone,
-                //           cursorColor: Color(0xff8856F4),
-                //           onTap: () {
-                //             setState(() {
-                //               _validatePhone = "";
-                //             });
-                //           },
-                //           onChanged: (v) {
-                //             setState(() {
-                //               _validatePhone = "";
-                //             });
-                //           },
-                //           decoration: InputDecoration(
-                //             contentPadding:
-                //                 EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                //             hintText: "Phone Number",
-                //             hintStyle: const TextStyle(
-                //               fontSize: 14,
-                //               letterSpacing: 0,
-                //               height: 19.36 / 14,
-                //               color: Color(0xffAFAFAF),
-                //               fontFamily: 'Inter',
-                //               fontWeight: FontWeight.w400,
-                //             ),
-                //             prefixIcon: Container(
-                //               width: 21,
-                //               height: 21,
-                //               padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                //               child: Image.asset(
-                //                 "assets/call.png",
-                //                 width: 21,
-                //                 height: 21,
-                //                 fit: BoxFit.contain,
-                //                 color: Color(0xffAFAFAF),
-                //               ),
-                //             ),
-                //             filled: true,
-                //             fillColor: const Color(0xffFCFAFF),
-                //             enabledBorder: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(7),
-                //               borderSide: const BorderSide(
-                //                   width: 1, color: Color(0xffd0cbdb)),
-                //             ),
-                //             focusedBorder: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(7),
-                //               borderSide: const BorderSide(
-                //                   width: 1, color: Color(0xffd0cbdb)),
-                //             ),
-                //             errorBorder: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(7),
-                //               borderSide: const BorderSide(
-                //                   width: 1, color: Color(0xffd0cbdb)),
-                //             ),
-                //             focusedErrorBorder: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(7),
-                //               borderSide: const BorderSide(
-                //                   width: 1, color: Color(0xffd0cbdb)),
-                //             ),
-                //           ),
-                //           style: TextStyle(
-                //             fontSize: 14, // Ensure font size fits within height
-                //             overflow:
-                //                 TextOverflow.ellipsis, // Add ellipsis for long text
-                //           ),
-                //           textAlignVertical: TextAlignVertical.center,
-                //         ),
-                //       ),
-                //     ),
-                //  SizedBox(width: 10,),
-                //  Flexible(
-                //    child: Container(
-                //       height: MediaQuery.of(context).size.height * 0.050,
-                //       // width: w * 0.3,
-                //      padding: EdgeInsets.all(10),
-                //      decoration: BoxDecoration(
-                //        color: Color(0xffDDDDDD),
-                //        borderRadius: BorderRadius.circular(7),
-                //      ),
-                //      child: Row(
-                //        children: [
-                //          Image.asset(
-                //            'assets/gmail.png',
-                //            fit: BoxFit.contain,
-                //            height: h * 0.1,
-                //            width: w * 0.1, // Adjusted width for better layout
-                //          ),
-                //          SizedBox(width: w * 0.01),
-                //          DropdownButton<String>(
-                //            value: _selectedValue,
-                //            items: _options.map((String value) {
-                //              return DropdownMenuItem<String>(
-                //                value: value,
-                //                child: Text(value),
-                //              );
-                //            }).toList(),
-                //            onChanged: (String? newValue) {
-                //              setState(() {
-                //                _selectedValue = newValue;
-                //              });
-                //            },
-                //            underline: SizedBox(), // Removes the underline
-                //            isExpanded: true, // Makes dropdown take full width
-                //            icon: Icon(Icons.arrow_drop_down), // Dropdown icon
-                //          ),
-                //        ],
-                //      ),
-                //    ),
-                //  )
-                //
-                //
-                //   ],
-                // ),
                 Row(
                   children: [
                     Container(
                       height: h * 0.05,
-                      width: w*0.4,
+                      width: w * 0.47,
                       child: TextFormField(
                         controller: _phoneController,
                         focusNode: _focusNodePhone,
@@ -526,7 +488,8 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           });
                         },
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                           hintText: "Phone Number",
                           hintStyle: const TextStyle(
                             fontSize: 14,
@@ -550,19 +513,23 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           fillColor: const Color(0xffFCFAFF),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
-                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
-                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
-                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
-                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                            borderSide: const BorderSide(
+                                width: 1, color: Color(0xffd0cbdb)),
                           ),
                         ),
                         style: TextStyle(
@@ -572,29 +539,33 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
-                    SizedBox(width: 10),
-                    Row(
-                      children: [
-                        SizedBox(width: w * 0.01),
+                    SizedBox(width: w * 0.02),
                     Container(
-                      width: w*0.32,
-                      padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8,),
-                           decoration: BoxDecoration(
-                             color: Color(0xffDDDDDD),
-                             borderRadius: BorderRadius.circular(7),
-                           ),
+                      width: w * 0.3,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        border: Border.all(
+                          color: Color(0xffD0CBDB),
+                        ),
+                        color: Color(0xffFCFAFF),
+                      ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton2<String>(
-                          customButton:
-                          Row(
+                          customButton: Row(
                             children: [
                               Image.asset(
                                 'assets/globe.png',
                                 fit: BoxFit.contain,
-                                height: h * 0.02, // Match height of the container
+                                height:
+                                    h * 0.02, // Match height of the container
                                 width: w * 0.04,
                               ),
-                              SizedBox(width: 8), // Space between image and text
+                              SizedBox(
+                                  width: 8), // Space between image and text
                               Text(
                                 selectedValue ?? 'Select an option',
                                 style: const TextStyle(
@@ -603,13 +574,11 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                   color: Colors.black,
                                 ),
                               ),
-
+                              Spacer(),
                               Icon(
                                 Icons.keyboard_arrow_down_sharp,
                                 size: 25,
                               ),
-
-
                             ],
                           ),
                           isExpanded: true,
@@ -668,15 +637,11 @@ class _GeneralInfoState extends State<GeneralInfo> {
                             height: 40,
                             padding: EdgeInsets.only(left: 14, right: 14),
                           ),
-                        ),),
-
+                        ),
+                      ),
                     ),
-                      ],
-                    ),
-
                   ],
                 ),
-
 
                 if (_validatePhone.isNotEmpty) ...[
                   Container(
@@ -935,7 +900,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
             Spacer(),
             InkResponse(
               onTap: () {
-                _validateFields();
+                UpdateProfile();
               },
               child: Container(
                 height: 40,

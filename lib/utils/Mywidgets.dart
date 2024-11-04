@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 
@@ -432,6 +433,30 @@ class MeetingTypess {
 
   MeetingTypess({required this.meetingtypevalue,});
 }
+
+class HemispherePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Color(0xff8856F4)
+      ..style = PaintingStyle.fill;
+
+    // Draw the hemisphere
+    canvas.drawArc(
+      Rect.fromLTWH(10, 0, size.width, size.height),
+      0, // Start angle
+      3.14, // Sweep angle for a semicircle
+      true, // Use center for the arc
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
 
 
 
