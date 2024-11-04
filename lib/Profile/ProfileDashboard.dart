@@ -61,24 +61,43 @@ class _ProfileDashboardState extends State<ProfileDashboard>
               children: [
                 Row(
                   children: [
-                    ClipOval(
-                      child: Center(
-                        child:
-                            // Image.network(
-                            //   userdata?.image ?? "",
-                            //   width: 70,
-                            //   height: 70,
-                            //   fit: BoxFit.cover,
-                            // ),
-                            Image.asset(
-                          "assets/prashanth.png",
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            "assets/prashanth.png",
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          // Adjust the positioning as needed
+                          bottom: 0,
+                          child: Container(
+                            height: 25,
+                            width: w*0.18,
+                           
+                            
+                            decoration: BoxDecoration(
+                            color: Color(0xff8856F4),borderRadius: BorderRadius.only(bottomRight: Radius.circular(1000),bottomLeft: Radius.circular(100))
+                            ),
+                            child: Center(
+                              child: Text(
+                                '1', // Example text (like a notification count)
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
+
+                     SizedBox(width: 10),
                     // User Info and Performance
                     Expanded(
                       child: Column(
@@ -162,7 +181,6 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                       "UX/UI Designer at PIXL Since 2024",
                                       style: TextStyle(
                                           color: const Color(0xff6C848F),
-
                                           fontWeight: FontWeight.w400,
                                           fontSize: 14,
                                           height: 16.21 / 14,
@@ -221,18 +239,18 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 4, vertical: 3),
                                             decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              color:Color(0xff2572ED).withOpacity(0.08)
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                color: Color(0xff2572ED)
+                                                    .withOpacity(0.08)),
                                             child: Row(
                                               children: [
                                                 Image.asset(
                                                   "assets/gmail.png",
                                                   fit: BoxFit.contain,
                                                   width: 12,
-                                                    color: const Color(
-                                                        0xff2572ED),
+                                                  color:
+                                                      const Color(0xff2572ED),
                                                 ),
                                                 SizedBox(width: 4),
                                                 Expanded(
@@ -307,13 +325,13 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                 return Tab(
                   child: Center(
                     child: Text(
-                      // index == 0
-                      //     ?
-                          'General Info'
-                          // : index == 1
-                          //     ? 'Job Info'
-                          //     : 'Payslips',
-                    ),
+                        // index == 0
+                        //     ?
+                        'General Info'
+                        // : index == 1
+                        //     ? 'Job Info'
+                        //     : 'Payslips',
+                        ),
                   ),
                 );
               }),
@@ -330,11 +348,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
             child: PageView(
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
-              children: [
-                GeneralInfo(),
-                JobInfo(),
-                PaySlips()
-              ],
+              children: [GeneralInfo(), JobInfo(), PaySlips()],
             ),
           ),
         ],

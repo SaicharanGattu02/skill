@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/CustomSnackBar.dart';
@@ -33,7 +34,12 @@ class _GeneralInfoState extends State<GeneralInfo> {
   String _gender = "";
 
   bool _isLoading = false;
+  String? selectedValue = 'Public';
+  final List<String> items = [
+    'Public',
+    'Private',
 
+  ];
   final spinkit = Spinkits();
 
   void _validateFields() {
@@ -70,8 +76,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
           padding: EdgeInsets.all(24),
           margin: EdgeInsets.all(16),
           decoration: BoxDecoration(
-              color: Color(0xffFFFFFF),
-              borderRadius: BorderRadius.circular(7)),
+              color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(7)),
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Column(
@@ -109,19 +114,19 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      prefixIcon: Container(
-                        width: 18,
-                        height: 18,
-                        padding:
-                            EdgeInsets.only(top: 14, bottom: 14, left: 6),
-                        child: Image.asset(
-                          "assets/profilep.png",
-                          width: 18,
-                          height: 18,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        ),
-                      ),
+                      // prefixIcon:
+                      // Container(
+                      //   width: 18,
+                      //   height: 18,
+                      //   padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
+                      //   child: Image.asset(
+                      //     "assets/profilep.png",
+                      //     width: 18,
+                      //     height: 18,
+                      //     fit: BoxFit.contain,
+                      //     color: Color(0xffAFAFAF),
+                      //   ),
+                      // ),
                       filled: true,
                       fillColor: const Color(0xffFCFAFF),
                       enabledBorder: OutlineInputBorder(
@@ -206,19 +211,18 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      prefixIcon: Container(
-                        width: 21,
-                        height: 21,
-                        padding:
-                            EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                        child: Image.asset(
-                          "assets/profilep.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        ),
-                      ),
+                      // prefixIcon: Container(
+                      //   width: 21,
+                      //   height: 21,
+                      //   padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                      //   child: Image.asset(
+                      //     "assets/profilep.png",
+                      //     width: 21,
+                      //     height: 21,
+                      //     fit: BoxFit.contain,
+                      //     color: Color(0xffAFAFAF),
+                      //   ),
+                      // ),
                       filled: true,
                       fillColor: const Color(0xffFCFAFF),
                       enabledBorder: OutlineInputBorder(
@@ -336,7 +340,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                             value: 'Other',
                             groupValue: _gender,
                             activeColor:
-                            Color(0xff8856F4), // Change the active color
+                                Color(0xff8856F4), // Change the active color
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -380,79 +384,299 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 ],
                 _label(text: 'Phone Number'),
                 SizedBox(height: 6),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.050,
-                  child: TextFormField(
-                    controller: _phoneController,
-                    focusNode: _focusNodePhone,
-                    keyboardType: TextInputType.phone,
-                    cursorColor: Color(0xff8856F4),
-                    onTap: () {
-                      setState(() {
-                        _validatePhone = "";
-                      });
-                    },
-                    onChanged: (v) {
-                      setState(() {
-                        _validatePhone = "";
-                      });
-                    },
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      hintText: "Phone Number",
-                      hintStyle: const TextStyle(
-                        fontSize: 14,
-                        letterSpacing: 0,
-                        height: 19.36 / 14,
-                        color: Color(0xffAFAFAF),
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                      ),
-                      prefixIcon: Container(
-                        width: 21,
-                        height: 21,
-                        padding:
-                            EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                        child: Image.asset(
-                          "assets/call.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
+                // Row(
+                //   children: [
+                //     Flexible(
+                //       child: Container(
+                //         height: MediaQuery.of(context).size.height * 0.050,
+                //         width: w * 0.45,
+                //         child: TextFormField(
+                //           controller: _phoneController,
+                //           focusNode: _focusNodePhone,
+                //           keyboardType: TextInputType.phone,
+                //           cursorColor: Color(0xff8856F4),
+                //           onTap: () {
+                //             setState(() {
+                //               _validatePhone = "";
+                //             });
+                //           },
+                //           onChanged: (v) {
+                //             setState(() {
+                //               _validatePhone = "";
+                //             });
+                //           },
+                //           decoration: InputDecoration(
+                //             contentPadding:
+                //                 EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                //             hintText: "Phone Number",
+                //             hintStyle: const TextStyle(
+                //               fontSize: 14,
+                //               letterSpacing: 0,
+                //               height: 19.36 / 14,
+                //               color: Color(0xffAFAFAF),
+                //               fontFamily: 'Inter',
+                //               fontWeight: FontWeight.w400,
+                //             ),
+                //             prefixIcon: Container(
+                //               width: 21,
+                //               height: 21,
+                //               padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
+                //               child: Image.asset(
+                //                 "assets/call.png",
+                //                 width: 21,
+                //                 height: 21,
+                //                 fit: BoxFit.contain,
+                //                 color: Color(0xffAFAFAF),
+                //               ),
+                //             ),
+                //             filled: true,
+                //             fillColor: const Color(0xffFCFAFF),
+                //             enabledBorder: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(7),
+                //               borderSide: const BorderSide(
+                //                   width: 1, color: Color(0xffd0cbdb)),
+                //             ),
+                //             focusedBorder: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(7),
+                //               borderSide: const BorderSide(
+                //                   width: 1, color: Color(0xffd0cbdb)),
+                //             ),
+                //             errorBorder: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(7),
+                //               borderSide: const BorderSide(
+                //                   width: 1, color: Color(0xffd0cbdb)),
+                //             ),
+                //             focusedErrorBorder: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(7),
+                //               borderSide: const BorderSide(
+                //                   width: 1, color: Color(0xffd0cbdb)),
+                //             ),
+                //           ),
+                //           style: TextStyle(
+                //             fontSize: 14, // Ensure font size fits within height
+                //             overflow:
+                //                 TextOverflow.ellipsis, // Add ellipsis for long text
+                //           ),
+                //           textAlignVertical: TextAlignVertical.center,
+                //         ),
+                //       ),
+                //     ),
+                //  SizedBox(width: 10,),
+                //  Flexible(
+                //    child: Container(
+                //       height: MediaQuery.of(context).size.height * 0.050,
+                //       // width: w * 0.3,
+                //      padding: EdgeInsets.all(10),
+                //      decoration: BoxDecoration(
+                //        color: Color(0xffDDDDDD),
+                //        borderRadius: BorderRadius.circular(7),
+                //      ),
+                //      child: Row(
+                //        children: [
+                //          Image.asset(
+                //            'assets/gmail.png',
+                //            fit: BoxFit.contain,
+                //            height: h * 0.1,
+                //            width: w * 0.1, // Adjusted width for better layout
+                //          ),
+                //          SizedBox(width: w * 0.01),
+                //          DropdownButton<String>(
+                //            value: _selectedValue,
+                //            items: _options.map((String value) {
+                //              return DropdownMenuItem<String>(
+                //                value: value,
+                //                child: Text(value),
+                //              );
+                //            }).toList(),
+                //            onChanged: (String? newValue) {
+                //              setState(() {
+                //                _selectedValue = newValue;
+                //              });
+                //            },
+                //            underline: SizedBox(), // Removes the underline
+                //            isExpanded: true, // Makes dropdown take full width
+                //            icon: Icon(Icons.arrow_drop_down), // Dropdown icon
+                //          ),
+                //        ],
+                //      ),
+                //    ),
+                //  )
+                //
+                //
+                //   ],
+                // ),
+                Row(
+                  children: [
+                    Container(
+                      height: h * 0.05,
+                      width: w*0.4,
+                      child: TextFormField(
+                        controller: _phoneController,
+                        focusNode: _focusNodePhone,
+                        keyboardType: TextInputType.phone,
+                        cursorColor: Color(0xff8856F4),
+                        onTap: () {
+                          setState(() {
+                            _validatePhone = "";
+                          });
+                        },
+                        onChanged: (v) {
+                          setState(() {
+                            _validatePhone = "";
+                          });
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          hintText: "Phone Number",
+                          hintStyle: const TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 0,
+                            height: 19.36 / 14,
+                            color: Color(0xffAFAFAF),
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          // prefixIcon: Padding(
+                          //   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                          //   child: Image.asset(
+                          //     "assets/call.png",
+                          //     width: 21,
+                          //     height: 21,
+                          //     fit: BoxFit.contain,
+                          //     color: Color(0xffAFAFAF),
+                          //   ),
+                          // ),
+                          filled: true,
+                          fillColor: const Color(0xffFCFAFF),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: const BorderSide(width: 1, color: Color(0xffd0cbdb)),
+                          ),
                         ),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffFCFAFF),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
                       ),
                     ),
-                    style: TextStyle(
-                      fontSize: 14, // Ensure font size fits within height
-                      overflow:
-                          TextOverflow.ellipsis, // Add ellipsis for long text
+                    SizedBox(width: 10),
+                    Row(
+                      children: [
+                        SizedBox(width: w * 0.01),
+                    Container(
+                      width: w*0.32,
+                      padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8,),
+                           decoration: BoxDecoration(
+                             color: Color(0xffDDDDDD),
+                             borderRadius: BorderRadius.circular(7),
+                           ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<String>(
+                          customButton:
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/globe.png',
+                                fit: BoxFit.contain,
+                                height: h * 0.02, // Match height of the container
+                                width: w * 0.04,
+                              ),
+                              SizedBox(width: 8), // Space between image and text
+                              Text(
+                                selectedValue ?? 'Select an option',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down_sharp,
+                                size: 25,
+                              ),
+
+
+                            ],
+                          ),
+                          isExpanded: true,
+                          items: items.map((String item) {
+                            return DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          value: selectedValue,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                          },
+                          // buttonStyleData: ButtonStyleData(
+                          //   width: w * 0.35,
+                          //   padding: const EdgeInsets.only(left: 14, right: 14),
+                          //   decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(7),
+                          //     border: Border.all(
+                          //       color: Color(0xffD0CBDB),
+                          //     ),
+                          //     color: Color(0xffDDDDDD),
+                          //   ),
+                          // ),
+                          iconStyleData: const IconStyleData(
+                            icon: Icon(
+                              Icons.keyboard_arrow_down_sharp,
+                              size: 25,
+                            ),
+                            iconEnabledColor: Colors.black,
+                            iconDisabledColor: Colors.black,
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              color: Colors.white,
+                            ),
+                            scrollbarTheme: ScrollbarThemeData(
+                              radius: const Radius.circular(40),
+                              thickness: MaterialStateProperty.all(6),
+                              thumbVisibility: MaterialStateProperty.all(true),
+                            ),
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 40,
+                            padding: EdgeInsets.only(left: 14, right: 14),
+                          ),
+                        ),),
+
                     ),
-                    textAlignVertical: TextAlignVertical.center,
-                  ),
+                      ],
+                    ),
+
+                  ],
                 ),
+
+
                 if (_validatePhone.isNotEmpty) ...[
                   Container(
                     alignment: Alignment.topLeft,
@@ -507,19 +731,18 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      prefixIcon: Container(
-                        width: 21,
-                        height: 21,
-                        padding:
-                            EdgeInsets.only(top: 10, bottom: 10, left: 6),
-                        child: Image.asset(
-                          "assets/gmail.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        ),
-                      ),
+                      // prefixIcon: Container(
+                      //   width: 21,
+                      //   height: 21,
+                      //   padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                      //   child: Image.asset(
+                      //     "assets/gmail.png",
+                      //     width: 21,
+                      //     height: 21,
+                      //     fit: BoxFit.contain,
+                      //     color: Color(0xffAFAFAF),
+                      //   ),
+                      // ),
                       filled: true,
                       fillColor: const Color(0xffFCFAFF),
                       enabledBorder: OutlineInputBorder(
@@ -548,8 +771,8 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       overflow:
                           TextOverflow.ellipsis, // Add ellipsis for long text
                     ),
-                    textAlignVertical: TextAlignVertical
-                        .center, // Vertically center the text
+                    textAlignVertical:
+                        TextAlignVertical.center, // Vertically center the text
                   ),
                 ),
                 if (_validateLinkdn.isNotEmpty) ...[
@@ -606,19 +829,18 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      prefixIcon: Container(
-                        width: 21,
-                        height: 21,
-                        padding:
-                            EdgeInsets.only(top: 14, bottom: 14, left: 6),
-                        child: Image.asset(
-                          "assets/gmail.png",
-                          width: 21,
-                          height: 21,
-                          fit: BoxFit.contain,
-                          color: Color(0xffAFAFAF),
-                        ),
-                      ),
+                      // prefixIcon: Container(
+                      //   width: 21,
+                      //   height: 21,
+                      //   padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
+                      //   child: Image.asset(
+                      //     "assets/gmail.png",
+                      //     width: 21,
+                      //     height: 21,
+                      //     fit: BoxFit.contain,
+                      //     color: Color(0xffAFAFAF),
+                      //   ),
+                      // ),
                       filled: true,
                       fillColor: const Color(0xffFCFAFF),
                       enabledBorder: OutlineInputBorder(
@@ -647,8 +869,8 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       overflow:
                           TextOverflow.ellipsis, // Add ellipsis for long text
                     ),
-                    textAlignVertical: TextAlignVertical
-                        .center, // Vertically center the text
+                    textAlignVertical:
+                        TextAlignVertical.center, // Vertically center the text
                   ),
                 ),
                 if (_validateAddress.isNotEmpty) ...[
@@ -682,7 +904,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
         child: Row(
           children: [
             InkResponse(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
@@ -714,8 +936,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
               onTap: () {
                 _validateFields();
               },
-              child:
-              Container(
+              child: Container(
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
@@ -726,19 +947,18 @@ class _GeneralInfoState extends State<GeneralInfo> {
                   ),
                   borderRadius: BorderRadius.circular(7),
                 ),
-                child:
-                Center(
-                  child:
-                  _isLoading?spinkit.getFadingCircleSpinner():
-                  Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Color(0xffffffff),
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
+                child: Center(
+                  child: _isLoading
+                      ? spinkit.getFadingCircleSpinner()
+                      : Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
                 ),
               ),
             ),
