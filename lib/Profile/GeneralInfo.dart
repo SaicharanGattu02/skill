@@ -603,6 +603,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                   color: Colors.black,
                                 ),
                               ),
+
                               Icon(
                                 Icons.keyboard_arrow_down_sharp,
                                 size: 25,
