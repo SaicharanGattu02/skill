@@ -9,7 +9,8 @@ import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectUserTasksModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
-import '../utils/ShakeWidget.dart'; // For date formatting
+import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart'; // For date formatting
 
 
 class Addlogtime extends StatefulWidget {
@@ -660,7 +661,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                 decoration: BoxDecoration(
                   color: Color(0xffF8FCFF),
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: AppColors.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -669,7 +670,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: Color(0xff8856F4),
+                      color: AppColors.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -687,11 +688,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
-                  border: Border.all(
-                    color: Color(0xff8856F4),
-                    width: 1.0,
-                  ),
+                  color:AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(

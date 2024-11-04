@@ -10,6 +10,7 @@ import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class MileStone extends StatefulWidget {
   final String id;
@@ -217,7 +218,7 @@ class _MileStoneState extends State<MileStone> {
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F4),
+                                  color:AppColors.primaryColor,
                                   borderRadius: BorderRadius.circular(6)),
                               child: Row(
                                 children: [
@@ -325,7 +326,7 @@ class _MileStoneState extends State<MileStone> {
                                       fit: BoxFit.contain,
                                       width: w * 0.06,
                                       height: w * 0.05,
-                                      color: Color(0xff8856F4),
+                                      color:AppColors.primaryColor,
                                     ),
                                   ),
                                 ],
@@ -718,7 +719,7 @@ class _MileStoneState extends State<MileStone> {
                             decoration: BoxDecoration(
                               color: Color(0xffF8FCFF),
                               border: Border.all(
-                                color: Color(0xff8856F4),
+                                color: AppColors.primaryColor,
                                 width: 1.0,
                               ),
                               borderRadius: BorderRadius.circular(7),
@@ -727,7 +728,7 @@ class _MileStoneState extends State<MileStone> {
                               child: Text(
                                 'Close',
                                 style: TextStyle(
-                                  color: Color(0xff8856F4),
+                                  color: AppColors.primaryColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Inter',
@@ -767,11 +768,7 @@ class _MileStoneState extends State<MileStone> {
                             height: 40,
                             width: w * 0.43,
                             decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              border: Border.all(
-                                color: Color(0xff8856F4),
-                                width: 1.0,
-                              ),
+                              color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(

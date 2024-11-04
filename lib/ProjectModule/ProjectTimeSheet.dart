@@ -4,6 +4,7 @@ import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/app_colors.dart';
 
 class TimeSheet extends StatefulWidget {
   final String id;
@@ -308,7 +309,7 @@ class _TimeSheetState extends State<TimeSheet> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: Color(0xff8856F4),
+                            color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
@@ -655,7 +656,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                     detail.total ?? "",
                                     // "0245:00 ",
                                     style: TextStyle(
-                                      color: const Color(0xff8856F4),
+                                      color: AppColors.primaryColor,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 14,
                                       height: 16.94 / 14,

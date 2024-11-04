@@ -34,6 +34,7 @@ import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/app_colors.dart';
 import 'EditProfileScreen.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
@@ -450,7 +451,7 @@ class _DashboardState extends State<Dashboard> {
               leading: null, // Hides the leading icon (for drawer)
               actions: <Widget>[Container()],
               toolbarHeight: 58,
-              backgroundColor: const Color(0xff8856F4),
+              backgroundColor: AppColors.primaryColor,
               title: Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
@@ -656,7 +657,7 @@ class _DashboardState extends State<Dashboard> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                    color: const Color(0xff8856F4),
+                                    color: AppColors.primaryColor,
                                     borderRadius: BorderRadius.circular(8)),
                                 child: Column(
                                   children: [
@@ -974,7 +975,7 @@ class _DashboardState extends State<Dashboard> {
                                         fontSize: 14,
                                         height: 16.94 / 14,
                                         decoration: TextDecoration.underline,
-                                        decorationColor: Color(0xff8856F4),
+                                        decorationColor:AppColors.primaryColor,
                                         fontFamily: "Inter"),
                                   ),
                                 ),
@@ -1164,7 +1165,7 @@ class _DashboardState extends State<Dashboard> {
                             //             fontWeight: FontWeight.w500,
                             //             fontSize: 14,
                             //             decoration: TextDecoration.underline,
-                            //             decorationColor: Color(0xff8856F4),
+                            //             decorationColor:AppColors.primaryColor,
                             //             fontFamily: "Inter"),
                             //       ),
                             //     ),
@@ -1472,7 +1473,7 @@ class _DashboardState extends State<Dashboard> {
                                       width: w,
                                       height: 40,
                                       decoration: BoxDecoration(
-                                        color: Color(0xff8856F4),
+                                        color: AppColors.primaryColor,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Row(
@@ -1509,7 +1510,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
             drawer: Drawer(
-              backgroundColor: Color(0xff8856F4),
+              backgroundColor: AppColors.primaryColor,
               width: w * 0.65,
               child: Column(
                 children: [
@@ -1869,7 +1870,7 @@ class _DashboardState extends State<Dashboard> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                            color: Color(0xfff8856F4),
+                            color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(4)),
                         child: Image.asset("assets/dashboard.png"),
                       ),

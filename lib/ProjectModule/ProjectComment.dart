@@ -12,6 +12,7 @@ import 'package:skill/utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class ProjectComment extends StatefulWidget {
   final String id;
@@ -362,7 +363,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                   decoration: BoxDecoration(
                                     color: Color(0xffF8FCFF),
                                     border: Border.all(
-                                      color: Color(0xff8856F4),
+                                      color:AppColors.primaryColor,
                                       width: 1.0,
                                     ),
                                     borderRadius: BorderRadius.circular(8.0),
@@ -371,7 +372,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                     child: Text(
                                       'Upload File',
                                       style: TextStyle(
-                                        color: Color(0xff8856F4),
+                                        color:AppColors.primaryColor,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w500,
                                         fontFamily: 'Poppins',
@@ -659,7 +660,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                               style: const TextStyle(
                                                 fontSize: 14,
                                                 height: 16.94 / 14,
-                                                color: Color(0xff8856F4),
+                                                color: AppColors.primaryColor,
                                                 fontWeight: FontWeight.w600,
                                                 fontFamily: 'Inter',
                                                 decoration:
@@ -701,7 +702,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 decoration: BoxDecoration(
                   color: Color(0xffF8FCFF),
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color:AppColors.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -710,7 +711,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   child: Text(
                     'Cancel',
                     style: TextStyle(
-                      color: Color(0xff8856F4),
+                      color: AppColors.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -737,11 +738,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
-                  border: Border.all(
-                    color: Color(0xff8856F4),
-                    width: 1.0,
-                  ),
+                  color: AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(

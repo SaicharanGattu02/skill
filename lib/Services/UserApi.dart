@@ -304,16 +304,16 @@ class Userapi {
     }
   }
 
-  static Future<GetTaskKanBanModel?> TaskKanBanUpdate (String id,String Status) async {
+  static Future<LoginModel?> TaskKanBanUpdate (String id,String Status) async {
     try {
       final headers = await getheader();
       final url = Uri.parse(
           "${host}/project/project-task-kanban-update/${id}?status=${Status}");
+      print("URL:${url}");
       final res = await http.patch(url, headers: headers);
       if (res != null) {
         print("GetTaskKanBanUpdate $Status Response:${res.body}");
-
-        return GetTaskKanBanModel.fromJson(jsonDecode(res.body));
+        return LoginModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
         return null;

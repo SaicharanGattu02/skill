@@ -14,6 +14,7 @@ import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 import 'AddTask.dart';
 
 class TaskList extends StatefulWidget {
@@ -278,7 +279,7 @@ class _TaskListState extends State<TaskList> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: Color(0xff8856F4),
+                            color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
@@ -314,9 +315,9 @@ class _TaskListState extends State<TaskList> {
                     },
                     child: Image.asset(
                       "assets/filter.png",
-                      width: 20,
-                      height: 20,
-                      color: Color(0xff9E7BCA),
+                      width: 25,
+                      height: 25,
+                      color: AppColors.primaryColor,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -442,7 +443,7 @@ class _TaskListState extends State<TaskList> {
                                             fit: BoxFit.contain,
                                             width: w * 0.06,
                                             height: w * 0.05,
-                                            color: Color(0xff8856F4),
+                                            color:AppColors.primaryColor,
                                           ),
                                         ),
                                       ),

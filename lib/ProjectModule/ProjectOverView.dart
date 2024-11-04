@@ -7,6 +7,7 @@ import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectActivityModel.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class OverView extends StatefulWidget {
   final String id;
@@ -507,7 +508,7 @@ class _OverViewState extends State<OverView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color: isMembersTab ? Color(0xff8856f4) : Color(0xff3c3c43),
+                  color: isMembersTab ? Color(0xff8856f4) : AppColors.primaryColor,
                 ),
               ),
               if (isMembersTab)
@@ -533,7 +534,7 @@ class _OverViewState extends State<OverView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color: isMembersTab ? Color(0xff3c3c43) : Color(0xff8856f4),
+                  color: isMembersTab ? Color(0xff3c3c43) : AppColors.primaryColor,
                 ),
               ),
               if (!isMembersTab)

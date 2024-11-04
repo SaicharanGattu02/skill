@@ -7,6 +7,7 @@ import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class AddToDo extends StatefulWidget {
   const AddToDo({super.key});
@@ -564,7 +565,7 @@ class _AddToDoState extends State<AddToDo> {
                 decoration: BoxDecoration(
                   color: Color(0xffF8FCFF),
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: AppColors.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -573,7 +574,7 @@ class _AddToDoState extends State<AddToDo> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: Color(0xff8856F4),
+                      color:AppColors.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',

@@ -19,7 +19,9 @@ import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart'; // For date formatting
-import 'package:path/path.dart' as p; // Import the path package
+import 'package:path/path.dart' as p;
+
+import '../utils/app_colors.dart'; // Import the path package
 
 class TaskForm extends StatefulWidget {
   final String projectId;
@@ -448,7 +450,7 @@ class _TaskFormState extends State<TaskForm> {
         body: _loading
             ? Center(
                 child:
-                    spinkits.getFadingCircleSpinner(color: Color(0xff8856F4)))
+                    spinkits.getFadingCircleSpinner(color: AppColors.primaryColor))
             : Container(
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
@@ -526,7 +528,7 @@ class _TaskFormState extends State<TaskForm> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffF8FCFF),
                                         border: Border.all(
-                                          color: Color(0xff8856F4),
+                                          color: AppColors.primaryColor,
                                           width: 1.0,
                                         ),
                                         borderRadius:
@@ -536,7 +538,7 @@ class _TaskFormState extends State<TaskForm> {
                                         child: Text(
                                           'Choose File',
                                           style: TextStyle(
-                                            color: Color(0xff8856F4),
+                                            color:AppColors.primaryColor,
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.w500,
                                             fontFamily: 'Poppins',
@@ -1303,7 +1305,7 @@ class _TaskFormState extends State<TaskForm> {
                   decoration: BoxDecoration(
                     color: Color(0xffF8FCFF),
                     border: Border.all(
-                      color: Color(0xff8856F4),
+                      color:AppColors.primaryColor,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(7),
@@ -1312,7 +1314,7 @@ class _TaskFormState extends State<TaskForm> {
                     child: Text(
                       'Close',
                       style: TextStyle(
-                        color: Color(0xff8856F4),
+                        color: AppColors.primaryColor,
                         fontSize: 16.0,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Inter',
@@ -1332,7 +1334,7 @@ class _TaskFormState extends State<TaskForm> {
                   decoration: BoxDecoration(
                     color: Color(0xff8856F4),
                     border: Border.all(
-                      color: Color(0xff8856F4),
+                      color: AppColors.primaryColor,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(7),

@@ -17,6 +17,7 @@ import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class AddMeetings extends StatefulWidget {
   const AddMeetings({super.key});
@@ -1221,7 +1222,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                 decoration: BoxDecoration(
                   color: Color(0xffF8FCFF),
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: AppColors.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -1230,7 +1231,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: Color(0xff8856F4),
+                      color:AppColors.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -1248,11 +1249,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
-                  border: Border.all(
-                    color: Color(0xff8856F4),
-                    width: 1.0,
-                  ),
+                  color: AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(

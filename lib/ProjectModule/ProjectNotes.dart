@@ -13,6 +13,8 @@ import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import 'package:path/path.dart' as p;
 
+import '../utils/app_colors.dart';
+
 class ProjectNotes extends StatefulWidget {
   final String id;
   const ProjectNotes({super.key, required this.id});
@@ -238,7 +240,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
-                                  color: Color(0xff8856F4),
+                                  color:AppColors.primaryColor,
                                   borderRadius: BorderRadius.circular(6)),
                               child: Row(
                                 children: [
@@ -351,7 +353,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                       fit: BoxFit.contain,
                                       width: w * 0.06,
                                       height: w * 0.05,
-                                      color: Color(0xff8856F4),
+                                      color: AppColors.primaryColor,
                                     ),
                                   ),
                                   SizedBox(
@@ -375,7 +377,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                         fit: BoxFit.contain,
                                         width: w * 0.06,
                                         height: w * 0.05,
-                                        color: Color(0xff8856F4),
+                                        color: AppColors.primaryColor,
                                       ),
                                     ),
                                   ],
@@ -799,7 +801,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffF8FCFF),
                                         border: Border.all(
-                                          color: Color(0xff8856F4),
+                                          color: AppColors.primaryColor,
                                           width: 1.0,
                                         ),
                                         borderRadius:
@@ -809,7 +811,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                         child: Text(
                                           'Choose File',
                                           style: TextStyle(
-                                            color: Color(0xff8856F4),
+                                            color: AppColors.primaryColor,
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.w500,
                                             fontFamily: 'Poppins',
@@ -878,7 +880,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             decoration: BoxDecoration(
                               color: Color(0xffF8FCFF),
                               border: Border.all(
-                                color: Color(0xff8856F4),
+                                color: AppColors.primaryColor,
                                 width: 1.0,
                               ),
                               borderRadius: BorderRadius.circular(7),
@@ -887,7 +889,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                               child: Text(
                                 'Close',
                                 style: TextStyle(
-                                  color: Color(0xff8856F4),
+                                  color: AppColors.primaryColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Inter',
@@ -925,11 +927,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             height: 40,
                             width: w * 0.43,
                             decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              border: Border.all(
-                                color: Color(0xff8856F4),
-                                width: 1.0,
-                              ),
+                              color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(

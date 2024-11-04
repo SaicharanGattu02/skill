@@ -14,6 +14,8 @@ import 'package:path/path.dart' as p;
 import '../utils/ShakeWidget.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../utils/app_colors.dart';
+
 class ProjectFile extends StatefulWidget {
   final String id;
   const ProjectFile({super.key, required this.id});
@@ -179,7 +181,6 @@ class _ProjectFileState extends State<ProjectFile> {
   Future<void> PostFiles(String editid) async {
     var res;
     if (editid != "") {
-
       res = await Userapi.putProjectFile(editid, categoryID,
           filepath, _descriptionController.text);
       print("putProjectFile>>${res}");
@@ -207,7 +208,6 @@ class _ProjectFileState extends State<ProjectFile> {
 
   Future<void> PostCategory(String id) async {
     var res;
-
     if (id != "") {
       res = await Userapi.PutProjectCategory(_nameController.text, id);
     } else {
@@ -289,7 +289,7 @@ class _ProjectFileState extends State<ProjectFile> {
                       height: w * 0.08,
                       // padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                          color: Color(0xFF9B5FFF), // Purple background
+                          color:AppColors.primaryColor, // Purple background
                           borderRadius: BorderRadius.circular(100),
                           border:
                               Border.all(width: 1, color: Color(0xFF9B5FFF))),
@@ -308,7 +308,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: w * 0.08,
                               decoration: BoxDecoration(
                                 color: isFilesSelected
-                                    ? Color(0xFF9B5FFF)
+                                    ? AppColors.primaryColor
                                     : Colors
                                         .white, // White background if selected, purple if not
                                 borderRadius: BorderRadius.only(
@@ -324,7 +324,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     width: 16,
                                     height: 16,
                                     color: !isFilesSelected
-                                        ? Color(0xFF9B5FFF)
+                                        ? AppColors.primaryColor
                                         : Color(0xFFFFFFFF),
                                     fit: BoxFit.contain,
                                   ),
@@ -334,8 +334,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     style: TextStyle(
                                         color: isFilesSelected
                                             ? Colors.white
-                                            : Color(
-                                                0xFF9B5FFF), // Purple text if selected, white if not
+                                            : AppColors.primaryColor, // Purple text if selected, white if not
                                         fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                         fontFamily: 'Inter',
@@ -359,7 +358,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: w * 0.08,
                               decoration: BoxDecoration(
                                 color: !isFilesSelected
-                                    ? Color(0xFF9B5FFF)
+                                    ?AppColors.primaryColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.only(
                                     topRight: Radius.circular(50),
@@ -375,7 +374,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     height: 16,
                                     color: !isFilesSelected
                                         ? Colors.white
-                                        : Color(0xFF9B5FFF),
+                                        : AppColors.primaryColor,
                                     fit: BoxFit.contain,
                                   ),
                                   SizedBox(width: 8),
@@ -384,7 +383,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     style: TextStyle(
                                         color: !isFilesSelected
                                             ? Colors.white
-                                            : Color(0xFF9B5FFF),
+                                            :AppColors.primaryColor,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                         fontFamily: 'Inter',
@@ -464,7 +463,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
-                                    color: Color(0xff8856F4),
+                                    color:AppColors.primaryColor,
                                     borderRadius: BorderRadius.circular(6)),
                                 child: Row(
                                   children: [
@@ -593,7 +592,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                         fit: BoxFit.contain,
                                         width: w * 0.06,
                                         height: w * 0.05,
-                                        color: Color(0xff8856F4),
+                                        color:AppColors.primaryColor,
                                       ),
                                     ),
                                   ],
@@ -754,7 +753,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
-                                    color: Color(0xff8856F4),
+                                    color: AppColors.primaryColor,
                                     borderRadius: BorderRadius.circular(6)),
                                 child: Row(
                                   children: [
@@ -881,7 +880,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                         fit: BoxFit.contain,
                                         width: w * 0.06,
                                         height: w * 0.05,
-                                        color: Color(0xff8856F4),
+                                        color:AppColors.primaryColor,
                                       ),
                                     ),
                                   ],
@@ -1307,7 +1306,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffF8FCFF),
                                         border: Border.all(
-                                          color: Color(0xff8856F4),
+                                          color: AppColors.primaryColor,
                                           width: 1.0,
                                         ),
                                         borderRadius:
@@ -1317,7 +1316,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                         child: Text(
                                           'Choose File',
                                           style: TextStyle(
-                                            color: Color(0xff8856F4),
+                                            color: AppColors.primaryColor,
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.w500,
                                             fontFamily: 'Poppins',
@@ -1461,7 +1460,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             decoration: BoxDecoration(
                               color: Color(0xffF8FCFF),
                               border: Border.all(
-                                color: Color(0xff8856F4),
+                                color:AppColors.primaryColor,
                                 width: 1.0,
                               ),
                               borderRadius: BorderRadius.circular(7),
@@ -1470,7 +1469,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Text(
                                 'Close',
                                 style: TextStyle(
-                                  color: Color(0xff8856F4),
+                                  color: AppColors.primaryColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Inter',
@@ -1509,11 +1508,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             height: 40,
                             width: w * 0.43,
                             decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              border: Border.all(
-                                color: Color(0xff8856F4),
-                                width: 1.0,
-                              ),
+                              color:AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(
@@ -1736,7 +1731,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             decoration: BoxDecoration(
                               color: Color(0xffF8FCFF),
                               border: Border.all(
-                                color: Color(0xff8856F4),
+                                color: AppColors.primaryColor,
                                 width: 1.0,
                               ),
                               borderRadius: BorderRadius.circular(7),
@@ -1745,7 +1740,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Text(
                                 'Close',
                                 style: TextStyle(
-                                  color: Color(0xff8856F4),
+                                  color: AppColors.primaryColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Inter',
@@ -1777,11 +1772,7 @@ class _ProjectFileState extends State<ProjectFile> {
                             height: 40,
                             width: w * 0.43,
                             decoration: BoxDecoration(
-                              color: Color(0xff8856F4),
-                              border: Border.all(
-                                color: Color(0xff8856F4),
-                                width: 1.0,
-                              ),
+                              color: AppColors.primaryColor,
                               borderRadius: BorderRadius.circular(7),
                             ),
                             child: Center(

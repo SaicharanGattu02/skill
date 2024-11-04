@@ -8,6 +8,7 @@ import '../Model/RoomsDetailsModel.dart';
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
+import '../utils/app_colors.dart';
 import 'Profiledashboard.dart';
 import 'UserProfile.dart';
 
@@ -278,7 +279,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: Color(0xff8856F4),
+        backgroundColor: AppColors.primaryColor,
         automaticallyImplyLeading: false,
         title: Row(
           children: [

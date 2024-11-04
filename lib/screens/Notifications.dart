@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/app_colors.dart';
+
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
 
@@ -36,7 +38,7 @@ class _NotificationsState extends State<Notifications> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
+        backgroundColor: AppColors.primaryColor,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);

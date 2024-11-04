@@ -7,6 +7,7 @@ import 'package:skill/utils/CustomAppBar.dart';
 
 import '../Model/MeetingModel.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/app_colors.dart';
 
 class Meetings extends StatefulWidget {
   const Meetings({super.key});
@@ -160,7 +161,7 @@ class _MeetingsState extends State<Meetings> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xff8856F4),
+                        color: AppColors.primaryColor,
                         height: 19.36 / 16,
                       ),
                     ),

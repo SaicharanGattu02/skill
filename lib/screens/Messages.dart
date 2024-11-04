@@ -5,6 +5,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/RoomsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/app_colors.dart';
 import 'OneToOneChatPage.dart';
 
 class Messages extends StatefulWidget {
@@ -110,7 +111,7 @@ class _MessagesState extends State<Messages> {
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: const Color(0xff8856F4),
+        backgroundColor: AppColors.primaryColor,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);

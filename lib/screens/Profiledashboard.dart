@@ -34,7 +34,6 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-
   // Focus nodes
   final FocusNode _focusNodeFirstName = FocusNode();
   final FocusNode _focusNodeLastName = FocusNode();

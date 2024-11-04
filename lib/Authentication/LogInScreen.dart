@@ -9,6 +9,7 @@ import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -127,11 +128,11 @@ class _LogInScreenState extends State<LogInScreen> {
           Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 height: h * 0.45,
                 width: w,
-                decoration: const BoxDecoration(
-                  color: Color(0xff8856F4),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
                   image: DecorationImage(
                       image: AssetImage(
                         "assets/Background.png",
@@ -458,7 +459,7 @@ class _LogInScreenState extends State<LogInScreen> {
                           child: Text(
                             "Forgot Password?",
                             style: TextStyle(
-                                color: Color(0xff8856F4),
+                                color: AppColors.primaryColor,
                                 fontFamily: "Inter",
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -497,7 +498,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         width: w,
                         height: w * 0.1,
                         decoration: BoxDecoration(
-                          color: const Color(0xff8856F4),
+                          color: AppColors.primaryColor,
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Center(
@@ -545,8 +546,8 @@ class _LogInScreenState extends State<LogInScreen> {
                                 fontFamily: 'Inter',
                                 fontSize: 12,
                                 decoration: TextDecoration.underline,
-                                decorationColor: Color(0xff8856F4),
-                                color: Color(0xff8856F4),
+                                decorationColor: AppColors.primaryColor,
+                                color: AppColors.primaryColor,
                                 height: 19.6 / 12,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: -0.01),

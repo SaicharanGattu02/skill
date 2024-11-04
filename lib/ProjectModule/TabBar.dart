@@ -13,6 +13,7 @@ import 'package:skill/ProjectModule/TaskList.dart';
 import 'dart:developer' as developer;
 import '../Services/otherservices.dart';
 import '../utils/ShakeWidget.dart';
+import '../utils/app_colors.dart';
 import 'ProjectNotes.dart';
 import 'ProjectOverView.dart';
 import 'TaskKanbanBoard.dart';
@@ -115,7 +116,7 @@ class _MyTabBarState extends State<MyTabBar>
             key: _scaffoldKey,
             backgroundColor: const Color(0xffF3ECFB),
             appBar: AppBar(
-              backgroundColor: const Color(0xff8856F4),
+              backgroundColor: AppColors.primaryColor,
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(context);
@@ -197,7 +198,7 @@ class _MyTabBarState extends State<MyTabBar>
                           padding: EdgeInsets.zero,
                           controller: _tabController,
                           isScrollable: true,
-                          indicatorColor: Color(0xff8856F4),
+                          indicatorColor: AppColors.primaryColor,
                           indicatorWeight: 1.0,
                           tabAlignment: TabAlignment.start,
                           labelPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -206,7 +207,7 @@ class _MyTabBarState extends State<MyTabBar>
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
                             height: 1.6,
-                            color: Color(0xff8856F4),
+                            color: AppColors.primaryColor,
                             letterSpacing: 0.15,
                           ),
                           unselectedLabelStyle: TextStyle(

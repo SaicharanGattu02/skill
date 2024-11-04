@@ -2,6 +2,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TaskKanBanModel.dart';
@@ -94,19 +95,80 @@ class _TaskkanbanboardState extends State<Taskkanbanboard> {
       body: Column(
         children: [
           SizedBox(height: 8),
-          Expanded(child: TaskRow(status: 'To Do')),
-          Expanded(child: TaskRow(status: 'In Progress')),
-          Expanded(child: TaskRow(status: 'Done')),
+          Expanded(child: TaskRow(status: 'To Do', id: widget.id)),
+          Expanded(child: TaskRow(status: 'In Progress', id: widget.id)),
+          Expanded(child: TaskRow(status: 'Done', id: widget.id)),
         ],
       ),
     );
   }
 }
 
-class TaskRow extends StatelessWidget {
+class TaskRow extends StatefulWidget {
   final String status;
+  final String id;
 
-  TaskRow({required this.status});
+  TaskRow({
+    required this.status,
+    required this.id,
+  });
+
+  @override
+  State<TaskRow> createState() => _TaskRowState();
+}
+
+class _TaskRowState extends State<TaskRow> {
+  Future<void> UpdateTaskStatusApi(String ID, String newStatus) async {
+    String? Status;
+    if (newStatus == "To Do") {
+      Status = "to_do";
+    } else if (newStatus == "In Progress") {
+      Status = "in_progress";
+    } else {
+      Status = "completed";
+    }
+    try {
+      var res = await Userapi.TaskKanBanUpdate(ID, Status);
+      if (res != null) {
+        if (res.settings?.success == 1) {
+          _fetchAllKanbanData();
+        }
+      }
+    } catch (e) {
+      print("Error updating task status: $e");
+    }
+  }
+
+  Future<void> _fetchAllKanbanData() async {
+    try {
+      var results = await Future.wait([
+        Userapi.GetTaskKanBan(widget.id, "to_do"),
+        Userapi.GetTaskKanBan(widget.id, "in_progress"),
+        Userapi.GetTaskKanBan(widget.id, "completed"),
+      ]);
+
+      // Get the provider instance
+      final provider = Provider.of<KanbanProvider>(context, listen: false);
+
+      // Update the provider with the results
+      provider.setTodoData(_processResponse(results[0]));
+      provider.setInProgressData(_processResponse(results[1]));
+      provider.setCompletedData(_processResponse(results[2]));
+    } catch (error) {
+      // Handle error appropriately
+      print("Error fetching data: $error");
+    } finally {
+      setState(() {});
+    }
+  }
+
+  List<Kanban> _processResponse(res) {
+    if (res != null && res.settings?.success == 1) {
+      var data = res.data ?? [];
+      return data; // Return sorted data
+    }
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +176,7 @@ class TaskRow extends StatelessWidget {
     final provider = Provider.of<KanbanProvider>(context);
     List<Kanban> tasks;
 
-    switch (status) {
+    switch (widget.status) {
       case 'To Do':
         tasks = provider.todoData;
         break;
@@ -136,9 +198,9 @@ class TaskRow extends StatelessWidget {
           child: Row(
             children: [
               Image.asset(
-                status == "To Do"
+                widget.status == "To Do"
                     ? "assets/box.png"
-                    : status == "In Progress"
+                    : widget.status == "In Progress"
                         ? "assets/inprogress.png"
                         : "assets/done.png",
                 fit: BoxFit.contain,
@@ -146,15 +208,10 @@ class TaskRow extends StatelessWidget {
                 height: w * 0.05,
               ),
               SizedBox(width: w * 0.02),
-              Text(status,
+              Text(widget.status,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
               SizedBox(width: w * 0.01),
-              Text(
-                  status == "To Do"
-                      ? "(${tasks.length.toString()})"
-                      : status == "In Progress"
-                          ? "(${tasks.length.toString()})"
-                          : "(${tasks.length.toString()})",
+              Text("(${tasks.length.toString()})",
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -173,117 +230,111 @@ class TaskRow extends StatelessWidget {
                 dashPattern: [5, 3],
                 borderType: BorderType.RRect,
                 radius: Radius.circular(7),
-                child: Container(
-                  padding: EdgeInsets.all(5),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Color(0xffEFE2FF),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: (tasks.isEmpty)
-                        ? Center(
-                            child: Text(
-                              "No data",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(
-                                    0xff6C848F), // Customize color as needed
-                              ),
-                            ),
-                          )
-                        : Row(
-                            children: tasks.map((task) {
-                              String isoDate = task.startDate ?? "";
-                              String isoDate1 = task.endDate ?? "";
-                              String formattedDate = DateTimeFormatter.format(
-                                  isoDate,
-                                  includeDate: true,
-                                  includeTime: false);
-                              String formattedDate1 = DateTimeFormatter.format(
-                                  isoDate1,
-                                  includeDate: true,
-                                  includeTime: false);
+                child: DragTarget<Kanban>(
+                  onAccept: (draggedTask) {
+                    if (draggedTask.status != widget.status) {
+                      Provider.of<KanbanProvider>(context, listen: false)
+                          .updateTaskStatus(draggedTask, widget.status);
+                      UpdateTaskStatusApi(draggedTask.id!, widget.status);
+                    }
+                  },
+                  builder: (context, candidateData, rejectedData) {
+                    return Container(
+                      padding: EdgeInsets.all(5),
+                      width: double.infinity,
+                      height: w*0.4,
+                      decoration: BoxDecoration(
+                        color: Color(0xffEFE2FF),
+                      ),
+                      child: tasks.isEmpty
+                          ?    Center(
+                        child: Lottie.asset(
+                          'assets/animations/nodata1.json',
+                          height: 100,
+                          width: 100,
+                        ),
+                      )
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: tasks.map((task) {
+                                  String formattedStartDate =
+                                      DateTimeFormatter.format(
+                                          task.startDate ?? "",
+                                          includeDate: true,
+                                          includeTime: false);
+                                  String formattedEndDate =
+                                      DateTimeFormatter.format(
+                                          task.endDate ?? "",
+                                          includeDate: true,
+                                          includeTime: false);
 
-                              // Extracting image URLs from collaborators
-                              List<String> collaboratorImages = [];
-                              if (task.collaborators != null) {
-                                collaboratorImages = task.collaborators!
-                                    .map((collaborator) =>
-                                        collaborator.image ?? "")
-                                    .toList();
-                              }
-                              return Container(
-                                width: w * 0.83,
-                                margin: EdgeInsets.all(8.0),
-                                child: LongPressDraggable<Kanban>(
-                                  data: task,
-                                  feedback: Card(
-                                    child: Container(
-                                      width: 200,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                      padding: EdgeInsets.all(16),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
+                                  List<String> collaboratorImages = task
+                                          .collaborators
+                                          ?.map((collaborator) =>
+                                              collaborator.image ?? "")
+                                          .toList() ??
+                                      [];
+                                  return Container(
+                                    width: w * 0.83,
+                                    margin: EdgeInsets.all(8.0),
+                                    child: LongPressDraggable<Kanban>(
+                                      data: task,
+                                      feedback: Card(
+                                        child: Container(
+                                          width: 200,
+                                          height: 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                          ),
+                                          padding: EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
-                                                child: Text(
-                                                  task.title ?? "",
-                                                  style: TextStyle(
-                                                    fontFamily: 'Inter',
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color(0xff000000),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      task.title ?? "",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color:
+                                                            Color(0xff000000),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  Image.asset(
+                                                    "assets/More-vertical.png",
+                                                    width: w * 0.045,
+                                                    height: w * 0.06,
+                                                    color: Color(0xff6C848F),
+                                                  ),
+                                                ],
                                               ),
-                                              Image.asset(
-                                                "assets/More-vertical.png",
-                                                fit: BoxFit.contain,
-                                                width: w * 0.045,
-                                                height: w * 0.06,
-                                                color: Color(0xff6C848F),
+                                              SizedBox(height: 8),
+                                              FlutterImageStack(
+                                                imageList: collaboratorImages,
+                                                totalCount:
+                                                    collaboratorImages.length,
+                                                showTotalCount: true,
+                                                extraCountTextStyle: TextStyle(
+                                                  color: Color(0xff8856F4),
+                                                ),
+                                                backgroundColor: Colors.white,
+                                                itemRadius: 30,
+                                                itemBorderWidth: 3,
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 8),
-                                          FlutterImageStack(
-                                            imageList: collaboratorImages,
-                                            totalCount:
-                                                collaboratorImages.length,
-                                            showTotalCount: true,
-                                            extraCountTextStyle: TextStyle(
-                                              color: Color(0xff8856F4),
-                                            ),
-                                            backgroundColor: Colors.white,
-                                            itemRadius: 30,
-                                            itemBorderWidth: 3,
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  childWhenDragging: Container(),
-                                  child: DragTarget<Kanban>(
-                                    onAccept: (draggedTask) {
-                                      if (draggedTask.status != status) {
-                                        Provider.of<KanbanProvider>(context,
-                                                listen: false)
-                                            .updateTaskStatus(
-                                                draggedTask, status);
-                                      }
-                                    },
-                                    builder:
-                                        (context, candidateData, rejectedData) {
-                                      return Card(
+                                      childWhenDragging: Container(),
+                                      child: Card(
                                         elevation: 2,
                                         child: Container(
                                           padding: EdgeInsets.all(10),
@@ -302,7 +353,6 @@ class TaskRow extends StatelessWidget {
                                                     child: Text(
                                                       task.title ?? "",
                                                       style: TextStyle(
-                                                        fontFamily: 'Inter',
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w500,
@@ -313,7 +363,6 @@ class TaskRow extends StatelessWidget {
                                                   ),
                                                   Image.asset(
                                                     "assets/More-vertical.png",
-                                                    fit: BoxFit.contain,
                                                     width: w * 0.045,
                                                     height: w * 0.06,
                                                     color: Color(0xff6C848F),
@@ -325,16 +374,14 @@ class TaskRow extends StatelessWidget {
                                                 children: [
                                                   Image.asset(
                                                     "assets/calendar.png",
-                                                    fit: BoxFit.contain,
                                                     width: w * 0.045,
                                                     height: w * 0.06,
                                                     color: Color(0xff6C848F),
                                                   ),
                                                   SizedBox(width: 8),
                                                   Text(
-                                                    formattedDate,
+                                                    formattedStartDate,
                                                     style: TextStyle(
-                                                      fontFamily: 'Inter',
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400,
@@ -344,16 +391,14 @@ class TaskRow extends StatelessWidget {
                                                   SizedBox(width: 15),
                                                   Image.asset(
                                                     "assets/calendar.png",
-                                                    fit: BoxFit.contain,
                                                     width: w * 0.045,
                                                     height: w * 0.06,
                                                     color: Color(0xff6C848F),
                                                   ),
                                                   SizedBox(width: 8),
                                                   Text(
-                                                    formattedDate1,
+                                                    formattedEndDate,
                                                     style: TextStyle(
-                                                      fontFamily: 'Inter',
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400,
@@ -378,14 +423,14 @@ class TaskRow extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                  ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                    );
+                  },
                 ),
               ),
             ),
