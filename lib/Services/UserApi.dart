@@ -288,9 +288,30 @@ class Userapi {
       final headers = await getheader();
       final url = Uri.parse(
           "${host}/project/project-tasks-kanban?project_id=${id}&status=${Status}");
+
       final res = await get(url, headers: headers);
       if (res != null) {
         print("GetTaskKanBan $Status Response:${res.body}");
+
+        return GetTaskKanBanModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  static Future<GetTaskKanBanModel?> TaskKanBanUpdate (String id,String Status) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse(
+          "${host}/project/project-task-kanban-update/${id}?status=${Status}");
+      final res = await http.patch(url, headers: headers);
+      if (res != null) {
+        print("GetTaskKanBanUpdate $Status Response:${res.body}");
 
         return GetTaskKanBanModel.fromJson(jsonDecode(res.body));
       } else {

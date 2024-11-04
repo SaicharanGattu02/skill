@@ -461,7 +461,7 @@ class _DashboardState extends State<Dashboard> {
                       },
                       child: Container(
                         padding: const EdgeInsets.only(
-                            right: 10), // Increase padding as needed
+                            right: 10),
                         child: Image.asset(
                           "assets/menu.png",
                           width: 24,
