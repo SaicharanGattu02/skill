@@ -35,11 +35,12 @@ class _AddToDoState extends State<AddToDo> {
   bool _isLoading = false;
   final spinkit = Spinkits();
   String formattedDate = "";
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-
+    _setInitialDate();
     GetLabel();
     _taskNameController.addListener(() {
       setState(() {
@@ -65,6 +66,7 @@ class _AddToDoState extends State<AddToDo> {
 
   void _setInitialDate() {
     setState(() {
+      formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
       _DateController.text = formattedDate;
     });
   }
@@ -144,22 +146,6 @@ class _AddToDoState extends State<AddToDo> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Text(
-                    "Add To Do List",
-                    style: TextStyle(
-                      color: Color(0xff1C1D22),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                      height: 18 / 16,
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(height: 16),
               Expanded(
                 child: SingleChildScrollView(
@@ -293,7 +279,7 @@ class _AddToDoState extends State<AddToDo> {
                             key: Key("value"),
                             duration: Duration(milliseconds: 700),
                             child: Text(
-                              'Please type description',
+                              _validdescription,
                               style: TextStyle(
                                 fontFamily: "Poppins",
                                 fontSize: 12,
@@ -361,7 +347,7 @@ class _AddToDoState extends State<AddToDo> {
                                 fontWeight: FontWeight.w400,
                               ),
                               decoration: InputDecoration(
-                                hintText: "Select priority",
+                                hintText: "Select Priority",
                                 hintStyle: TextStyle(
                                   fontSize: 15,
                                   letterSpacing: 0,
@@ -463,7 +449,7 @@ class _AddToDoState extends State<AddToDo> {
                                 fontWeight: FontWeight.w400,
                               ),
                               decoration: InputDecoration(
-                                hintText: "Select label",
+                                hintText: "Select Label",
                                 hintStyle: TextStyle(
                                   fontSize: 15,
                                   letterSpacing: 0,
@@ -677,7 +663,7 @@ class _AddToDoState extends State<AddToDo> {
               });
             },
             decoration: InputDecoration(
-              hintText: "Select date",
+              hintText: "Select Date",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(

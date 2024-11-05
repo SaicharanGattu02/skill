@@ -241,7 +241,7 @@ class _AddMeetingsState extends State<AddMeetings> {
   }
 
   String meeting_url = "";
-  bool meeting_created = true;
+  bool meeting_created = false;
   MeetingData? meetingData;
   Future<void> CreateZoomMeeting() async {
     var res = await Userapi.createZoomMeeting(
@@ -256,7 +256,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       if (res != null) {
         if (res.settings?.success == 1) {
           meetingData = res.data;
-          meeting_created = false;
+          meeting_created = true;
           isLoading = false;
           CustomSnackBar.show(context, "${res.settings?.message}");
         } else {
@@ -1373,6 +1373,7 @@ class _AddMeetingsState extends State<AddMeetings> {
             readOnly: meeting_created,
             onTap: () {
               if(meeting_created){
+              }else{
                 _selectDate(context, controller);
                 closeDropdown();
               }
@@ -1425,6 +1426,8 @@ class _AddMeetingsState extends State<AddMeetings> {
             readOnly: meeting_created,
             onTap: () {
               if(meeting_created){
+
+              }else{
                 _selectTime(context, controller);
                 closeDropdown();
               }

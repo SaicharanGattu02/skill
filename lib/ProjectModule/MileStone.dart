@@ -103,33 +103,6 @@ class _MileStoneState extends State<MileStone> {
     });
   }
 
-  Future<void> PostMilestoneApi(String editId) async {
-    var res;
-    if (editId != "") {
-      res = await Userapi.putMileStone(editId, _titleController.text,
-          _descriptionController.text, _deadlineController.text);
-    } else {
-      res = await Userapi.PostMileStone(_titleController.text,
-          _descriptionController.text, widget.id, _deadlineController.text);
-    }
-    if (res != null) {
-      setState(() {
-        if (res.settings?.success == 1) {
-          _isLoading=false;
-          CustomSnackBar.show(context, "${res.settings?.message}");
-          Navigator.pop(context);
-          GetMileStone();
-        } else {
-          _isLoading=false;
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      });
-    } else {
-
-      CustomSnackBar.show(context, "${res?.settings?.message}");
-    }
-  }
-
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime? pickedDate = await showDatePicker(
@@ -461,6 +434,32 @@ class _MileStoneState extends State<MileStone> {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
+
+                Future<void> PostMilestoneApi(String editId) async {
+                  var res;
+                  if (editId != "") {
+                    res = await Userapi.putMileStone(editId, _titleController.text,
+                        _descriptionController.text, _deadlineController.text);
+                  } else {
+                    res = await Userapi.PostMileStone(_titleController.text,
+                        _descriptionController.text, widget.id, _deadlineController.text);
+                  }
+                  if (res != null) {
+                    setState(() {
+                      if (res.settings?.success == 1) {
+                        _isLoading=false;
+                        CustomSnackBar.show(context, "${res.settings?.message}");
+                        Navigator.pop(context);
+                        GetMileStone();
+                      } else {
+                        _isLoading=false;
+                        CustomSnackBar.show(context, "${res.settings?.message}");
+                      }
+                    });
+                  } else {
+                    CustomSnackBar.show(context, "${res?.settings?.message}");
+                  }
+                }
             return Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),

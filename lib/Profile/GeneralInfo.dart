@@ -688,7 +688,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      hintText: "Enter Email Linkdn Url",
+                      hintText: "Enter Linkdn Url",
                       hintStyle: const TextStyle(
                         fontSize: 14,
                         letterSpacing: 0,
