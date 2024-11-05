@@ -1227,9 +1227,8 @@ class _DashboardState extends State<Dashboard> {
                             // ),
                             //
                             SizedBox(
-                              height: w * 0.05,
+                              height: w * 0.5,
                             ),
-
                             Container(
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
