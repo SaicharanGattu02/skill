@@ -918,7 +918,7 @@ class _TodolistState extends State<Todolist> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: "Select label",
+                                      hintText: "Select Label",
                                       hintStyle: TextStyle(
                                         fontSize: 15,
                                         letterSpacing: 0,
@@ -1057,11 +1057,11 @@ class _TodolistState extends State<Todolist> {
                             setState(() {
                               _validateLabelName =
                                   _labelnameController.text.isEmpty
-                                      ? "Please enter label name"
+                                      ? "Please enter Label Name"
                                       : "";
                               _validateLabelColor =
                                   _labelcolorController.text.isEmpty
-                                      ? "Please select a label color"
+                                      ? "Please Select a Label Color"
                                       : "";
 
                               _isLoading = _validateLabelName.isEmpty &&
@@ -1391,7 +1391,7 @@ class _TodolistState extends State<Todolist> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: "Select priority",
+                                      hintText: "Select Priority",
                                       hintStyle: TextStyle(
                                         fontSize: 15,
                                         letterSpacing: 0,
@@ -1720,7 +1720,7 @@ class _TodolistState extends State<Todolist> {
               });
             },
             decoration: InputDecoration(
-              hintText: "Select date",
+              hintText: "Select Date",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(

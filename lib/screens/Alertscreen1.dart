@@ -64,7 +64,7 @@ class AlertDialogScreen extends StatelessWidget {
                                 TextFormField(
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(),
-                                    hintText: 'Enter channel name',
+                                    hintText: 'Enter Channel Name',
                                   ),
                                 ),
                                 SizedBox(

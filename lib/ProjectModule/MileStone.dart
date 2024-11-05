@@ -544,7 +544,7 @@ class _MileStoneState extends State<MileStone> {
                                 keyboardType: TextInputType.text,
                                 cursorColor: Color(0xff8856F4),
                                 decoration: InputDecoration(
-                                  hintText: "Enter title.",
+                                  hintText: "Enter Title.",
                                   hintStyle: const TextStyle(
                                     fontSize: 14,
                                     letterSpacing: 0,
@@ -815,7 +815,7 @@ class _MileStoneState extends State<MileStone> {
               _selectDate(context, controller);
             },
             decoration: InputDecoration(
-              hintText: "Select date from date picker",
+              hintText: "Select Date from Date Picker",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(

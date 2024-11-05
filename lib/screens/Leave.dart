@@ -1025,7 +1025,7 @@ class _LeaveState extends State<Leave> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select date from date picker",
+                  hintText: "Select Date from Date Picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

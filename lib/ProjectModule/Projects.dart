@@ -517,7 +517,7 @@ final spinkit=Spinkits();
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select date from date picker",
+                  hintText: "Select Date From Date Picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(

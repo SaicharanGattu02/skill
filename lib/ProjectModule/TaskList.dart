@@ -654,7 +654,7 @@ class _TaskListState extends State<TaskList> {
               _selectDate(context, controller);
             },
             decoration: InputDecoration(
-              hintText: "Select date",
+              hintText: "Select Date",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(
@@ -828,7 +828,7 @@ class _TaskListState extends State<TaskList> {
                                         decoration: InputDecoration(
                                           contentPadding: EdgeInsets.symmetric(
                                               vertical: 0, horizontal: 10),
-                                          hintText: "Select milestone",
+                                          hintText: "Select Milestone",
                                           hintStyle: TextStyle(
                                               fontSize: 15,
                                               letterSpacing: 0,
@@ -919,7 +919,7 @@ class _TaskListState extends State<TaskList> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: "Select priority",
+                                          hintText: "Select Priority",
                                           hintStyle: TextStyle(
                                             fontSize: 15,
                                             letterSpacing: 0,
@@ -1008,7 +1008,7 @@ class _TaskListState extends State<TaskList> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: "Select assigned to person",
+                                          hintText: "Select Assigned to Person",
                                           hintStyle: TextStyle(
                                             fontSize: 15,
                                             letterSpacing: 0,
@@ -1098,7 +1098,7 @@ class _TaskListState extends State<TaskList> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: "Select status",
+                                          hintText: "Select Status",
                                           hintStyle: TextStyle(
                                             fontSize: 15,
                                             letterSpacing: 0,

@@ -1054,7 +1054,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                           onChanged: (query) =>
                                               filterProviders(query),
                                           decoration: InputDecoration(
-                                            hintText: "Search providers",
+                                            hintText: "Search Providers",
                                             hintStyle: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w400,
@@ -1379,7 +1379,7 @@ class _AddMeetingsState extends State<AddMeetings> {
               }
             },
             decoration: InputDecoration(
-              hintText: "Select start date",
+              hintText: "Select Start Date",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(

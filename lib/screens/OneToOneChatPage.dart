@@ -402,7 +402,7 @@ class _ChatPageState extends State<ChatPage> {
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Enter your message',
+                        hintText: 'Enter Your Message',
                         border: InputBorder.none, // Remove the default border
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 16.0), // Add padding

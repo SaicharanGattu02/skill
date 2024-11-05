@@ -1178,7 +1178,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: "Select your milestone",
+                                      hintText: "Select Your Milestone",
                                       hintStyle: TextStyle(
                                         fontSize: 15,
                                         letterSpacing: 0,

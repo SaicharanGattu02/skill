@@ -210,7 +210,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                         horizontal: 10,
                                         vertical: 8,
                                       ),
-                                      hintText: 'Search for a user...',
+                                      hintText: 'Search for a User...',
                                       hintStyle: const TextStyle(fontSize: 12),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
@@ -234,7 +234,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           _buildTextFormField(
                             controller: firstNameController,
                             focusNode: _focusFirstName,
-                            hintText: 'Enter your first name',
+                            hintText: 'Enter Your First name',
                             validator: _validateName, // Validation
                           ),
                           const SizedBox(height: 16),
@@ -244,7 +244,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           _buildTextFormField(
                             controller: lastNameController,
                             focusNode: _focusLastName,
-                            hintText: 'Enter your last name',
+                            hintText: 'Enter Your Last Name',
                             validator: _validateName, // Validation
                           ),
                           const SizedBox(height: 16),
@@ -254,7 +254,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           _buildTextFormField(
                             controller: startDateController,
                             focusNode: _focusStartDate,
-                            hintText: 'Enter start date (DD/MM/YYYY)',
+                            hintText: 'Enter Start Date (DD/MM/YYYY)',
                             validator: _validateStartDate, // Validation
                           ),
                           const SizedBox(height: 16),
@@ -303,7 +303,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           _buildTextFormField(
                             controller: phoneController,
                             focusNode: _focusPhone,
-                            hintText: 'Enter your phone number',
+                            hintText: 'Enter your Phone Number',
                             keyboardType: TextInputType.phone,
                             validator: _validatePhone, // Validation
                           ),

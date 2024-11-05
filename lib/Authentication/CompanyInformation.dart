@@ -292,7 +292,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                       _buildTextFormField(
                           controller: _companySizeController,
                           focusNode: _focusNodeCompanySize,
-                          hintText: "Enter company size",
+                          hintText: "Enter Company Size",
                           validationMessage: _validateCompanySize,
                           prefixicon: Image.asset(
                             "assets/csize.png",
@@ -367,7 +367,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                                   child: TextField(
                                     onChanged: (query) => filterStates(query),
                                     decoration: InputDecoration(
-                                      hintText: "Search state",
+                                      hintText: "Search State",
                                       hintStyle: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w400,
@@ -619,7 +619,7 @@ class _CompanyInformationState extends State<CompanyInformation> {
                       _buildTextFormField(
                           controller: _companyAddressController,
                           focusNode: _focusNodeCompanyAddress,
-                          hintText: "Enter address",
+                          hintText: "Enter Address",
                           validationMessage: _validateCompanyAddress,
                           prefixicon: Image.asset(
                             "assets/categoryselect.png",

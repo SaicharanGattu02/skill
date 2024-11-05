@@ -620,7 +620,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   });
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "Enter title",
+                                  hintText: "Enter Title",
                                   hintStyle: const TextStyle(
                                     fontSize: 14,
                                     letterSpacing: 0,

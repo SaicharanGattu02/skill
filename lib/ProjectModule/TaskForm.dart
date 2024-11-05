@@ -682,7 +682,7 @@ class _TaskFormState extends State<TaskForm> {
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 10),
-                                      hintText: "Select milestone",
+                                      hintText: "Select Milestone",
                                       hintStyle: TextStyle(
                                           fontSize: 15,
                                           letterSpacing: 0,
@@ -871,7 +871,7 @@ class _TaskFormState extends State<TaskForm> {
                                             horizontal: 10,
                                             vertical: 8,
                                           ),
-                                          hintText: 'Search for a user...',
+                                          hintText: 'Search for a User...',
                                           hintStyle:
                                               const TextStyle(fontSize: 12),
                                           border: OutlineInputBorder(
@@ -961,7 +961,7 @@ class _TaskFormState extends State<TaskForm> {
                                 header: Padding(
                                   padding: EdgeInsets.all(8),
                                   child: Text(
-                                    'Select collaborators from the list',
+                                    'Select Collaborators from the List',
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
                                         fontSize: 16,
@@ -1039,7 +1039,7 @@ class _TaskFormState extends State<TaskForm> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: "Select status",
+                                      hintText: "Select Status",
                                       hintStyle: TextStyle(
                                         fontSize: 15,
                                         letterSpacing: 0,
@@ -1147,7 +1147,7 @@ class _TaskFormState extends State<TaskForm> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: "Select priority",
+                                      hintText: "Select Priority",
                                       hintStyle: TextStyle(
                                         fontSize: 15,
                                         letterSpacing: 0,
@@ -1462,7 +1462,7 @@ class _TaskFormState extends State<TaskForm> {
               _selectDate(context, controller);
             },
             decoration: InputDecoration(
-              hintText: "Select date",
+              hintText: "Select Date",
               suffixIcon: Container(
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(

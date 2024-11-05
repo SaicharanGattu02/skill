@@ -188,7 +188,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      hintText: "Enter FirstName",
+                      hintText: "Enter First Name",
                       hintStyle: const TextStyle(
                         fontSize: 14,
                         letterSpacing: 0,
@@ -688,7 +688,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      hintText: "Enter Linkdn Url",
+                      hintText: "LinkedIn Url",
                       hintStyle: const TextStyle(
                         fontSize: 14,
                         letterSpacing: 0,
@@ -794,7 +794,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         color: Color(0xffAFAFAF),
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
+
                       ),
+
                       // prefixIcon: Container(
                       //   width: 21,
                       //   height: 21,
@@ -839,6 +841,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         TextAlignVertical.center, // Vertically center the text
                   ),
                 ),
+                SizedBox(height: 8),
                 if (_validateAddress.isNotEmpty) ...[
                   Container(
                     alignment: Alignment.topLeft,

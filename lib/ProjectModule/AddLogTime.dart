@@ -301,7 +301,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                               fontWeight: FontWeight.w400,
                             ),
                             decoration: InputDecoration(
-                              hintText: "Select task",
+                              hintText: "Select Task",
                               hintStyle: TextStyle(
                                 fontSize: 15,
                                 letterSpacing: 0,
@@ -425,7 +425,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: "Select Start time",
+                          hintText: "Select Start Time",
                           hintStyle: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0,
@@ -518,7 +518,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                         },
 
                         decoration: InputDecoration(
-                          hintText: "Select end time",
+                          hintText: "Select End Time",
                           hintStyle: TextStyle(
                             fontSize: 15,
                             letterSpacing: 0,
@@ -728,7 +728,7 @@ class _AddlogtimeState extends State<Addlogtime> {
               child: TextField(
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: "Select date from date picker",
+                  hintText: "Select Date From Date Picker",
                   suffixIcon: Container(
                       padding: EdgeInsets.only(top: 12, bottom: 12),
                       child: Image.asset(
