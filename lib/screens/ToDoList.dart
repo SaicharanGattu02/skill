@@ -288,443 +288,453 @@ class _TodolistState extends State<Todolist> {
     return Future.delayed(Duration.zero);
   }
 
+
+  Future<bool> willPop() async {
+    Navigator.pop(context,true);
+    return false;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(
-        title: 'Todo',
-        actions: [
-          SizedBox(
-            height: w * 0.09,
-            child: InkWell(
-              onTap: () {
-                GetLabelColor();
-                _showAddLabel(context);
-              },
-              child: Padding(
-                padding: EdgeInsets.only(right: 10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xffffffff), width: 1),
-                      // color: Color(0xff8856F4),
-                      borderRadius: BorderRadius.circular(6)),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/circleadd.png",
-                        fit: BoxFit.contain,
-                        width: w * 0.045,
-                        height: w * 0.05,
-                        color: Color(0xffffffff),
-                      ),
-                      SizedBox(width: w * 0.01),
-                      Text(
-                        "Add Label",
-                        style: TextStyle(
+    return WillPopScope(
+      onWillPop: willPop,
+      child: Scaffold(
+        backgroundColor: const Color(0xffF3ECFB),
+        appBar: CustomAppBar(
+          title: 'Todo',
+          actions: [
+            SizedBox(
+              height: w * 0.09,
+              child: InkWell(
+                onTap: () {
+                  GetLabelColor();
+                  _showAddLabel(context);
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xffffffff), width: 1),
+                        // color: Color(0xff8856F4),
+                        borderRadius: BorderRadius.circular(6)),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/circleadd.png",
+                          fit: BoxFit.contain,
+                          width: w * 0.045,
+                          height: w * 0.05,
                           color: Color(0xffffffff),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                          fontFamily: "Inter",
-                          height: 16.94 / 12,
-                          letterSpacing: 0.59,
                         ),
-                      )
-                    ],
+                        SizedBox(width: w * 0.01),
+                        Text(
+                          "Add Label",
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            fontFamily: "Inter",
+                            height: 16.94 / 12,
+                            letterSpacing: 0.59,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: w * 0.6256,
-                    height: h * 0.043,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffffffff),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "assets/search.png",
-                            width: 20,
-                            height: 17,
-                            fit: BoxFit.contain,
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                isCollapsed: true,
-                                border: InputBorder.none,
-                                hintText: 'Search',
-                                hintStyle: const TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  color: Color(0xff9E7BCA),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  fontFamily: "Nunito",
-                                ),
-                              ),
-                              style: TextStyle(
-                                color: Color(0xff9E7BCA),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                fontFamily: "Nunito",
-                              ),
-                              textAlignVertical: TextAlignVertical.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    height: w * 0.09,
-                    child: InkWell(
-                      onTap: () async {
-                        var res = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddToDo()));
-                        if (res == true) {
-                          setState(() {
-                            _isLoading = true;
-                            GetToDoList(formattedDate);
-                          });
-                        }
-                      },
+          ],
+        ),
+        body: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: w * 0.6,
+                      height: h * 0.043,
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(6)),
+                          color: const Color(0xffffffff),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Row(
                           children: [
                             Image.asset(
-                              "assets/circleadd.png",
+                              "assets/search.png",
+                              width: 20,
+                              height: 17,
                               fit: BoxFit.contain,
-                              width: w * 0.045,
-                              height: w * 0.05,
-                              color: Color(0xffffffff),
                             ),
-                            SizedBox(width: w * 0.01),
-                            Text(
-                              "Add To Do",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                fontFamily: "Inter",
-                                height: 16.94 / 12,
-                                letterSpacing: 0.59,
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  isCollapsed: true,
+                                  border: InputBorder.none,
+                                  hintText: 'Search',
+                                  hintStyle: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: Color(0xff9E7BCA),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                    fontFamily: "Nunito",
+                                  ),
+                                ),
+                                style: TextStyle(
+                                  color: Color(0xff9E7BCA),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  fontFamily: "Nunito",
+                                ),
+                                textAlignVertical: TextAlignVertical.center,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-                width: w,
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: const Color(0xffFFFFFF),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
-                      child: Row(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(width: 10),
+                    SizedBox(
+                      height: w * 0.09,
+                      child: InkWell(
+                        onTap: () async {
+                          var res = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddToDo()));
+                          if (res == true) {
+                            setState(() {
+                              _isLoading = true;
+                              GetToDoList(formattedDate);
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: AppColors.primaryColor,
+                              borderRadius: BorderRadius.circular(6)),
+                          child: Row(
                             children: [
+                              Image.asset(
+                                "assets/circleadd.png",
+                                fit: BoxFit.contain,
+                                width: w * 0.045,
+                                height: w * 0.05,
+                                color: Color(0xffffffff),
+                              ),
+                              SizedBox(width: w * 0.01),
                               Text(
-                                "Today",
+                                "Add To Do",
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.primaryColor,
-                                  height: 19.36 / 16,
-                                ),
-                              ),
-                              Text(
-                                DateFormat('MMMM d, y').format(currentMonth),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff000000),
+                                  color: Color(0xffffffff),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   fontFamily: "Inter",
-                                  height: 19.36 / 14,
+                                  height: 16.94 / 12,
+                                  letterSpacing: 0.59,
                                 ),
-                              ),
+                              )
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SingleChildScrollView(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(dates.length, (index) {
-                          final isSelected =
-                              dates[index].day == selectedDate.day &&
-                                  dates[index].month == selectedDate.month &&
-                                  dates[index].year == selectedDate.year;
-
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedDate = dates[index];
-                                formattedDate = DateFormat('yyyy-MM-dd')
-                                    .format(selectedDate);
-                                print("selectedDate: $formattedDate");
-                                data = [];
-                                filteredData = [];
-                                _isLoading = true;
-                                GetToDoList(formattedDate);
-                              });
-                              _scrollToSelectedDate();
-                            },
-                            child: ClipRect(
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                width: 55,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xffF0EAFF)
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(16),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                  width: w,
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffFFFFFF),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5, right: 5),
+                        child: Row(
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Today",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.primaryColor,
+                                    height: 19.36 / 16,
+                                  ),
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      dates[index].day.toString(),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: isSelected
-                                            ? const Color(0xff8856F4)
-                                            : const Color(0xff000000),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      daysOfWeek[dates[index].weekday - 1],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xff94A3B8),
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  DateFormat('MMMM d, y').format(currentMonth),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xff000000),
+                                    fontFamily: "Inter",
+                                    height: 19.36 / 14,
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          );
-                        }),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    _isLoading
-                        ? _buildShimmerList()
-                        : (filteredData.length > 0)
-                            ? SizedBox(
-                      height: h * 0.7,
-                      child: ReorderableListView(
-                        onReorder: (oldIndex, newIndex) {
-                          // Adjust the newIndex if it's greater than the oldIndex to ensure correct reordering
-                          if (newIndex > oldIndex) {
-                            newIndex -= 1;
-                          }
-                          // Move the item in the list to its new position
-                          final tododata = filteredData.removeAt(oldIndex);
-                          filteredData.insert(newIndex, tododata);
-                          setState(() {
-                            // The list is now reordered, you may also want to save this order or do something with it.
-                          });
-                        },
-                        children: List.generate(filteredData.length, (index) {
-                          var tododata = filteredData[index];
-                          return Column(
-                            key: ValueKey(tododata.id ?? index), // Ensure each item has a unique key for efficient reordering
-                            children: [
-                              // Wrap the entire list item in a ReorderableDragStartListener to trigger drag on long press
-                              ReorderableDragStartListener(
-                                index: index,
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SingleChildScrollView(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(dates.length, (index) {
+                            final isSelected =
+                                dates[index].day == selectedDate.day &&
+                                    dates[index].month == selectedDate.month &&
+                                    dates[index].year == selectedDate.year;
+
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedDate = dates[index];
+                                  formattedDate = DateFormat('yyyy-MM-dd')
+                                      .format(selectedDate);
+                                  print("selectedDate: $formattedDate");
+                                  data = [];
+                                  filteredData = [];
+                                  _isLoading = true;
+                                  GetToDoList(formattedDate);
+                                });
+                                _scrollToSelectedDate();
+                              },
+                              child: ClipRect(
                                 child: Container(
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 18.0),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Image.asset(
-                                          "assets/More-vertical.png",
-                                          fit: BoxFit.contain,
-                                          width: 20,
-                                          height: 20,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  width: 55,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? const Color(0xffF0EAFF)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        dates[index].day.toString(),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: isSelected
+                                              ? const Color(0xff8856F4)
+                                              : const Color(0xff000000),
                                         ),
-                                        // The InkWell here should not interfere with the reorder gesture.
-                                        // It’s better to move the delete action outside of the draggable area.
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              deleteToDoList(tododata.id ?? "");
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 8, right: 8), // Increase padding for larger tap area
-                                            child: Container(
-                                              width: 20,
-                                              height: 20,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: tododata.labelColor != null
-                                                      ? hexToColor(tododata.labelColor ?? "")
-                                                      : Colors.grey, // Border color
-                                                  width: 3,
-                                                ),
-                                              ),
-                                              child: isChecked
-                                                  ? Icon(
-                                                Icons.check,
-                                                size: 10,
-                                                color: Colors.white, // Color of the check icon
-                                              )
-                                                  : null, // Use null instead of SizedBox.shrink() when unchecked
-                                            ),
-                                          ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        daysOfWeek[dates[index].weekday - 1],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff94A3B8),
+                                          fontSize: 12,
                                         ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                tododata.taskName ?? "",
-                                                style: const TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 15,
-                                                  color: Color(0xff141516),
-                                                  height: 16.94 / 13,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              if (tododata.description != "")
-                                                Text(
-                                                  tododata.description ?? "",
-                                                  style: const TextStyle(
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 15,
-                                                    color: Color(0xff4a4a4a),
-                                                    height: 12.89 / 11,
-                                                  ),
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              const SizedBox(height: 5),
-                                              Row(
-                                                children: [
-                                                  Image.asset("assets/calendar.png", width: 18, height: 18),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    tododata.dateTime ?? "",
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Inter',
-                                                      fontWeight: FontWeight.w500,
-                                                      fontSize: 14,
-                                                      color: Color(0xff2FB035),
-                                                      height: 13.31 / 11,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              // Insert a divider after each item to separate tasks visually
-                              const Divider(
-                                thickness: 1,
-                                color: Color(0xffE1E1E1),
-                                height: 1,
-                              ),
-                            ],
-                          );
-                        }),
+                            );
+                          }),
+                        ),
                       ),
-                    )
-                        : Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: 100,
-                                    ),
-                                    Image.asset(
-                                      'assets/nodata1.png', // Path to your no data image
-                                      width: 150,
-                                      height: 150,
-                                      fit: BoxFit.contain,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      "No Data Found",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.grey,
-                                        fontFamily: "Inter",
+                      SizedBox(
+                        height: 15,
+                      ),
+                      _isLoading
+                          ? _buildShimmerList()
+                          : (filteredData.length > 0)
+                              ? SizedBox(
+                        height: h * 0.7,
+                        child: ReorderableListView(
+                          onReorder: (oldIndex, newIndex) {
+                            // Adjust the newIndex if it's greater than the oldIndex to ensure correct reordering
+                            if (newIndex > oldIndex) {
+                              newIndex -= 1;
+                            }
+                            // Move the item in the list to its new position
+                            final tododata = filteredData.removeAt(oldIndex);
+                            filteredData.insert(newIndex, tododata);
+                            setState(() {
+                              // The list is now reordered, you may also want to save this order or do something with it.
+                            });
+                          },
+                          children: List.generate(filteredData.length, (index) {
+                            var tododata = filteredData[index];
+                            return Column(
+                              key: ValueKey(tododata.id ?? index), // Ensure each item has a unique key for efficient reordering
+                              children: [
+                                // Wrap the entire list item in a ReorderableDragStartListener to trigger drag on long press
+                                ReorderableDragStartListener(
+                                  index: index,
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 18.0),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Image.asset(
+                                            "assets/More-vertical.png",
+                                            fit: BoxFit.contain,
+                                            width: 20,
+                                            height: 20,
+                                          ),
+                                          // The InkWell here should not interfere with the reorder gesture.
+                                          // It’s better to move the delete action outside of the draggable area.
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                deleteToDoList(tododata.id ?? "");
+                                              });
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 8, right: 8), // Increase padding for larger tap area
+                                              child: Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: tododata.labelColor != null
+                                                        ? hexToColor(tododata.labelColor ?? "")
+                                                        : Colors.grey, // Border color
+                                                    width: 3,
+                                                  ),
+                                                ),
+                                                child: isChecked
+                                                    ? Icon(
+                                                  Icons.check,
+                                                  size: 10,
+                                                  color: Colors.white, // Color of the check icon
+                                                )
+                                                    : null, // Use null instead of SizedBox.shrink() when unchecked
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  tododata.taskName ?? "",
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Inter',
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15,
+                                                    color: Color(0xff141516),
+                                                    height: 16.94 / 13,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                if (tododata.description != "")
+                                                  Text(
+                                                    tododata.description ?? "",
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontWeight: FontWeight.w400,
+                                                      fontSize: 15,
+                                                      color: Color(0xff4a4a4a),
+                                                      height: 12.89 / 11,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                const SizedBox(height: 5),
+                                                Row(
+                                                  children: [
+                                                    Image.asset("assets/calendar.png", width: 18, height: 18),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      tododata.dateTime ?? "",
+                                                      style: const TextStyle(
+                                                        fontFamily: 'Inter',
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: 14,
+                                                        color: Color(0xff2FB035),
+                                                        height: 13.31 / 11,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: h * 0.3,
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              )
-                  ],
-                )),
-          ],
+                                // Insert a divider after each item to separate tasks visually
+                                const Divider(
+                                  thickness: 1,
+                                  color: Color(0xffE1E1E1),
+                                  height: 1,
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      )
+                          : Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 100,
+                                      ),
+                                      Image.asset(
+                                        'assets/nodata1.png', // Path to your no data image
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.contain,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        "No Data Found",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.grey,
+                                          fontFamily: "Inter",
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: h * 0.3,
+                                      )
+                                    ],
+                                  ),
+                                )
+                    ],
+                  )),
+            ],
+          ),
         ),
       ),
     );

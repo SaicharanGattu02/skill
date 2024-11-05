@@ -20,7 +20,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppColors.primaryColor,
       leading: InkWell(
         onTap: () {
-          Navigator.pop(context);
+          Navigator.pop(context,true);
         },
         child: const Icon(
           Icons.arrow_back,

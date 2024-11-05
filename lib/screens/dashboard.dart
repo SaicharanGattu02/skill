@@ -552,7 +552,7 @@ class _DashboardState extends State<Dashboard> {
                     displacement: 50,
                     onRefresh: _refreshItems,
                     child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
+                      physics: NeverScrollableScrollPhysics(),
                       child: Padding(
                         padding: const EdgeInsets.only(
                             top: 16, left: 16, right: 16, bottom: 8),
@@ -1227,7 +1227,7 @@ class _DashboardState extends State<Dashboard> {
                             // ),
                             //
                             SizedBox(
-                              height: w * 0.5,
+                              height: w * 0.45,
                             ),
                             Container(
                               padding: EdgeInsets.all(16),
@@ -1243,12 +1243,20 @@ class _DashboardState extends State<Dashboard> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       InkWell(
-                                        onTap: () {
-                                          Navigator.push(
+                                        onTap: () async {
+                                        var res = await  Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       ProjectsScreen()));
+                                        if(res==true){
+                                          setState(() {
+                                            _loading=true;
+                                            GetUserDeatails();
+                                          });
+                                        }
+
+
                                         },
                                         child: Column(
                                           children: [
@@ -1266,6 +1274,7 @@ class _DashboardState extends State<Dashboard> {
                                                       BorderRadius.circular(8)),
                                               child: Center(
                                                 child: Text(
+
                                                   userdata?.projectCount
                                                           .toString() ??
                                                       "",
@@ -1296,12 +1305,15 @@ class _DashboardState extends State<Dashboard> {
                                         width: w * 0.03,
                                       ),
                                       InkWell(
-                                        onTap: () {
-                                          Navigator.push(
+                                        onTap: ()  {
+
+                                         Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       Todolist()));
+
+
                                         },
                                         child: Column(
                                           children: [
@@ -1349,12 +1361,19 @@ class _DashboardState extends State<Dashboard> {
                                         width: 20,
                                       ),
                                       InkWell(
-                                        onTap: () {
-                                          Navigator.push(
+                                        onTap: () async{
+                                          var res =await Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       Task()));
+
+                                          if(res==true){
+                                            setState(() {
+                                              _loading=true;
+                                              GetUserDeatails();
+                                            });
+                                          }
                                         },
                                         child: Column(
                                           children: [
@@ -1402,12 +1421,18 @@ class _DashboardState extends State<Dashboard> {
                                         width: 20,
                                       ),
                                       InkWell(
-                                        onTap: () {
-                                          Navigator.push(
+                                        onTap: () async{
+                                         var res=await Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       Meetings()));
+                                          if(res==true){
+                                            setState(() {
+                                              _loading=true;
+                                              GetUserDeatails();
+                                            });
+                                          }
                                         },
                                         child: Column(
                                           children: [
@@ -1928,12 +1953,18 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           Navigator.pop(context);
-                          Navigator.push(
+                         var res =await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Todolist()));
+                         if(res==true){
+                           setState(() {
+                             _loading=true;
+                             GetUserDeatails();
+                           });
+                         }
                         },
                         child: Container(
                           child: Column(
@@ -1967,12 +1998,19 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async{
                           Navigator.pop(context);
+                          var res =await
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProjectsScreen()));
+                          if(res==true){
+                            setState(() {
+                              _loading=true;
+                              GetUserDeatails();
+                            });
+                          }
                         },
                         child: Container(
                           child: Column(
@@ -2080,12 +2118,18 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async{
                           Navigator.pop(context);
-                          Navigator.push(
+                       var res =await   Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Meetings()));
+                          if(res==true){
+                            setState(() {
+                              _loading=true;
+                              GetUserDeatails();
+                            });
+                          }
                         },
                         child: Container(
                           child: Column(

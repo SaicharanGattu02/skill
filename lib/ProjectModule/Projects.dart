@@ -106,78 +106,89 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   }
 
 final spinkit=Spinkits();
+
+
+  Future<bool> willPop() async {
+    Navigator.pop(context,true);
+    return false;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
-      appBar: CustomAppBar(
-        title: 'All Projects',
-        actions: [Container()],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          children: [
-            SizedBox(
-              width: w,
-              // height: h * 0.043,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xffffffff),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child:
-                Row(
-                  children: [
-                    Image.asset(
-                      "assets/search.png",
-                      width: 20,
-                      height: 17,
-                      fit: BoxFit.contain,
-                    ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          isCollapsed: true,
-                          border: InputBorder.none,
-                          hintText: 'Search',
-                          hintStyle: const TextStyle(
-                            overflow: TextOverflow.ellipsis,
+    return WillPopScope(
+      onWillPop: willPop,
+      child: Scaffold(
+        backgroundColor: const Color(0xffF3ECFB),
+        appBar: CustomAppBar(
+          title: 'All Projects',
+          actions: [Container()],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            children: [
+              SizedBox(
+                width: w,
+                // height: h * 0.043,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffffffff),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child:
+                  Row(
+                    children: [
+                      Image.asset(
+                        "assets/search.png",
+                        width: 20,
+                        height: 17,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            isCollapsed: true,
+                            border: InputBorder.none,
+                            hintText: 'Search',
+                            hintStyle: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: Color(0xff9E7BCA),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              fontFamily: "Nunito",
+                            ),
+                          ),
+                          style: TextStyle(
                             color: Color(0xff9E7BCA),
                             fontWeight: FontWeight.w400,
-                            fontSize: 14,
+                            fontSize: 16,
+                            decorationColor: Color(0xff9E7BCA),
                             fontFamily: "Nunito",
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          textAlignVertical: TextAlignVertical.center,
                         ),
-                        style: TextStyle(
-                          color: Color(0xff9E7BCA),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          decorationColor: Color(0xff9E7BCA),
-                          fontFamily: "Nunito",
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        textAlignVertical: TextAlignVertical.center,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: _loading?_buildShimmerGrid(w):
-              filteredRooms.isEmpty
-                  ? _buildEmptyPlaceholder()
-                  : _buildProjectGrid(),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Expanded(
+                child: _loading?_buildShimmerGrid(w):
+                filteredRooms.isEmpty
+                    ? _buildEmptyPlaceholder()
+                    : _buildProjectGrid(),
+              ),
+            ],
+          ),
         ),
       ),
     );
