@@ -385,61 +385,68 @@ class _MeetingsState extends State<Meetings> {
     return ListView.builder(
       itemCount: 10, // Adjust the number of shimmer items as needed
       itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26, // Adjust shadow color
-                offset: Offset(0, 2), // Change the offset as needed
-                blurRadius: 8, // Change the blur radius as needed
-                spreadRadius: 1, // Change the spread radius as needed
+        return Column(
+          children: [
+            // Regular content of the shimmer list item
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  shimmerText(50, 15), // Shimmer for "Today" label
-                  const Spacer(),
-                  shimmerRectangle(24), // Shimmer for delete icon
-                  const SizedBox(width: 8),
-                  shimmerRectangle(24), // Shimmer for edit icon
+                  Row(
+                    children: [
+                      shimmerText(50, 15), // Shimmer for "Today" label
+                      const Spacer(),
+                      shimmerRectangle(24), // Shimmer for delete icon
+                      const SizedBox(width: 8),
+                      shimmerRectangle(24), // Shimmer for edit icon
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      shimmerCircle(10), // Shimmer for status dot
+                      const SizedBox(width: 8),
+                      shimmerText(150, 12), // Shimmer for start date
+                      const SizedBox(width: 8),
+                      shimmerCircle(12), // Shimmer for meeting icon
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  shimmerText(150, 12), // Shimmer for task title
+                  const SizedBox(height: 8),
+                  shimmerText(200, 12), // Shimmer for meeting link
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: Colors.grey[300], // Shimmer background color
+                    ),
+                    child: shimmerText(100, 12), // Shimmer for meeting link button
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  shimmerCircle(10), // Shimmer for status dot
-                  const SizedBox(width: 8),
-                  shimmerText(150, 12), // Shimmer for start date
-                  const SizedBox(width: 8),
-                  shimmerCircle(12), // Shimmer for meeting icon
-                ],
+            ),
+
+            // Add divider after each item except the last one
+            if (index != 9) // If it's not the last item
+              Divider(
+                color: Colors.grey[300],
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
               ),
-              const SizedBox(height: 8),
-              shimmerText(150, 12), // Shimmer for task title
-              const SizedBox(height: 8),
-              shimmerText(200, 12), // Shimmer for meeting link
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: Colors.grey[300], // Shimmer background color
-                ),
-                child: shimmerText(100, 12), // Shimmer for meeting link button
-              ),
-            ],
-          ),
+          ],
         );
       },
     );
   }
+
 
 }

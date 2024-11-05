@@ -1199,6 +1199,7 @@ class _AddTaskState extends State<AddTask> {
                                           onChanged: (value) {
                                             setState(() {
                                               isCollaboraterDropdownOpen=false;
+                                              _validateCollaborators="";
                                             });
                                             toggleSelection(data.id!, data.fullName!);
                                           },
