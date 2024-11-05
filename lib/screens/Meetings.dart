@@ -102,16 +102,16 @@ class _MeetingsState extends State<Meetings> {
       );
     });
   }
-  Future<bool> willPop() async {
-    Navigator.pop(context,true);
-    return false;
 
-  }
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return WillPopScope(
-      onWillPop: willPop,
+      onWillPop: () async {
+        // Perform any logic before popping the screen
+        Navigator.pop(context, true); // This will pop the screen and pass 'true' back.
+        return Future.value(false); // Returning false prevents the default back navigation behavior
+      },
       child: Scaffold(
         backgroundColor: const Color(0xffF3ECFB),
         appBar: CustomAppBar(
@@ -184,28 +184,6 @@ class _MeetingsState extends State<Meetings> {
                     ],
                   ),
                   Spacer(),
-                  // Image.asset(
-                  //   "assets/sun.png",
-                  //   width: w * 0.05,
-                  //   height: w * 0.04,
-                  // ),
-                  // const SizedBox(width: 4),
-                  // Text(
-                  //   "Now is almost sunny",
-                  //   style: TextStyle(
-                  //     fontFamily: 'Inter',
-                  //     fontSize: 10,
-                  //     color: Color(0xff64748B),
-                  //     height: 16.94 / 10,
-                  //     fontWeight: FontWeight.w400,
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 4),
-                  // Image.asset(
-                  //   "assets/sunn.png",
-                  //   width: 24,
-                  //   height: 24,
-                  // ),
                 ],
               ),
               const SizedBox(height: 18),
@@ -302,139 +280,100 @@ class _MeetingsState extends State<Meetings> {
                         ),
                       )
                     : ListView.builder(
-                        itemCount: meetings.length,
-                        itemBuilder: (context, index) {
-                          final task = meetings[index];
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: const Color(0xffD0CBDB), width: 0.7),
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Today",
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xff9AADB6),
-                                          height: 20 / 15,
-                                          fontFamily: "Inter"),
+                  itemCount: meetings.length,
+                  itemBuilder: (context, index) {
+                    final task = meetings[index];
+
+                    // Check if it's the last item
+                    bool isLastItem = index == meetings.length - 1;
+
+                    return Column(
+                      children: [
+                        Container(
+                          margin:EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset("assets/meeting.png",width: 32,height: 32,),
+                              SizedBox(width: 10,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    task.title ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff141516),
+                                      height: 16 / 12,
                                     ),
-                                    SizedBox(width: w * 0.009),
-                                    Text(
-                                      task.startDate ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xff9AADB6),
-                                        fontFamily: "Inter",
-                                        height: 20 / 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    ClipOval(
-                                        child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                          color: Color(0xff3B82F6),
-                                          borderRadius:
-                                              BorderRadius.circular(100)),
-                                    )),
-                                    SizedBox(width: w * 0.008),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          task.startDate ?? "",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            height: 16 / 12,
-                                            color: Color(0xff4A4A4A),
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(width: w * 0.008),
-                                    ClipOval(
-                                      child: Container(
-                                        width: 12,
-                                        height: 12,
-                                        padding: EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffF0EAFF),
-                                            borderRadius:
-                                                BorderRadius.circular(100)),
-                                        child: Image.asset(
-                                          "assets/meet.png",
-                                          width: 4,
-                                          height: 4,
-                                          color: Color(0xff000000),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  task.title ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff141516),
-                                    height: 16 / 12,
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  task.meetingLink ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: "Inter",
-                                    height: 16 / 14,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Color(0xffDE350B),
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xffDE350B),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    task.description ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff141516),
+                                      height: 16 / 12,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 8, right: 8, top: 1, bottom: 1),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100),
-                                      color: Color(0xff2FB035)),
-                                  child: Text(
-                                    task.meetingLink ?? "",
+                                  const SizedBox(height: 8),
+                                  Text("Join the video conference call link:",
                                     style: TextStyle(
-                                        color: const Color(0xffffffff),
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 12,
-                                        height: 19.41 / 12,
-                                        letterSpacing: 0.14,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontFamily: "Inter"),
+                                      fontSize: 15,
+                                      fontFamily: "Inter",
+                                      height: 16 / 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff4a4a4a),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                                  SizedBox(
+                                    width: w * 0.6,
+                                    child: Text("${task.meetingLink ?? ""}",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: "Inter",
+                                        height: 16 / 14,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Color(0xffDE350B),
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xffDE350B),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Image.asset("assets/calendar.png", width: 20, height: 20),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        task.startDate ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff64748B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Add divider only if it's not the last item
+                        if (!isLastItem)
+                          Divider(
+                            color: Color(0xff94A3B8).withOpacity(0.3),
+                            thickness: 1,
+                          ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ],
           ),

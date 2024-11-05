@@ -2,6 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
+import 'package:video_player/video_player.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/FetchmesgsModel.dart';
 import '../Model/RoomsDetailsModel.dart';
@@ -19,10 +24,16 @@ class ChatPage extends StatefulWidget {
   _ChatPageState createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin {
   late IOWebSocketChannel _socket;
   TextEditingController _messageController = TextEditingController();
   ScrollController _scrollController = ScrollController();
+
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  bool _isPickerVisible = false;
+
   bool _isConnected = false;
   bool _isLoadingMore = false; // Track loading state for more messages
   String user_id = "";
@@ -39,6 +50,29 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     _initializeWebSocket();
     RoomDetailsApi();
+// Initialize the AnimationController
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500), // Total duration of both animations
+    );
+
+    // Slide Animation: From right to left
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(1.5, 0),  // Start position: off-screen to the right
+      end: Offset(0, 0),      // End position: aligned with the text field
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Fade Animation: From invisible to visible
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,  // Start opacity: invisible
+      end: 1.0,    // End opacity: fully visible
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
     _scrollController
         .addListener(_scrollListener); // Add listener for scrolling
     print(widget.roomId);
@@ -47,19 +81,29 @@ class _ChatPageState extends State<ChatPage> {
   List<Messages> _messages = [];
 
   Future<void> RoomDetailsApi() async {
-    user_id = await PreferenceService().getString("user_id") ?? "";
-    print('user_id: $user_id');
-
     var res = await Userapi.getrommsdetailsApi(widget.roomId);
+
     setState(() {
       if (res != null && res.settings?.success == 1) {
-        _messages = res.data?.messages ?? [];
+        // Assign the messages and reverse the list
+        _messages = (res.data?.messages ?? []).reversed.toList();
+
         if (_messages.isNotEmpty) {
           last_msg_id = _messages[0].id ?? "";
         }
+
+        // Decode the msg field if necessary (to handle emoji/character encoding issues)
+        _messages = _messages.map((msg) {
+          msg.msg = decodeEmojiMessage(msg.msg ?? "");
+          return msg;
+        }).toList();
+
         username = res.data?.userName ?? "";
         userimage = res.data?.userImage ?? "";
-        userID = res.data?.userId ?? "";
+        userID = res.data?.id ?? "";
+        user_id = res.data?.userId ?? "";
+
+        print("USERID :${userID}");
 
         // Scroll to the bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -70,6 +114,17 @@ class _ChatPageState extends State<ChatPage> {
       }
     });
   }
+
+  String decodeEmojiMessage(String message) {
+    try {
+      // Manually decode the incorrectly encoded emojis (if necessary)
+      return utf8.decode(message.codeUnits);
+    } catch (e) {
+      // If decoding fails, return the original message
+      return message;
+    }
+  }
+
 
   Future<void> _fetchMessages() async {
     print('Fetching messages for page $_currentPage...');
@@ -134,12 +189,13 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  void _initializeWebSocket() {
+  void _initializeWebSocket() async{
+    final token = await PreferenceService().getString("token");
     print('Attempting to connect to WebSocket...');
     _socket = IOWebSocketChannel.connect(
-        Uri.parse('wss://stage.skil.in/ws/chat/${widget.roomId}'));
+        Uri.parse('wss://stage.skil.in/ws/chat/${widget.roomId}?token=${token}'));
     print(
-        'Connected to WebSocket at: wss://stage.skil.in/ws/chat/${widget.roomId}');
+        'Connected to WebSocket at: wss://stage.skil.in/ws/chat/${widget.roomId}?token=${token}');
     setState(() {
       _isConnected = true;
     });
@@ -198,7 +254,8 @@ class _ChatPageState extends State<ChatPage> {
 
       try {
         final payload = jsonEncode(
-            {'command': 'new_message', 'message': message, 'user': user_id});
+            {'command': 'new_message', 'message': message, 'user':user_id});
+        print("Payload :${payload}");
         _socket.sink.add(payload);
       } catch (e) {
         print('Error sending message: $e');
@@ -209,7 +266,146 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Widget _buildMessageBubble(String message, String sender, String datetime) {
+  // // Function to show the dialog
+  // void _showPickerDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: true, // Allows the dialog to be dismissed when tapping outside
+  //     builder: (BuildContext context) {
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(16),
+  //         ),
+  //         elevation: 16,
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(16.0),
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Text(
+  //                 'Choose an option',
+  //                 style: TextStyle(
+  //                   fontSize: 18,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //               SizedBox(height: 20),
+  //               ListTile(
+  //                 leading: Icon(Icons.camera_alt),
+  //                 title: Text("Take Photo"),
+  //                 onTap: () {
+  //                   _pickImage(ImageSource.camera);
+  //                   Navigator.of(context).pop(); // Close the dialog after picking
+  //                 },
+  //               ),
+  //               ListTile(
+  //                 leading: Icon(Icons.photo_library),
+  //                 title: Text("Choose from Gallery"),
+  //                 onTap: () {
+  //                   _pickImage(ImageSource.gallery);
+  //                   Navigator.of(context).pop(); // Close the dialog after picking
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // Toggle the visibility of the file picker and start animation
+  void _showPickerDialog() {
+    setState(() {
+      _isPickerVisible = !_isPickerVisible;
+    });
+
+    if (_isPickerVisible) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  // Function to pick image from either camera or gallery
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
+      // You can use image.path or display it in your UI
+      print('Picked image: ${image.path}');
+      // For example, you can set the image path to the TextField:
+      setState(() {
+
+      });
+    }
+  }
+
+  void _openImageViewer(BuildContext context, List<Media> media, int initialIndex) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoViewGallery.builder(
+          itemCount: media.length,
+          builder: (context, index) {
+            return PhotoViewGalleryPageOptions(
+              imageProvider: NetworkImage(media[index].file ?? ''),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered,
+            );
+          },
+          scrollPhysics: BouncingScrollPhysics(),
+          backgroundDecoration: BoxDecoration(
+            color: Colors.black,
+          ),
+          pageController: PageController(initialPage: initialIndex), // Start from the selected index
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openVideoPlayer(BuildContext context, Media mediaItem) async {
+    // Create a VideoPlayerController
+    VideoPlayerController controller = VideoPlayerController.network(mediaItem.file ?? '');
+    await controller.initialize();
+
+    // Display the video player
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: VideoPlayer(controller),
+          ),
+        );
+      },
+    );
+
+    // Play the video
+    controller.play();
+  }
+
+  Future<void> _openDocument(BuildContext context, Media mediaItem) async {
+    // Show PDF in a full-screen viewer
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: PDFView(
+            filePath: mediaItem.file ?? '',
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
+  Widget _buildMessageBubble(String message, String sender, String datetime, List<Media>? media) {
     bool isMe = sender == 'you';
 
     return Padding(
@@ -221,9 +417,8 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
-
               Padding(
-                padding: const EdgeInsets.only(top:5.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: ClipOval(
                   child: Image.network(
                     userimage,
@@ -235,6 +430,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             SizedBox(width: 8),
 
+            // Message Container
             Container(
               width: MediaQuery.of(context).size.width * 0.75,
               margin: EdgeInsets.symmetric(vertical: 5),
@@ -251,10 +447,167 @@ class _ChatPageState extends State<ChatPage> {
               child: Column(
                 crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message,
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  // Display the message text
+                  if (message != "")
+                    Text(
+                      message,
+                      style: TextStyle(color: Colors.black),
+                    ),
+
+                  // Check if there's media and handle different media types
+                  if (media != null && media.isNotEmpty) ...[
+                    if (media.length == 1) ...[
+                      // Single media item, check type
+                      if (media[0].contentType?.startsWith('image') ?? false) ...[
+                        // Display image
+                        GestureDetector(
+                          onTap: () => _openImageViewer(context, media, 0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Image.network(
+                              media[0].file ?? '',
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                          ),
+                        ),
+                      ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
+                        // Display video (with an icon for preview)
+                        GestureDetector(
+                          onTap: () => _openVideoPlayer(context, media[0]),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  media[0].file ?? '',
+                                  fit: BoxFit.cover,
+                                  width: 100,
+                                  height: 100,
+                                ),
+                                Icon(
+                                  Icons.play_circle_fill,
+                                  color: Colors.white,
+                                  size: 50,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ] else if (media[0].contentType?.startsWith('application/pdf') ?? false) ...[
+                        // Display PDF icon
+                        GestureDetector(
+                          onTap: () => _openDocument(context, media[0]),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Icon(
+                              Icons.insert_drive_file,
+                              color: Colors.blue,
+                              size: 50, // Adjust icon size
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        // If it's an unsupported type, show a default icon
+                        // GestureDetector(
+                        //   onTap: () => _openFile(context, media[0]),
+                        //   child: Card(
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(16),
+                        //     ),
+                        //     elevation: 4,
+                        //     clipBehavior: Clip.hardEdge,
+                        //     child: Icon(
+                        //       Icons.help_outline,
+                        //       color: Colors.grey,
+                        //       size: 50,
+                        //     ),
+                        //   ),
+                        // ),
+                      ]
+                    ] else if (media.length > 1) ...[
+                      // If there are multiple media items
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 3,
+                          mainAxisSpacing: 3,
+                        ),
+                        itemCount: media.length > 3 ? 4 : media.length, // Show up to 4 items, with a "more" option
+                        itemBuilder: (context, index) {
+                          if (index == 3 && media.length > 3) {
+                            // If it's the last index and we have more than 3 items, display the +X more
+                            return GestureDetector(
+                              onTap: () => _openImageViewer(context, media, 3),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 4,
+                                clipBehavior: Clip.hardEdge,
+                                child: Stack(
+                                  children: [
+                                    Positioned.fill(
+                                      child: Image.network(
+                                        media[0].file ?? '',
+                                        fit: BoxFit.cover,
+                                        color: Colors.black.withOpacity(0.4),
+                                        colorBlendMode: BlendMode.darken,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '+${media.length - 3}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else {
+                            final mediaItem = media[index];
+                            return GestureDetector(
+                              onTap: () => _openImageViewer(context, media, index),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 4,
+                                clipBehavior: Clip.hardEdge,
+                                child: getMediaWidget(mediaItem),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ],
+
+                  // Message timestamp
                   SizedBox(height: 5),
                   Text(
                     datetime,
@@ -271,6 +624,45 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
+// A helper function to return the appropriate widget for each media type
+  Widget getMediaWidget(Media mediaItem) {
+    if (mediaItem.contentType?.startsWith('image') ?? false) {
+      return Image.network(
+        mediaItem.file ?? '',
+        fit: BoxFit.cover,
+      );
+    } else if (mediaItem.contentType?.startsWith('video') ?? false) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.network(
+            mediaItem.file ?? '',
+            fit: BoxFit.cover,
+          ),
+          Icon(
+            Icons.play_circle_fill,
+            color: Colors.white,
+            size: 50,
+          ),
+        ],
+      );
+    } else if (mediaItem.contentType?.startsWith('application/pdf') ?? false) {
+      return Icon(
+        Icons.insert_drive_file,
+        color: Colors.blue,
+        size: 50,
+      );
+    } else {
+      return Icon(
+        Icons.help_outline,
+        color: Colors.grey,
+        size: 50,
+      );
+    }
+  }
+
+
 
 
   @override
@@ -363,9 +755,7 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              // In the ListView.builder
-              itemCount: _messages.length +
-                  (_isLoadingMore ? 1 : 0), // Add 1 for the loader
+              itemCount: _messages.length + (_isLoadingMore ? 1 : 0), // Add 1 for the loader
               itemBuilder: (context, index) {
                 if (index == _messages.length && _isLoadingMore) {
                   return Center(
@@ -375,13 +765,47 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   );
                 }
-                final message = _messages[index].msg;
-                final sender = _messages[index].sentUser == user_id ? "you" : "remote";
-                final datetime = _messages[index].lastUpdated??"";
-                return _buildMessageBubble(message ?? "", sender,datetime);
+                final message = _messages[index];
+                final messageText = message.msg;
+                final sender = message.sentUser == user_id ? "you" : "remote";
+                final datetime = message.lastUpdated ?? "";
+                final media = message.media;  // Get the media list
+
+                return _buildMessageBubble(messageText ?? "", sender, datetime, media);
               },
             ),
           ),
+          // Animated file picker dialog
+          if (_isPickerVisible)
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation, // Apply fade animation
+                  child: SlideTransition(
+                    position: _slideAnimation, // Apply slide animation
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 10, right: 20), // Adjust for the button position
+                        width: 250,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -398,35 +822,45 @@ class _ChatPageState extends State<ChatPage> {
               ),
               child: Row(
                 children: [
+                  // Expanded TextField for message input
                   Expanded(
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
                         hintText: 'Enter Your Message',
-                        border: InputBorder.none, // Remove the default border
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16.0), // Add padding
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                       ),
                     ),
                   ),
+                  // IconButton(
+                  //   icon: Icon(
+                  //     Icons.attach_file_outlined,
+                  //     color: Colors.grey,
+                  //   ),
+                  //   onPressed: () {
+                  //     _showPickerDialog();
+                  //   },
+                  // ),
+
+                  // Send Button
                   InkResponse(
-                    onTap: (){
+                    onTap: () {
                       _sendMessage();
                     },
                     child: Container(
                       padding: EdgeInsets.only(right: 10),
-                        child: Image(
-                      image: AssetImage(
+                      child: Image.asset(
                         "assets/container.png",
+                        height: 36,
+                        width: 36,
                       ),
-                      height: 36,
-                      width: 36,
-                    )),
+                    ),
                   ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

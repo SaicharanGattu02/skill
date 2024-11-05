@@ -288,20 +288,17 @@ class _TodolistState extends State<Todolist> {
     return Future.delayed(Duration.zero);
   }
 
-
-  Future<bool> willPop() async {
-    Navigator.pop(context,true);
-    return false;
-
-  }
-
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
 
     return WillPopScope(
-      onWillPop: willPop,
+      onWillPop: () async {
+        // Perform any logic before popping the screen
+        Navigator.pop(context, true); // This will pop the screen and pass 'true' back.
+        return Future.value(false); // Returning false prevents the default back navigation behavior
+      },
       child: Scaffold(
         backgroundColor: const Color(0xffF3ECFB),
         appBar: CustomAppBar(
@@ -361,7 +358,7 @@ class _TodolistState extends State<Todolist> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: w * 0.6,
+                      width: w * 0.6256,
                       height: h * 0.043,
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -597,98 +594,96 @@ class _TodolistState extends State<Todolist> {
                                   index: index,
                                   child: Container(
                                     width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 18.0),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Image.asset(
-                                            "assets/More-vertical.png",
-                                            fit: BoxFit.contain,
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                          // The InkWell here should not interfere with the reorder gesture.
-                                          // It’s better to move the delete action outside of the draggable area.
-                                          InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                deleteToDoList(tododata.id ?? "");
-                                              });
-                                            },
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 8, right: 8), // Increase padding for larger tap area
-                                              child: Container(
-                                                width: 20,
-                                                height: 20,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: tododata.labelColor != null
-                                                        ? hexToColor(tododata.labelColor ?? "")
-                                                        : Colors.grey, // Border color
-                                                    width: 3,
-                                                  ),
+                                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Image.asset(
+                                          "assets/More-vertical.png",
+                                          fit: BoxFit.contain,
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                        // The InkWell here should not interfere with the reorder gesture.
+                                        // It’s better to move the delete action outside of the draggable area.
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              deleteToDoList(tododata.id ?? "");
+                                            });
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 8, right: 8), // Increase padding for larger tap area
+                                            child: Container(
+                                              width: 20,
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: tododata.labelColor != null
+                                                      ? hexToColor(tododata.labelColor ?? "")
+                                                      : Colors.grey, // Border color
+                                                  width: 3,
                                                 ),
-                                                child: isChecked
-                                                    ? Icon(
-                                                  Icons.check,
-                                                  size: 10,
-                                                  color: Colors.white, // Color of the check icon
-                                                )
-                                                    : null, // Use null instead of SizedBox.shrink() when unchecked
                                               ),
+                                              child: isChecked
+                                                  ? Icon(
+                                                Icons.check,
+                                                size: 10,
+                                                color: Colors.white, // Color of the check icon
+                                              )
+                                                  : null, // Use null instead of SizedBox.shrink() when unchecked
                                             ),
                                           ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                tododata.taskName ?? "",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 15,
+                                                  color: Color(0xff141516),
+                                                  height: 16.94 / 13,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              if (tododata.description != "")
                                                 Text(
-                                                  tododata.taskName ?? "",
+                                                  tododata.description ?? "",
                                                   style: const TextStyle(
                                                     fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w500,
+                                                    fontWeight: FontWeight.w400,
                                                     fontSize: 15,
-                                                    color: Color(0xff141516),
-                                                    height: 16.94 / 13,
+                                                    color: Color(0xff4a4a4a),
+                                                    height: 12.89 / 11,
                                                   ),
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
-                                                const SizedBox(height: 5),
-                                                if (tododata.description != "")
+                                              const SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  Image.asset("assets/calendar.png", width: 18, height: 18),
+                                                  SizedBox(width: 8),
                                                   Text(
-                                                    tododata.description ?? "",
+                                                    tododata.dateTime ?? "",
                                                     style: const TextStyle(
                                                       fontFamily: 'Inter',
-                                                      fontWeight: FontWeight.w400,
-                                                      fontSize: 15,
-                                                      color: Color(0xff4a4a4a),
-                                                      height: 12.89 / 11,
+                                                      fontWeight: FontWeight.w500,
+                                                      fontSize: 14,
+                                                      color: Color(0xff2FB035),
+                                                      height: 13.31 / 11,
                                                     ),
-                                                    overflow: TextOverflow.ellipsis,
                                                   ),
-                                                const SizedBox(height: 5),
-                                                Row(
-                                                  children: [
-                                                    Image.asset("assets/calendar.png", width: 18, height: 18),
-                                                    SizedBox(width: 8),
-                                                    Text(
-                                                      tododata.dateTime ?? "",
-                                                      style: const TextStyle(
-                                                        fontFamily: 'Inter',
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: 14,
-                                                        color: Color(0xff2FB035),
-                                                        height: 13.31 / 11,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

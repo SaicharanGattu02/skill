@@ -35,6 +35,7 @@ class Employeedata {
   String? email;
   String? status;
   String? mobile;
+  String? room_id;
 
   Employeedata(
       {this.id,
@@ -42,6 +43,7 @@ class Employeedata {
         this.image,
         this.email,
         this.status,
+        this.room_id,
         this.mobile});
 
   Employeedata.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class Employeedata {
     email = json['email'];
     status = json['status'];
     mobile = json['mobile'];
+    room_id = json['room_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +64,7 @@ class Employeedata {
     data['email'] = this.email;
     data['status'] = this.status;
     data['mobile'] = this.mobile;
+    data['room_id'] = this.room_id;
     return data;
   }
 }

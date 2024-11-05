@@ -242,11 +242,12 @@ class _DashboardState extends State<Dashboard> {
   }
 
   bool _isConnected = false;
-  void _initializeWebSocket(String userid) {
+  void _initializeWebSocket(String userid) async {
+    final token = await PreferenceService().getString("token");
     print('Attempting to connect to WebSocket...');
     _socket = IOWebSocketChannel.connect(
-        Uri.parse("wss://stage.skil.in/ws/notify/${userid}"));
-    print('Connected to WebSocket at: wss://stage.skil.in/ws/notify/${userid}');
+        Uri.parse("wss://stage.skil.in/ws/notify/${userid}?token=${token}"));
+    print('Connected to WebSocket at: wss://stage.skil.in/ws/notify/${userid}?token=${token}');
     setState(() {
       _isConnected = true;
     });
@@ -295,24 +296,24 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Future<void> createRoom(String id) async {
-    var res = await Userapi.CreateChatRoomAPi(id);
-    setState(() {
-      if (res != null && res.settings?.success == 1) {
-        GetRoomsList();
-        _searchController.text = "";
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatPage(roomId: res.data?.room ?? ""),
-          ),
-        );
-      } else {
-        CustomSnackBar.show(context, "${res?.settings?.message}");
-      }
-    });
-  }
+  // Future<void> createRoom(String id) async {
+  //   var res = await Userapi.CreateChatRoomAPi(id);
+  //   setState(() {
+  //     if (res != null && res.settings?.success == 1) {
+  //       GetRoomsList();
+  //       _searchController.text = "";
+  //       Navigator.pop(context);
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => ChatPage(roomId: res.data?.room ?? ""),
+  //         ),
+  //       );
+  //     } else {
+  //       CustomSnackBar.show(context, "${res?.settings?.message}");
+  //     }
+  //   });
+  // }
 
   void updateRooms(Map<String, dynamic> newMessage, String decryptedMessage) {
     final roomId = newMessage['data']['room_id'];
@@ -411,7 +412,7 @@ class _DashboardState extends State<Dashboard> {
           _loading = false;
           userdata = Res.data;
           userid = Res.data?.id ?? "";
-          _initializeWebSocket(userdata?.id ?? "");
+          _initializeWebSocket(userdata?.employee?.id ?? "");
           PreferenceService().saveString("user_id", userdata?.id ?? "");
         } else {
           _loading = false;
@@ -552,7 +553,7 @@ class _DashboardState extends State<Dashboard> {
                     displacement: 50,
                     onRefresh: _refreshItems,
                     child: SingleChildScrollView(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       child: Padding(
                         padding: const EdgeInsets.only(
                             top: 16, left: 16, right: 16, bottom: 8),
@@ -1683,9 +1684,14 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 onTap: () async {
                                   try {
-                                    FocusScope.of(context)
-                                        .unfocus(); // Update the current page index
-                                    createRoom(employee.id ?? "");
+                                    FocusScope.of(context).unfocus();
+                                    Navigator.pop(context,true);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatPage(roomId: employee.room_id ?? ""),
+                                      ),
+                                    );
                                   } catch (error) {
                                     // Handle error
                                     print(error);
