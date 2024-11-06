@@ -7,11 +7,13 @@ import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_fiel
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:provider/provider.dart';
 // import 'package:your_package/multi_select_dropdown.dart';
 import 'package:skill/Model/ProjectsModel.dart';
 import '../Model/CreateZoomMeeting.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/MeetingProviders.dart';
+import '../Providers/ProfileProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
@@ -230,8 +232,10 @@ class _AddMeetingsState extends State<AddMeetings> {
       if (res != null) {
         if (res.settings?.success == 1) {
           _isLoading = false;
+          final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+          profileProvider.fetchUserDetails();
           Navigator.pop(context, true);
-          CustomSnackBar.show(context, "${res.settings?.message}");
+          CustomSnackBar.show(context, "Meeting Added Successfully!");
         } else {
           _isLoading = false;
           CustomSnackBar.show(context, "${res.settings?.message}");

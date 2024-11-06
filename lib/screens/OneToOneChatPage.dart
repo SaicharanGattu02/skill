@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -36,7 +37,10 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
   final FlutterSoundPlayer _audioPlayer = FlutterSoundPlayer();
   bool _isRecording = false;
+  bool _isCancelled = false;
   bool _isPlaying = false;
+  int _recordingTime = 0;  // in seconds
+  Timer? _timer;
   String? _recordedFilePath;
 
   late AnimationController _animationController;
@@ -117,28 +121,50 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     final tempDir = await getTemporaryDirectory();
     final filePath = '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
     await _audioRecorder.startRecorder(toFile: filePath);
+
+    // Start the recording timer
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _recordingTime++;
+      });
+    });
+
     return filePath;
   }
 
   // Stop recording and return the file path
   Future<String> _stopRecording() async {
     final filePath = await _audioRecorder.stopRecorder();
+    _timer?.cancel();
     return filePath!;
+  }
+
+  // Cancel the recording (slide to cancel)
+  Future<void> _cancelRecording() async {
+    if (_isRecording) {
+      await _audioRecorder.stopRecorder();
+      _timer?.cancel();
+      setState(() {
+        _isRecording = false;
+        _isCancelled = true;
+      });
+    }
   }
 
   // Play recorded audio
   Future<void> _playAudio(String path) async {
-    await _audioPlayer.startPlayer(fromURI: path);
     setState(() {
       _isPlaying = true;
     });
-    // _audioPlayer..listen((e) {
-    //   if (e == null) {
-    //     setState(() {
-    //       _isPlaying = false;
-    //     });
-    //   }
-    // });
+    // Play the recorded audio
+    await _audioPlayer.startPlayer(
+      fromURI: path,
+      whenFinished: () {
+        setState(() {
+          _isPlaying = false;
+        });
+      },
+    );
   }
 
   List<Messages> _messages = [];
@@ -249,6 +275,9 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     _socket.sink.close();
     _messageController.dispose();
     _scrollController.dispose();
+    _timer?.cancel();
+    _audioRecorder.closeRecorder();
+    _audioPlayer.closePlayer();
     super.dispose();
   }
 
@@ -854,12 +883,30 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                         width: 250,
                         height: 150,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Color(0xffEAE0FF),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child:Icon(Icons.camera_alt,size: 40,color: Color(0xff8856F4),),
+                            ),
+                            SizedBox(width: 10,),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child:Icon(Icons.photo,size: 40,color: Color(0xff8856F4),),
+                            )
 
                           ],
                         ),
@@ -885,10 +932,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               ),
               child: Row(
                 children: [
-                  // Expanded TextField for message input
                   Expanded(
                     child: TextField(
-                      controller: _messageController,
                       decoration: InputDecoration(
                         hintText: 'Enter Your Message',
                         border: InputBorder.none,
@@ -896,28 +941,51 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                       ),
                     ),
                   ),
-                  // IconButton(
-                  //   icon: Icon(
-                  //     Icons.attach_file_outlined,
-                  //     color: Colors.grey,
-                  //   ),
-                  //   onPressed: () {
-                  //     _showPickerDialog();
-                  //   },
-                  // ),
-
                   IconButton(
                     icon: Icon(
-                      _isRecording ? Icons.stop : Icons.mic,
-                      color: _isRecording ? Colors.red : Colors.blue,
+                      Icons.attach_file_outlined,
+                      color: Colors.grey,
                     ),
-                    onPressed: _toggleRecording,
+                    onPressed: () {
+                      // Handle file attachment here
+                    },
                   ),
-
-                  // Send Button
+                  GestureDetector(
+                    onLongPressStart: (_) {
+                      _startRecording();
+                    },
+                    onLongPressEnd: (_) {
+                      if (!_isCancelled) {
+                        _stopRecording();
+                      }
+                    },
+                    onHorizontalDragUpdate: (details) {
+                      if (details.localPosition.dx < 0) {
+                        _cancelRecording();
+                      }
+                    },
+                    child: IconButton(
+                      icon: Icon(
+                        _isRecording ? Icons.stop : Icons.mic,
+                        color: _isRecording ? Colors.red : Colors.blue,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                  _isRecording
+                      ? Column(
+                    children: [
+                      Text("Recording: ${_recordingTime}s"),
+                      // Placeholder for audio frequency visualizer (like waveform)
+                      LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
+                    ],
+                  )
+                      : Container(),
                   InkResponse(
                     onTap: () {
-                      _sendMessage();
+                      if (_recordedFilePath != null) {
+                        _playAudio(_recordedFilePath!);
+                      }
                     },
                     child: Container(
                       padding: EdgeInsets.only(right: 10),
@@ -931,7 +999,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                 ],
               ),
             ),
-          ),
+          )
         ],
       ),
     );

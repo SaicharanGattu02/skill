@@ -4,18 +4,6 @@ class ToDoListModel {
 
   ToDoListModel({this.data, this.settings});
 
-  // ToDoListModel.fromJson(Map<String, dynamic> json) {
-  //   if (json['data'] != null) {
-  //     data = <TODOList>[];
-  //     json['data'].forEach((v) {
-  //       data!.add(new TODOList.fromJson(v));
-  //     });
-  //   }
-  //   settings = json['settings'] != null
-  //       ? new Settings.fromJson(json['settings'])
-  //       : null;
-  // }
-
   ToDoListModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null && json['data'] is List) {
       data = <TODOList>[];
@@ -50,6 +38,7 @@ class TODOList {
   String? labelId;
   String? labelName;
   String? labelColor;
+  int? order;
 
   TODOList(
       {this.id,
@@ -59,6 +48,7 @@ class TODOList {
         this.priority,
         this.labelId,
         this.labelName,
+        this.order,
         this.labelColor});
 
   TODOList.fromJson(Map<String, dynamic> json) {
@@ -70,6 +60,7 @@ class TODOList {
     labelId = json['label_id'];
     labelName = json['label_name'];
     labelColor = json['label_color'];
+    order = json['order'];
   }
 
   Map<String, dynamic> toJson() {
@@ -82,6 +73,7 @@ class TODOList {
     data['label_id'] = this.labelId;
     data['label_name'] = this.labelName;
     data['label_color'] = this.labelColor;
+    data['order'] = this.order;
     return data;
   }
 }

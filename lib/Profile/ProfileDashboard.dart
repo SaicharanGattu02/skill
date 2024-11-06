@@ -35,9 +35,29 @@ class _ProfileDashboardState extends State<ProfileDashboard>
   @override
   void initState() {
     super.initState();
-    // GetUserDeatails();
     _tabController = TabController(length: 4, vsync: this);
     _pageController = PageController();
+  }
+
+  Future<void> UpdateProfile() async {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final userdata = profileProvider.userProfile; // Get the user profile data
+    int? status;
+    setState(() {
+      if (userdata?.is_mobile_private == false) {
+        status = 0;
+      } else {
+        status = 1;
+      }
+    });
+    var res = await profileProvider.updateUserProfile("", "", "", "", 0, "", _image);
+    setState(() {
+      if(res==true){
+        CustomSnackBar.show(context, "Profile Updated Successfully!");
+      }else{
+        CustomSnackBar.show(context, "Profile Update Failed!");
+      }
+    });
   }
 
   Future<void> _pickImage() async {
@@ -97,7 +117,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
           _croppedFile = croppedFile;
           _image = File(_croppedFile!.path);
           if (_image != null) {
-            // UpdateProfile();
+            UpdateProfile();
           }
         });
       }

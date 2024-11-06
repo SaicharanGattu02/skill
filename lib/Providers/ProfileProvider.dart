@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';  // For ChangeNotifier
-import 'package:skill/Model/LoginModel.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
-import '../repositories/UserRepository.dart';
 
 class ProfileProvider with ChangeNotifier {
   UserData? _userProfile;
@@ -26,7 +24,6 @@ class ProfileProvider with ChangeNotifier {
   // Update user profile via the repository
   Future<bool> updateUserProfile(
      String fullName,
-     String email,
      String mobile,
      String gender,
      String linkdin,

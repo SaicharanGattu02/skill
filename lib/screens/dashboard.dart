@@ -41,6 +41,8 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 import 'package:geocoding/geocoding.dart' as geocoder;
 
+import 'TODOList.dart';
+
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});
 
@@ -88,15 +90,33 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    GetEmployeeData();
-    GetUserDeatails();
-    GetRoomsList();
-    GetProjectsData();
-    get_lat_log();
     initConnectivity();
+    GetUserDeatails();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
+  }
+
+  Future<void> loadData() async {
+    try {
+      await Future.wait([
+        GetEmployeeData(),
+        GetRoomsList(),
+        GetProjectsData(),
+        get_lat_log(),
+      ]);
+    } catch (e) {
+      // Handle any errors that occur during the loading
+      print("Error loading data: $e");
+      // Optionally, show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load data. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _loading = false; // Hide loader after all API calls are complete
+      });
+    }
   }
 
   Future<void> _getAddress(double? lat1, double? lng1) async {
@@ -171,7 +191,7 @@ class _DashboardState extends State<Dashboard> {
     print('Connectivity changed: $_connectionStatus');
   }
 
-  void get_lat_log() async {
+  Future<void> get_lat_log() async {
     // Check location permission
     var status = await Permission.location.status;
 
@@ -404,7 +424,8 @@ class _DashboardState extends State<Dashboard> {
 
   // Function to fetch user details
   Future<void> GetUserDeatails() async {
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
     try {
       await profileProvider.fetchUserDetails();
     } catch (e) {
@@ -417,31 +438,9 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  // UserData? userdata;
-  // Future<void> GetUserDeatails() async {
-  //   var Res = await Userapi.GetUserdetails();
-  //   setState(() {
-  //     if (Res != null) {
-  //       if (Res.settings?.success == 1) {
-  //         _loading = false;
-  //         userdata = Res.data;
-  //         userid = Res.data?.id ?? "";
-  //         _initializeWebSocket(userdata?.employee?.id ?? "");
-  //         PreferenceService().saveString("user_id", userdata?.id ?? "");
-  //       } else {
-  //         _loading = false;
-  //       }
-  //     }
-  //   });
-  // }
-
   Future<void> _refreshItems() async {
     await Future.delayed(Duration(seconds: 2));
-    GetEmployeeData();
-    GetUserDeatails();
-    GetRoomsList();
-    GetProjectsData();
-    get_lat_log();
+    loadData();
     setState(() {
       employeeData = [];
       _loading = true;
@@ -657,314 +656,310 @@ class _DashboardState extends State<Dashboard> {
                             Consumer<ProfileProvider>(
                               builder: (context, profileProvider, child) {
                                 final userdata = profileProvider.userProfile;
-                                return InkResponse(
-                                  onTap: () async {
-                                    var res = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProfileDashboard()));
-                                    if (res == true) {
-                                      GetUserDeatails();
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                        color: AppColors.primaryColor,
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            ClipOval(
-                                              child: Center(
-                                                child: Image.network(
-                                                  userdata?.image ?? "",
-                                                  width: 70,
-                                                  height: 70,
-                                                  fit: BoxFit.cover,
+                                return Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.primaryColor,
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          ClipOval(
+                                            child: Center(
+                                              child: Image.network(
+                                                userdata?.image ?? "",
+                                                width: 70,
+                                                height: 70,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          // User Info and Performance
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 4,
+                                                          right: 4,
+                                                          top: 2,
+                                                          bottom: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                        0xffFFFFFF),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        userdata?.userNumber ??
+                                                            "",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xff8856F4),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500,
+                                                            fontSize: 10,
+                                                            height: 12.1 / 10,
+                                                            letterSpacing:
+                                                                0.14,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            fontFamily:
+                                                                "Nunito"),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            // User Info and Performance
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 4,
-                                                            right: 4,
-                                                            top: 2,
-                                                            bottom: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: const Color(
-                                                          0xffFFFFFF),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              4),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        userdata?.fullName ??
+                                                            "",
+                                                        style: const TextStyle(
+                                                            color: Color(
+                                                                0xffFFFFFF),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                            fontSize: 16,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            fontFamily:
+                                                                "Inter"),
+                                                      ),
                                                     ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          userdata?.userNumber ??
-                                                              "",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xff8856F4),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 10,
-                                                              height: 12.1 / 10,
-                                                              letterSpacing:
-                                                                  0.14,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              fontFamily:
-                                                                  "Nunito"),
-                                                        ),
-                                                      ],
+                                                    SizedBox(width: 8),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal: 4,
+                                                              vertical: 2),
+                                                      decoration:
+                                                          BoxDecoration(
+                                                        color: const Color(
+                                                            0xff2FB035),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    100),
+                                                      ),
+                                                      child: Text(
+                                                        userdata?.status ??
+                                                            "",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xffFFFFFF),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700,
+                                                            fontSize: 12,
+                                                            height:
+                                                                16.36 / 12,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            fontFamily:
+                                                                "Nunito"),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          userdata?.fullName ??
-                                                              "",
-                                                          style: const TextStyle(
-                                                              color: Color(
-                                                                  0xffFFFFFF),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 16,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              fontFamily:
-                                                                  "Inter"),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(builder: (context) => ProfileDashboard()),
+                                                        );
+                                                      },
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Image.asset(
+                                                          "assets/edit.png",
+                                                          width: 20,
+                                                          height: 20,
+                                                          fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                      SizedBox(width: 8),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 4,
-                                                                vertical: 2),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: const Color(
-                                                              0xff2FB035),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      100),
-                                                        ),
-                                                        child: Text(
-                                                          userdata?.status ??
-                                                              "",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xffFFFFFF),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              fontSize: 12,
-                                                              height:
-                                                                  16.36 / 12,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              fontFamily:
-                                                                  "Nunito"),
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 15),
-                                                      Image.asset(
-                                                        "assets/edit.png",
-                                                        width: 18,
-                                                        height: 18,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  // UX/UI and Performance in a Row
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              userdata?.employee
-                                                                      ?.designation ??
-                                                                  "",
-                                                              style: TextStyle(
-                                                                  color: const Color(0xffFFFFFF)
-                                                                      .withOpacity(
-                                                                          0.7),
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 12,
-                                                                  height:
-                                                                      16.21 /
-                                                                          12,
-                                                                  letterSpacing:
-                                                                      0.14,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  fontFamily:
-                                                                      "Inter"),
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 8),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      Container(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            4,
-                                                                        vertical:
-                                                                            3),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              6),
-                                                                      color: Color(
-                                                                              0xffFFFFFF)
-                                                                          .withOpacity(
-                                                                              0.25),
-                                                                    ),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Image
-                                                                            .asset(
-                                                                          "assets/call.png",
-                                                                          fit: BoxFit
-                                                                              .contain,
+                                                    )
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            userdata?.employee
+                                                                    ?.designation ??
+                                                                "",
+                                                            style: TextStyle(
+                                                                color: const Color(0xffFFFFFF)
+                                                                    .withOpacity(
+                                                                        0.7),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 12,
+                                                                height:
+                                                                    16.21 /
+                                                                        12,
+                                                                letterSpacing:
+                                                                    0.14,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                fontFamily:
+                                                                    "Inter"),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child:
+                                                                    Container(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          4,
+                                                                      vertical:
+                                                                          3),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            6),
+                                                                    color: Color(
+                                                                            0xffFFFFFF)
+                                                                        .withOpacity(
+                                                                            0.25),
+                                                                  ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Image
+                                                                          .asset(
+                                                                        "assets/call.png",
+                                                                        fit: BoxFit
+                                                                            .contain,
+                                                                        width:
+                                                                            12,
+                                                                        color:
+                                                                            Color(0xffffffff),
+                                                                      ),
+                                                                      SizedBox(
                                                                           width:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xffffffff),
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width:
-                                                                                4),
-                                                                        Expanded(
-                                                                          // Wrap Text with Expanded to avoid overflow
-                                                                          child:
-                                                                              Text(
-                                                                            userdata?.mobile ??
-                                                                                "",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: const Color(0xffFFFFFF),
-                                                                              fontWeight: FontWeight.w400,
-                                                                              fontSize: 11,
-                                                                              height: 13.41 / 11,
-                                                                              letterSpacing: 0.14,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              fontFamily: "Inter",
-                                                                            ),
+                                                                              4),
+                                                                      Expanded(
+                                                                        // Wrap Text with Expanded to avoid overflow
+                                                                        child:
+                                                                            Text(
+                                                                          userdata?.mobile ??
+                                                                              "",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color: const Color(0xffFFFFFF),
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 11,
+                                                                            height: 13.41 / 11,
+                                                                            letterSpacing: 0.14,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            fontFamily: "Inter",
                                                                           ),
                                                                         ),
-                                                                      ],
-                                                                    ),
+                                                                      ),
+                                                                    ],
                                                                   ),
                                                                 ),
-                                                                SizedBox(
-                                                                    width: w *
-                                                                        0.015),
-                                                                Expanded(
-                                                                  child:
-                                                                      Container(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            4,
-                                                                        vertical:
-                                                                            3),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              6),
-                                                                      color: Color(
-                                                                              0xffFFFFFF)
-                                                                          .withOpacity(
-                                                                              0.25),
-                                                                    ),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Image
-                                                                            .asset(
-                                                                          "assets/gmail.png",
-                                                                          fit: BoxFit
-                                                                              .contain,
+                                                              ),
+                                                              SizedBox(
+                                                                  width: w *
+                                                                      0.015),
+                                                              Expanded(
+                                                                child:
+                                                                    Container(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          4,
+                                                                      vertical:
+                                                                          3),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            6),
+                                                                    color: Color(
+                                                                            0xffFFFFFF)
+                                                                        .withOpacity(
+                                                                            0.25),
+                                                                  ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Image
+                                                                          .asset(
+                                                                        "assets/gmail.png",
+                                                                        fit: BoxFit
+                                                                            .contain,
+                                                                        width:
+                                                                            12,
+                                                                        color:
+                                                                            Color(0xffffffff),
+                                                                      ),
+                                                                      SizedBox(
                                                                           width:
-                                                                              12,
-                                                                          color:
-                                                                              Color(0xffffffff),
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width:
-                                                                                4),
-                                                                        Expanded(
-                                                                          // Wrap Text with Expanded here too
-                                                                          child:
-                                                                              Text(
-                                                                            userdata?.email ??
-                                                                                "",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: const Color(0xffFFFFFF),
-                                                                              fontWeight: FontWeight.w400,
-                                                                              fontSize: 11,
-                                                                              height: 13.41 / 11,
-                                                                              letterSpacing: 0.14,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              fontFamily: "Inter",
-                                                                            ),
+                                                                              4),
+                                                                      Expanded(
+                                                                        // Wrap Text with Expanded here too
+                                                                        child:
+                                                                            Text(
+                                                                          userdata?.email ??
+                                                                              "",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color: const Color(0xffFFFFFF),
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 11,
+                                                                            height: 13.41 / 11,
+                                                                            letterSpacing: 0.14,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            fontFamily: "Inter",
                                                                           ),
                                                                         ),
-                                                                      ],
-                                                                    ),
+                                                                      ),
+                                                                    ],
                                                                   ),
                                                                 ),
-                                                              ],
-                                                            )
-                                                          ],
-                                                        ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
                                                       ),
-                                                      const SizedBox(width: 15),
-                                                      // Performance Container
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                                    ),
+                                                    const SizedBox(width: 15),
+                                                    // Performance Container
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
@@ -1276,17 +1271,11 @@ class _DashboardState extends State<Dashboard> {
                                         children: [
                                           InkWell(
                                             onTap: () async {
-                                              var res = await Navigator.push(
+                                              await Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           ProjectsScreen()));
-                                              if (res == true) {
-                                                setState(() {
-                                                  _loading = true;
-                                                  GetUserDeatails();
-                                                });
-                                              }
                                             },
                                             child: Column(
                                               children: [
@@ -1396,18 +1385,12 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           InkWell(
                                             onTap: () async {
-                                              var res = await Navigator.push(
+                                             await Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           Task()));
 
-                                              if (res == true) {
-                                                setState(() {
-                                                  _loading = true;
-                                                  GetUserDeatails();
-                                                });
-                                              }
                                             },
                                             child: Column(
                                               children: [
@@ -1459,18 +1442,13 @@ class _DashboardState extends State<Dashboard> {
                                             width: 20,
                                           ),
                                           InkWell(
-                                            onTap: () async {
-                                              var res = await Navigator.push(
+                                            onTap: () {
+                                            Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           Meetings()));
-                                              if (res == true) {
-                                                setState(() {
-                                                  _loading = true;
-                                                  GetUserDeatails();
-                                                });
-                                              }
+
                                             },
                                             child: Column(
                                               children: [
@@ -2005,16 +1983,11 @@ class _DashboardState extends State<Dashboard> {
                       InkWell(
                         onTap: () async {
                           Navigator.pop(context);
-                          var res = await Navigator.push(
+                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Todolist()));
-                          if (res == true) {
-                            setState(() {
-                              _loading = true;
-                              GetUserDeatails();
-                            });
-                          }
+                                  builder: (context) => TODOLIST()));
+
                         },
                         child: Container(
                           child: Column(
@@ -2050,16 +2023,10 @@ class _DashboardState extends State<Dashboard> {
                       InkWell(
                         onTap: () async {
                           Navigator.pop(context);
-                          var res = await Navigator.push(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProjectsScreen()));
-                          if (res == true) {
-                            setState(() {
-                              _loading = true;
-                              GetUserDeatails();
-                            });
-                          }
                         },
                         child: Container(
                           child: Column(
@@ -2167,18 +2134,12 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () async {
+                        onTap: () {
                           Navigator.pop(context);
-                          var res = await Navigator.push(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Meetings()));
-                          if (res == true) {
-                            setState(() {
-                              _loading = true;
-                              GetUserDeatails();
-                            });
-                          }
                         },
                         child: Container(
                           child: Column(

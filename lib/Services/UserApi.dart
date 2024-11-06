@@ -1044,6 +1044,24 @@ class Userapi {
     }
   }
 
+  static Future<ToDoListModel?>TODOListApi(String date,String label,String priority) async {
+    try {
+      final headers = await getheader();
+      final url = Uri.parse("${host}/todo/tasks?priority=$priority&label=$label&date=$date");
+      final res = await get(url, headers: headers);
+      if (res != null) {
+        print("TODOListApi Response:${res.body}");
+        return ToDoListModel.fromJson(jsonDecode(res.body));
+      } else {
+        print("Null Response");
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
   static Future<DashboardTaksModel?> gettaskaApi(String date) async {
     try {
       final headers = await getheader();
@@ -1973,6 +1991,34 @@ class Userapi {
       print('Error occurred: $e');
     }
     return null; // Return null if an error occurs
+  }
+
+static Future<LoginModel?> ReorderTodos(Map<String, int> todosOrder) async {
+    final url = '${host}/todo/rearrange-todos';
+
+    final Map<String, dynamic> requestBody = {
+      "todos_order": todosOrder,
+    };
+    print("ReorderTodos data:${requestBody}");
+    final headers = await getheader();
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        print("ReorderTodos response: ${response.body}");
+        return LoginModel.fromJson(jsonResponse);
+      } else {
+        // Handle error
+        print("Error updating todos order: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Failed to update todos order: $e");
+    }
   }
 
 

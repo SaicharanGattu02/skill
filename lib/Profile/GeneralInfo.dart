@@ -96,6 +96,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
   Future<void> UpdateProfile() async {
     int? status;
     setState(() {
+      _isLoading=true;
       if (selectedValue == "Public") {
         status = 0;
       } else {
@@ -111,21 +112,22 @@ class _GeneralInfoState extends State<GeneralInfo> {
       var res = await profileProvider.updateUserProfile(
         "${_firstNameController.text} ${_lastNameController.text}",
         _phoneController
-            .text, // Assuming email is the phone number, adjust as needed
-        _phoneController
-            .text, // Assuming mobile is the phone number, adjust as needed
+            .text,
         _gender,
         _linkdnController.text,
         status!,
         _addressController.text,
         null, // If you have an image, pass it here
       );
-
-      if(res==true){
-          CustomSnackBar.show(context, "Profile Details Updated Successfully!");
-      }else{
-        CustomSnackBar.show(context, "Profile Details Update Failed!");
-      }
+      setState(() {
+        if(res==true){
+          _isLoading=false;
+          CustomSnackBar.show(context, "Profile Updated Successfully!");
+        }else{
+          _isLoading=false;
+          CustomSnackBar.show(context, "Profile Update Failed!");
+        }
+      });
     } catch (e) {
       CustomSnackBar.show(context, "Failed to update profile: $e");
 
