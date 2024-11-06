@@ -171,7 +171,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
   Future<void> RoomDetailsApi() async {
     var res = await Userapi.getrommsdetailsApi(widget.roomId);
-
     setState(() {
       if (res != null && res.settings?.success == 1) {
         // Assign the messages and reverse the list
