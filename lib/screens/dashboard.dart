@@ -11,6 +11,7 @@ import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Profile/ProfileDashboard.dart';
+import 'package:skill/Providers/ProfileProvider.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AIChatPage.dart';
 import 'package:skill/screens/Leave.dart';
@@ -98,7 +99,6 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
   }
 
-
   Future<void> _getAddress(double? lat1, double? lng1) async {
     if (lat1 == null || lng1 == null) return;
     List<geocoder.Placemark> placemarks =
@@ -136,7 +136,6 @@ class _DashboardState extends State<Dashboard> {
       });
     }
   }
-
 
   Future<void> initConnectivity() async {
     List<ConnectivityResult> result;
@@ -247,7 +246,8 @@ class _DashboardState extends State<Dashboard> {
     print('Attempting to connect to WebSocket...');
     _socket = IOWebSocketChannel.connect(
         Uri.parse("wss://stage.skil.in/ws/notify/${userid}?token=${token}"));
-    print('Connected to WebSocket at: wss://stage.skil.in/ws/notify/${userid}?token=${token}');
+    print(
+        'Connected to WebSocket at: wss://stage.skil.in/ws/notify/${userid}?token=${token}');
     setState(() {
       _isConnected = true;
     });
@@ -377,7 +377,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-
   List<Employeedata> employeeData = [];
   List<Employeedata> tempemployeeData = [];
   Future<void> GetEmployeeData() async {
@@ -403,23 +402,38 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  UserData? userdata;
+  // Function to fetch user details
   Future<void> GetUserDeatails() async {
-    var Res = await Userapi.GetUserdetails();
-    setState(() {
-      if (Res != null) {
-        if (Res.settings?.success == 1) {
-          _loading = false;
-          userdata = Res.data;
-          userid = Res.data?.id ?? "";
-          _initializeWebSocket(userdata?.employee?.id ?? "");
-          PreferenceService().saveString("user_id", userdata?.id ?? "");
-        } else {
-          _loading = false;
-        }
-      }
-    });
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    try {
+      await profileProvider.fetchUserDetails();
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      // Once the data is fetched, stop showing the loader
+      setState(() {
+        _loading = false;
+      });
+    }
   }
+
+  // UserData? userdata;
+  // Future<void> GetUserDeatails() async {
+  //   var Res = await Userapi.GetUserdetails();
+  //   setState(() {
+  //     if (Res != null) {
+  //       if (Res.settings?.success == 1) {
+  //         _loading = false;
+  //         userdata = Res.data;
+  //         userid = Res.data?.id ?? "";
+  //         _initializeWebSocket(userdata?.employee?.id ?? "");
+  //         PreferenceService().saveString("user_id", userdata?.id ?? "");
+  //       } else {
+  //         _loading = false;
+  //       }
+  //     }
+  //   });
+  // }
 
   Future<void> _refreshItems() async {
     await Future.delayed(Duration(seconds: 2));
@@ -461,8 +475,7 @@ class _DashboardState extends State<Dashboard> {
                         _scaffoldKey.currentState?.openDrawer();
                       },
                       child: Container(
-                        padding: const EdgeInsets.only(
-                            right: 10),
+                        padding: const EdgeInsets.only(right: 10),
                         child: Image.asset(
                           "assets/menu.png",
                           width: 24,
@@ -641,308 +654,320 @@ class _DashboardState extends State<Dashboard> {
                             SizedBox(
                               height: w * 0.03,
                             ),
-                            // User Info Container
-                            InkResponse(
-                              onTap: () async {
-                                var res = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ProfileDashboard()));
-                                if (res == true) {
-                                  GetUserDeatails();
-                                }
-                              },
-                              child:
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                    color: AppColors.primaryColor,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Column(
-                                  children: [
-                                    Row(
+                            Consumer<ProfileProvider>(
+                              builder: (context, profileProvider, child) {
+                                final userdata = profileProvider.userProfile;
+                                return InkResponse(
+                                  onTap: () async {
+                                    var res = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProfileDashboard()));
+                                    if (res == true) {
+                                      GetUserDeatails();
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        color: AppColors.primaryColor,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Column(
                                       children: [
-                                        ClipOval(
-                                          child: Center(
-                                            child: Image.network(
-                                              userdata?.image ?? "",
-                                              width: 70,
-                                              height: 70,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        // User Info and Performance
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.only(
-                                                    left: 4,
-                                                    right: 4,
-                                                    top: 2,
-                                                    bottom: 2),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xffFFFFFF),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      userdata?.userNumber??"",
-                                                      style: TextStyle(
-                                                          color:
-                                                              Color(0xff8856F4),
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 10,
-                                                          height: 12.1 / 10,
-                                                          letterSpacing: 0.14,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          fontFamily: "Nunito"),
-                                                    ),
-                                                  ],
+                                        Row(
+                                          children: [
+                                            ClipOval(
+                                              child: Center(
+                                                child: Image.network(
+                                                  userdata?.image ?? "",
+                                                  width: 70,
+                                                  height: 70,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
-                                              Row(
+                                            ),
+                                            const SizedBox(width: 10),
+                                            // User Info and Performance
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      userdata?.fullName ?? "",
-                                                      style: const TextStyle(
-                                                          color:
-                                                              Color(0xffFFFFFF),
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          fontSize: 16,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          fontFamily: "Inter"),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8),
                                                   Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 4,
-                                                        vertical: 2),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 4,
+                                                            right: 4,
+                                                            top: 2,
+                                                            bottom: 2),
                                                     decoration: BoxDecoration(
                                                       color: const Color(
-                                                          0xff2FB035),
+                                                          0xffFFFFFF),
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              100),
+                                                              4),
                                                     ),
-                                                    child: Text(
-                                                      userdata?.status ?? "",
-                                                      style: TextStyle(
-                                                          color:
-                                                              Color(0xffFFFFFF),
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 12,
-                                                          height: 16.36 / 12,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          fontFamily: "Nunito"),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 15),
-                                                  Image.asset(
-                                                    "assets/edit.png",
-                                                    width: 18,
-                                                    height: 18,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              // UX/UI and Performance in a Row
-                                              Row(
-                                                children: [
-                                                  Expanded(
                                                     child: Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          userdata?.employee?.designation ?? "",
+                                                          userdata?.userNumber ??
+                                                              "",
                                                           style: TextStyle(
-                                                              color:
-                                                                  const Color(
-                                                                          0xffFFFFFF)
-                                                                      .withOpacity(
-                                                                          0.7),
+                                                              color: Color(
+                                                                  0xff8856F4),
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w400,
-                                                              fontSize: 12,
-                                                              height: 16.21 /
-                                                                  12,
+                                                                      .w500,
+                                                              fontSize: 10,
+                                                              height: 12.1 / 10,
                                                               letterSpacing:
                                                                   0.14,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
                                                               fontFamily:
-                                                                  "Inter"),
+                                                                  "Nunito"),
                                                         ),
-                                                        const SizedBox(
-                                                            height: 8),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Container(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                        horizontal:
-                                                                            4,
-                                                                        vertical:
-                                                                            3),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              6),
-                                                                  color: Color(
-                                                                          0xffFFFFFF)
-                                                                      .withOpacity(
-                                                                          0.25),
-                                                                ),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Image.asset(
-                                                                      "assets/call.png",
-                                                                      fit: BoxFit
-                                                                          .contain,
-                                                                      width: 12,
-                                                                      color: Color(
-                                                                          0xffffffff),
-                                                                    ),
-                                                                    SizedBox(
-                                                                        width:
-                                                                            4),
-                                                                    Expanded(
-                                                                      // Wrap Text with Expanded to avoid overflow
-                                                                      child:
-                                                                          Text(
-                                                                        userdata?.mobile ??
-                                                                            "",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              const Color(0xffFFFFFF),
-                                                                          fontWeight:
-                                                                              FontWeight.w400,
-                                                                          fontSize:
-                                                                              11,
-                                                                          height:
-                                                                              13.41 / 11,
-                                                                          letterSpacing:
-                                                                              0.14,
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          fontFamily:
-                                                                              "Inter",
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                                width:
-                                                                    w * 0.015),
-                                                            Expanded(
-                                                              child: Container(
-                                                                padding: EdgeInsets
-                                                                    .symmetric(
-                                                                        horizontal:
-                                                                            4,
-                                                                        vertical:
-                                                                            3),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              6),
-                                                                  color: Color(
-                                                                          0xffFFFFFF)
-                                                                      .withOpacity(
-                                                                          0.25),
-                                                                ),
-                                                                child: Row(
-                                                                  children: [
-                                                                    Image.asset(
-                                                                      "assets/gmail.png",
-                                                                      fit: BoxFit
-                                                                          .contain,
-                                                                      width: 12,
-                                                                      color: Color(
-                                                                          0xffffffff),
-                                                                    ),
-                                                                    SizedBox(
-                                                                        width:
-                                                                            4),
-                                                                    Expanded(
-                                                                      // Wrap Text with Expanded here too
-                                                                      child:
-                                                                          Text(
-                                                                        userdata?.email ??
-                                                                            "",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              const Color(0xffFFFFFF),
-                                                                          fontWeight:
-                                                                              FontWeight.w400,
-                                                                          fontSize:
-                                                                              11,
-                                                                          height:
-                                                                              13.41 / 11,
-                                                                          letterSpacing:
-                                                                              0.14,
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          fontFamily:
-                                                                              "Inter",
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        )
                                                       ],
                                                     ),
                                                   ),
-                                                  const SizedBox(width: 15),
-                                                  // Performance Container
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          userdata?.fullName ??
+                                                              "",
+                                                          style: const TextStyle(
+                                                              color: Color(
+                                                                  0xffFFFFFF),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 16,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              fontFamily:
+                                                                  "Inter"),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 4,
+                                                                vertical: 2),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: const Color(
+                                                              0xff2FB035),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      100),
+                                                        ),
+                                                        child: Text(
+                                                          userdata?.status ??
+                                                              "",
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  0xffFFFFFF),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              fontSize: 12,
+                                                              height:
+                                                                  16.36 / 12,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              fontFamily:
+                                                                  "Nunito"),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 15),
+                                                      Image.asset(
+                                                        "assets/edit.png",
+                                                        width: 18,
+                                                        height: 18,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  // UX/UI and Performance in a Row
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              userdata?.employee
+                                                                      ?.designation ??
+                                                                  "",
+                                                              style: TextStyle(
+                                                                  color: const Color(0xffFFFFFF)
+                                                                      .withOpacity(
+                                                                          0.7),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 12,
+                                                                  height:
+                                                                      16.21 /
+                                                                          12,
+                                                                  letterSpacing:
+                                                                      0.14,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  fontFamily:
+                                                                      "Inter"),
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 8),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                      Container(
+                                                                    padding: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            4,
+                                                                        vertical:
+                                                                            3),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              6),
+                                                                      color: Color(
+                                                                              0xffFFFFFF)
+                                                                          .withOpacity(
+                                                                              0.25),
+                                                                    ),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Image
+                                                                            .asset(
+                                                                          "assets/call.png",
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                          width:
+                                                                              12,
+                                                                          color:
+                                                                              Color(0xffffffff),
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                4),
+                                                                        Expanded(
+                                                                          // Wrap Text with Expanded to avoid overflow
+                                                                          child:
+                                                                              Text(
+                                                                            userdata?.mobile ??
+                                                                                "",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: const Color(0xffFFFFFF),
+                                                                              fontWeight: FontWeight.w400,
+                                                                              fontSize: 11,
+                                                                              height: 13.41 / 11,
+                                                                              letterSpacing: 0.14,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              fontFamily: "Inter",
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                    width: w *
+                                                                        0.015),
+                                                                Expanded(
+                                                                  child:
+                                                                      Container(
+                                                                    padding: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            4,
+                                                                        vertical:
+                                                                            3),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              6),
+                                                                      color: Color(
+                                                                              0xffFFFFFF)
+                                                                          .withOpacity(
+                                                                              0.25),
+                                                                    ),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Image
+                                                                            .asset(
+                                                                          "assets/gmail.png",
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                          width:
+                                                                              12,
+                                                                          color:
+                                                                              Color(0xffffffff),
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                4),
+                                                                        Expanded(
+                                                                          // Wrap Text with Expanded here too
+                                                                          child:
+                                                                              Text(
+                                                                            userdata?.email ??
+                                                                                "",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: const Color(0xffFFFFFF),
+                                                                              fontWeight: FontWeight.w400,
+                                                                              fontSize: 11,
+                                                                              height: 13.41 / 11,
+                                                                              letterSpacing: 0.14,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              fontFamily: "Inter",
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 15),
+                                                      // Performance Container
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                                );
+                              },
                             ),
                             SizedBox(
                               height: w * 0.04,
@@ -975,7 +1000,7 @@ class _DashboardState extends State<Dashboard> {
                                         fontSize: 14,
                                         height: 16.94 / 14,
                                         decoration: TextDecoration.underline,
-                                        decorationColor:AppColors.primaryColor,
+                                        decorationColor: AppColors.primaryColor,
                                         fontFamily: "Inter"),
                                   ),
                                 ),
@@ -986,7 +1011,9 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             if (projectsData.length > 0) ...[
                               SizedBox(
-                                height:projectsData.length>2? w * 0.78:w*0.45,
+                                height: projectsData.length > 2
+                                    ? w * 0.78
+                                    : w * 0.45,
                                 child: GridView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: projectsData.length,
@@ -1000,17 +1027,18 @@ class _DashboardState extends State<Dashboard> {
                                       //     crossAxisSpacing:
                                       //         10 // Space between items horizontally
                                       //     ),
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount:  projectsData.length > 2
-                                          ? 2
-                                          : 1,
-                                      childAspectRatio:
-                                      projectsData.length > 2?0.8:0.98,
-                                      // 0.8, // Adjust this ratio to fit your design
-                                      mainAxisSpacing: 2,
-                                      crossAxisSpacing:
-                                      10 // Space between items horizontally
-                                  ),
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount:
+                                              projectsData.length > 2 ? 2 : 1,
+                                          childAspectRatio:
+                                              projectsData.length > 2
+                                                  ? 0.8
+                                                  : 0.98,
+                                          // 0.8, // Adjust this ratio to fit your design
+                                          mainAxisSpacing: 2,
+                                          crossAxisSpacing:
+                                              10 // Space between items horizontally
+                                          ),
                                   itemBuilder: (context, index) {
                                     var data = projectsData[index];
                                     return InkResponse(
@@ -1230,303 +1258,320 @@ class _DashboardState extends State<Dashboard> {
                             SizedBox(
                               height: w * 0.45,
                             ),
-                            Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                  color: Color(0xffFFFFFF),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                            Consumer<ProfileProvider>(
+                              builder: (context, profileProvider, child) {
+                                final userdata = profileProvider.userProfile;
+                                return Container(
+                                  padding: EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffFFFFFF),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Column(
                                     children: [
-                                      InkWell(
-                                        onTap: () async {
-                                        var res = await  Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProjectsScreen()));
-                                        if(res==true){
-                                          setState(() {
-                                            _loading=true;
-                                            GetUserDeatails();
-                                          });
-                                        }
-
-
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: w * 0.16,
-                                              height: w * 0.115,
-                                              padding: EdgeInsets.only(
-                                                  left: 3,
-                                                  right: 3,
-                                                  top: 2,
-                                                  bottom: 2),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x1A8856F4),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              child: Center(
-                                                child: Text(
-
-                                                  userdata?.projectCount
-                                                          .toString() ??
-                                                      "",
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            onTap: () async {
+                                              var res = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ProjectsScreen()));
+                                              if (res == true) {
+                                                setState(() {
+                                                  _loading = true;
+                                                  GetUserDeatails();
+                                                });
+                                              }
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: w * 0.16,
+                                                  height: w * 0.115,
+                                                  padding: EdgeInsets.only(
+                                                      left: 3,
+                                                      right: 3,
+                                                      top: 2,
+                                                      bottom: 2),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x1A8856F4),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      userdata?.projectCount
+                                                              .toString() ??
+                                                          "",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xff000000),
+                                                          fontSize: 25,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontFamily:
+                                                              "Sarabun"),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "PROJECTS",
                                                   style: TextStyle(
                                                       color: Color(0xff000000),
-                                                      fontSize: 25,
+                                                      fontSize: 10,
                                                       fontWeight:
-                                                          FontWeight.w700,
-                                                      fontFamily: "Sarabun"),
+                                                          FontWeight.w500,
+                                                      fontFamily: "Inter"),
                                                 ),
-                                              ),
+                                              ],
                                             ),
-                                            SizedBox(
-                                              height: 8,
+                                          ),
+                                          SizedBox(
+                                            width: w * 0.03,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Todolist()));
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: w * 0.16,
+                                                  height: w * 0.115,
+                                                  padding: EdgeInsets.only(
+                                                      left: 3,
+                                                      right: 3,
+                                                      top: 2,
+                                                      bottom: 2),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xffF1FFF3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      userdata?.todoCount
+                                                              .toString() ??
+                                                          "",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xff000000),
+                                                          fontSize: 25,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontFamily:
+                                                              "Sarabun"),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "TO DO",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: "Inter"),
+                                                ),
+                                              ],
                                             ),
-                                            Text(
-                                              "PROJECTS",
-                                              style: TextStyle(
-                                                  color: Color(0xff000000),
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: "Inter"),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              var res = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Task()));
+
+                                              if (res == true) {
+                                                setState(() {
+                                                  _loading = true;
+                                                  GetUserDeatails();
+                                                });
+                                              }
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: w * 0.16,
+                                                  height: w * 0.115,
+                                                  padding: EdgeInsets.only(
+                                                      left: 3,
+                                                      right: 3,
+                                                      top: 2,
+                                                      bottom: 2),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x1AFBBC04),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      userdata?.tasksCount
+                                                              .toString() ??
+                                                          "",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xff000000),
+                                                          fontSize: 25,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontFamily:
+                                                              "Sarabun"),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "TASKS",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: "Inter"),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              var res = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Meetings()));
+                                              if (res == true) {
+                                                setState(() {
+                                                  _loading = true;
+                                                  GetUserDeatails();
+                                                });
+                                              }
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width: w * 0.16,
+                                                  height: w * 0.115,
+                                                  padding: EdgeInsets.only(
+                                                      left: 3,
+                                                      right: 3,
+                                                      top: 2,
+                                                      bottom: 2),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x1A08BED0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      userdata?.meetingCount
+                                                              .toString() ??
+                                                          "",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xff000000),
+                                                          fontSize: 25,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontFamily:
+                                                              "Sarabun"),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "MEETINGS",
+                                                  style: TextStyle(
+                                                      color: Color(0xff000000),
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: "Inter"),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       SizedBox(
-                                        width: w * 0.03,
+                                        height: 20,
                                       ),
-                                      InkWell(
-                                        onTap: ()  {
-
-                                         Navigator.push(
+                                      InkResponse(
+                                        onTap: () {
+                                          Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Todolist()));
-
-
+                                                builder: (context) =>
+                                                    Punching(),
+                                              ));
+                                          // showCustomDialog(context);
                                         },
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: w * 0.16,
-                                              height: w * 0.115,
-                                              padding: EdgeInsets.only(
-                                                  left: 3,
-                                                  right: 3,
-                                                  top: 2,
-                                                  bottom: 2),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0xffF1FFF3),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              child: Center(
-                                                child: Text(
-                                                  userdata?.todoCount
-                                                          .toString() ??
-                                                      "",
-                                                  style: TextStyle(
-                                                      color: Color(0xff000000),
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontFamily: "Sarabun"),
-                                                ),
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              top: 8, bottom: 8),
+                                          width: w,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "Punch In",
+                                                style: TextStyle(
+                                                    color: Color(0xffffffff),
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontFamily: "Inter"),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              "TO DO",
-                                              style: TextStyle(
-                                                  color: Color(0xff000000),
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: "Inter"),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      InkWell(
-                                        onTap: () async{
-                                          var res =await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Task()));
-
-                                          if(res==true){
-                                            setState(() {
-                                              _loading=true;
-                                              GetUserDeatails();
-                                            });
-                                          }
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: w * 0.16,
-                                              height: w * 0.115,
-                                              padding: EdgeInsets.only(
-                                                  left: 3,
-                                                  right: 3,
-                                                  top: 2,
-                                                  bottom: 2),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x1AFBBC04),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              child: Center(
-                                                child: Text(
-                                                  userdata?.tasksCount
-                                                          .toString() ??
-                                                      "",
-                                                  style: TextStyle(
-                                                      color: Color(0xff000000),
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontFamily: "Sarabun"),
-                                                ),
+                                              SizedBox(
+                                                width: 8,
                                               ),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              "TASKS",
-                                              style: TextStyle(
-                                                  color: Color(0xff000000),
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: "Inter"),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      InkWell(
-                                        onTap: () async{
-                                         var res=await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Meetings()));
-                                          if(res==true){
-                                            setState(() {
-                                              _loading=true;
-                                              GetUserDeatails();
-                                            });
-                                          }
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: w * 0.16,
-                                              height: w * 0.115,
-                                              padding: EdgeInsets.only(
-                                                  left: 3,
-                                                  right: 3,
-                                                  top: 2,
-                                                  bottom: 2),
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x1A08BED0),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              child: Center(
-                                                child: Text(
-                                                  userdata?.meetingCount
-                                                          .toString() ??
-                                                      "",
-                                                  style: TextStyle(
-                                                      color: Color(0xff000000),
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontFamily: "Sarabun"),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              "MEETINGS",
-                                              style: TextStyle(
-                                                  color: Color(0xff000000),
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: "Inter"),
-                                            ),
-                                          ],
+                                              // Image.asset(
+                                              //   "assets/fingerPrint.png",
+                                              //   fit: BoxFit.contain,
+                                              // )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  InkResponse(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => Punching(),
-                                          ));
-                                      // showCustomDialog(context);
-                                    },
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.only(top: 8, bottom: 8),
-                                      width: w,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryColor,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Punch In",
-                                            style: TextStyle(
-                                                color: Color(0xffffffff),
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: "Inter"),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          // Image.asset(
-                                          //   "assets/fingerPrint.png",
-                                          //   fit: BoxFit.contain,
-                                          // )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -1622,7 +1667,8 @@ class _DashboardState extends State<Dashboard> {
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               final employee = employeeData[index];
-                              final bool isAnimating = _animatingIndex == index; // Check if the current index is animating
+                              final bool isAnimating = _animatingIndex ==
+                                  index; // Check if the current index is animating
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundImage:
@@ -1663,11 +1709,11 @@ class _DashboardState extends State<Dashboard> {
                                               _animatingIndex = index;
                                             });
 
-                                            await Future.delayed(Duration(seconds: 2));
+                                            await Future.delayed(
+                                                Duration(seconds: 2));
                                             setState(() {
                                               _animatingIndex = null;
                                             });
-
                                           },
                                           child: Image.asset(
                                             'assets/notify.png',
@@ -1685,11 +1731,12 @@ class _DashboardState extends State<Dashboard> {
                                 onTap: () async {
                                   try {
                                     FocusScope.of(context).unfocus();
-                                    Navigator.pop(context,true);
+                                    Navigator.pop(context, true);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ChatPage(roomId: employee.room_id ?? ""),
+                                        builder: (context) => ChatPage(
+                                            roomId: employee.room_id ?? ""),
                                       ),
                                     );
                                   } catch (error) {
@@ -1880,13 +1927,10 @@ class _DashboardState extends State<Dashboard> {
                   //     ],
                   //   ),
                   // ),
-
-
                 ],
               ),
             ),
-            endDrawer:
-            Drawer(
+            endDrawer: Drawer(
               width: w * 0.3,
               backgroundColor: Colors.white,
               child: Padding(
@@ -1961,16 +2005,16 @@ class _DashboardState extends State<Dashboard> {
                       InkWell(
                         onTap: () async {
                           Navigator.pop(context);
-                         var res =await Navigator.push(
+                          var res = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Todolist()));
-                         if(res==true){
-                           setState(() {
-                             _loading=true;
-                             GetUserDeatails();
-                           });
-                         }
+                          if (res == true) {
+                            setState(() {
+                              _loading = true;
+                              GetUserDeatails();
+                            });
+                          }
                         },
                         child: Container(
                           child: Column(
@@ -2004,16 +2048,15 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () async{
+                        onTap: () async {
                           Navigator.pop(context);
-                          var res =await
-                          Navigator.push(
+                          var res = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProjectsScreen()));
-                          if(res==true){
+                          if (res == true) {
                             setState(() {
-                              _loading=true;
+                              _loading = true;
                               GetUserDeatails();
                             });
                           }
@@ -2124,15 +2167,15 @@ class _DashboardState extends State<Dashboard> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: () async{
+                        onTap: () async {
                           Navigator.pop(context);
-                       var res =await   Navigator.push(
+                          var res = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Meetings()));
-                          if(res==true){
+                          if (res == true) {
                             setState(() {
-                              _loading=true;
+                              _loading = true;
                               GetUserDeatails();
                             });
                           }

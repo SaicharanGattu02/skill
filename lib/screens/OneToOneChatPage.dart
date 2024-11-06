@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -15,6 +17,8 @@ import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
 import '../utils/app_colors.dart';
 import 'UserProfile.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
@@ -28,6 +32,12 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   late IOWebSocketChannel _socket;
   TextEditingController _messageController = TextEditingController();
   ScrollController _scrollController = ScrollController();
+
+  final FlutterSoundRecorder _audioRecorder = FlutterSoundRecorder();
+  final FlutterSoundPlayer _audioPlayer = FlutterSoundPlayer();
+  bool _isRecording = false;
+  bool _isPlaying = false;
+  String? _recordedFilePath;
 
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
@@ -76,6 +86,59 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     _scrollController
         .addListener(_scrollListener); // Add listener for scrolling
     print(widget.roomId);
+    _initializeAudio();
+  }
+
+  Future<void> _initializeAudio() async {
+    await Permission.microphone.request();
+    await _audioRecorder.openRecorder();
+    await _audioPlayer.openPlayer();
+  }
+
+  // Start or stop recording
+  Future<void> _toggleRecording() async {
+    if (_isRecording) {
+      final filePath = await _stopRecording();
+      setState(() {
+        _isRecording = false;
+        _recordedFilePath = filePath;
+      });
+    } else {
+      final filePath = await _startRecording();
+      setState(() {
+        _isRecording = true;
+        _recordedFilePath = filePath;
+      });
+    }
+  }
+
+  // Start recording audio
+  Future<String> _startRecording() async {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+    await _audioRecorder.startRecorder(toFile: filePath);
+    return filePath;
+  }
+
+  // Stop recording and return the file path
+  Future<String> _stopRecording() async {
+    final filePath = await _audioRecorder.stopRecorder();
+    return filePath!;
+  }
+
+  // Play recorded audio
+  Future<void> _playAudio(String path) async {
+    await _audioPlayer.startPlayer(fromURI: path);
+    setState(() {
+      _isPlaying = true;
+    });
+    // _audioPlayer..listen((e) {
+    //   if (e == null) {
+    //     setState(() {
+    //       _isPlaying = false;
+    //     });
+    //   }
+    // });
   }
 
   List<Messages> _messages = [];
@@ -842,6 +905,14 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                   //     _showPickerDialog();
                   //   },
                   // ),
+
+                  IconButton(
+                    icon: Icon(
+                      _isRecording ? Icons.stop : Icons.mic,
+                      color: _isRecording ? Colors.red : Colors.blue,
+                    ),
+                    onPressed: _toggleRecording,
+                  ),
 
                   // Send Button
                   InkResponse(

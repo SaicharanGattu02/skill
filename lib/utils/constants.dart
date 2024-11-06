@@ -48,6 +48,7 @@ const aadhaarRegex = "[0-9]{12}";
 const staticImage = "https://picsum.photos/250?image=9";
 String chat_socket_url = "wss://192.168.0.56:8000/ws/chat/";
 String notify_socket_url = "wss://192.168.0.56:8000/ws/notify/";
+const String host = "https://stage.skil.in";
 
 
 String geminiApiKey = "AIzaSyCxSSwFx-2e7d8zrBOCdU23gs7pJv0poO4";

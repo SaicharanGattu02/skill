@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../Model/ProjectLabelModel.dart';
+import '../Providers/ProfileProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
@@ -104,22 +106,33 @@ class _AddToDoState extends State<AddToDo> {
   }
 
   Future<void> PostToDo() async {
-    var res = await Userapi.PostProjectTodo(_taskNameController.text,
-        _descriptionController.text, _DateController.text, priorityid, labelid);
-    setState(() {
-      _isLoading = false;
-      if (res != null) {
-        if (res.settings?.success == 1) {
+    try {
+      // Call your API to post the ToDo
+      var res = await Userapi.PostProjectTodo(
+        _taskNameController.text,
+        _descriptionController.text,
+        _DateController.text,
+        priorityid,
+        labelid,
+      );
+      setState(() {
+
+      });
+      // Check if the response is not null and contains success data
+      if (res != null && res.settings?.success == 1) {
+        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+          await profileProvider.fetchUserDetails();
           Navigator.pop(context, true);
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
       } else {
-        _isLoading = false;
+        CustomSnackBar.show(context, "${res?.settings?.message ?? 'Failed to post ToDo.'}");
       }
-    });
+    } catch (e) {
+      // Handle general errors, like network failures or exceptions
+      print("Error posting ToDo: $e");
+      CustomSnackBar.show(context, "Error posting ToDo. Please try again.");
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

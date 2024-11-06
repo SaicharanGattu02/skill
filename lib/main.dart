@@ -15,6 +15,7 @@ import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:skill/utils/constants.dart';
+import 'Providers/ProfileProvider.dart';
 import 'Providers/ThemeProvider.dart';
 
 
@@ -160,8 +161,10 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (context) => KanbanProvider()),
 
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider(),  // Provide ProfileProvider here
+        ),
 
-        // Add other providers here as needed
       ],
       child: MyApp(),
     ),

@@ -1,10 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart';
+import '../Providers/ProfileProvider.dart';
 
 class GeneralInfo extends StatefulWidget {
   const GeneralInfo({super.key});
@@ -49,46 +50,44 @@ class _GeneralInfoState extends State<GeneralInfo> {
     GetUserDeatails();
   }
 
-  UserData? userdata;
   Future<void> GetUserDeatails() async {
-    var res = await Userapi.GetUserdetails();
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _isLoading=false;
-          userdata = res.data;
-          final fullName = res.data?.fullName ?? "";
-          final nameParts = fullName.split(' ');
+      _isLoading = false; // Stop the loading indicator
+      final userProfile = profileProvider.userProfile; // Get the user profile data
+      // Assuming the data is not null, fill the fields accordingly
+      if (userProfile != null) {
+        final fullName = userProfile.fullName ?? "";
+        final nameParts = fullName.split(' ');
 
-          // Set first name and last name accordingly
-          if (nameParts.length > 0) {
-            _firstNameController.text = nameParts[0]; // Set first name
-          }
-          if (nameParts.length > 1) {
-            _lastNameController.text = nameParts.sublist(1).join(' '); // Set last name
-          } else {
-            _lastNameController.text = ""; // Clear last name if no last part
-          }
-
-          _phoneController.text = res.data?.mobile ?? "";
-          _linkdnController.text = res.data?.linkedin ?? "";
-          _addressController.text = res.data?.address ?? "";
-          if(res.data?.is_mobile_private==true){
-            selectedValue="Public";
-          }else{
-            selectedValue="Private";
-          }
-
-          if(res.data?.gender=="Male"){
-            _gender="male";
-          }else if(res.data?.gender=="Female"){
-            _gender="female";
-          }else{
-            _gender="other";
-          }
-
+        // Set first name and last name accordingly
+        if (nameParts.length > 0) {
+          _firstNameController.text = nameParts[0]; // Set first name
+        }
+        if (nameParts.length > 1) {
+          _lastNameController.text = nameParts.sublist(1).join(' '); // Set last name
         } else {
-          _isLoading=false;
+          _lastNameController.text = ""; // Clear last name if no last part
+        }
+
+        _phoneController.text = userProfile.mobile ?? "";
+        _linkdnController.text = userProfile.linkedin ?? "";
+        _addressController.text = userProfile.address ?? "";
+
+        // Handle privacy setting (Public/Private)
+        if (userProfile.is_mobile_private == true) {
+          selectedValue = "Public";
+        } else {
+          selectedValue = "Private";
+        }
+
+        // Handle gender setting
+        if (userProfile.gender == "Male") {
+          _gender = "male";
+        } else if (userProfile.gender == "Female") {
+          _gender = "female";
+        } else {
+          _gender = "other";
         }
       }
     });
@@ -97,31 +96,39 @@ class _GeneralInfoState extends State<GeneralInfo> {
   Future<void> UpdateProfile() async {
     int? status;
     setState(() {
-      if(selectedValue=="Public"){
-        status=0;
-      }else{
-        status=1;
+      if (selectedValue == "Public") {
+        status = 0;
+      } else {
+        status = 1;
       }
     });
 
-    var res = await Userapi.UpdateUserDetails(
+    // Access the ProfileProvider and call the updateUserProfile method
+    var profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+
+    try {
+      // Call the updateUserProfile method from ProfileProvider
+      var res = await profileProvider.updateUserProfile(
         "${_firstNameController.text} ${_lastNameController.text}",
-        _phoneController.text,
+        _phoneController
+            .text, // Assuming email is the phone number, adjust as needed
+        _phoneController
+            .text, // Assuming mobile is the phone number, adjust as needed
         _gender,
         _linkdnController.text,
         status!,
         _addressController.text,
-        null);
-    if (res != null) {
-      if (res.settings?.success == 1) {
-        CustomSnackBar.show(context, "${res.settings?.message}");
-      } else {
-        print("Update failure: ${res.settings?.message}");
-        CustomSnackBar.show(context, "${res.settings?.message}");
+        null, // If you have an image, pass it here
+      );
+
+      if(res==true){
+          CustomSnackBar.show(context, "Profile Details Updated Successfully!");
+      }else{
+        CustomSnackBar.show(context, "Profile Details Update Failed!");
       }
-    } else {
-      print("Update failed: ${res?.settings?.message}");
-      CustomSnackBar.show(context, "${res?.settings?.message}");
+    } catch (e) {
+      CustomSnackBar.show(context, "Failed to update profile: $e");
+
     }
   }
 
@@ -156,7 +163,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
       backgroundColor: Color(0xffF3ECFB),
       resizeToAvoidBottomInset: true,
       body: Container(
-          padding: EdgeInsets.only(left: 24,right: 24,top: 24),
+          padding: EdgeInsets.only(left: 24, right: 24, top: 24),
           margin: EdgeInsets.all(16),
           decoration: BoxDecoration(
               color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(7)),
@@ -642,7 +649,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     ),
                   ],
                 ),
-
                 if (_validatePhone.isNotEmpty) ...[
                   Container(
                     alignment: Alignment.topLeft,
@@ -794,7 +800,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         color: Color(0xffAFAFAF),
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
-
                       ),
 
                       // prefixIcon: Container(
