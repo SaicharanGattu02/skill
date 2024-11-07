@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skill/Model/UserDetailsModel.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
@@ -286,7 +287,7 @@ class _MessagesState extends State<Messages> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        ChatPage(roomId: data.roomId),
+                                        ChatPage(roomId: data.roomId,ID: "",),
                                   ),
                                 );
                                 if (res == true) {

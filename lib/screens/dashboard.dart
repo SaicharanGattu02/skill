@@ -92,31 +92,29 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     initConnectivity();
     GetUserDeatails();
+    GetEmployeeData();
+    GetRoomsList();
+    GetProjectsData();
+    get_lat_log();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
   }
 
-  Future<void> loadData() async {
-    try {
-      await Future.wait([
-        GetEmployeeData(),
-        GetRoomsList(),
-        GetProjectsData(),
-        get_lat_log(),
-      ]);
-    } catch (e) {
-      // Handle any errors that occur during the loading
-      print("Error loading data: $e");
-      // Optionally, show an error message to the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load data. Please try again.')),
-      );
-    } finally {
-      setState(() {
-        _loading = false; // Hide loader after all API calls are complete
-      });
-    }
+  Future<void> createRoom(String id) async {
+    var res = await Userapi.CreateChatRoomAPi(id);
+    setState(() {
+      if (res != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(roomId: res.data?.room ?? "",ID: "",),
+          ),
+        );
+      } else {
+        CustomSnackBar.show(context, "${res?.settings?.message}");
+      }
+    });
   }
 
   Future<void> _getAddress(double? lat1, double? lng1) async {
@@ -311,7 +309,7 @@ class _DashboardState extends State<Dashboard> {
         _loading = false;
         projectsData = Res.data ?? [];
       } else {
-        // Handle failure case here
+        _loading = false;
       }
     });
   }
@@ -440,7 +438,10 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> _refreshItems() async {
     await Future.delayed(Duration(seconds: 2));
-    loadData();
+    GetEmployeeData();
+    GetRoomsList();
+    GetProjectsData();
+    get_lat_log();
     setState(() {
       employeeData = [];
       _loading = true;
@@ -690,8 +691,8 @@ class _DashboardState extends State<Dashboard> {
                                                           top: 2,
                                                           bottom: 2),
                                                   decoration: BoxDecoration(
-                                                    color: const Color(
-                                                        0xffFFFFFF),
+                                                    color:
+                                                        const Color(0xffFFFFFF),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             4),
@@ -708,12 +709,10 @@ class _DashboardState extends State<Dashboard> {
                                                             color: Color(
                                                                 0xff8856F4),
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .w500,
+                                                                FontWeight.w500,
                                                             fontSize: 10,
                                                             height: 12.1 / 10,
-                                                            letterSpacing:
-                                                                0.14,
+                                                            letterSpacing: 0.14,
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -733,8 +732,7 @@ class _DashboardState extends State<Dashboard> {
                                                             color: Color(
                                                                 0xffFFFFFF),
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .w600,
+                                                                FontWeight.w600,
                                                             fontSize: 16,
                                                             overflow:
                                                                 TextOverflow
@@ -745,32 +743,26 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                     SizedBox(width: 8),
                                                     Container(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              horizontal: 4,
-                                                              vertical: 2),
-                                                      decoration:
-                                                          BoxDecoration(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 4,
+                                                          vertical: 2),
+                                                      decoration: BoxDecoration(
                                                         color: const Color(
                                                             0xff2FB035),
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(
-                                                                    100),
+                                                                .circular(100),
                                                       ),
                                                       child: Text(
-                                                        userdata?.status ??
-                                                            "",
+                                                        userdata?.status ?? "",
                                                         style: TextStyle(
                                                             color: Color(
                                                                 0xffFFFFFF),
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .w700,
+                                                                FontWeight.w700,
                                                             fontSize: 12,
-                                                            height:
-                                                                16.36 / 12,
+                                                            height: 16.36 / 12,
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -782,11 +774,15 @@ class _DashboardState extends State<Dashboard> {
                                                       onTap: () {
                                                         Navigator.push(
                                                           context,
-                                                          MaterialPageRoute(builder: (context) => ProfileDashboard()),
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ProfileDashboard()),
                                                         );
                                                       },
                                                       child: Padding(
-                                                        padding: const EdgeInsets.all(8.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
                                                         child: Image.asset(
                                                           "assets/edit.png",
                                                           width: 20,
@@ -810,16 +806,17 @@ class _DashboardState extends State<Dashboard> {
                                                                     ?.designation ??
                                                                 "",
                                                             style: TextStyle(
-                                                                color: const Color(0xffFFFFFF)
-                                                                    .withOpacity(
-                                                                        0.7),
+                                                                color:
+                                                                    const Color(
+                                                                            0xffFFFFFF)
+                                                                        .withOpacity(
+                                                                            0.7),
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400,
                                                                 fontSize: 12,
                                                                 height:
-                                                                    16.21 /
-                                                                        12,
+                                                                    16.21 / 12,
                                                                 letterSpacing:
                                                                     0.14,
                                                                 overflow:
@@ -835,16 +832,17 @@ class _DashboardState extends State<Dashboard> {
                                                               Expanded(
                                                                 child:
                                                                     Container(
-                                                                  padding: EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          4,
-                                                                      vertical:
-                                                                          3),
+                                                                  padding: EdgeInsets
+                                                                      .symmetric(
+                                                                          horizontal:
+                                                                              4,
+                                                                          vertical:
+                                                                              3),
                                                                   decoration:
                                                                       BoxDecoration(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            6),
+                                                                        BorderRadius
+                                                                            .circular(6),
                                                                     color: Color(
                                                                             0xffFFFFFF)
                                                                         .withOpacity(
@@ -859,8 +857,8 @@ class _DashboardState extends State<Dashboard> {
                                                                             .contain,
                                                                         width:
                                                                             12,
-                                                                        color:
-                                                                            Color(0xffffffff),
+                                                                        color: Color(
+                                                                            0xffffffff),
                                                                       ),
                                                                       SizedBox(
                                                                           width:
@@ -873,13 +871,20 @@ class _DashboardState extends State<Dashboard> {
                                                                               "",
                                                                           style:
                                                                               TextStyle(
-                                                                            color: const Color(0xffFFFFFF),
-                                                                            fontWeight: FontWeight.w400,
-                                                                            fontSize: 11,
-                                                                            height: 13.41 / 11,
-                                                                            letterSpacing: 0.14,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            fontFamily: "Inter",
+                                                                            color:
+                                                                                const Color(0xffFFFFFF),
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                            fontSize:
+                                                                                11,
+                                                                            height:
+                                                                                13.41 / 11,
+                                                                            letterSpacing:
+                                                                                0.14,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                            fontFamily:
+                                                                                "Inter",
                                                                           ),
                                                                         ),
                                                                       ),
@@ -893,16 +898,17 @@ class _DashboardState extends State<Dashboard> {
                                                               Expanded(
                                                                 child:
                                                                     Container(
-                                                                  padding: EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          4,
-                                                                      vertical:
-                                                                          3),
+                                                                  padding: EdgeInsets
+                                                                      .symmetric(
+                                                                          horizontal:
+                                                                              4,
+                                                                          vertical:
+                                                                              3),
                                                                   decoration:
                                                                       BoxDecoration(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            6),
+                                                                        BorderRadius
+                                                                            .circular(6),
                                                                     color: Color(
                                                                             0xffFFFFFF)
                                                                         .withOpacity(
@@ -917,8 +923,8 @@ class _DashboardState extends State<Dashboard> {
                                                                             .contain,
                                                                         width:
                                                                             12,
-                                                                        color:
-                                                                            Color(0xffffffff),
+                                                                        color: Color(
+                                                                            0xffffffff),
                                                                       ),
                                                                       SizedBox(
                                                                           width:
@@ -931,13 +937,20 @@ class _DashboardState extends State<Dashboard> {
                                                                               "",
                                                                           style:
                                                                               TextStyle(
-                                                                            color: const Color(0xffFFFFFF),
-                                                                            fontWeight: FontWeight.w400,
-                                                                            fontSize: 11,
-                                                                            height: 13.41 / 11,
-                                                                            letterSpacing: 0.14,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            fontFamily: "Inter",
+                                                                            color:
+                                                                                const Color(0xffFFFFFF),
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                            fontSize:
+                                                                                11,
+                                                                            height:
+                                                                                13.41 / 11,
+                                                                            letterSpacing:
+                                                                                0.14,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                            fontFamily:
+                                                                                "Inter",
                                                                           ),
                                                                         ),
                                                                       ),
@@ -1148,7 +1161,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             ] else ...[
                               SizedBox(
-                                height: w * 0.78,
+                                height: w * 0.4,
                                 child: Center(
                                   child: Text(
                                     "No projects are assigned.",
@@ -1385,12 +1398,11 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           InkWell(
                                             onTap: () async {
-                                             await Navigator.push(
+                                              await Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           Task()));
-
                                             },
                                             child: Column(
                                               children: [
@@ -1443,12 +1455,11 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           InkWell(
                                             onTap: () {
-                                            Navigator.push(
+                                              Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           Meetings()));
-
                                             },
                                             child: Column(
                                               children: [
@@ -1710,13 +1721,19 @@ class _DashboardState extends State<Dashboard> {
                                   try {
                                     FocusScope.of(context).unfocus();
                                     Navigator.pop(context, true);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ChatPage(
-                                            roomId: employee.room_id ?? ""),
-                                      ),
-                                    );
+                                    if(employee.room_id!=""){
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChatPage(
+                                            roomId: employee.room_id ?? "",
+                                            ID: employee.id ?? "",
+                                          ),
+                                        ),
+                                      );
+                                    }else{
+                                      createRoom(employee.id??"");
+                                    }
                                   } catch (error) {
                                     // Handle error
                                     print(error);
@@ -1983,11 +2000,10 @@ class _DashboardState extends State<Dashboard> {
                       InkWell(
                         onTap: () async {
                           Navigator.pop(context);
-                           Navigator.push(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TODOLIST()));
-
                         },
                         child: Container(
                           child: Column(

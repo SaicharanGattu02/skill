@@ -15,8 +15,7 @@
         android:label="Skil"
         android:name="${applicationName}"
         android:icon="@mipmap/skillicon"
-        tools:replace="android:icon,android:label"
-        >
+        tools:replace="android:icon,android:label">
         <activity
             android:name=".MainActivity"
             android:exported="true"

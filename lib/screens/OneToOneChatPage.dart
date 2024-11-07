@@ -23,7 +23,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
-  ChatPage({required this.roomId});
+  final String ID;
+  ChatPage({required this.roomId,required this.ID});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -59,38 +60,40 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   String userimage = "";
   String userID = "";
 
+  bool isLoading=true;
+
   @override
   void initState() {
     super.initState();
     _initializeWebSocket();
     RoomDetailsApi();
+    print("ID:${widget.ID}");
 // Initialize the AnimationController
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500), // Total duration of both animations
-    );
-
-    // Slide Animation: From right to left
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(1.5, 0),  // Start position: off-screen to the right
-      end: Offset(0, 0),      // End position: aligned with the text field
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Fade Animation: From invisible to visible
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,  // Start opacity: invisible
-      end: 1.0,    // End opacity: fully visible
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    _scrollController
-        .addListener(_scrollListener); // Add listener for scrolling
-    print(widget.roomId);
-    _initializeAudio();
+//     _animationController = AnimationController(
+//       vsync: this,
+//       duration: Duration(milliseconds: 500), // Total duration of both animations
+//     );
+    //
+    // // Slide Animation: From right to left
+    // _slideAnimation = Tween<Offset>(
+    //   begin: Offset(1.5, 0),  // Start position: off-screen to the right
+    //   end: Offset(0, 0),      // End position: aligned with the text field
+    // ).animate(CurvedAnimation(
+    //   parent: _animationController,
+    //   curve: Curves.easeInOut,
+    // ));
+    //
+    // // Fade Animation: From invisible to visible
+    // _fadeAnimation = Tween<double>(
+    //   begin: 0.0,  // Start opacity: invisible
+    //   end: 1.0,    // End opacity: fully visible
+    // ).animate(CurvedAnimation(
+    //   parent: _animationController,
+    //   curve: Curves.easeInOut,
+    // ));
+// Add listener for scrolling
+    // print(widget.roomId);
+    // _initializeAudio();
   }
 
   Future<void> _initializeAudio() async {
@@ -192,15 +195,60 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
         user_id = res.data?.userId ?? "";
 
         print("USERID :${userID}");
-
+        isLoading=false;
         // Scroll to the bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _scrollToBottom();
+            _scrollToBottom();
         });
       } else {
+        isLoading=false;
         print('Failed to create room');
       }
     });
+  }
+
+  // Declare the files at the class level
+  List<XFile> _files = [];
+
+  // Function to pick image(s) from either camera or gallery
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+
+    // Use pickMultiImage for selecting multiple images
+    final pickedFiles = await picker.pickMultiImage();
+
+    // If no files are selected, handle the null case
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      setState(() {
+        _files = pickedFiles;  // Update the list with the selected files
+      });
+
+      // Call your upload function and pass the list of selected files
+      uploadFiles(); // Now passing the correct List<XFile>
+    } else {
+      // If no files selected
+      print("No images selected.");
+    }
+  }
+
+  // Call the API to upload files
+  Future<void> uploadFiles() async {
+    try {
+      var res = await Userapi.uploadFilesAsMultipart(userID, _files);
+
+      if (res.statusCode == 200) {
+        // Success
+        print("Files uploaded successfully!");
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Files uploaded successfully!')));
+      } else {
+        // // Failure
+        print("Failed to upload files");
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload files')));
+      }
+    } catch (e) {
+      // print('Error uploading files: $e');
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred')));
+    }
   }
 
   String decodeEmojiMessage(String message) {
@@ -325,11 +373,28 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     );
   }
 
+  // void _scrollToBottom() {
+  //   if (_scrollController.hasClients) {
+  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  //   }
+  // }
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      // Get the maximum scroll extent to check if it's scrollable
+      double maxScroll = _scrollController.position.maxScrollExtent;
+
+      // Only scroll if there's content to scroll to
+      if (maxScroll > 0) {
+        _scrollController.animateTo(
+          maxScroll,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     }
   }
+
 
   void _reconnectWebSocket() {
     Future.delayed(Duration(seconds: 5), () {
@@ -418,19 +483,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     }
   }
 
-  // Function to pick image from either camera or gallery
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: source);
-    if (image != null) {
-      // You can use image.path or display it in your UI
-      print('Picked image: ${image.path}');
-      // For example, you can set the image path to the TextField:
-      setState(() {
-
-      });
-    }
-  }
 
   void _openImageViewer(BuildContext context, List<Media> media, int initialIndex) {
     Navigator.push(
@@ -548,8 +600,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                   // Check if there's media and handle different media types
                   if (media != null && media.isNotEmpty) ...[
                     if (media.length == 1) ...[
-                      // Single media item, check type
-                      if (media[0].contentType?.startsWith('image') ?? false) ...[
                         // Display image
                         GestureDetector(
                           onTap: () => _openImageViewer(context, media, 0),
@@ -567,69 +617,69 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                             ),
                           ),
                         ),
-                      ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
-                        // Display video (with an icon for preview)
-                        GestureDetector(
-                          onTap: () => _openVideoPlayer(context, media[0]),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.network(
-                                  media[0].file ?? '',
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                ),
-                                Icon(
-                                  Icons.play_circle_fill,
-                                  color: Colors.white,
-                                  size: 50,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ] else if (media[0].contentType?.startsWith('application/pdf') ?? false) ...[
-                        // Display PDF icon
-                        GestureDetector(
-                          onTap: () => _openDocument(context, media[0]),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child: Icon(
-                              Icons.insert_drive_file,
-                              color: Colors.blue,
-                              size: 50, // Adjust icon size
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        // If it's an unsupported type, show a default icon
-                        // GestureDetector(
-                        //   onTap: () => _openFile(context, media[0]),
-                        //   child: Card(
-                        //     shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(16),
-                        //     ),
-                        //     elevation: 4,
-                        //     clipBehavior: Clip.hardEdge,
-                        //     child: Icon(
-                        //       Icons.help_outline,
-                        //       color: Colors.grey,
-                        //       size: 50,
-                        //     ),
-                        //   ),
-                        // ),
-                      ]
+                      // ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
+                      //   // Display video (with an icon for preview)
+                      //   GestureDetector(
+                      //     onTap: () => _openVideoPlayer(context, media[0]),
+                      //     child: Card(
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(16),
+                      //       ),
+                      //       elevation: 4,
+                      //       clipBehavior: Clip.hardEdge,
+                      //       child: Stack(
+                      //         alignment: Alignment.center,
+                      //         children: [
+                      //           Image.network(
+                      //             media[0].file ?? '',
+                      //             fit: BoxFit.cover,
+                      //             width: 100,
+                      //             height: 100,
+                      //           ),
+                      //           Icon(
+                      //             Icons.play_circle_fill,
+                      //             color: Colors.white,
+                      //             size: 50,
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ] else if (media[0].contentType?.startsWith('application/pdf') ?? false) ...[
+                      //   // Display PDF icon
+                      //   GestureDetector(
+                      //     onTap: () => _openDocument(context, media[0]),
+                      //     child: Card(
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //       ),
+                      //       elevation: 4,
+                      //       clipBehavior: Clip.hardEdge,
+                      //       child: Icon(
+                      //         Icons.insert_drive_file,
+                      //         color: Colors.blue,
+                      //         size: 50, // Adjust icon size
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ] else ...[
+                      //   // If it's an unsupported type, show a default icon
+                      //   // GestureDetector(
+                      //   //   onTap: () => _openFile(context, media[0]),
+                      //   //   child: Card(
+                      //   //     shape: RoundedRectangleBorder(
+                      //   //       borderRadius: BorderRadius.circular(16),
+                      //   //     ),
+                      //   //     elevation: 4,
+                      //   //     clipBehavior: Clip.hardEdge,
+                      //   //     child: Icon(
+                      //   //       Icons.help_outline,
+                      //   //       color: Colors.grey,
+                      //   //       size: 50,
+                      //   //     ),
+                      //   //   ),
+                      //   // ),
+                      // ]
                     ] else if (media.length > 1) ...[
                       // If there are multiple media items
                       GridView.builder(
@@ -718,39 +768,39 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
 // A helper function to return the appropriate widget for each media type
   Widget getMediaWidget(Media mediaItem) {
-    if (mediaItem.contentType?.startsWith('image') ?? false) {
+    // if (mediaItem.contentType?.startsWith('image') ?? false) {
       return Image.network(
         mediaItem.file ?? '',
         fit: BoxFit.cover,
       );
-    } else if (mediaItem.contentType?.startsWith('video') ?? false) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.network(
-            mediaItem.file ?? '',
-            fit: BoxFit.cover,
-          ),
-          Icon(
-            Icons.play_circle_fill,
-            color: Colors.white,
-            size: 50,
-          ),
-        ],
-      );
-    } else if (mediaItem.contentType?.startsWith('application/pdf') ?? false) {
-      return Icon(
-        Icons.insert_drive_file,
-        color: Colors.blue,
-        size: 50,
-      );
-    } else {
-      return Icon(
-        Icons.help_outline,
-        color: Colors.grey,
-        size: 50,
-      );
-    }
+    // } else if (mediaItem.contentType?.startsWith('video') ?? false) {
+    //   return Stack(
+    //     alignment: Alignment.center,
+    //     children: [
+    //       Image.network(
+    //         mediaItem.file ?? '',
+    //         fit: BoxFit.cover,
+    //       ),
+    //       Icon(
+    //         Icons.play_circle_fill,
+    //         color: Colors.white,
+    //         size: 50,
+    //       ),
+    //     ],
+    //   );
+    // } else if (mediaItem.contentType?.startsWith('application/pdf') ?? false) {
+    //   return Icon(
+    //     Icons.insert_drive_file,
+    //     color: Colors.blue,
+    //     size: 50,
+    //   );
+    // } else {
+    //   return Icon(
+    //     Icons.help_outline,
+    //     color: Colors.grey,
+    //     size: 50,
+    //   );
+    // }
   }
 
 
@@ -758,7 +808,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+      Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
@@ -838,7 +889,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
         //   ),
         // ],
       ),
-      body: Column(
+      body:  isLoading? Center(child: CircularProgressIndicator()):
+      Column(
         children: [
           SizedBox(
             height: 20,
@@ -860,7 +912,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                 final messageText = message.msg;
                 final sender = message.sentUser == user_id ? "you" : "remote";
                 final datetime = message.lastUpdated ?? "";
-                final media = message.media;  // Get the media list
+                final media = message.media;
 
                 return _buildMessageBubble(messageText ?? "", sender, datetime, media);
               },
@@ -932,7 +984,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
+                    child: TextFormField(
+                      controller:_messageController,
                       decoration: InputDecoration(
                         hintText: 'Enter Your Message',
                         border: InputBorder.none,
@@ -946,54 +999,53 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                       color: Colors.grey,
                     ),
                     onPressed: () {
-                      // Handle file attachment here
+                      _pickImage(ImageSource.gallery);
                     },
                   ),
-                  GestureDetector(
-                    onLongPressStart: (_) {
-                      _startRecording();
-                    },
-                    onLongPressEnd: (_) {
-                      if (!_isCancelled) {
-                        _stopRecording();
-                      }
-                    },
-                    onHorizontalDragUpdate: (details) {
-                      if (details.localPosition.dx < 0) {
-                        _cancelRecording();
-                      }
-                    },
-                    child: IconButton(
-                      icon: Icon(
-                        _isRecording ? Icons.stop : Icons.mic,
-                        color: _isRecording ? Colors.red : Colors.blue,
-                      ),
-                      onPressed: () {},
-                    ),
-                  ),
-                  _isRecording
-                      ? Column(
-                    children: [
-                      Text("Recording: ${_recordingTime}s"),
-                      // Placeholder for audio frequency visualizer (like waveform)
-                      LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
-                    ],
-                  )
-                      : Container(),
+                  // GestureDetector(
+                  //   onLongPressStart: (_) {
+                  //     _startRecording();
+                  //   },
+                  //   onLongPressEnd: (_) {
+                  //     if (!_isCancelled) {
+                  //       _stopRecording();
+                  //     }
+                  //   },
+                  //   onHorizontalDragUpdate: (details) {
+                  //     if (details.localPosition.dx < 0) {
+                  //       _cancelRecording();
+                  //     }
+                  //   },
+                  //   child: IconButton(
+                  //     icon: Icon(
+                  //       _isRecording ? Icons.stop : Icons.mic,
+                  //       color: _isRecording ? Colors.red : Colors.blue,
+                  //     ),
+                  //     onPressed: () {},
+                  //   ),
+                  // ),
+                  // _isRecording
+                  //     ? Column(
+                  //   children: [
+                  //     Text("Recording: ${_recordingTime}s"),
+                  //     // Placeholder for audio frequency visualizer (like waveform)
+                  //     LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
+                  //   ],
+                  // )
+                  //     : Container(),
                   InkResponse(
-                    onTap: () {
-                      if (_recordedFilePath != null) {
-                        _playAudio(_recordedFilePath!);
-                      }
+                    onTap: (){
+                      _sendMessage();
                     },
                     child: Container(
-                      padding: EdgeInsets.only(right: 10),
-                      child: Image.asset(
-                        "assets/container.png",
-                        height: 36,
-                        width: 36,
-                      ),
-                    ),
+                        padding: EdgeInsets.only(right: 10),
+                        child: Image(
+                          image: AssetImage(
+                            "assets/container.png",
+                          ),
+                          height: 36,
+                          width: 36,
+                        )),
                   ),
                 ],
               ),

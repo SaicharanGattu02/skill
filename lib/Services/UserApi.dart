@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:skill/Model/CountriesModel.dart';
 import 'package:skill/Model/GetLeaveCountModel.dart';
@@ -2022,4 +2023,28 @@ static Future<LoginModel?> ReorderTodos(Map<String, int> todosOrder) async {
   }
 
 
+  static Future<http.Response> uploadFilesAsMultipart(String roomId, List<XFile> files) async {
+    var url = Uri.parse('${host}/chat/files-upload/$roomId');
+    print("URL:${url}");
+    final headers = await getheader();
+
+    var request = http.MultipartRequest('POST', url)
+      ..headers.addAll(headers);
+
+    // Add the files
+    for (var file in files) {
+      request.files.add(await http.MultipartFile.fromPath(
+          'files',
+          file.path,
+          contentType: MediaType('application', 'octet-stream') // Use appropriate content type
+      ));
+    }
+
+    // Send the request
+    var response = await request.send();
+
+    // Wait for the response to return
+    return await http.Response.fromStream(response);
+  }
 }
+

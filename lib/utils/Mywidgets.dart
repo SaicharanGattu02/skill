@@ -209,7 +209,7 @@ class _MemberCardState extends State<MemberCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatPage(roomId: res.data?.room ?? ""),
+            builder: (context) => ChatPage(roomId: res.data?.room ?? "",ID: "",),
           ),
         );
       } else {
