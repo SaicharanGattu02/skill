@@ -113,9 +113,11 @@ class _LeaveState extends State<Leave> {
         if (Res.success == 1) {
           _isLoading = false;
           leaves = Res.data ?? [];
-          rooms = leaves!; // Set the original data
+          rooms = leaves??[]; // Set the original data
           filteredRooms = rooms; // Initially filteredRooms is the same as rooms
         }
+      }else{
+        // _isLoading = false;
       }
     });
   }
@@ -126,7 +128,7 @@ class _LeaveState extends State<Leave> {
     setState(() {
       if (res != null) {
         if (res.success == 1) {
-          // _isLoading = false;
+          _isLoading = false;
           data = res.data;
           CustomSnackBar.show(context, "${res.message}");
         } else {

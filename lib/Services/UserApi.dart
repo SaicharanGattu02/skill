@@ -254,7 +254,7 @@ class Userapi {
       final url = Uri.parse("${host}/leave/leave");
       final res = await get(url, headers: headers);
       if (res != null) {
-        print("GetProjectsList Response:${res.body}");
+        print("GetLeave Response:${res.body}");
         return GetLeaveModel.fromJson(jsonDecode(res.body));
       } else {
         print("Null Response");
@@ -1049,6 +1049,7 @@ class Userapi {
     try {
       final headers = await getheader();
       final url = Uri.parse("${host}/todo/tasks?priority=$priority&label=$label&date=$date");
+      print("URl:${url}");
       final res = await get(url, headers: headers);
       if (res != null) {
         print("TODOListApi Response:${res.body}");

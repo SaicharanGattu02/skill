@@ -108,7 +108,7 @@ class _DashboardState extends State<Dashboard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatPage(roomId: res.data?.room ?? "",ID: "",),
+            builder: (context) => ChatPage(roomId: res.data?.room ?? "",ID:userdata?.employee?.id??"",),
           ),
         );
       } else {
@@ -420,12 +420,14 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  UserData? userdata;
   // Function to fetch user details
   Future<void> GetUserDeatails() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
     try {
       await profileProvider.fetchUserDetails();
+       userdata = profileProvider.userProfile; // Get the user profile data
     } catch (e) {
       print("Error: $e");
     } finally {
@@ -1615,15 +1617,28 @@ class _DashboardState extends State<Dashboard> {
                       controller: _searchController,
                       onChanged: (text) {
                         setState(() {
-                          if (text.length > 0) {
-                            employeeData = []; // Clear previous dat
-                            GetSearchUsersData(text); // Fetch new data
+                          if (text.isNotEmpty) {
+                            // Filter employeeData based on the search query
+                            employeeData = tempemployeeData.where((employee) {
+                              return employee.name!.toLowerCase().contains(text.toLowerCase());
+                            }).toList();
                           } else {
-                            employeeData = [];
-                            employeeData = tempemployeeData;
+                            // Reset to original data if the search field is empty
+                            employeeData = List.from(tempemployeeData);
                           }
                         });
                       },
+                      // onChanged: (text) {
+                      //   setState(() {
+                      //     if (text.length > 0) {
+                      //       employeeData = []; // Clear previous dat
+                      //       GetSearchUsersData(text); // Fetch new data
+                      //     } else {
+                      //       employeeData = [];
+                      //       employeeData = tempemployeeData;
+                      //     }
+                      //   });
+                      // },
                       decoration: InputDecoration(
                         hintText: 'Search...',
                         hintStyle: TextStyle(color: Color(0xff9E7BCA)),
@@ -1727,7 +1742,7 @@ class _DashboardState extends State<Dashboard> {
                                         MaterialPageRoute(
                                           builder: (context) => ChatPage(
                                             roomId: employee.room_id ?? "",
-                                            ID: employee.id ?? "",
+                                            ID: userdata?.employee?.id?? "",
                                           ),
                                         ),
                                       );
@@ -2003,7 +2018,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => TODOLIST()));
+                                  builder: (context) => Todolist()));
                         },
                         child: Container(
                           child: Column(

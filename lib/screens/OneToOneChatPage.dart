@@ -410,7 +410,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
       try {
         final payload = jsonEncode(
-            {'command': 'new_message', 'message': message, 'user':user_id});
+            {'command': 'new_message', 'message': message, 'user':widget.ID});
         print("Payload :${payload}");
         _socket.sink.add(payload);
       } catch (e) {
@@ -910,7 +910,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                 }
                 final message = _messages[index];
                 final messageText = message.msg;
-                final sender = message.sentUser == user_id ? "you" : "remote";
+                final sender = message.sentUser == widget.ID ? "you" : "remote";
                 final datetime = message.lastUpdated ?? "";
                 final media = message.media;
 

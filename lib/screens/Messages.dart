@@ -44,8 +44,7 @@ class _MessagesState extends State<Messages> {
   final spinkit = Spinkits();
 
   List<Rooms> rooms = [];
-  List<Rooms> filteredRooms =
-      []; // To store filtered messages based on the search query
+  List<Rooms> filteredRooms = []; // To store filtered messages based on the search query
 
   @override
   void initState() {
@@ -87,6 +86,7 @@ class _MessagesState extends State<Messages> {
       } else {
         // Handle null response case, show message
         showNoDataFoundMessage = true;
+        _loading = false;
       }
     });
   }
