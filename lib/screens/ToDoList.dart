@@ -165,7 +165,7 @@ class _TodolistState extends State<Todolist> {
       if (res != null) {
         if (res.settings?.success == 1) {
           GetToDoList(formattedDate);
-          CustomSnackBar.show(context, "Deleted successfully!");
+          CustomSnackBar.show(context, "TODO Done successfully!");
         } else {
           CustomSnackBar.show(context, "${res.settings?.message}");
         }
@@ -358,7 +358,7 @@ class _TodolistState extends State<Todolist> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: w * 0.55,
+                      width: w * 0.5,
                       height: h * 0.043,
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -455,12 +455,15 @@ class _TodolistState extends State<Todolist> {
                       onTap: () {
                         _bottomSheet(context);
                       },
-                      child: Image.asset(
-                        "assets/filter.png",
-                        width: 25,
-                        height: 25,
-                        color: AppColors.primaryColor,
-                        fit: BoxFit.contain,
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        child: Image.asset(
+                          "assets/filter.png",
+                          width: 22,
+                          height: 22,
+                          color: AppColors.primaryColor,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ],
@@ -680,6 +683,7 @@ class _TodolistState extends State<Todolist> {
                                                   overflow: TextOverflow.ellipsis,
                                                 ),
                                               const SizedBox(height: 8),
+                                if(tododata.labelName!=null)...[
                                               Row(
                                                 children: [
                                                   Image.asset("assets/label.png", width: 18, height: 18,color: hexToColor(tododata.labelColor ?? ""),),
@@ -696,6 +700,7 @@ class _TodolistState extends State<Todolist> {
 
                                                 ],
                                               ),
+                                              ],
                                               const SizedBox(height: 8),
                                               Row(
                                                 children: [

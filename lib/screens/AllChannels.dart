@@ -62,7 +62,6 @@ class _AllchannelsState extends State<Allchannels> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar:CustomAppBar(title: 'All Channels',actions:[ Container()],  ),
@@ -105,14 +104,11 @@ class _AllchannelsState extends State<Allchannels> {
                               ),
                             ),
                             style:  TextStyle(
-
                               color: Color(0xff9E7BCA),
                               fontWeight: FontWeight.w400,
                               fontSize: 16,
                               decorationColor:  Color(0xff9E7BCA),
-
                               fontFamily: "Nunito",
-
                             ),
                           ),
                         ),

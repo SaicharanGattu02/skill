@@ -477,7 +477,7 @@ class _DashboardState extends State<Dashboard> {
                         _scaffoldKey.currentState?.openDrawer();
                       },
                       child: Container(
-                        padding: const EdgeInsets.only(right: 10),
+                        padding: EdgeInsets.only(right: 10),
                         child: Image.asset(
                           "assets/menu.png",
                           width: 24,
@@ -1579,15 +1579,14 @@ class _DashboardState extends State<Dashboard> {
                     child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Spacer(),
                             Image.asset(
                               "assets/skillLogo.png",
                               fit: BoxFit.contain,
                               width: 60,
                               height: 30,
                             ),
-                            Spacer(),
                             InkWell(
                               onTap: () {
                                 Navigator.pop(context);

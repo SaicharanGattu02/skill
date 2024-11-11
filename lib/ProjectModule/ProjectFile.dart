@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,6 +45,7 @@ class _ProjectFileState extends State<ProjectFile> {
   bool isFilesSelected = true;
 
   String categoryID = "";
+  String categoryid = "";
 
 
 
@@ -71,6 +73,7 @@ class _ProjectFileState extends State<ProjectFile> {
 
   List<Data> data = [];
   List<Data> filteredRooms = [];
+
   List<Catagory> catagory = [];
   List<Catagory> filteredRooms2 = [];
 
@@ -1155,82 +1158,180 @@ class _ProjectFileState extends State<ProjectFile> {
                           children: [
                             _label(text: 'Category'),
                             SizedBox(height: 4),
-                            Container(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.050,
-                              child: TypeAheadField<Catagory>(
-                                builder: (context, controller, focusNode) {
-                                  return TextField(
-                                    controller: _categoryController,
-                                    focusNode: focusNode,
-                                    autofocus: true,
-                                    onTap: () {
-                                      setState(() {});
-                                    },
-                                    onChanged: (v) {
-                                      setState(() {});
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      letterSpacing: 0,
-                                      height: 1.2,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Select Your Milestone",
-                                      hintStyle: TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 0,
-                                        height: 1.2,
-                                        color: Color(0xffAFAFAF),
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      filled: true,
-                                      fillColor: Color(0xffFCFAFF),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1, color: Color(0xffD0CBDB)),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                suggestionsCallback: (pattern) {
-                                  return catagory
-                                      .where((item) => item.name!
-                                          .toLowerCase()
-                                          .contains(pattern.toLowerCase()))
-                                      .toList();
-                                },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(
-                                      suggestion.name!,
+                            // Container(
+                            //   height: MediaQuery.of(context).size.height * 0.050,
+                            //   child: TypeAheadField<Catagory>(
+                            //     builder: (context, controller, focusNode) {
+                            //       return TextField(
+                            //         controller: _categoryController,
+                            //         focusNode: focusNode,
+                            //         autofocus: true,
+                            //         onTap: () {
+                            //           setState(() {});
+                            //         },
+                            //         onChanged: (v) {
+                            //           setState(() {});
+                            //         },
+                            //         style: TextStyle(
+                            //           fontSize: 16,
+                            //           letterSpacing: 0,
+                            //           height: 1.2,
+                            //           color: Colors.black,
+                            //           fontWeight: FontWeight.w400,
+                            //         ),
+                            //         decoration: InputDecoration(
+                            //           hintText: "Select Category",
+                            //           hintStyle: TextStyle(
+                            //             fontSize: 15,
+                            //             letterSpacing: 0,
+                            //             height: 1.2,
+                            //             color: Color(0xffAFAFAF),
+                            //             fontFamily: 'Poppins',
+                            //             fontWeight: FontWeight.w400,
+                            //           ),
+                            //           filled: true,
+                            //           fillColor: Color(0xffFCFAFF),
+                            //           enabledBorder: OutlineInputBorder(
+                            //             borderRadius: BorderRadius.circular(7),
+                            //             borderSide: BorderSide(
+                            //                 width: 1, color: Color(0xffD0CBDB)),
+                            //           ),
+                            //           focusedBorder: OutlineInputBorder(
+                            //             borderRadius:
+                            //                 BorderRadius.circular(7.0),
+                            //             borderSide: BorderSide(
+                            //                 width: 1, color: Color(0xffD0CBDB)),
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //     suggestionsCallback: (pattern) {
+                            //       return catagory
+                            //           .where((item) => item.name!
+                            //               .toLowerCase()
+                            //               .contains(pattern.toLowerCase()))
+                            //           .toList();
+                            //     },
+                            //     itemBuilder: (context, suggestion) {
+                            //       return ListTile(
+                            //         title: Text(
+                            //           suggestion.name!,
+                            //           style: TextStyle(
+                            //             fontSize: 15,
+                            //             fontFamily: "Inter",
+                            //             fontWeight: FontWeight.w400,
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //     onSelected: (suggestion) {
+                            //       setState(() {
+                            //         _categoryController.text = suggestion.name!;
+                            //         // You can use suggestion.statusKey to send to the server
+                            //         categoryID = suggestion.id!;
+                            //         // Call your API with the selected key here if needed
+                            //         _validateCategory = "";
+                            //       });
+                            //     },
+                            //   ),
+                            // ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton2<Catagory>(
+                                isExpanded: true,
+                                hint: Row(
+                                  children: [
+                                    Text(
+                                      'Select Category',
                                       style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Inter",
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w400,
+                                        fontFamily: "Inter",
+                                        color: Color(0xffAFAFAF),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                                // Show "No data found" if data is empty
+                                items: catagory.isEmpty
+                                    ? [
+                                  DropdownMenuItem<Catagory>(
+                                    value: null, // Set value as null or a placeholder
+                                    enabled: false, // Disable selection
+                                    child: Text(
+                                      'No data found',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xffAFAFAF),
                                       ),
                                     ),
-                                  );
-                                },
-                                onSelected: (suggestion) {
+                                  ),
+                                ]
+                                    : catagory
+                                    .map((source) => DropdownMenuItem<Catagory>(
+                                  value: source, // Set the whole object as the value
+                                  child: Text(
+                                    source.name ?? '', // Show the category name
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ))
+                                    .toList(),
+                                value: categoryid != null && categoryid != ""
+                                    ? catagory.isNotEmpty
+                                    ? catagory.firstWhere(
+                                      (member) => member.id == categoryid,
+                                  orElse: () => catagory[0], // Fallback to the first element if available
+                                )
+                                    : null // If data is empty, return null
+                                    : null, // Default to null if categoryid is not valid
+                                onChanged: (value) {
                                   setState(() {
-                                    _categoryController.text = suggestion.name!;
-                                    // You can use suggestion.statusKey to send to the server
-                                    categoryID = suggestion.id!;
-                                    // Call your API with the selected key here if needed
-                                    _validateCategory = "";
+                                    if (value != null) {
+                                      categoryid = value.id!; // Set categoryid to the selected category's id
+                                    } else {
+                                      categoryid = ""; // If the value is null (No data found), reset categoryid to 0
+                                    }
+                                    _validateCategory = ""; // Reset validation message
                                   });
                                 },
+                                buttonStyleData: ButtonStyleData(
+                                  height: MediaQuery.of(context).size.height * 0.050,
+                                  width: w,
+                                  padding: const EdgeInsets.only(left: 14, right: 14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7),
+                                    border: Border.all(color: Color(0xffD0CBDB)),
+                                    color: Color(0xffFCFAFF),
+                                  ),
+                                ),
+                                iconStyleData: const IconStyleData(
+                                  icon: Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 25,
+                                  ),
+                                  iconSize: 14,
+                                  iconEnabledColor: Colors.black,
+                                  iconDisabledColor: Colors.black,
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    color: Colors.white,
+                                  ),
+                                  scrollbarTheme: ScrollbarThemeData(
+                                    radius: const Radius.circular(40),
+                                    thickness: MaterialStateProperty.all(6),
+                                    thumbVisibility: MaterialStateProperty.all(true),
+                                  ),
+                                ),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  height: 40,
+                                  padding: EdgeInsets.only(left: 14, right: 14),
+                                ),
                               ),
                             ),
                             if (_validateCategory.isNotEmpty) ...[

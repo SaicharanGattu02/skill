@@ -117,15 +117,16 @@ class _AddToDoState extends State<AddToDo> {
         _taskNameController.text,
         _descriptionController.text,
         _DateController.text,
-        selectedValue!,
-        selectedLabelID!,
+        selectedValue??"",
+        selectedLabelID??"",
       );
       if (res != null && res.settings?.success == 1) {
         final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
           await profileProvider.fetchUserDetails();
           Navigator.pop(context, true);
-      } else {
         CustomSnackBar.show(context, "TODO Task Added Successfully!");
+      } else {
+        CustomSnackBar.show(context, "${res?.settings?.message}");
       }
     } catch (e) {
       // Handle general errors, like network failures or exceptions

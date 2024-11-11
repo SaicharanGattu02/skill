@@ -480,7 +480,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                   children: [
                     Container(
                       height: h * 0.05,
-                      width: w * 0.47,
+                      width: w * 0.45,
                       child: TextFormField(
                         controller: _phoneController,
                         focusNode: _focusNodePhone,
@@ -551,6 +551,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     SizedBox(width: w * 0.02),
                     Container(
                       width: w * 0.3,
+                      height: h * 0.05,
                       padding: EdgeInsets.symmetric(
                         vertical: 6,
                         horizontal: 8,
@@ -569,8 +570,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                               Image.asset(
                                 'assets/globe.png',
                                 fit: BoxFit.contain,
-                                height:
-                                    h * 0.02, // Match height of the container
+                                height: h * 0.02, // Match height of the container
                                 width: w * 0.04,
                               ),
                               SizedBox(
@@ -578,7 +578,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                               Text(
                                 selectedValue ?? 'Select an option',
                                 style: const TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
@@ -586,7 +586,8 @@ class _GeneralInfoState extends State<GeneralInfo> {
                               Spacer(),
                               Icon(
                                 Icons.keyboard_arrow_down_sharp,
-                                size: 25,
+                                color: Colors.black,
+                                size: 20,
                               ),
                             ],
                           ),
@@ -611,17 +612,17 @@ class _GeneralInfoState extends State<GeneralInfo> {
                               selectedValue = value;
                             });
                           },
-                          // buttonStyleData: ButtonStyleData(
-                          //   width: w * 0.35,
-                          //   padding: const EdgeInsets.only(left: 14, right: 14),
-                          //   decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(7),
-                          //     border: Border.all(
-                          //       color: Color(0xffD0CBDB),
-                          //     ),
-                          //     color: Color(0xffDDDDDD),
-                          //   ),
-                          // ),
+                          buttonStyleData: ButtonStyleData(
+                            width: w * 0.35,
+                            padding: const EdgeInsets.only(left: 14, right: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7),
+                              border: Border.all(
+                                color: Color(0xffD0CBDB),
+                              ),
+                              color: Color(0xffDDDDDD),
+                            ),
+                          ),
                           iconStyleData: const IconStyleData(
                             icon: Icon(
                               Icons.keyboard_arrow_down_sharp,
