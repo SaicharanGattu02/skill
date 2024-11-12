@@ -271,19 +271,19 @@ class _AddTaskState extends State<AddTask> {
     setState(() {
       _validateTitle =
       _titleController.text.isEmpty ? "Please enter a title" : "";
-      _validateDescription = _descriptionController.text.isEmpty
-          ? "Please enter a description"
-          : "";
+      // _validateDescription = _descriptionController.text.isEmpty
+      //     ? "Please enter a description"
+      //     : "";
       _validateMileStone =
       selectedMilestoneValue ==null ? "Please enter a milestone" : "";
       _validateAssignedTo =
       selectedAssignedValue==null ? "Please assign to someone" : "";
-      _validateCollaborators =
-      selectedIds.isEmpty ? "Please add collaborators" : "";
-      _validateStatus =
-      selectedStatusValue==null ? "Please set a status" : "";
-      _validatePriority =
-      selectedPriorityValue==null ? "Please set a priority" : "";
+      // _validateCollaborators =
+      // selectedIds.isEmpty ? "Please add collaborators" : "";
+      // _validateStatus =
+      // selectedStatusValue==null ? "Please set a status" : "";
+      // _validatePriority =
+      // selectedPriorityValue==null ? "Please set a priority" : "";
       _validateStartDate =
       _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
@@ -291,12 +291,12 @@ class _AddTaskState extends State<AddTask> {
       // _validatefile = _imageFile==null ? "Please choose file." : "";
 
       _isLoading = _validateTitle.isEmpty &&
-          _validateDescription.isEmpty &&
+          // _validateDescription.isEmpty &&
           _validateMileStone.isEmpty &&
           _validateAssignedTo.isEmpty &&
-          _validateCollaborators.isEmpty &&
-          _validateStatus.isEmpty &&
-          _validatePriority.isEmpty &&
+          // _validateCollaborators.isEmpty &&
+          // _validateStatus.isEmpty &&
+          // _validatePriority.isEmpty &&
           _validateStartDate.isEmpty &&
           _validateDeadline.isEmpty;
 
@@ -326,10 +326,10 @@ class _AddTaskState extends State<AddTask> {
           widget.projectId,
           _titleController.text,
           _descriptionController.text,
-          selectedMilestoneID!,
-          selectedAssignedID!,
-          selectedStatusID!,
-          selectedPriorityID!,
+          selectedMilestoneID??"",
+          selectedAssignedID??"",
+          selectedStatusID??"",
+          selectedPriorityID??"",
           _startDateController.text,
           _deadlineController.text,
           selectedIds,

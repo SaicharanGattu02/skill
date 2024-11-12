@@ -462,7 +462,7 @@ class _TaskListState extends State<TaskList> {
                                   const SizedBox(height: 8),
                                   Text(
                                     task.description ?? "",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
                                       height: 16 / 12,
                                       color: Color(0xff787486),
