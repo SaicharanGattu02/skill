@@ -22,7 +22,7 @@ import 'package:skill/screens/Notifications.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/screens/PunchInOut.dart';
 import 'package:skill/screens/Task.dart';
-import 'package:skill/screens/ToDoList.dart';
+import 'package:skill/screens/TODOList.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:vibration/vibration.dart';
@@ -1266,7 +1266,7 @@ class _DashboardState extends State<Dashboard> {
                             // ),
                             //
                             SizedBox(
-                              height: w * 0.45,
+                              height: h * 0.18,
                             ),
                             Consumer<ProfileProvider>(
                               builder: (context, profileProvider, child) {
@@ -2017,7 +2017,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Todolist()));
+                                  builder: (context) =>Todolist()));
                         },
                         child: Container(
                           child: Column(
