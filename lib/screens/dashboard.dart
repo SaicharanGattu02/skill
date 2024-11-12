@@ -1073,7 +1073,7 @@ class _DashboardState extends State<Dashboard> {
                                               top: 10,
                                               bottom: 10),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xffF7F4FC),
+                                            color: const Color(0xffffffff),
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),

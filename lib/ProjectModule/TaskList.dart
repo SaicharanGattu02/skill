@@ -51,6 +51,12 @@ class _TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
+
+
+
+
+
+
     GetProjectTasks();
     // Initialize filteredData with all data
     filteredData = List.from(data);
@@ -721,6 +727,7 @@ class _TaskListState extends State<TaskList> {
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
+
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return Padding(
@@ -986,13 +993,16 @@ class _TaskListState extends State<TaskList> {
                                       0.050,
                                   child: TypeAheadField<Members>(
                                     controller: _assignedToController,
+
                                     builder: (context, controller, focusNode) {
+
                                       return TextField(
                                         controller: controller,
                                         focusNode: focusNode,
                                         onTap: () {
                                           setState(() {
                                             _validateAssignedTo = "";
+
                                           });
                                         },
                                         onChanged: (v) {
@@ -1035,14 +1045,35 @@ class _TaskListState extends State<TaskList> {
                                           ),
                                         ),
                                       );
+
+
                                     },
+
+                                    // suggestionsCallback: (pattern) {
+                                    //   return members
+                                    //       .where((item) => item.fullName!
+                                    //       .toLowerCase()
+                                    //       .contains(pattern.toLowerCase()))
+                                    //       .toList();
+                                    // },
+
                                     suggestionsCallback: (pattern) {
-                                      return members
+
+                                      var matches = members
                                           .where((item) => item.fullName!
                                           .toLowerCase()
                                           .contains(pattern.toLowerCase()))
                                           .toList();
+
+
+                                      if (matches.isEmpty){
+                                        _assignedToController.clear();
+                                      }
+
+
+                                      return matches;
                                     },
+
                                     itemBuilder: (context, suggestion) {
                                       return ListTile(
                                         title: Text(
@@ -1055,8 +1086,13 @@ class _TaskListState extends State<TaskList> {
                                         ),
                                       );
                                     },
+
                                     onSelected: (suggestion) {
+
                                       setState(() {
+
+
+
                                         _assignedToController.text =
                                             suggestion.fullName!;
                                         // You can use suggestion.statusKey to send to the server
@@ -1065,8 +1101,16 @@ class _TaskListState extends State<TaskList> {
                                         _validateAssignedTo = "";
                                       });
                                     },
+
+
                                   ),
                                 ),
+
+
+
+
+
+
                                 SizedBox(height: 16),
                                 _label(text: 'Status'),
 

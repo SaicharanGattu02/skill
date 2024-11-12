@@ -1,5 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Services/UserApi.dart';
@@ -481,10 +482,14 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     Container(
                       height: h * 0.05,
                       width: w * 0.45,
-                      child: TextFormField(
+                      child:
+                      TextFormField(
                         controller: _phoneController,
                         focusNode: _focusNodePhone,
-                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         cursorColor: Color(0xff8856F4),
                         onTap: () {
                           setState(() {

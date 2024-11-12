@@ -84,31 +84,38 @@ class _OverViewState extends State<OverView> {
     });
   }
 
-  void _updatePieChartData() {
-    pieChartSectionData = [
 
+
+  void _updatePieChartData() {
+
+    pieChartSectionData = [
+      // Todo section
       PieChartSectionData(
-        titleStyle:
-            TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.w600),
+        titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         value: data?.todoPercent?.toDouble() ?? 0,
-        title: '${data?.todoPercent}%',
+        title: '${data?.todoPercent}%', // Title with todo percentage
         color: Color(0xff8856F4),
-        radius: 33,
+        radius: 25,
       ),
+      // In-progress section
       PieChartSectionData(
+        titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         value: data?.inProgressPercent?.toDouble() ?? 0,
-        title: '${data?.inProgressPercent}%',
+        title: '${data?.inProgressPercent}%', // Title with in-progress percentage
         color: Color(0xffCAA0F8),
         radius: 25,
       ),
+      // Completed section
       PieChartSectionData(
-        value: data?.inProgressPercent?.toDouble() ?? 0,
-        title: '${data?.inProgressPercent}%',
+        titleStyle: TextStyle(color:Colors.black, fontWeight: FontWeight.w600),
+        value: data?.totalPercent?.toDouble() ?? 0,
+        title: '${data?.totalPercent}%',
         color: Color(0xffEDDFFC),
         radius: 25,
       ),
     ];
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -439,13 +446,93 @@ class _OverViewState extends State<OverView> {
           Container(
             height: MediaQuery.of(context).size.width * 0.33,
 
-            child: PieChart(
-              PieChartData(
-                sections: pieChartSectionData,
-                borderData: FlBorderData(show: false),
-                sectionsSpace: 2,
-                centerSpaceRadius: 40,
+            child: Stack(alignment: Alignment.center,
+                children:[
+                  PieChart(
+                PieChartData(
+                  sections: pieChartSectionData,
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 40,
+                ),
               ),
+                  // PieChart(
+                  //   PieChartData(
+                  //     sections: pieChartSectionData,
+                  //     borderData: FlBorderData(show: false),
+                  //     sectionsSpace: 2,
+                  //     // centerSpaceRadius: 40, // Center space radius for the pie chart
+                  //   ),
+                  // ),
+                  // // Title (Percentage) inside a black container
+                  // Positioned(
+                  //   left: 0,
+                  //   child: Container(
+                  //     width: MediaQuery.of(context).size.width * 0.12,
+                  //     height: MediaQuery.of(context).size.height * 0.06,
+                  //     decoration: BoxDecoration(
+                  //       color: Color(0xffECEAF8),  // Background color for the title container
+                  //       borderRadius: BorderRadius.circular(100),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text(
+                  //      '${data?.todoPercent}%',  // Display percentage title for the first section
+                  //         style: TextStyle(
+                  //           color: Colors.black,
+                  //           fontWeight: FontWeight.w600,
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // // Title (Percentage) for the second section (inProgressPercent) inside a container
+                  // Positioned(
+                  //   top: MediaQuery.of(context).size.height * 0.05,  // Adjust position for second title
+                  //   right: MediaQuery.of(context).size.width * 0.10, // Adjusted right position
+                  //   child: Container(
+                  //     width: MediaQuery.of(context).size.width * 0.12,
+                  //     height: MediaQuery.of(context).size.height * 0.06,
+                  //     decoration: BoxDecoration(
+                  //       color: Color(0xffECEAF8),  // Background color for the title container
+                  //       borderRadius: BorderRadius.circular(100),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text(
+                  //         '${data?.inProgressPercent}%',
+                  //         style: TextStyle(
+                  //           color: Colors.black,
+                  //           fontWeight: FontWeight.w600,
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // // Title (Percentage) for the third section (inProgressPercent) inside a container
+                  // Positioned(
+                  //   right: 0,
+                  //   child: Container(
+                  //     width: MediaQuery.of(context).size.width * 0.12,
+                  //     height: MediaQuery.of(context).size.height * 0.06,
+                  //     decoration: BoxDecoration(
+                  //       color: Color(0xffECEAF8),  // Background color for the title container
+                  //       borderRadius: BorderRadius.circular(100),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text(
+                  //         '${data?.totalPercent}%',
+                  //         style: TextStyle(
+                  //           color: Colors.black,
+                  //           fontWeight: FontWeight.w600,
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+
             ),
           ),
           SizedBox(height: 20),
@@ -504,7 +591,8 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildTabSwitcher(BuildContext context) {
-    return Row(
+    return
+      Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         GestureDetector(
@@ -513,7 +601,8 @@ class _OverViewState extends State<OverView> {
               isMembersTab = true;
             });
           },
-          child: Column(
+          child:
+          Column(
             children: [
               Text(
                 'Members',
@@ -521,7 +610,7 @@ class _OverViewState extends State<OverView> {
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
                   color:
-                      isMembersTab ? Color(0xff8856f4) : AppColors.primaryColor,
+                      isMembersTab ?AppColors.primaryColor: Color(0xff3c3c43)
                 ),
               ),
               if (isMembersTab)
@@ -535,6 +624,7 @@ class _OverViewState extends State<OverView> {
           ),
         ),
         GestureDetector(
+
           onTap: () {
             setState(() {
               isMembersTab = false;

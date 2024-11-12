@@ -140,6 +140,7 @@ class _TaskRowState extends State<TaskRow> {
   }
 
   Future<void> _fetchAllKanbanData() async {
+
     try {
       var results = await Future.wait([
         Userapi.GetTaskKanBan(widget.id, "to_do"),
@@ -150,7 +151,7 @@ class _TaskRowState extends State<TaskRow> {
       // Get the provider instance
       final provider = Provider.of<KanbanProvider>(context, listen: false);
 
-      // Update the provider with the results
+
       provider.setTodoData(_processResponse(results[0]));
       provider.setInProgressData(_processResponse(results[1]));
       provider.setCompletedData(_processResponse(results[2]));

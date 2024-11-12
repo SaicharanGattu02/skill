@@ -1583,8 +1583,7 @@ class _ProjectFileState extends State<ProjectFile> {
                         InkResponse(
                           onTap: () {
                             setState(() {
-                              _validateCategory =
-                                  _categoryController.text.isEmpty
+                              _validateCategory = categoryid==""
                                       ? "Please select a category"
                                       : "";
                               _validateDescription =
