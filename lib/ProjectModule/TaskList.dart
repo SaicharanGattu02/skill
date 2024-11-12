@@ -465,16 +465,20 @@ class _TaskListState extends State<TaskList> {
                                       height: 21 / 16,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    task.description ?? "",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      height: 16 / 12,
-                                      color: Color(0xff787486),
-                                      fontWeight: FontWeight.w400,
+
+                                  if(task.description!="")...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      task.description ?? "",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        height: 16 / 12,
+                                        color: Color(0xff787486),
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
-                                  ),
+                                  ],
+
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
@@ -512,33 +516,36 @@ class _TaskListState extends State<TaskList> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      FlutterImageStack(
-                                        imageList: collaboratorImages,
-                                        totalCount: collaboratorImages.length,
-                                        showTotalCount: true,
-                                        extraCountTextStyle: TextStyle(
-                                          color: Color(0xff8856F4),
-                                          fontSize: 12,
+
+                                  if(collaboratorImages.length!=0)...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        FlutterImageStack(
+                                          imageList: collaboratorImages,
+                                          totalCount: collaboratorImages.length,
+                                          showTotalCount: true,
+                                          extraCountTextStyle: TextStyle(
+                                            color: Color(0xff8856F4),
+                                            fontSize: 12,
+                                          ),
+                                          backgroundColor: Colors.white,
+                                          itemRadius: 30,
                                         ),
-                                        backgroundColor: Colors.white,
-                                        itemRadius: 30,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        "Collaborators",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff64748B),
+                                        SizedBox(
+                                          width: 10,
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                        Text(
+                                          "Collaborators",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff64748B),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                   const SizedBox(height: 8),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -556,7 +563,7 @@ class _TaskListState extends State<TaskList> {
                                         style: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
-                                          color: Color(0xff64748B),
+                                          color: Color(0xff2EB67D),
                                         ),
                                       ),
                                       const Spacer(),
@@ -573,7 +580,7 @@ class _TaskListState extends State<TaskList> {
                                         style: const TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
-                                          color: Color(0xff64748B),
+                                          color: Color(0xffDE350B),
                                         ),
                                       ),
                                     ],

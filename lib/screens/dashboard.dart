@@ -62,6 +62,7 @@ class _DashboardState extends State<Dashboard> {
   var longitude;
   var address;
   bool _loading = true;
+  bool is_notify = false;
   int? _animatingIndex;
 
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
@@ -389,7 +390,13 @@ class _DashboardState extends State<Dashboard> {
   Future<void> Notifyuser(String id) async {
     var res = await Userapi.notifyUser(id);
     setState(() {
-      if (res != null) {}
+      if (res != null) {
+        if(res.settings?.success==1){
+            is_notify=false;
+        }else{
+          is_notify=false;
+        }
+      }
     });
   }
 
@@ -425,7 +432,8 @@ class _DashboardState extends State<Dashboard> {
         Provider.of<ProfileProvider>(context, listen: false);
     try {
       await profileProvider.fetchUserDetails();
-       userdata = profileProvider.userProfile; // Get the user profile data
+       userdata = profileProvider.userProfile;
+      PreferenceService().saveString("my_employeeID", userdata?.employee?.id ?? "");
     } catch (e) {
       print("Error: $e");
     } finally {
@@ -1668,8 +1676,7 @@ class _DashboardState extends State<Dashboard> {
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               final employee = employeeData[index];
-                              final bool isAnimating = _animatingIndex ==
-                                  index; // Check if the current index is animating
+                              final bool isAnimating = _animatingIndex == index; // Check if the current index is animating
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundImage:
@@ -1703,13 +1710,16 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                         InkResponse(
                                           onTap: () async {
-                                            Notifyuser(employee.id ?? "");
-                                            Vibration.vibrate(duration: 300);
+                                            if(is_notify){
 
-                                            setState(() {
-                                              _animatingIndex = index;
-                                            });
-
+                                            }else{
+                                              setState(() {
+                                                Notifyuser(employee.id ?? "");
+                                                Vibration.vibrate(duration: 300);
+                                                _animatingIndex = index;
+                                                is_notify=true;
+                                              });
+                                            }
                                             await Future.delayed(
                                                 Duration(seconds: 2));
                                             setState(() {

@@ -6,6 +6,7 @@ import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectActivityModel.dart';
+import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
 
@@ -23,6 +24,8 @@ class _OverViewState extends State<OverView> {
 
   bool _loading = true;
   final spinkit = Spinkits();
+  String my_employeeID ="";
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +60,8 @@ class _OverViewState extends State<OverView> {
 
   List<PieChartSectionData> pieChartSectionData = [];
   Future<void> GetProjectsOverviewData() async {
+    my_employeeID = await PreferenceService().getString("my_employeeID")??"";
+    print("my_employeeID:${my_employeeID}");
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
     setState(() {
       if (res != null && res.data != null) {
@@ -91,7 +96,7 @@ class _OverViewState extends State<OverView> {
     pieChartSectionData = [
       // Todo section
       PieChartSectionData(
-        titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         value: data?.todoPercent?.toDouble() ?? 0,
         title: '${data?.todoPercent}%', // Title with todo percentage
         color: Color(0xff8856F4),
