@@ -110,6 +110,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     color: Color(0xffFFFFFF),
                     borderRadius: BorderRadius.circular(10),
                   ),
+
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
