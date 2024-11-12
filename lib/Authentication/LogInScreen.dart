@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:skill/Authentication/ForgotPassword.dart';
 import 'package:skill/Authentication/PersnalInformation.dart';
 import 'package:skill/Authentication/CompanyInformation.dart';
@@ -34,11 +35,59 @@ class _LogInScreenState extends State<LogInScreen> {
   String fcm_token="";
   String tokentype="";
 
+
+
+  @override
+  void initState() {
+    requestPermissions();
+    super.initState();
+  }
+
+  // Function to request all permissions
+  Future<void> requestPermissions() async {
+    // Request location permission
+    PermissionStatus locationStatus = await Permission.location.request();
+    PermissionStatus notificationStatus = await Permission.notification.request();
+    PermissionStatus storagePermission = await Permission.storage.request();
+    PermissionStatus cameraPermission = await Permission.camera.request();
+
+    // Check if all permissions are granted
+    if (locationStatus.isGranted &&
+        notificationStatus.isGranted &&
+        storagePermission.isGranted &&
+        cameraPermission.isGranted) {
+
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Permissions Denied'),
+          content: Text('You need to grant all permissions to proceed.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                openAppSettings(); // Open the app settings
+              },
+              child: Text('Go to Settings'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+
   @override
   void dispose() {
     _focusNodeEmail.dispose();
     _focusNodePassword.dispose();
-
     super.dispose();
   }
 
@@ -89,13 +138,6 @@ class _LogInScreenState extends State<LogInScreen> {
       CustomSnackBar.show(context, "Failed to retrieve FCM token. Please try again.");
     }
   }
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _validateFields() {
     setState(() {
       // Check if the fields are empty and set validation messages accordingly

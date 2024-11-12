@@ -50,5 +50,16 @@
         <string>UIInterfaceOrientationPortrait</string>
     </array>
 
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Your app needs access to location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Your app needs access to location at all times.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Your app needs access to the photo library to pick images.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Your app needs access to the camera to take pictures.</string>
+
+
 </dict>
 </plist>

@@ -99,11 +99,12 @@ final ThemeData lightTheme = ThemeData(
   ),
   bottomSheetTheme: const BottomSheetThemeData(
       surfaceTintColor: Colors.white, backgroundColor: Colors.white),
-  // colorScheme: const ColorScheme.light(background: Colors.white)
-  //     .copyWith(background: Colors.white),
+  colorScheme: const ColorScheme.light(background: Colors.white)
+      .copyWith(background: Colors.white),
 );
 
 final ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
   visualDensity: VisualDensity.adaptivePlatformDensity,
   splashColor: Colors.transparent,
   highlightColor: Colors.transparent,

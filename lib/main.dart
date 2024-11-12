@@ -16,6 +16,8 @@ import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:skill/utils/constants.dart';
+import 'Helpers/DatabaseHelper.dart';
+import 'Model/NotificationModel.dart';
 import 'Providers/ProfileProvider.dart';
 import 'Providers/ThemeProvider.dart';
 
@@ -133,8 +135,14 @@ Future<void> main() async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
     if (notification != null && android != null) {
-      // print('A new message received: ${notification.title}');
-      // print('RemoteMessage data: ${message.data.toString()}');
+      print('A new message received title: ${notification.title}');
+      print('A new message received body: ${notification.body}');
+      print('RemoteMessage data: ${message.data.toString()}');
+
+      // Save notification to SQLite database
+      _saveNotificationToDatabase(notification, message.data);
+
+      // Show a local notification (optional)
       showNotification(notification, android, message.data);
     }
   });
@@ -177,6 +185,19 @@ Future<void> main() async {
   );
 }
 
+
+void _saveNotificationToDatabase(RemoteNotification notification, Map<String, dynamic> data) async {
+  print("Sent Notification for saving:${notification}");
+  // Create a Notification object to be saved in SQLite
+  NotificationModel newNotification = NotificationModel(
+    title: notification.title,
+    body: notification.body,
+  );
+
+  // Save the notification to SQLite
+  await DatabaseHelper.instance.insertNotification(newNotification);
+}
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   // print('A Background message just showed up :  ${message.data}');
@@ -189,8 +210,8 @@ void showNotification(RemoteNotification notification,
   await audioPlayer.play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
   AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
-    'your_channel_id', // Your channel ID
-    'your_channel_name', // Your channel name
+    'skil_channel_id',
+    'skil_channel_name',
     importance: Importance.max,
     priority: Priority.high,
     playSound: false,
@@ -218,8 +239,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
             title: 'Skill App',
             debugShowCheckedModeBanner: false,
-            darkTheme: ThemeData.dark(),
-            theme: themeProvider.themeData, // Use the current theme from the provider
+            theme: themeProvider.themeData,
             home: Splash()
         );
       },
