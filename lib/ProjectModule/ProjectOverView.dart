@@ -86,7 +86,10 @@ class _OverViewState extends State<OverView> {
 
   void _updatePieChartData() {
     pieChartSectionData = [
+
       PieChartSectionData(
+        titleStyle:
+            TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.w600),
         value: data?.todoPercent?.toDouble() ?? 0,
         title: '${data?.todoPercent}%',
         color: Color(0xff8856F4),
@@ -122,7 +125,8 @@ class _OverViewState extends State<OverView> {
                     SliverAppBar(
                       backgroundColor: Colors.transparent,
                       pinned: true,
-                      expandedHeight: MediaQuery.of(context).size.height * 0.36,
+                      expandedHeight:
+                          MediaQuery.of(context).size.height * 0.378,
                       automaticallyImplyLeading: false,
                       elevation: 0,
                       flexibleSpace: FlexibleSpaceBar(
@@ -204,7 +208,7 @@ class _OverViewState extends State<OverView> {
                   const SizedBox(height: 15),
                   shimmerText(350, 20),
                   SizedBox(
-                   height: MediaQuery.of(context).size.height,
+                    height: MediaQuery.of(context).size.height,
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       itemCount: 6,
@@ -225,7 +229,8 @@ class _OverViewState extends State<OverView> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         shimmerText(100, 16),
                                         const SizedBox(height: 5),
@@ -292,7 +297,6 @@ class _OverViewState extends State<OverView> {
     );
   }
 
-
   Widget _buildProjectStatusCard(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.45,
@@ -357,7 +361,6 @@ class _OverViewState extends State<OverView> {
         _buildProjectDetailColumn(
           title: "Start Date",
           value: "${data?.startDate ?? ""}",
-
           secondTitle: "Total Hours",
           secondValue: "${data?.totalTimeWorked ?? ""}",
         ),
@@ -392,7 +395,9 @@ class _OverViewState extends State<OverView> {
                 fontFamily: "Inter",
                 fontSize: 10,
                 color: Color(0xff16192C))),
-        SizedBox(height: 2,),
+        SizedBox(
+          height: 2,
+        ),
         Text(secondTitle,
             style: TextStyle(
                 fontWeight: FontWeight.w400,
@@ -433,6 +438,7 @@ class _OverViewState extends State<OverView> {
           SizedBox(height: 16),
           Container(
             height: MediaQuery.of(context).size.width * 0.33,
+
             child: PieChart(
               PieChartData(
                 sections: pieChartSectionData,
@@ -453,16 +459,22 @@ class _OverViewState extends State<OverView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
         Row(
           children: [
             _buildLegendItem(Color(0xff8856F4), "To do"),
-            SizedBox(width: 10),
-            _buildLegendItem(Color(0xffEDDFFC), "Done"),
           ],
         ),
+        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
         Row(
           children: [
             _buildLegendItem(Color(0xffCAA0F8), "In Progress"),
+          ],
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
+        Row(
+          children: [
+            _buildLegendItem(Color(0xffEDDFFC), "Done"),
           ],
         ),
       ],
@@ -483,7 +495,7 @@ class _OverViewState extends State<OverView> {
         SizedBox(width: 7),
         Text(label,
             style: TextStyle(
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 fontFamily: "Inter",
                 fontSize: 11,
                 color: Colors.black)),
@@ -508,7 +520,8 @@ class _OverViewState extends State<OverView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color: isMembersTab ? Color(0xff8856f4) : AppColors.primaryColor,
+                  color:
+                      isMembersTab ? Color(0xff8856f4) : AppColors.primaryColor,
                 ),
               ),
               if (isMembersTab)
@@ -534,7 +547,8 @@ class _OverViewState extends State<OverView> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color: isMembersTab ? Color(0xff3c3c43) : AppColors.primaryColor,
+                  color:
+                      isMembersTab ? Color(0xff3c3c43) : AppColors.primaryColor,
                 ),
               ),
               if (!isMembersTab)
@@ -557,12 +571,10 @@ class _OverViewState extends State<OverView> {
       children: [
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child:
-          SizedBox(
+          child: SizedBox(
             width: w,
             child: Center(
-              child:
-              Container(
+              child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xff9E7BCA).withOpacity(0.1),

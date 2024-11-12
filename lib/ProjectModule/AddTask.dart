@@ -270,7 +270,7 @@ class _AddTaskState extends State<AddTask> {
   void _validateFields() {
     setState(() {
       _validateTitle =
-      _titleController.text.isEmpty ? "Please enter a title" : "";
+       _titleController.text.isEmpty ? "Please enter a title" : "";
       // _validateDescription = _descriptionController.text.isEmpty
       //     ? "Please enter a description"
       //     : "";
