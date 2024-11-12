@@ -78,7 +78,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
             // If there's an error loading the data
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              // return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(child: CircularProgressIndicator(color: Color(0xff8856F4)));
             }
 
             // If no notifications were found

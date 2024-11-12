@@ -1,7 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Services/UserApi.dart';
@@ -93,6 +92,8 @@ class _TaskkanbanboardState extends State<Taskkanbanboard> {
     return Scaffold(
       backgroundColor: Color(0xffF3ECFB),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(height: 8),
           Expanded(child: TaskRow(status: 'To Do', id: widget.id)),
@@ -193,24 +194,25 @@ class _TaskRowState extends State<TaskRow> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8),
           child: Row(
             children: [
               Image.asset(
                 widget.status == "To Do"
                     ? "assets/box.png"
                     : widget.status == "In Progress"
-                        ? "assets/inprogress.png"
-                        : "assets/done.png",
+                    ? "assets/inprogress.png"
+                    : "assets/done.png",
                 fit: BoxFit.contain,
                 width: w * 0.045,
                 height: w * 0.05,
               ),
               SizedBox(width: w * 0.02),
               Text(widget.status,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
               SizedBox(width: w * 0.01),
               Text("(${tasks.length.toString()})",
                   style: TextStyle(
@@ -220,219 +222,276 @@ class _TaskRowState extends State<TaskRow> {
             ],
           ),
         ),
-        Expanded(
-          child: Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: DottedBorder(
-                color: Color(0xffCFB9FF),
-                strokeWidth: 1,
-                dashPattern: [5, 3],
-                borderType: BorderType.RRect,
-                radius: Radius.circular(7),
-                child: DragTarget<Kanban>(
-                  onAccept: (draggedTask) {
-                    if (draggedTask.status != widget.status) {
-                      Provider.of<KanbanProvider>(context, listen: false)
-                          .updateTaskStatus(draggedTask, widget.status);
-                      UpdateTaskStatusApi(draggedTask.id!, widget.status);
-                    }
-                  },
-                  builder: (context, candidateData, rejectedData) {
-                    return Container(
-                      padding: EdgeInsets.all(5),
-                      width: double.infinity,
-                      height: w*0.4,
-                      decoration: BoxDecoration(
-                        color: Color(0xffEFE2FF),
+        Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: DottedBorder(
+              color: Color(0xffCFB9FF),
+              strokeWidth: 1,
+              dashPattern: [5, 3],
+              borderType: BorderType.RRect,
+              radius: Radius.circular(7),
+              child: DragTarget<Kanban>(
+                onAccept: (draggedTask) {
+                  if (draggedTask.status != widget.status) {
+                    Provider.of<KanbanProvider>(context, listen: false)
+                        .updateTaskStatus(draggedTask, widget.status);
+                    UpdateTaskStatusApi(draggedTask.id!, widget.status);
+                  }
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return Container(
+                    width: double.infinity,
+                    height: w * 0.4,
+                    decoration: BoxDecoration(
+                      color: Color(0xffEFE2FF),
+                    ),
+                    child: tasks.isEmpty
+                        ? Center(
+                      child: Lottie.asset(
+                        'assets/animations/nodata1.json',
+                        height: 100,
+                        width: 100,
                       ),
-                      child: tasks.isEmpty
-                          ?    Center(
-                        child: Lottie.asset(
-                          'assets/animations/nodata1.json',
-                          height: 100,
-                          width: 100,
-                        ),
-                      )
-                          : SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: tasks.map((task) {
-                                  String formattedStartDate =
-                                      DateTimeFormatter.format(
-                                          task.startDate ?? "",
-                                          includeDate: true,
-                                          includeTime: false);
-                                  String formattedEndDate =
-                                      DateTimeFormatter.format(
-                                          task.endDate ?? "",
-                                          includeDate: true,
-                                          includeTime: false);
+                    )
+                        : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        radius: Radius.circular(10),
+                        child: Row(
+                          children: tasks.map((task) {
+                            String formattedStartDate =
+                            DateTimeFormatter.format(
+                                task.startDate ?? "",
+                                includeDate: true,
+                                includeTime: false);
+                            String formattedEndDate =
+                            DateTimeFormatter.format(
+                                task.endDate ?? "",
+                                includeDate: true,
+                                includeTime: false);
 
-                                  List<String> collaboratorImages = task
-                                          .collaborators
-                                          ?.map((collaborator) =>
-                                              collaborator.image ?? "")
-                                          .toList() ??
-                                      [];
-                                  return Container(
-                                    width: w * 0.83,
-                                    margin: EdgeInsets.all(8.0),
-                                    child: LongPressDraggable<Kanban>(
-                                      data: task,
-                                      feedback: Card(
-                                        child: Container(
-                                          width: 200,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                          ),
-                                          padding: EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      task.title ?? "",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color:
-                                                            Color(0xff000000),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Image.asset(
-                                                    "assets/More-vertical.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 8),
-                                              FlutterImageStack(
-                                                imageList: collaboratorImages,
-                                                totalCount:
-                                                    collaboratorImages.length,
-                                                showTotalCount: true,
-                                                extraCountTextStyle: TextStyle(
-                                                  color: Color(0xff8856F4),
-                                                ),
-                                                backgroundColor: Colors.white,
-                                                itemRadius: 30,
-                                                itemBorderWidth: 3,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      childWhenDragging: Container(),
-                                      child: Card(
-                                        elevation: 2,
-                                        child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      task.title ?? "",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color:
-                                                            Color(0xff000000),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Image.asset(
-                                                    "assets/More-vertical.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 8),
-                                              Row(
-                                                children: [
-                                                  Image.asset(
-                                                    "assets/calendar.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    formattedStartDate,
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Color(0xff6C848F),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 15),
-                                                  Image.asset(
-                                                    "assets/calendar.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    formattedEndDate,
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Color(0xff6C848F),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 8),
-                                              FlutterImageStack(
-                                                imageList: collaboratorImages,
-                                                totalCount:
-                                                    collaboratorImages.length,
-                                                showTotalCount: true,
-                                                extraCountTextStyle: TextStyle(
-                                                  color: Color(0xff8856F4),
-                                                ),
-                                                backgroundColor: Colors.white,
-                                                itemRadius: 30,
-                                                itemBorderWidth: 3,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                            List<String> collaboratorImages = task
+                                .collaborators
+                                ?.map((collaborator) =>
+                            collaborator.image ?? "")
+                                .toList() ??
+                                [];
+                            return Container(
+                              width: w * 0.83,
+                              margin: EdgeInsets.all(8.0),
+                              child: LongPressDraggable<Kanban>(
+                                data: task,
+                                feedback: Card(
+                                  child: Container(
+                                    width: w * 0.8,
+                                    height: w * 0.32,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(7),
                                     ),
-                                  );
-                                }).toList(),
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                task.title ?? "",
+                                                maxLines: 3,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight:
+                                                  FontWeight.w500,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
+                                                  color:
+                                                  Color(0xff000000),
+                                                ),
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              "assets/More-vertical.png",
+                                              width: w * 0.045,
+                                              height: w * 0.06,
+                                              color: Color(0xff6C848F),
+                                            ),
+                                          ],
+                                        ),
+                                        if (collaboratorImages.length != 0)
+                                          ...[
+                                            SizedBox(height: 5),
+                                            Row(
+                                              children: [
+                                                FlutterImageStack(
+                                                  imageList:
+                                                  collaboratorImages,
+                                                  totalCount:
+                                                  collaboratorImages
+                                                      .length,
+                                                  showTotalCount: true,
+                                                  extraCountTextStyle:
+                                                  TextStyle(
+                                                    color:
+                                                    Color(0xff8856F4),
+                                                  ),
+                                                  backgroundColor:
+                                                  Colors.white,
+                                                  itemRadius: 25,
+                                                  itemBorderWidth: 3,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  "Collaborators",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                    FontWeight.w400,
+                                                    color: Color(
+                                                        0xff6C848F),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                childWhenDragging: Container(),
+                                child: Card(
+                                  elevation: 2,
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        top: 5,
+                                        bottom: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(7),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                task.title ?? "",
+                                                maxLines: 2,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                  FontWeight.w500,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
+                                                  color:
+                                                  Color(0xff000000),
+                                                ),
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              "assets/More-vertical.png",
+                                              width: w * 0.045,
+                                              height: w * 0.06,
+                                              color: Color(0xff6C848F),
+                                            ),
+                                          ],
+                                        ),
+                                        if (collaboratorImages.length != 0)
+                                          ...[
+                                            SizedBox(height: 5),
+                                            Row(
+                                              children: [
+                                                FlutterImageStack(
+                                                  imageList:
+                                                  collaboratorImages,
+                                                  totalCount:
+                                                  collaboratorImages
+                                                      .length,
+                                                  showTotalCount: true,
+                                                  extraCountTextStyle:
+                                                  TextStyle(
+                                                    color:
+                                                    Color(0xff8856F4),
+                                                  ),
+                                                  backgroundColor:
+                                                  Colors.white,
+                                                  itemRadius: 25,
+                                                  itemBorderWidth: 3,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  "Collaborators",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                    FontWeight.w400,
+                                                    color: Color(
+                                                        0xff6C848F),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        SizedBox(height: 5),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              "assets/calendar.png",
+                                              width: w * 0.045,
+                                              height: w * 0.06,
+                                              color: Color(0xff6C848F),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              formattedStartDate,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight:
+                                                FontWeight.w400,
+                                                color: Color(0xff6C848F),
+                                              ),
+                                            ),
+                                            SizedBox(width: 15),
+                                            Image.asset(
+                                              "assets/calendar.png",
+                                              width: w * 0.045,
+                                              height: w * 0.06,
+                                              color: Color(0xff6C848F),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              formattedEndDate,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight:
+                                                FontWeight.w400,
+                                                color: Color(0xff6C848F),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                    );
-                  },
-                ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

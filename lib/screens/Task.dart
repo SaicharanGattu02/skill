@@ -229,8 +229,7 @@ class _TaskState extends State<Task> {
                 ),
               ),
               const SizedBox(height: 24),
-              (data.length == 0)
-                  ? Center(
+              if (data.length == 0) Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -252,11 +251,10 @@ class _TaskState extends State<Task> {
                         fontFamily: "Inter",
                       ),
                     ),
-                    SizedBox(height: h*0.3,)
+                    SizedBox(height: h*0.2,)
                   ],
                 ),
-              ):
-              Expanded(
+              ) else Expanded(
                 child: ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
@@ -312,10 +310,12 @@ class _TaskState extends State<Task> {
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Color(0xff1D1C1D),
+                              overflow: TextOverflow.ellipsis,
                               height: 21 / 16,
                             ),
                           ),
                           const SizedBox(height: 8),
+                          if(task.description!="")
                           Text(
                             task.description ?? "",
                             style: const TextStyle(

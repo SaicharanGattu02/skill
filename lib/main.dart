@@ -200,8 +200,16 @@ void _saveNotificationToDatabase(RemoteNotification notification, Map<String, dy
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // print('A Background message just showed up :  ${message.data}');
-  await audioPlayer.play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null) {
+    print('A new message received title: ${notification.title}');
+    print('A new message received body: ${notification.body}');
+    print('RemoteMessage data: ${message.data.toString()}');
+
+    // Save notification to SQLite database
+    _saveNotificationToDatabase(notification, message.data);
+  }
 }
 
 // Function to display local notifications

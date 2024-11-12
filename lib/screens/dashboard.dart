@@ -22,7 +22,7 @@ import 'package:skill/screens/Notifications.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/screens/PunchInOut.dart';
 import 'package:skill/screens/Task.dart';
-import 'package:skill/screens/TODOList.dart';
+import 'package:skill/screens/ToDoList.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:vibration/vibration.dart';
@@ -40,8 +40,6 @@ import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 import 'package:geocoding/geocoding.dart' as geocoder;
-
-import 'TODOList.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({super.key});

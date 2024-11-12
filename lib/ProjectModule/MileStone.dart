@@ -304,13 +304,13 @@ class _MileStoneState extends State<MileStone> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 10),
                               Text(
                                 milestone.title ?? "",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   height: 19.36 / 16,
-                                  color: Color(0xff1D1C1D),
+                                  color: AppColors.primaryColor,
                                   fontWeight: FontWeight.w500,
                                   fontFamily: 'Inter',
                                 ),
