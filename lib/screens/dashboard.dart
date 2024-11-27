@@ -93,6 +93,7 @@ class _DashboardState extends State<Dashboard> {
     GetUserDeatails();
     GetEmployeeData();
     GetRoomsList();
+
     GetProjectsData();
     get_lat_log();
     _connectivitySubscription =
