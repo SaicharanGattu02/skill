@@ -137,43 +137,49 @@ shimmerLinearProgress(double height) {
 }
 
 class RoundedProgressPainter extends CustomPainter {
-  final double progress;
+  final double progress; // Progress value as a fraction (0.0 to 1.0)
 
   RoundedProgressPainter(this.progress);
 
   @override
   void paint(Canvas canvas, Size size) {
-    print("Progress :${progress}");
+    print("Progress :$progress");
+
+    // Background paint (circle)
     final Paint paintBackground = Paint()
-      ..color = Color(0xffE0C6FD)
+      ..color = Color(0xffE0C6FD) // Light color for background
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;
 
+    // Foreground paint (arc)
     final Paint paintForeground = Paint()
-      ..color = Color(0xff682FA3)
+      ..color = Color(0xff682FA3) // Color for the progress
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;
 
     final double radius = size.width / 2;
 
-    // Draw background circle
+    // Draw background circle (complete circle)
     canvas.drawCircle(
       Offset(radius, radius),
       radius - paintBackground.strokeWidth / 2,
       paintBackground,
     );
 
-    // Draw foreground arc
-    final double sweepAngle = 2 * 3.141592653589793 * progress; // Full circle in radians
+    // Calculate sweep angle for the progress arc
+    // Full circle is 2 * PI radians, so multiply the progress by the full circle's radians
+    final double sweepAngle = 2 * 3.141592653589793 * (progress / 100);
+
+    // Draw foreground arc (progress arc)
     canvas.drawArc(
       Rect.fromCircle(
         center: Offset(radius, radius),
         radius: radius - paintForeground.strokeWidth / 2,
       ),
-      -3.141592653589793 / 2, // Start angle (top)
-      sweepAngle,
+      -3.141592653589793 / 2, // Start at the top (12 o'clock position)
+      sweepAngle, // Arc sweep angle based on progress
       false,
       paintForeground,
     );
@@ -181,9 +187,10 @@ class RoundedProgressPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true; // Repaint when progress changes
+    return true; // Repaint whenever progress changes
   }
 }
+
 class MemberCard extends StatefulWidget {
   final String name;
   final String profile_image;

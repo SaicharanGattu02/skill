@@ -34,7 +34,6 @@ class ProfileProvider with ChangeNotifier {
     try {
       final success = await Userapi.UpdateUserDetails(fullName, mobile, gender, linkdin, status, address, profileImage);
       if (success?.settings?.success==1) {
-        // If successful, fetch updated details and notify listeners
         await fetchUserDetails();
         notifyListeners();
         return true;

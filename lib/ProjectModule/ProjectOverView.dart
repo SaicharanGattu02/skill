@@ -89,37 +89,44 @@ class _OverViewState extends State<OverView> {
     });
   }
 
+  double _parseToDouble(dynamic value) {
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;  // Safely parse String to double
+    } else if (value is int) {
+      return value.toDouble();  // Convert int to double
+    }
+    return 0.0;  // Default to 0.0 if it's neither a String nor an int
+  }
 
 
   void _updatePieChartData() {
-
     pieChartSectionData = [
-      // Todo section
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        value: data?.todoPercent?.toDouble() ?? 0,
-        title: '${data?.todoPercent}%', // Title with todo percentage
+        value: (_parseToDouble(data?.todoPercent) ?? 0).toInt().toDouble(), // Convert to double
+        title: '${((_parseToDouble(data?.todoPercent) ?? 0)).round()}%', // Display as an integer
         color: Color(0xff8856F4),
         radius: 25,
       ),
       // In-progress section
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        value: data?.inProgressPercent?.toDouble() ?? 0,
+        value: _parseToDouble(data?.inProgressPercent) ?? 0,
         title: '${data?.inProgressPercent}%', // Title with in-progress percentage
         color: Color(0xffCAA0F8),
         radius: 25,
       ),
       // Completed section
       PieChartSectionData(
-        titleStyle: TextStyle(color:Colors.black, fontWeight: FontWeight.w600),
-        value: data?.totalPercent?.toDouble() ?? 0,
-        title: '${data?.totalPercent}%',
+        titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+        value: (_parseToDouble(data?.totalPercent) ?? 0).toInt().toDouble(),
+        title: '${((_parseToDouble(data?.totalPercent) ?? 0)).round()}%', // Display as an integer
         color: Color(0xffEDDFFC),
         radius: 25,
       ),
     ];
   }
+
 
 
   @override
@@ -351,10 +358,13 @@ class _OverViewState extends State<OverView> {
           CustomPaint(
             size: Size(136, 136),
             painter: RoundedProgressPainter(
-                (data?.totalPercent?.roundToDouble() ?? 0 * 100).round() / 100),
+              // Ensure the value is parsed as a double, multiplied by 100, and converted to a double
+              (_parseToDouble(data?.totalPercent) ?? 0),
+            ),
           ),
           Text(
-            '${(data?.totalPercent ?? 0 * 100).round()}%',
+            // Parse the value, multiply by 100, then round and display as an integer
+            '${((_parseToDouble(data?.totalPercent) ?? 0)).round()}%',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w600,

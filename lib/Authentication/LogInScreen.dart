@@ -48,13 +48,13 @@ class _LogInScreenState extends State<LogInScreen> {
     // Request location permission
     PermissionStatus locationStatus = await Permission.location.request();
     PermissionStatus notificationStatus = await Permission.notification.request();
-    PermissionStatus storagePermission = await Permission.storage.request();
+    PermissionStatus photoPermission = await Permission.photos.request();
     PermissionStatus cameraPermission = await Permission.camera.request();
 
     // Check if all permissions are granted
     if (locationStatus.isGranted &&
         notificationStatus.isGranted &&
-        storagePermission.isGranted &&
+        photoPermission.isGranted &&
         cameraPermission.isGranted) {
 
     } else {

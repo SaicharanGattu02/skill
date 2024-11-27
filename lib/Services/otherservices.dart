@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +68,6 @@ class NoInternetWidget extends StatelessWidget {
               onTap: () async {
                 final connectivityResult = await Connectivity().checkConnectivity();
                 String message;
-
                 if (connectivityResult == ConnectivityResult.mobile) {
                   message = "Connected to Mobile Network";
                 } else if (connectivityResult == ConnectivityResult.wifi) {
@@ -105,6 +106,8 @@ class NoInternetWidget extends StatelessWidget {
     );
   }
 }
+
+
 
 
 
