@@ -170,7 +170,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => ThemeProvider(lightTheme)),
+            create: (context) => ThemeProvider(AppThemeMode.system)),
 
         ChangeNotifierProvider(
             create: (context) => KanbanProvider()),
@@ -245,7 +245,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-            title: 'Skill App',
+            title: 'Skill',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
             home: Splash()

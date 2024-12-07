@@ -36,6 +36,7 @@ import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 import 'OneToOneChatPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -468,13 +469,12 @@ class _DashboardState extends State<Dashboard> {
             isDeviceConnected == "ConnectivityResult.mobile")
         ? Scaffold(
             key: _scaffoldKey,
-            backgroundColor: const Color(0xffF3ECFB),
+            backgroundColor: themeProvider.scaffoldBackgroundColor, // Use dynamic background color
             appBar: AppBar(
               automaticallyImplyLeading: false,
               leading: null, // Hides the leading icon (for drawer)
               actions: <Widget>[Container()],
               toolbarHeight: 58,
-              backgroundColor: AppColors.primaryColor,
               title: Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
@@ -587,7 +587,7 @@ class _DashboardState extends State<Dashboard> {
                                 Text(
                                   "Today \n$formattedDate",
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: themeProvider.textColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
                                       fontFamily: "Inter"),
@@ -605,7 +605,7 @@ class _DashboardState extends State<Dashboard> {
                                     Text(
                                       mainWeatherStatus,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: themeProvider.textColor,
                                           fontWeight: FontWeight.w400,
                                           fontSize: 14,
                                           fontFamily: "Inter"),
@@ -669,7 +669,7 @@ class _DashboardState extends State<Dashboard> {
                                 return Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      color: AppColors.primaryColor,
+                                      color:themeProvider.themeData==lightTheme? AppColors.primaryColor : AppColors.darkmodeContainerColor,
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Column(
                                     children: [
@@ -991,10 +991,10 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             Row(
                               children: [
-                                const Text(
+                                Text(
                                   "Projects",
                                   style: TextStyle(
-                                      color: Color(0xff16192C),
+                                      color: themeProvider.themeData==lightTheme? Color(0xff16192C) :  themeProvider.textColor,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 18,
                                       height: 24.48 / 18,
@@ -1080,7 +1080,7 @@ class _DashboardState extends State<Dashboard> {
                                               top: 10,
                                               bottom: 10),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xffffffff),
+                                            color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -1099,8 +1099,8 @@ class _DashboardState extends State<Dashboard> {
                                               // Bottom Text
                                               Text(
                                                 data.name ?? "",
-                                                style: const TextStyle(
-                                                    color: Color(0xff4F3A84),
+                                                style: TextStyle(
+                                                    color: themeProvider.themeData==lightTheme? Color(0xff4F3A84) : themeProvider.textColor,
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: 16,
                                                     height: 19.36 / 16,
@@ -1121,8 +1121,7 @@ class _DashboardState extends State<Dashboard> {
                                                       Text(
                                                         "Progress",
                                                         style: TextStyle(
-                                                            color: Color(
-                                                                0xff000000),
+                                                            color:themeProvider.textColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 12,
@@ -1133,8 +1132,7 @@ class _DashboardState extends State<Dashboard> {
                                                       Text(
                                                         "${data.totalPercent ?? ""}%",
                                                         style: TextStyle(
-                                                            color: Color(
-                                                                0xff000000),
+                                                            color:themeProvider.textColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 12,
@@ -1281,7 +1279,7 @@ class _DashboardState extends State<Dashboard> {
                                 return Container(
                                   padding: EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                      color: Color(0xffFFFFFF),
+                                        color:themeProvider.containerColor,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     children: [
@@ -1310,7 +1308,7 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color: Color(0x1A8856F4),
+                                                      color:themeProvider.themeData==lightTheme?Color(0x1A8856F4) :  themeProvider.scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1320,8 +1318,7 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color:
-                                                              Color(0xff000000),
+                                                          color: themeProvider.textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1336,7 +1333,7 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "PROJECTS",
                                                   style: TextStyle(
-                                                      color: Color(0xff000000),
+                                                      color: themeProvider.textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1367,7 +1364,7 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color: Color(0xffF1FFF3),
+                                                      color:themeProvider.themeData==lightTheme? Color(0xffF1FFF3) :  themeProvider.scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1377,8 +1374,7 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color:
-                                                              Color(0xff000000),
+                                                          color: themeProvider.textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1393,7 +1389,7 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "TO DO",
                                                   style: TextStyle(
-                                                      color: Color(0xff000000),
+                                                      color: themeProvider.textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1424,7 +1420,7 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color: Color(0x1AFBBC04),
+                                                      color:themeProvider.themeData==lightTheme?  Color(0x1AFBBC04) :  themeProvider.scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1434,8 +1430,7 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color:
-                                                              Color(0xff000000),
+                                                          color: themeProvider.textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1450,7 +1445,7 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "TASKS",
                                                   style: TextStyle(
-                                                      color: Color(0xff000000),
+                                                      color: themeProvider.textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1481,7 +1476,7 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color: Color(0x1A08BED0),
+                                                      color:themeProvider.themeData==lightTheme?  Color(0x1A08BED0) :  themeProvider.scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1491,8 +1486,7 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color:
-                                                              Color(0xff000000),
+                                                          color: themeProvider.textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1507,7 +1501,7 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "MEETINGS",
                                                   style: TextStyle(
-                                                      color: Color(0xff000000),
+                                                      color: themeProvider.textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1577,7 +1571,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
             drawer: Drawer(
-              backgroundColor: AppColors.primaryColor,
+              backgroundColor:themeProvider.themeData==lightTheme? AppColors.primaryColor:  themeProvider.scaffoldBackgroundColor,
               width: w * 0.65,
               child: Column(
                 children: [
@@ -1950,7 +1944,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             endDrawer: Drawer(
               width: w * 0.3,
-              backgroundColor: Colors.white,
+              backgroundColor:themeProvider.themeData==lightTheme? Colors.white:themeProvider.scaffoldBackgroundColor,
               child: Padding(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 40),
                 child: Container(

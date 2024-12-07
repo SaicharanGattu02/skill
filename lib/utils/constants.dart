@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 const defaultPadding = 10.0;
 const defaultMargin = 10.0;
 const defaultHeight = 10.0;
@@ -69,7 +71,7 @@ final ThemeData lightTheme = ThemeData(
   splashColor: Colors.transparent,
   highlightColor: Colors.transparent,
   hoverColor: Colors.transparent,
-  scaffoldBackgroundColor: Colors.white,
+  scaffoldBackgroundColor: Color(0xff17191C),
   dialogBackgroundColor: Colors.white,
   cardColor: Colors.white,
   searchBarTheme: const SearchBarThemeData(),
@@ -88,6 +90,7 @@ final ThemeData lightTheme = ThemeData(
       const PopupMenuThemeData(color: Colors.white, shadowColor: Colors.white),
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.white,
+    backgroundColor: AppColors.primaryColor,
   ),
   cardTheme: const CardTheme(
     shadowColor: Colors.white,
@@ -109,7 +112,7 @@ final ThemeData darkTheme = ThemeData(
   splashColor: Colors.transparent,
   highlightColor: Colors.transparent,
   hoverColor: Colors.transparent,
-  scaffoldBackgroundColor: Colors.white,
+  scaffoldBackgroundColor: Color(0xff181818),
   dialogBackgroundColor: Colors.white,
   cardColor: Colors.white,
   searchBarTheme: const SearchBarThemeData(),
@@ -128,6 +131,7 @@ final ThemeData darkTheme = ThemeData(
       const PopupMenuThemeData(color: Colors.white, shadowColor: Colors.white),
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.white,
+    backgroundColor: Colors.black
   ),
   cardTheme: const CardTheme(
     shadowColor: Colors.white,
