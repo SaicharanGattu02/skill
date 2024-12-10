@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:skill/Authentication/LogInScreen.dart';
 import 'package:skill/Authentication/Otp.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
+import 'package:skill/screens/OneToOneChatPage.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
 import 'package:skill/utils/constants.dart';
@@ -128,7 +129,9 @@ Future<void> main() async {
   flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) async {},
+        (NotificationResponse notificationResponse) async {
+          _handleNotificationTap(notificationResponse.payload);
+        },
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -150,8 +153,7 @@ Future<void> main() async {
   // Also handle any interaction when the app is in the background via a
   // Stream listener
   FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    // _handleMessage(message);
-    // print("onMessageOpenedApp:${message.data['type']}");
+    _handleNotificationTap(jsonEncode(message.data));
   });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -183,6 +185,33 @@ Future<void> main() async {
       child: MyApp(),
     ),
   );
+
+  // Handle notification taps when the app is terminated
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    _handleNotificationTap(jsonEncode(initialMessage.data));
+  }
+}
+
+Future<void> _handleNotificationTap(String? payload) async {
+  final myEmployeeID = await PreferenceService().getString("my_employeeID");
+
+  if (payload != null) {
+    Map<String, dynamic> data = jsonDecode(payload);
+    String? roomId = data['room_id'];
+    print("roomId:${roomId}");
+    if (roomId != null) {
+      navigatorKey.currentState?.pushNamed(
+        '/chat_screen',
+        arguments: {
+          'roomId': roomId,
+          'employeeId': myEmployeeID,
+        },
+      );
+    } else {
+      print("No room_id found in the payload");
+    }
+  }
 }
 
 
@@ -209,6 +238,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     // Save notification to SQLite database
     _saveNotificationToDatabase(notification, message.data);
+    _handleNotificationTap(jsonEncode(message.data));
   }
 }
 
@@ -248,7 +278,17 @@ class MyApp extends StatelessWidget {
             title: 'Skill',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
-            home: Splash()
+            home: Splash(),
+            navigatorKey: navigatorKey, // Add this line
+            onGenerateRoute: (settings) {
+            if (settings.name == '/chat_screen') {
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => ChatPage(ID: args['employeeId'] ?? "", roomId: args['roomId'] ?? ""),
+              );
+            }
+            return null;
+          },
         );
       },
     );

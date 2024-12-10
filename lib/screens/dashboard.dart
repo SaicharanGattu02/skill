@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -94,12 +95,37 @@ class _DashboardState extends State<Dashboard> {
     GetUserDeatails();
     GetEmployeeData();
     GetRoomsList();
+    initUniLinks();
 
     GetProjectsData();
     get_lat_log();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
+  }
+
+  void initUniLinks() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      _handleNotificationTap(jsonEncode(initialMessage.data));
+    }
+  }
+
+  Future<void> _handleNotificationTap(String? payload) async {
+    final myEmployeeID = await PreferenceService().getString("my_employeeID");
+
+    if (payload != null) {
+      Map<String, dynamic> data = jsonDecode(payload);
+      String? roomId = data['room_id'];
+      print("roomId:${roomId}");
+      if (roomId != null) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+            ChatPage(ID: myEmployeeID ?? "", roomId: roomId)));
+      } else {
+        print("No room_id found in the payload");
+      }
+    }
   }
 
   Future<void> createRoom(String id) async {
