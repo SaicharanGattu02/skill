@@ -64,7 +64,7 @@ class _ProjectCommentState extends State<ProjectComment> {
     if (res != null) {
       setState(() {
         if (res.settings?.success == 1) {
-          _loading=true;
+          _loading = true;
           data = [];
           GetProjectCommentsApi();
           CustomSnackBar.show(context, "${res.settings?.message}");
@@ -168,533 +168,525 @@ class _ProjectCommentState extends State<ProjectComment> {
       backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       resizeToAvoidBottomInset: true,
       body: Padding(
-              padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 6),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(7),
+              ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(7),
+                  // Row(
+                  //   children: [
+                  //     // if ( projectfile.fileUrl!= null)
+                  //     Padding(
+                  //       padding: const EdgeInsets.only(right: 4.0),
+                  //       child: ClipOval(
+                  //         child: Image.asset(
+                  //           "assets/prashanth.png",
+                  //           width: w * 0.15,
+                  //           height: w * 0.15,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: w * 0.01,
+                  //     ),
+                  //     Column(
+                  //       mainAxisAlignment: MainAxisAlignment.start,
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Text(
+                  //           "Prashanth Chary",
+                  //           style: TextStyle(
+                  //             color: Color(0xff000000),
+                  //             fontFamily: 'Inter',
+                  //             fontSize: 16,
+                  //             fontWeight: FontWeight.w500,
+                  //             height: 18.36 / 16,
+                  //           ),
+                  //         ),
+                  //         Text(
+                  //           "Ux Designer",
+                  //           style: TextStyle(
+                  //             color: Color(0xff6C848F),
+                  //             fontFamily: 'Inter',
+                  //             fontSize: 14,
+                  //             fontWeight: FontWeight.w400,
+                  //             height: 14.36 / 14,
+                  //           ),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Write Comment",
+                    style: TextStyle(
+                      color: Color(0xff141516),
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      height: 18.36 / 16,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Row(
-                        //   children: [
-                        //     // if ( projectfile.fileUrl!= null)
-                        //     Padding(
-                        //       padding: const EdgeInsets.only(right: 4.0),
-                        //       child: ClipOval(
-                        //         child: Image.asset(
-                        //           "assets/prashanth.png",
-                        //           width: w * 0.15,
-                        //           height: w * 0.15,
-                        //           fit: BoxFit.cover,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     SizedBox(
-                        //       width: w * 0.01,
-                        //     ),
-                        //     Column(
-                        //       mainAxisAlignment: MainAxisAlignment.start,
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         Text(
-                        //           "Prashanth Chary",
-                        //           style: TextStyle(
-                        //             color: Color(0xff000000),
-                        //             fontFamily: 'Inter',
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.w500,
-                        //             height: 18.36 / 16,
-                        //           ),
-                        //         ),
-                        //         Text(
-                        //           "Ux Designer",
-                        //           style: TextStyle(
-                        //             color: Color(0xff6C848F),
-                        //             fontFamily: 'Inter',
-                        //             fontSize: 14,
-                        //             fontWeight: FontWeight.w400,
-                        //             height: 14.36 / 14,
-                        //           ),
-                        //         )
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-                        SizedBox(
-                          height: 10,
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Container(
+                    height: h * 0.1,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Color(0xffE8ECFF))),
+                    child: TextFormField(
+                      cursorColor: Color(0xff8856F4),
+                      scrollPadding: const EdgeInsets.only(top: 5),
+                      controller: _commentController,
+                      focusNode: focusScopeNode,
+                      textInputAction: TextInputAction.done,
+                      maxLines: 100,
+                      onTap: () {
+                        setState(() {
+                          validatecomment = "";
+                        });
+                      },
+                      onChanged: (v) {
+                        setState(() {
+                          validatecomment = "";
+                        });
+                      },
+                      decoration: InputDecoration(
+                        contentPadding:
+                            const EdgeInsets.only(left: 10, top: 10),
+                        hintText: "Type Comment",
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          letterSpacing: 0,
+                          height: 1.2,
+                          color: Color(0xffAFAFAF),
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w400,
                         ),
-                        Text(
-                          "Write Comment",
+                        filled: true,
+                        fillColor: Color(0xffFCFAFF),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide:
+                              BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7.0),
+                          borderSide:
+                              BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (validatecomment.isNotEmpty) ...[
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: EdgeInsets.only(bottom: 5),
+                      child: ShakeWidget(
+                        key: Key("value"),
+                        duration: Duration(milliseconds: 700),
+                        child: Text(
+                          validatecomment,
                           style: TextStyle(
-                            color: Color(0xff141516),
-                            fontFamily: 'Inter',
-                            fontSize: 16,
+                            fontFamily: "Poppins",
+                            fontSize: 12,
+                            color: Colors.red,
                             fontWeight: FontWeight.w500,
-                            height: 18.36 / 16,
                           ),
                         ),
-                        SizedBox(
-                          height: 6,
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                  DottedBorder(
+                    color: Color(0xffD0CBDB),
+                    strokeWidth: 1,
+                    dashPattern: [2, 2],
+                    borderType: BorderType.RRect,
+                    radius: Radius.circular(8),
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SafeArea(
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(Icons.camera_alt),
+                                        title: Text('Upload File'),
+                                        onTap: () {
+                                          _pickImage(ImageSource.camera);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.photo_library),
+                                        title: Text('Choose from gallery'),
+                                        onTap: () {
+                                          _pickImage(ImageSource.gallery);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            height: 35,
+                            width: w * 0.35,
+                            decoration: BoxDecoration(
+                              color: Color(0xffF8FCFF),
+                              border: Border.all(
+                                color: AppColors.primaryColor,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Upload File',
+                                style: TextStyle(
+                                  color: AppColors.primaryColor,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        Container(
-                          height: h * 0.1,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Color(0xffE8ECFF))),
-                          child: TextFormField(
-                            cursorColor: Color(0xff8856F4),
-                            scrollPadding: const EdgeInsets.only(top: 5),
-                            controller: _commentController,
-                            focusNode: focusScopeNode,
-                            textInputAction: TextInputAction.done,
-                            maxLines: 100,
-                            onTap: () {
-                              setState(() {
-                                validatecomment = "";
-                              });
-                            },
-                            onChanged: (v) {
-                              setState(() {
-                                validatecomment = "";
-                              });
-                            },
-                            decoration: InputDecoration(
-                              contentPadding:
-                                  const EdgeInsets.only(left: 10, top: 10),
-                              hintText: "Type Comment",
-                              hintStyle: TextStyle(
-                                fontSize: 15,
-                                letterSpacing: 0,
-                                height: 1.2,
+                        SizedBox(width: 16),
+                        if (_imageList.isNotEmpty) ...[
+                          Expanded(
+                            child: SingleChildScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 5),
+                                  for (int i = 0; i < _imageList.length; i++)
+                                    Stack(
+                                      children: [
+                                        Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          elevation: 0,
+                                          child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                image: FileImage(
+                                                    File(_imageList[i].path)),
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  _imageList.removeAt(i);
+                                                });
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0xFFE8ECFF),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20))),
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Icon(Icons.clear,
+                                                      size: 15,
+                                                      color:
+                                                          Color(0xff6977C2)))),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          Center(
+                            child: Text(
+                              'No File Chosen',
+                              style: TextStyle(
                                 color: Color(0xffAFAFAF),
+                                fontSize: 14,
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w400,
                               ),
-                              filled: true,
-                              fillColor: Color(0xffFCFAFF),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(7),
-                                borderSide: BorderSide(
-                                    width: 1, color: Color(0xffD0CBDB)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(7.0),
-                                borderSide: BorderSide(
-                                    width: 1, color: Color(0xffD0CBDB)),
-                              ),
                             ),
-                          ),
-                        ),
-                        if (validatecomment.isNotEmpty) ...[
-                          Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.only(bottom: 5),
-                            child: ShakeWidget(
-                              key: Key("value"),
-                              duration: Duration(milliseconds: 700),
-                              child: Text(
-                                validatecomment,
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 12,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ] else ...[
-                          const SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                        DottedBorder(
-                          color: Color(0xffD0CBDB),
-                          strokeWidth: 1,
-                          dashPattern: [2, 2],
-                          borderType: BorderType.RRect,
-                          radius: Radius.circular(8),
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return SafeArea(
-                                        child: Wrap(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: Icon(Icons.camera_alt),
-                                              title: Text('Upload File'),
-                                              onTap: () {
-                                                _pickImage(ImageSource.camera);
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  Icon(Icons.photo_library),
-                                              title:
-                                                  Text('Choose from gallery'),
-                                              onTap: () {
-                                                _pickImage(ImageSource.gallery);
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  height: 35,
-                                  width: w * 0.35,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffF8FCFF),
-                                    border: Border.all(
-                                      color:AppColors.primaryColor,
-                                      width: 1.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Upload File',
-                                      style: TextStyle(
-                                        color:AppColors.primaryColor,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 16),
-                              if (_imageList.isNotEmpty) ...[
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    physics: AlwaysScrollableScrollPhysics(),
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: [
-                                        SizedBox(width: 5),
-                                        for (int i = 0;
-                                            i < _imageList.length;
-                                            i++)
-                                          Stack(
-                                            children: [
-                                              Card(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                elevation: 0,
-                                                child: Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    image: DecorationImage(
-                                                      image: FileImage(File(
-                                                          _imageList[i].path)),
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Positioned(
-                                                top: 0,
-                                                right: 0,
-                                                child: InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _imageList.removeAt(i);
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                        decoration: BoxDecoration(
-                                                            color: Color(
-                                                                0xFFE8ECFF),
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        20))),
-                                                        padding:
-                                                            EdgeInsets.all(2.0),
-                                                        child: Icon(Icons.clear,
-                                                            size: 15,
-                                                            color: Color(
-                                                                0xff6977C2)))),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ] else ...[
-                                Center(
-                                  child: Text(
-                                    'No File Chosen',
-                                    style: TextStyle(
-                                      color: Color(0xffAFAFAF),
-                                      fontSize: 14,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        if (_validatefile.isNotEmpty) ...[
-                          Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.only(bottom: 5),
-                            child: ShakeWidget(
-                              key: Key("value"),
-                              duration: Duration(milliseconds: 700),
-                              child: Text(
-                                _validatefile,
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 12,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ] else ...[
-                          const SizedBox(
-                            height: 15,
                           ),
                         ],
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Expanded(
-                    child: _loading?_buildShimmerList():
-                    data.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                ),
-                                Image.asset(
-                                  'assets/nodata1.png', // Make sure to use the correct image path
-                                  width:
-                                      150, // Adjust the size according to your design
-                                  height: 150,
-                                  fit: BoxFit.contain,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  "No Data Found",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey,
-                                    fontFamily: "Inter",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              final comments = data[index];
-
-                              return Container(
-                                margin: const EdgeInsets.symmetric(vertical: 6),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Display user image and name
-                                    Row(
-                                      children: [
-                                        if (comments.commentByImage != null)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 4.0),
-                                            child: ClipOval(
-                                              child: Image.network(
-                                                comments.commentByImage ?? "",
-                                                width: w * 0.08,
-                                                height: w * 0.08,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-
-                                        SizedBox(
-                                          width: w * 0.01,
-                                        ),
-                                        Text(
-                                          comments.commentBy ?? "",
-                                          style: TextStyle(
-                                            color: Color(0xff000000),
-                                            fontFamily: 'Inter',
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            height: 18.36 / 16,
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        InkWell(
-                                          onTap: () {
-                                            DelateApi(comments.id);
-                                          },
-                                          child: Image.asset(
-                                            "assets/delete_icon.png",
-                                            fit: BoxFit.contain,
-                                            width: w * 0.06,
-                                            height: w * 0.045,
-                                          ),
-                                        ),
-                                        // SizedBox(
-                                        //   width: w * 0.025,
-                                        // ),
-                                        // Image.asset(
-                                        //   "assets/download.png",
-                                        //   fit: BoxFit.contain,
-                                        //   width: w * 0.06,
-                                        //   height: w * 0.05,
-                                        //   color: Color(0xff8856F4),
-                                        // ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      comments.comment ?? "",
-                                      style: TextStyle(
-                                        color: Color(0xff6C848F),
-                                        fontFamily: 'Inter',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        height: 20 / 14,
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-                                    if (comments.commentFiles != null &&
-                                        comments.commentFiles!.isNotEmpty)
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 30,
-                                            width: 30,
-                                            padding: EdgeInsets.all(7),
-                                            decoration: BoxDecoration(
-                                              color: Color(0xffF5E6FE),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Image.asset(
-                                              "assets/gallery.png",
-                                              fit: BoxFit.contain,
-                                              color: Color(0xffBE63F9),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            width: w * 0.45,
-                                            child: Text(
-                                              comments.commentFiles![0]
-                                                      .fileName ??
-                                                  "",
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                                height: 21.78 / 15,
-                                                color: Color(0xff1D1C1D),
-                                                fontWeight: FontWeight.w500,
-                                                fontFamily: 'Inter',
-                                              ),
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          GestureDetector(
-                                            onTap: () {
-                                              focusScopeNode.unfocus();
-                                              _showBottomSheet(
-                                                  context,
-                                                  comments.commentFiles!,
-                                                  comments.createdTime,
-                                                  comments.comment);
-                                            },
-                                            child: Text(
-                                              "Click to view",
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                height: 16.94 / 14,
-                                                color: AppColors.primaryColor,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Inter',
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                decorationColor:
-                                                    Color(0xff8856F4),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                  ],
-                                ),
-                              );
-                            },
+                  if (_validatefile.isNotEmpty) ...[
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: EdgeInsets.only(bottom: 5),
+                      child: ShakeWidget(
+                        key: Key("value"),
+                        duration: Duration(milliseconds: 700),
+                        child: Text(
+                          _validatefile,
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 12,
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
                           ),
-                  ),
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(
+                      height: 15,
+                    ),
+                  ],
                 ],
               ),
             ),
+            SizedBox(
+              height: 8,
+            ),
+            Expanded(
+              child: _loading
+                  ? _buildShimmerList()
+                  : data.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                              ),
+                              Image.asset(
+                                'assets/nodata1.png', // Make sure to use the correct image path
+                                width:
+                                    150, // Adjust the size according to your design
+                                height: 150,
+                                fit: BoxFit.contain,
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                "No Data Found",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            final comments = data[index];
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      if (comments.commentByImage != null)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4.0),
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              comments.commentByImage ?? "",
+                                              width: w * 0.08,
+                                              height: w * 0.08,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+
+                                      SizedBox(
+                                        width: w * 0.01,
+                                      ),
+                                      Text(
+                                        comments.commentBy ?? "",
+                                        style: TextStyle(
+                                          color: Color(0xff000000),
+                                          fontFamily: 'Inter',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          height: 18.36 / 16,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      InkWell(
+                                        onTap: () {
+                                          DelateApi(comments.id);
+                                        },
+                                        child: Image.asset(
+                                          "assets/delete_icon.png",
+                                          fit: BoxFit.contain,
+                                          width: w * 0.06,
+                                          height: w * 0.045,
+                                        ),
+                                      ),
+                                      // SizedBox(
+                                      //   width: w * 0.025,
+                                      // ),
+                                      // Image.asset(
+                                      //   "assets/download.png",
+                                      //   fit: BoxFit.contain,
+                                      //   width: w * 0.06,
+                                      //   height: w * 0.05,
+                                      //   color: Color(0xff8856F4),
+                                      // ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    comments.comment ?? "",
+                                    style: TextStyle(
+                                      color: Color(0xff6C848F),
+                                      fontFamily: 'Inter',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      height: 20 / 14,
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  if (comments.commentFiles != null &&
+                                      comments.commentFiles!.isNotEmpty)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 30,
+                                          width: 30,
+                                          padding: EdgeInsets.all(7),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xffF5E6FE),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Image.asset(
+                                            "assets/gallery.png",
+                                            fit: BoxFit.contain,
+                                            color: Color(0xffBE63F9),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          width: w * 0.45,
+                                          child: Text(
+                                            comments.commentFiles![0]
+                                                    .fileName ??
+                                                "",
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              height: 21.78 / 15,
+                                              color: Color(0xff1D1C1D),
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Inter',
+                                            ),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            focusScopeNode.unfocus();
+                                            _showBottomSheet(
+                                                context,
+                                                comments.commentFiles!,
+                                                comments.createdTime,
+                                                comments.comment);
+                                          },
+                                          child: Text(
+                                            "Click to view",
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              height: 16.94 / 14,
+                                              color: AppColors.primaryColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Inter',
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  Color(0xff8856F4),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
         decoration: BoxDecoration(color: Colors.white),
         child: Row(
           children: [
             InkResponse(
-              onTap: (){
-               setState(() {
-                 _commentController.text="";
-                 _imageFile = null;
-                 filepath = null;
-                 filename = "";
-                 _imageList=[];
-               });
+              onTap: () {
+                setState(() {
+                  _commentController.text = "";
+                  _imageFile = null;
+                  filepath = null;
+                  filename = "";
+                  _imageList = [];
+                });
               },
               child: Container(
                 height: 40,
@@ -702,7 +694,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 decoration: BoxDecoration(
                   color: Color(0xffF8FCFF),
                   border: Border.all(
-                    color:AppColors.primaryColor,
+                    color: AppColors.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -780,29 +772,29 @@ class _ProjectCommentState extends State<ProjectComment> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Shimmer for user image and name
               Row(
                 children: [
-                  shimmerCircle(30,context), // Shimmer for user image
+                  shimmerCircle(30, context), // Shimmer for user image
                   const SizedBox(width: 8),
-                  shimmerText(100, 16,context), // Shimmer for user name
+                  shimmerText(100, 16, context), // Shimmer for user name
                   const Spacer(),
-                  shimmerRectangle(20,context), // Shimmer for delete icon
+                  shimmerRectangle(20, context), // Shimmer for delete icon
                 ],
               ),
               const SizedBox(height: 12),
-              shimmerText(200, 14,context), // Shimmer for comment text
+              shimmerText(200, 14, context), // Shimmer for comment text
               const SizedBox(height: 20),
               if (index % 2 == 0) // Show files for some shimmer items
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    shimmerRectangle(20,context), // Shimmer for file icon
+                    shimmerRectangle(20, context), // Shimmer for file icon
                     const SizedBox(width: 8),
-                    shimmerText(120, 15,context), // Shimmer for file name
+                    shimmerText(120, 15, context), // Shimmer for file name
                     const Spacer(),
-                    shimmerText(80, 14,context), // Shimmer for "Click to view" text
+                    shimmerText(
+                        80, 14, context), // Shimmer for "Click to view" text
                   ],
                 ),
             ],
@@ -811,7 +803,6 @@ class _ProjectCommentState extends State<ProjectComment> {
       },
     );
   }
-
 
   void _showBottomSheet(BuildContext context, List<CommentFiles> files,
       String? createdTime, String? comment) {
@@ -832,7 +823,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title and close button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -867,7 +857,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                     ],
                   ),
                   SizedBox(height: 24),
-
                   // Image List
                   Container(
                     height: h * 0.080,
@@ -972,93 +961,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                           )
                         : Container(), // Show empty container if no image is selected
                   ),
-
-                  // Spacer(),
-                  // Positioned(
-                  //   bottom: 0,
-                  //   child: Row(
-                  //     children: [
-                  //       Container(
-                  //         height: 40,
-                  //         width: w * 0.43,
-                  //         decoration: BoxDecoration(
-                  //           color: Color(0xffF8FCFF),
-                  //           border: Border.all(
-                  //             color: Color(0xff8856F4),
-                  //             width: 1.0,
-                  //           ),
-                  //           borderRadius: BorderRadius.circular(7),
-                  //         ),
-                  //         child: Row(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           children: [
-                  //             Image.asset(
-                  //               "assets/conatainer_close.png",
-                  //               fit: BoxFit.contain,
-                  //               width: w * 0.06,
-                  //               height: w * 0.05,
-                  //               color: Color(0xff8856F4),
-                  //             ),
-                  //             SizedBox(
-                  //               width: 0.02,
-                  //             ),
-                  //             Text(
-                  //               'Close',
-                  //               style: TextStyle(
-                  //                 color: Color(0xff8856F4),
-                  //                 fontSize: 16.0,
-                  //                 fontWeight: FontWeight.w400,
-                  //                 fontFamily: 'Inter',
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //       Spacer(),
-                  //       InkResponse(
-                  //         onTap: () {
-                  //           // _validateFields();
-                  //         },
-                  //         child: Container(
-                  //           height: 40,
-                  //           width: w * 0.43,
-                  //           decoration: BoxDecoration(
-                  //             color: Color(0xff8856F4),
-                  //             border: Border.all(
-                  //               color: Color(0xff8856F4),
-                  //               width: 1.0,
-                  //             ),
-                  //             borderRadius: BorderRadius.circular(7),
-                  //           ),
-                  //           child: Row(
-                  //             mainAxisAlignment: MainAxisAlignment.center,
-                  //             children: [
-                  //               Image.asset(
-                  //                 "assets/container_correct.png",
-                  //                 fit: BoxFit.contain,
-                  //                 width: w * 0.06,
-                  //                 height: w * 0.05,
-                  //               ),
-                  //               SizedBox(
-                  //                 width: 0.01,
-                  //               ),
-                  //               _loading?spinkit.getFadingCircleSpinner():
-                  //               Text(
-                  //                 'Okay',
-                  //                 style: TextStyle(
-                  //                   color: Color(0xffffffff),
-                  //                   fontSize: 16.0,
-                  //                   fontWeight: FontWeight.w400,
-                  //                   fontFamily: 'Inter',
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             );

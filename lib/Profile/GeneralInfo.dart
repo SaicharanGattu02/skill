@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../Model/UserDetailsModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart';
 import '../Providers/ProfileProvider.dart';
+import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class GeneralInfo extends StatefulWidget {
   const GeneralInfo({super.key});
@@ -162,14 +165,16 @@ class _GeneralInfoState extends State<GeneralInfo> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: Color(0xffF3ECFB),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       body: Container(
           padding: EdgeInsets.only(left: 24, right: 24, top: 24),
           margin: EdgeInsets.all(16),
           decoration: BoxDecoration(
-              color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(7)),
+              color:themeProvider.themeData==lightTheme?  Color(0xffffffff) : AppColors.darkmodeContainerColor,
+              borderRadius: BorderRadius.circular(7)),
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Column(
@@ -184,7 +189,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     controller: _firstNameController,
                     focusNode: _focusNodeFirstName,
                     keyboardType: TextInputType.text,
-                    cursorColor: Color(0xff8856F4),
+                    cursorColor:themeProvider.curserColor,
                     onTap: () {
                       setState(() {
                         _validateFirstName = "";
@@ -199,7 +204,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       hintText: "Enter First Name",
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         fontSize: 14,
                         letterSpacing: 0,
                         height: 19.36 / 14,
@@ -207,40 +212,27 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      // prefixIcon:
-                      // Container(
-                      //   width: 18,
-                      //   height: 18,
-                      //   padding: EdgeInsets.only(top: 14, bottom: 14, left: 6),
-                      //   child: Image.asset(
-                      //     "assets/profilep.png",
-                      //     width: 18,
-                      //     height: 18,
-                      //     fit: BoxFit.contain,
-                      //     color: Color(0xffAFAFAF),
-                      //   ),
-                      // ),
                       filled: true,
-                      fillColor: const Color(0xffFCFAFF),
+                      fillColor: themeProvider.themeData==lightTheme?  Color(0xffFCFAFF) :  Color(0xff000000) ,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                     ),
                     style: TextStyle(
@@ -304,39 +296,27 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
-                      // prefixIcon: Container(
-                      //   width: 21,
-                      //   height: 21,
-                      //   padding: EdgeInsets.only(top: 12, bottom: 12, left: 6),
-                      //   child: Image.asset(
-                      //     "assets/profilep.png",
-                      //     width: 21,
-                      //     height: 21,
-                      //     fit: BoxFit.contain,
-                      //     color: Color(0xffAFAFAF),
-                      //   ),
-                      // ),
                       filled: true,
-                      fillColor: const Color(0xffFCFAFF),
+                      fillColor: themeProvider.themeData==lightTheme?  Color(0xffFCFAFF) :  Color(0xff000000) ,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                     ),
                     style: TextStyle(
@@ -524,26 +504,26 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           //   ),
                           // ),
                           filled: true,
-                          fillColor: const Color(0xffFCFAFF),
+                          fillColor: themeProvider.themeData==lightTheme?  Color(0xffFCFAFF) :  Color(0xff000000) ,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: const BorderSide(
-                                width: 1, color: Color(0xffd0cbdb)),
+                                width: 0.5, color: Color(0xffd0cbdb)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: const BorderSide(
-                                width: 1, color: Color(0xffd0cbdb)),
+                                width: 0.5, color: Color(0xffd0cbdb)),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: const BorderSide(
-                                width: 1, color: Color(0xffd0cbdb)),
+                                width: 0.5, color: Color(0xffd0cbdb)),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: const BorderSide(
-                                width: 1, color: Color(0xffd0cbdb)),
+                                width: 0.5, color: Color(0xffd0cbdb)),
                           ),
                         ),
                         style: TextStyle(
@@ -724,26 +704,26 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       //   ),
                       // ),
                       filled: true,
-                      fillColor: const Color(0xffFCFAFF),
+                      fillColor: themeProvider.themeData==lightTheme?  Color(0xffFCFAFF) :  Color(0xff000000) ,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                     ),
                     style: TextStyle(
@@ -823,32 +803,31 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       //   ),
                       // ),
                       filled: true,
-                      fillColor: const Color(0xffFCFAFF),
+                      fillColor: themeProvider.themeData==lightTheme?  Color(0xffFCFAFF) :  Color(0xff000000) ,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7),
                         borderSide: const BorderSide(
-                            width: 1, color: Color(0xffd0cbdb)),
+                            width: 0.5, color: Color(0xffd0cbdb)),
                       ),
                     ),
                     style: TextStyle(
-                      fontSize: 14, // Ensure font size fits within height
-                      overflow:
-                          TextOverflow.ellipsis, // Add ellipsis for long text
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     textAlignVertical:
                         TextAlignVertical.center, // Vertically center the text
@@ -953,9 +932,10 @@ class _GeneralInfoState extends State<GeneralInfo> {
   Widget _label({
     required String text,
   }) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Text(text,
         style: TextStyle(
-            color: Color(0xff141516),
+            color:themeProvider.themeData==lightTheme?  Color(0xff141516) : themeProvider.textColor,
             fontFamily: 'Inter',
             fontSize: 14,
             height: 16.36 / 14,

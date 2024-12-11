@@ -10,9 +10,12 @@ import 'package:skill/Profile/PaySlips.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ProfileProvider.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
+import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class ProfileDashboard extends StatefulWidget {
   const ProfileDashboard({super.key});
@@ -135,8 +138,9 @@ class _ProfileDashboardState extends State<ProfileDashboard>
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: Color(0xffF3ECFB),
+      backgroundColor: themeProvider.scaffoldBackgroundColor, // Use dynamic background color
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(title: 'Edit Profile', actions: [
         Padding(
@@ -159,7 +163,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                       padding: const EdgeInsets.all(8),
                       margin: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                          color: const Color(0xffffffff),
+                          color:themeProvider.themeData==lightTheme?  Color(0xffffffff): AppColors.darkmodeContainerColor,
                           borderRadius: BorderRadius.circular(8)),
                       child: Column(
                         children: [
@@ -233,8 +237,8 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                         Expanded(
                                           child: Text(
                                             userdata?.fullName ?? "",
-                                            style: const TextStyle(
-                                                color: Color(0xff290358),
+                                            style: TextStyle(
+                                                color:themeProvider.themeData==lightTheme?  Color(0xff290358) : themeProvider.textColor,
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16,
                                                 overflow: TextOverflow.ellipsis,
@@ -280,12 +284,9 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                userdata?.employee
-                                                        ?.designation ??
-                                                    "",
+                                                userdata?.employee?.designation ?? "",
                                                 style: TextStyle(
-                                                    color:
-                                                        const Color(0xff6C848F),
+                                                    color:themeProvider.themeData==lightTheme?  Color(0xff6C848F): themeProvider.textColor,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14,
                                                     height: 16.21 / 14,
@@ -321,7 +322,6 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                                           ),
                                                           SizedBox(width: 4),
                                                           Expanded(
-                                                            // Wrap Text with Expanded to avoid overflow
                                                             child: Text(
                                                               userdata?.mobile ??
                                                                   "",
@@ -465,8 +465,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                           FocusScope.of(context).unfocus();
                           _pageController.jumpToPage(index);
                           setState(() {
-                            _selectedTabIndex =
-                                index; // Update selected tab index
+                            _selectedTabIndex = index;
                           });
                         },
                       ),
