@@ -28,16 +28,16 @@ class Data {
   String? id;
   String? name;
   String? description;
-  String? client;
+  String? client; 
   List<Members>? members;
   String? icon;
   String? status;
   String? startDate;
   String? endDate;
   String? totalTimeWorked;
-  String? totalPercent;
-  String? todoPercent;
-  int? inProgressPercent;
+  int? totalPercent;
+  int? todoPercent;
+  String? inProgressPercent;
 
   Data({
     this.id,
@@ -77,7 +77,7 @@ class Data {
     // Safely parsing the percent values
     totalPercent = json['total_percent'];
     todoPercent = json['todo_percent'];
-    inProgressPercent = _parseInt(json['in_progress_percent']);
+    inProgressPercent = json['in_progress_percent'];
   }
 
   Map<String, dynamic> toJson() {

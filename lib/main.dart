@@ -185,12 +185,6 @@ Future<void> main() async {
       child: MyApp(),
     ),
   );
-
-  // Handle notification taps when the app is terminated
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    _handleNotificationTap(jsonEncode(initialMessage.data));
-  }
 }
 
 Future<void> _handleNotificationTap(String? payload) async {

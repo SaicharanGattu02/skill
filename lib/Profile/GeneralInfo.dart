@@ -760,7 +760,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 _label(text: 'Address'),
                 SizedBox(height: 6),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.06,
+                  height: MediaQuery.of(context).size.height * 0.050,
                   child: TextFormField(
                     controller: _addressController,
                     focusNode: _focusNodeAddress,
