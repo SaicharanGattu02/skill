@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/ThemeProvider.dart';
 import '../Model/ProjectLabelModel.dart';
 import '../Providers/ProfileProvider.dart';
 import '../Services/UserApi.dart';
@@ -173,8 +174,9 @@ class _AddToDoState extends State<AddToDo> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       appBar: CustomAppBar(
         title: 'Add To Do',
         actions: [Container()],
@@ -184,7 +186,7 @@ class _AddToDoState extends State<AddToDo> {
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         margin: EdgeInsets.only(left: 16,right: 16,top: 16),
         decoration: BoxDecoration(
-          color: Color(0xffffffff),
+          color: themeProvider.containerbcColor,
           borderRadius: BorderRadius.circular(20)
         ),
         child: Column(
@@ -654,7 +656,7 @@ class _AddToDoState extends State<AddToDo> {
       ),
       bottomNavigationBar:
       Container(
-        color: Colors.white,
+        color: themeProvider.containerColor,
         padding: EdgeInsets.all(16),
         child: Row(
           children: [
@@ -666,7 +668,7 @@ class _AddToDoState extends State<AddToDo> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xffF8FCFF),
+                  color: themeProvider.containerbcColor,
                   border: Border.all(
                     color: AppColors.primaryColor,
                     width: 1.0,

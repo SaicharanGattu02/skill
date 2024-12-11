@@ -5,7 +5,7 @@ enum AppThemeMode { light, dark, system }
 
 class ThemeProvider with ChangeNotifier, WidgetsBindingObserver {
   AppThemeMode _appThemeMode;
-  Brightness _systemBrightness = Brightness.light; // Default system brightness
+  Brightness _systemBrightness = Brightness.light;
 
   ThemeProvider(this._appThemeMode) {
     WidgetsBinding.instance.addObserver(this);
@@ -34,7 +34,87 @@ class ThemeProvider with ChangeNotifier, WidgetsBindingObserver {
       case AppThemeMode.light:
         return Colors.black;
       case AppThemeMode.system:
-        return _systemBrightness == Brightness.dark ? Colors.white : Colors.black;
+        return _systemBrightness == Brightness.dark
+            ? Colors.white
+            : Colors.black;
+    }
+  }
+
+  Color get curserColor{
+    switch(_appThemeMode){
+      case AppThemeMode.dark:
+        return Colors.white;
+      case AppThemeMode.light:
+        return Colors.black;
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Colors.white
+            : Colors.black;
+    }
+  }
+
+  Color get containerbcColor{
+    switch (_appThemeMode){
+      case AppThemeMode.dark:
+        return Color(0xff1F2226);
+      case  AppThemeMode.light:
+        return Colors.white;
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Color(0xff1F2226):Colors.white;
+
+
+    }
+  }
+
+  Color get decorationColor{
+    switch(_appThemeMode){
+      case AppThemeMode.dark:
+        return Colors.white;
+      case AppThemeMode.light:
+        return Colors.black;
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Colors.white
+            : Colors.black;
+    }
+  }
+  Color get fillColor{
+    switch(_appThemeMode){
+      case AppThemeMode.dark:
+        return Colors.white12;
+      case AppThemeMode.light:
+        return Color(0xffFCFAFF);
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Colors.white12
+            : Color(0xffFCFAFF);
+    }
+  }
+  Color get containerBorder{
+    switch(_appThemeMode){
+      case AppThemeMode.dark:
+        return  Colors.white12;
+      case AppThemeMode.light:
+        return Color(0xff8856F4);
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Colors.white12
+            : Color(0xff8856F4);
+    }
+  }
+
+
+  Color get primaryText{
+    switch(_appThemeMode){
+      case AppThemeMode.dark:
+        return  Colors.white12;
+      case AppThemeMode.light:
+        return Color(0xff8856F4);
+      case AppThemeMode.system:
+        return _systemBrightness == Brightness.dark
+            ? Colors.white12
+            : Color(0xff8856F4);
     }
   }
 
@@ -103,4 +183,6 @@ class ThemeProvider with ChangeNotifier, WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
+
 }

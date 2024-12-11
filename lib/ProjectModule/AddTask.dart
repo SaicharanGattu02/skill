@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:skill/Providers/ThemeProvider.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
@@ -459,6 +461,7 @@ class _AddTaskState extends State<AddTask> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     print("Selected IDS :${selectedIds}");
     print("members :${members}");
     var items = members.map((member) {
@@ -473,7 +476,7 @@ class _AddTaskState extends State<AddTask> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
         title: widget.title,
@@ -489,7 +492,7 @@ class _AddTaskState extends State<AddTask> {
                     padding: EdgeInsets.all(16),
                     margin: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-              color: Colors.white,
+              color: themeProvider.containerColor,
               borderRadius: BorderRadius.all(Radius.circular(7))),
                     child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +513,7 @@ class _AddTaskState extends State<AddTask> {
                         child: TextFormField(
                           controller: _titleController,
                           keyboardType: TextInputType.text,
-                          cursorColor: Color(0xff8856F4),
+                          cursorColor: themeProvider.curserColor,
                           onTap:(){
                             closeDropdown();
                             setState(() {
@@ -530,12 +533,12 @@ class _AddTaskState extends State<AddTask> {
                               fontSize: 14,
                               letterSpacing: 0,
                               height: 19.36 / 14,
-                              color: Color(0xffAFAFAF),
+                              color: themeProvider.decorationColor,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                             ),
                             filled: true,
-                            fillColor: const Color(0xffFCFAFF),
+                            fillColor:themeProvider.fillColor,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
                               borderSide:
