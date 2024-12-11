@@ -51,12 +51,6 @@ class _TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-
-
-
-
-
-
     GetProjectTasks();
     // Initialize filteredData with all data
     filteredData = List.from(data);
@@ -207,9 +201,7 @@ class _TaskListState extends State<TaskList> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       key: _scaffoldKey,
-      backgroundColor: const Color(0xffF3ECFB),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),

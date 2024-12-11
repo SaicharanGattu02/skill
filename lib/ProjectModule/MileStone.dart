@@ -4,8 +4,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../Model/MileStoneModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
@@ -120,8 +122,9 @@ class _MileStoneState extends State<MileStone> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),

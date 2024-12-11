@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/MileStone.dart';
 import 'package:skill/ProjectModule/ProjectComment.dart';
 import 'package:skill/ProjectModule/ProjectFile.dart';
@@ -11,6 +12,7 @@ import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/ProjectModule/TaskKanBan.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'dart:developer' as developer;
+import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
@@ -110,13 +112,13 @@ class _MyTabBarState extends State<MyTabBar>
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return (isDeviceConnected == "ConnectivityResult.wifi" ||
             isDeviceConnected == "ConnectivityResult.mobile")
         ? Scaffold(
             key: _scaffoldKey,
-            backgroundColor: const Color(0xffF3ECFB),
+            backgroundColor: themeProvider.scaffoldBackgroundColor,
             appBar: AppBar(
-              backgroundColor: AppColors.primaryColor,
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(context);
