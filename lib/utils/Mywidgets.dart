@@ -92,6 +92,7 @@ Widget shimmerRectangle(double size,BuildContext context) {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
       ),
     ),
   );

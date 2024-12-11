@@ -981,6 +981,7 @@ class _ProjectFileState extends State<ProjectFile> {
   }
 
   Widget _buildShimmerList() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       itemCount: 10, // Adjust this number based on how many shimmer items you want
       shrinkWrap: true,
@@ -990,7 +991,7 @@ class _ProjectFileState extends State<ProjectFile> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(7),
           ),
           child: Column(

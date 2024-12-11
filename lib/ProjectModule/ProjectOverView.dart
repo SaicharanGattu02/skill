@@ -134,7 +134,6 @@ class _OverViewState extends State<OverView> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
-        backgroundColor: const Color(0xffF3ECFB),
         body: _loading
             ? _buildShimmerGrid(w)
             : NestedScrollView(
@@ -190,6 +189,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildShimmerGrid(double width) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -208,7 +208,7 @@ class _OverViewState extends State<OverView> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? Colors.black : Colors.white,
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(18),
                   topLeft: Radius.circular(18),
@@ -239,7 +239,7 @@ class _OverViewState extends State<OverView> {
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: const Color(0xffF7F4FC),
+                                color: isDarkMode ? Colors.black :  Color(0xffF7F4FC),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Row(
@@ -276,11 +276,12 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildShimmerCard() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: MediaQuery.of(context).size.width * 0.45,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.black : Colors.white,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(

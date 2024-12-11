@@ -763,8 +763,9 @@ class _ProjectCommentState extends State<ProjectComment> {
   }
 
   Widget _buildShimmerList() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
-      itemCount: 5, // Number of shimmer items
+      itemCount: 5,
       shrinkWrap: true,
       physics: const AlwaysScrollableScrollPhysics(),
       itemBuilder: (context, index) {
@@ -772,7 +773,7 @@ class _ProjectCommentState extends State<ProjectComment> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(7),
           ),
           child: Column(

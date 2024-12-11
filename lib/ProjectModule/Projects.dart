@@ -181,6 +181,7 @@ final spinkit=Spinkits();
 
 
   Widget _buildShimmerGrid(double width) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return GridView.builder(
       itemCount: 4, // Number of shimmer placeholders
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -193,7 +194,7 @@ final spinkit=Spinkits();
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(

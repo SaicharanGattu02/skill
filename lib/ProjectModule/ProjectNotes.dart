@@ -446,6 +446,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
   }
 
   Widget _buildShimmerList() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       itemCount: 10, // Adjust the number of shimmer items as needed
       shrinkWrap: true,
@@ -455,7 +456,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(7),
           ),
           child: Column(

@@ -857,6 +857,7 @@ class _TimeSheetState extends State<TimeSheet> {
     );
   }
   Widget _buildShimmerList() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       itemCount: 5, // Set the number of shimmer items you want to show
       shrinkWrap: true,
@@ -866,7 +867,7 @@ class _TimeSheetState extends State<TimeSheet> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(7),
           ),
           child: Column(
