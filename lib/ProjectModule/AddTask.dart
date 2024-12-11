@@ -533,7 +533,7 @@ class _AddTaskState extends State<AddTask> {
                               fontSize: 14,
                               letterSpacing: 0,
                               height: 19.36 / 14,
-                              color: themeProvider.decorationColor,
+                              color: themeProvider.fillColor,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                             ),
@@ -1611,7 +1611,7 @@ class _AddTaskState extends State<AddTask> {
           ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: themeProvider.containerbcColor),
         child: Row(
           children: [
             InkResponse(
@@ -1622,7 +1622,7 @@ class _AddTaskState extends State<AddTask> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xffF8FCFF),
+                  color: themeProvider.containerbcColor,
                   border: Border.all(
                     color: Color(0xff8856F4),
                     width: 1.0,
@@ -1740,12 +1740,16 @@ class _AddTaskState extends State<AddTask> {
   }
 
   static Widget _label({required String text}) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: Color(0xff141516),
-        fontSize: 14,
-      ),
+    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+      return Text(
+        text,
+        style: TextStyle(
+          color: themeProvider.textColor,
+          fontSize: 14,
+        ),
+      );
+    },
+
     );
   }
 
