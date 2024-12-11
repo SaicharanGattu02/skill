@@ -21,7 +21,10 @@ import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/ShakeWidget.dart'; // For date formatting
-import 'package:path/path.dart' as p; // Import the path package
+import 'package:path/path.dart' as p;
+
+import '../utils/app_colors.dart';
+import '../utils/constants.dart'; // Import the path package
 
 class AddTask extends StatefulWidget {
   final String projectId;
@@ -846,15 +849,17 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
+                                                  width: 0.5,
+                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
+                                                  width: 0.5,
+                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                  ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
@@ -1011,15 +1016,17 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
+                                                  width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
+                                                  width: 0.5,
+                                                                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+    ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
@@ -1228,16 +1235,18 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xff000000),
+                                                width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xff000000),
+                                                width: 0.5,
+                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+
                                               ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
@@ -1404,15 +1413,17 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
-                                            ),
+                                                width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
+                                              ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Color(0xff000000)),
+                                                width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
@@ -1509,7 +1520,9 @@ class _AddTaskState extends State<AddTask> {
                                     horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(7.0),
-                                    border: Border.all(color: Colors.white),
+                                    border: Border.all(
+                                      color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                    ),
                                     color: themeProvider.containerColor),
                                 child: Row(
                                   mainAxisAlignment:
@@ -1560,15 +1573,17 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Colors.white),
+                                                width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Color(0xff000000)),
+                                                width: 0.5,
+                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                              ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),

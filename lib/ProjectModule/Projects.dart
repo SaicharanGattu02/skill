@@ -20,7 +20,6 @@ class ProjectsScreen extends StatefulWidget {
 }
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
-
   List<Data> projectsData = [];
   List<Data> filteredRooms = [];
   bool isLoading = true;
@@ -67,7 +66,6 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     }
   }
 
-
   bool isSelected = false;
 
   Future<void> GetProjectsData() async {
@@ -78,7 +76,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         if (Res.settings?.success == 1) {
           isLoading = false;
           projectsData = Res.data ?? [];
-          filteredRooms = projectsData; // Initialize filteredRooms with all projects
+          filteredRooms =
+              projectsData; // Initialize filteredRooms with all projects
         } else {
           isLoading = false;
         }
@@ -88,13 +87,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     });
   }
 
-final spinkit=Spinkits();
-
+  final spinkit = Spinkits();
 
   Future<bool> willPop() async {
-    Navigator.pop(context,true);
+    Navigator.pop(context, true);
     return false;
-
   }
 
   @override
@@ -118,22 +115,25 @@ final spinkit=Spinkits();
                 width: w,
                 // height: h * 0.043,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
-                    color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+                    color: themeProvider.themeData == lightTheme
+                        ? Color(0xffffffff)
+                        : AppColors.darkmodeContainerColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child:
-                  Row(
+                  child: Row(
                     children: [
                       Image.asset(
                         "assets/search.png",
                         width: 20,
                         height: 17,
-                        color:themeProvider.textColor,
+                        color: themeProvider.textColor,
                         fit: BoxFit.contain,
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Expanded(
                         child: TextField(
                           controller: _searchController,
@@ -150,7 +150,7 @@ final spinkit=Spinkits();
                             ),
                           ),
                           style: TextStyle(
-                            color:themeProvider.textColor,
+                            color: themeProvider.textColor,
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
                             decorationColor: Color(0xff9E7BCA),
@@ -166,10 +166,11 @@ final spinkit=Spinkits();
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: _loading?_buildShimmerGrid(w):
-                filteredRooms.isEmpty
-                    ? _buildEmptyPlaceholder()
-                    : _buildProjectGrid(),
+                child: _loading
+                    ? _buildShimmerGrid(w)
+                    : filteredRooms.isEmpty
+                        ? _buildEmptyPlaceholder()
+                        : _buildProjectGrid(),
               ),
             ],
           ),
@@ -177,8 +178,6 @@ final spinkit=Spinkits();
       ),
     );
   }
-
-
 
   Widget _buildShimmerGrid(double width) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -200,25 +199,27 @@ final spinkit=Spinkits();
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              shimmerCircle(48,context), // Shimmer for the circular image
+              shimmerCircle(48, context), // Shimmer for the circular image
               const SizedBox(height: 8),
-              shimmerText(100, 16,context), // Shimmer for title text
+              shimmerText(100, 16, context), // Shimmer for title text
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  shimmerText(50, 12,context), // Shimmer for progress label
-                  shimmerText(30, 12,context), // Shimmer for percentage text
+                  shimmerText(50, 12, context), // Shimmer for progress label
+                  shimmerText(30, 12, context), // Shimmer for percentage text
                 ],
               ),
               const SizedBox(height: 4),
-              shimmerLinearProgress(7,context), // Shimmer for progress indicator
+              shimmerLinearProgress(
+                  7, context), // Shimmer for progress indicator
             ],
           ),
         );
       },
     );
   }
+
   Widget _buildProjectGrid() {
     final themeProvider = Provider.of<ThemeProvider>(context);
     // Check if filteredRooms is empty to determine if we need to show a message
@@ -234,10 +235,6 @@ final spinkit=Spinkits();
         ),
       );
     }
-
-
-
-
 
     return GridView.builder(
       itemCount: filteredRooms.length, // Use filteredRooms here
@@ -266,7 +263,9 @@ final spinkit=Spinkits();
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+              color: themeProvider.themeData == lightTheme
+                  ? Color(0xffffffff)
+                  : AppColors.darkmodeContainerColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -284,7 +283,9 @@ final spinkit=Spinkits();
                 Text(
                   data.name ?? "",
                   style: TextStyle(
-                    color: themeProvider.themeData==lightTheme? Color(0xff4F3A84) : themeProvider.textColor,
+                    color: themeProvider.themeData == lightTheme
+                        ? Color(0xff4F3A84)
+                        : themeProvider.textColor,
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     height: 19.36 / 16,
@@ -296,10 +297,10 @@ final spinkit=Spinkits();
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                     Text(
+                    Text(
                       "Progress",
                       style: TextStyle(
-                        color:themeProvider.textColor,
+                        color: themeProvider.textColor,
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
                         fontFamily: "Inter",
@@ -308,7 +309,7 @@ final spinkit=Spinkits();
                     Text(
                       "${data.totalPercent ?? ""}%",
                       style: TextStyle(
-                        color:themeProvider.textColor,
+                        color: themeProvider.textColor,
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
                         fontFamily: "Inter",
@@ -337,7 +338,8 @@ final spinkit=Spinkits();
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/nodata2.png',
+          Image.asset(
+            'assets/nodata2.png',
             height: 150,
             width: 150,
           ), // Add your placeholder image
@@ -355,4 +357,3 @@ final spinkit=Spinkits();
     );
   }
 }
-
