@@ -30,9 +30,9 @@ class AddTask extends StatefulWidget {
 
   AddTask(
       {Key? key,
-        required this.projectId,
-        required this.taskid,
-        required this.title})
+      required this.projectId,
+      required this.taskid,
+      required this.title})
       : super(key: key); // Constructor
 
   @override
@@ -51,10 +51,13 @@ class _AddTaskState extends State<AddTask> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
 
-  final TextEditingController _milestoneSearchController = TextEditingController();
-  final TextEditingController _assignedSearchController = TextEditingController();
+  final TextEditingController _milestoneSearchController =
+      TextEditingController();
+  final TextEditingController _assignedSearchController =
+      TextEditingController();
   final TextEditingController _statusSearchController = TextEditingController();
-  final TextEditingController _prioritySearchController = TextEditingController();
+  final TextEditingController _prioritySearchController =
+      TextEditingController();
 
   final controller = MultiSelectController<User>();
 
@@ -88,9 +91,6 @@ class _AddTaskState extends State<AddTask> {
   String? selectedPriorityID;
 
   bool isCollaboraterDropdownOpen = false;
-
-
-
 
   @override
   void initState() {
@@ -188,7 +188,8 @@ class _AddTaskState extends State<AddTask> {
     setState(() {
       if (res['success']) {
         milestones = res['response'].data ?? []; // Adjust based on your model
-        filteredMilestones = res['response'].data ?? []; // Adjust based on your model
+        filteredMilestones =
+            res['response'].data ?? []; // Adjust based on your model
       } else {
         CustomSnackBar.show(
             context,
@@ -197,7 +198,6 @@ class _AddTaskState extends State<AddTask> {
       }
     });
   }
-
 
   Future<void> GetProjectTaskDetails() async {
     try {
@@ -213,29 +213,29 @@ class _AddTaskState extends State<AddTask> {
             selectedPriorityID = res?.taskDetail?.priority ?? "";
 
             final milestone = milestones.firstWhere(
-                  (m) => m.id == selectedMilestoneID,
+              (m) => m.id == selectedMilestoneID,
               orElse: () => milestones[0],
             );
-            selectedMilestoneValue=milestone.title;
+            selectedMilestoneValue = milestone.title;
 
             final assigned = members.firstWhere(
-                  (m) => m.id == selectedAssignedID,
+              (m) => m.id == selectedAssignedID,
               orElse: () => members[0],
             );
-            selectedAssignedValue=assigned.fullName;
+            selectedAssignedValue = assigned.fullName;
 
             final status = statuses.firstWhere(
-                  (m) => m.statusKey == selectedStatusID,
+              (m) => m.statusKey == selectedStatusID,
               orElse: () => statuses[0],
             );
 
-            selectedStatusValue=status.statusValue;
+            selectedStatusValue = status.statusValue;
 
             final priority = priorities.firstWhere(
-                  (m) => m.priorityKey == selectedPriorityID,
+              (m) => m.priorityKey == selectedPriorityID,
               orElse: () => priorities[0],
             );
-            selectedPriorityValue=priority.priorityValue;
+            selectedPriorityValue = priority.priorityValue;
             _startDateController.text = res?.taskDetail?.startDate ?? "";
             _deadlineController.text = res?.taskDetail?.endDate ?? "";
 
@@ -272,14 +272,14 @@ class _AddTaskState extends State<AddTask> {
   void _validateFields() {
     setState(() {
       _validateTitle =
-       _titleController.text.isEmpty ? "Please enter a title" : "";
+          _titleController.text.isEmpty ? "Please enter a title" : "";
       // _validateDescription = _descriptionController.text.isEmpty
       //     ? "Please enter a description"
       //     : "";
       _validateMileStone =
-      selectedMilestoneValue ==null ? "Please enter a milestone" : "";
+          selectedMilestoneValue == null ? "Please enter a milestone" : "";
       _validateAssignedTo =
-      selectedAssignedValue==null ? "Please assign to someone" : "";
+          selectedAssignedValue == null ? "Please assign to someone" : "";
       // _validateCollaborators =
       // selectedIds.isEmpty ? "Please add collaborators" : "";
       // _validateStatus =
@@ -287,9 +287,9 @@ class _AddTaskState extends State<AddTask> {
       // _validatePriority =
       // selectedPriorityValue==null ? "Please set a priority" : "";
       _validateStartDate =
-      _startDateController.text.isEmpty ? "Please enter a start date" : "";
+          _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
-      _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
+          _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
       // _validatefile = _imageFile==null ? "Please choose file." : "";
 
       _isLoading = _validateTitle.isEmpty &&
@@ -328,10 +328,10 @@ class _AddTaskState extends State<AddTask> {
           widget.projectId,
           _titleController.text,
           _descriptionController.text,
-          selectedMilestoneID??"",
-          selectedAssignedID??"",
-          selectedStatusID??"",
-          selectedPriorityID??"",
+          selectedMilestoneID ?? "",
+          selectedAssignedID ?? "",
+          selectedStatusID ?? "",
+          selectedPriorityID ?? "",
           _startDateController.text,
           _deadlineController.text,
           selectedIds,
@@ -389,7 +389,6 @@ class _AddTaskState extends State<AddTask> {
     }
   }
 
-
   void filterMilestones(String query) {
     setState(() {
       filteredMilestones = milestones.where((provider) {
@@ -435,7 +434,6 @@ class _AddTaskState extends State<AddTask> {
     });
   }
 
-
   void closeDropdown() {
     setState(() {
       isPriorityDropdownOpen = false;
@@ -445,7 +443,7 @@ class _AddTaskState extends State<AddTask> {
     });
   }
 
-  void toggleSelection(String id,String name) {
+  void toggleSelection(String id, String name) {
     setState(() {
       if (selectedIds.contains(id)) {
         selectedIds.remove(id);
@@ -484,1131 +482,1240 @@ class _AddTaskState extends State<AddTask> {
       ),
       body: _loading
           ? Center(
-          child:
-          spinkits.getFadingCircleSpinner(color: Color(0xff8856F4)))
+              child: spinkits.getFadingCircleSpinner(color: Color(0xff8856F4)))
           : GestureDetector(
-          onTap: closeDropdown,
-            child: Container(
-                    padding: EdgeInsets.all(16),
-                    margin: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-              color: themeProvider.containerColor,
-              borderRadius: BorderRadius.all(Radius.circular(7))),
-                    child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _label(text: 'Title'),
-                      SizedBox(height: 6),
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.050,
-                        child: TextFormField(
-                          controller: _titleController,
-                          keyboardType: TextInputType.text,
-                          cursorColor: themeProvider.curserColor,
-                          onTap:(){
-                            closeDropdown();
-                            setState(() {
-                              _validateTitle="";
-                            });
-                          },
-                          onChanged: (v){
-                            setState(() {
-                              _validateTitle="";
-                            });
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            hintText: "Title",
-                            hintStyle: TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 14,
-                              letterSpacing: 0,
-                              height: 19.36 / 14,
-                              color: themeProvider.fillColor,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
-                            filled: true,
-                            fillColor:themeProvider.fillColor,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide:
-                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide:
-                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide:
-                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide:
-                              const BorderSide(width: 1, color: Color(0xffd0cbdb)),
-                            ),
-                          ),
-                          textAlignVertical: TextAlignVertical.center,
-                        ),
-                      ),
-                      if (_validateTitle.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(left: 8, bottom: 10, top: 5),
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateTitle,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        SizedBox(height: 15),
-                      ],
-                      DottedBorder(
-                        color: Color(0xffD0CBDB),
-                        strokeWidth: 1,
-                        dashPattern: [2, 2],
-                        borderType: BorderType.RRect,
-                        radius: Radius.circular(8),
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
+              onTap: closeDropdown,
+              child: Container(
+                padding: EdgeInsets.all(16),
+                margin: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: themeProvider.containerColor,
+                    borderRadius: BorderRadius.all(Radius.circular(7))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                closeDropdown();
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return SafeArea(
-                                      child: Wrap(
-                                        children: <Widget>[
-                                          ListTile(
-                                            leading:
-                                            Icon(Icons.camera_alt),
-                                            title: Text('Take a photo'),
-                                            onTap: () {
-                                              _pickImage(
-                                                  ImageSource.camera);
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          ListTile(
-                                            leading:
-                                            Icon(Icons.photo_library),
-                                            title: Text(
-                                                'Choose from gallery'),
-                                            onTap: () {
-                                              _pickImage(
-                                                  ImageSource.gallery);
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                height: 35,
-                                width: w * 0.35,
-                                decoration: BoxDecoration(
-                                  color: Color(0xffF8FCFF),
-                                  border: Border.all(
-                                    color: Color(0xff8856F4),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius:
-                                  BorderRadius.circular(8.0),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Choose File',
-                                    style: TextStyle(
-                                      color: Color(0xff8856F4),
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            SizedBox(
+                              height: 10,
                             ),
-                            SizedBox(width: 16),
-                            Center(
-                              child: Text(
-                                (filename != "")
-                                    ? filename
-                                    : 'No File Chosen',
-                                style: TextStyle(
-                                  color: Color(0xff3C3C3C),
-                                  fontSize: 14,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (_validatefile.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validatefile,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Description'),
-                      SizedBox(height: 4),
-                      Container(
-                        height: h * 0.13,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Color(0xffE8ECFF))),
-                        child: TextFormField(
-                          cursorColor: Color(0xff8856F4),
-                          scrollPadding: EdgeInsets.only(top: 5),
-                          controller: _descriptionController,
-                          textInputAction: TextInputAction.done,
-                          maxLines: 100,
-                          onTap:(){
-                            closeDropdown();
-                            setState(() {
-                              _validateDescription="";
-                            });
-                          },
-                          onChanged: (v){
-                            setState(() {
-                              _validateDescription="";
-                            });
-                          },
-                          decoration: InputDecoration(
-                            contentPadding:
-                            const EdgeInsets.only(left: 10, top: 10),
-                            hintText: "Description",
-                            hintStyle: TextStyle(
-                              fontSize: 15,
-                              letterSpacing: 0,
-                              height: 1.2,
-                              color: Color(0xffAFAFAF),
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w400,
-                            ),
-                            filled: true,
-                            fillColor: Color(0xffFCFAFF),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffD0CBDB)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(7.0),
-                              borderSide: BorderSide(
-                                  width: 1, color: Color(0xffD0CBDB)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (_validateDescription.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateDescription,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Milestone'),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isMilestoneDropdownOpen =
-                            !isMilestoneDropdownOpen;
-                            filteredMilestones = [];
-                            filteredMilestones = milestones;
-
-                            isAssignedtoDropdownOpen=false;
-                            isStatusDropdownOpen=false;
-                            isPriorityDropdownOpen=false;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.0),
-                              border:
-                              Border.all(color: Color(0xffD0CBDB)),
-                              color: Color(0xffFCFAFF)),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(selectedMilestoneValue ??
-                                  "Select milestone"),
-                              Icon(isMilestoneDropdownOpen
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (isMilestoneDropdownOpen) ...[
-                        SizedBox(height: 5),
-                        Card(
-                          elevation:
-                          4, // Optional elevation for shadow effect
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // Optional rounded corners
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Padding inside the card
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align items to the start
-                              children: [
-                                Container(
-                                  height: 40,
-                                  child: TextFormField(
-                                    controller: _milestoneSearchController,
-                                    onChanged: (query) =>
-                                        filterMilestones(query),
-                                    decoration: InputDecoration(
-                                      hintText: "Search milestone",
-                                      hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Inter"),
-                                      filled: true,
-                                      fillColor: Color(0xffffffff),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      contentPadding: EdgeInsets.all(8.0),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                    height:
-                                    10), // Space between TextField and ListView
-                                Container(
-                                    height:
-                                    180, // Set a fixed height for the dropdown list
-                                    child:filteredMilestones.length>0?
-                                    ListView.builder(
-                                      itemCount: filteredMilestones.length,
-                                      itemBuilder: (context, index) {
-                                        var data = filteredMilestones[index];
-                                        return ListTile(
-                                          minTileHeight: 30,
-                                          title: Text(
-                                            data.title ?? "",
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontSize: 15,
-                                                fontWeight:
-                                                FontWeight.w400),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              isMilestoneDropdownOpen =
-                                              false;
-                                              selectedMilestoneValue =
-                                                  data.title;
-                                              selectedMilestoneID = data.id;
-                                              _validateMileStone="";
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ):Center(child: Text("No Data found!"))
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_validateMileStone.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateMileStone,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Assign to'),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isAssignedtoDropdownOpen =
-                            !isAssignedtoDropdownOpen;
-                            filteredmembers = [];
-                            filteredmembers = members;
-
-
-                            isMilestoneDropdownOpen=false;
-                            isPriorityDropdownOpen=false;
-                            isStatusDropdownOpen=false;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.0),
-                              border:
-                              Border.all(color: Color(0xffD0CBDB)),
-                              color: Color(0xffFCFAFF)),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(selectedAssignedValue ??
-                                  "Select assigned to"),
-                              Icon(isAssignedtoDropdownOpen
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (isAssignedtoDropdownOpen) ...[
-                        SizedBox(height: 5),
-                        Card(
-                          elevation:
-                          4, // Optional elevation for shadow effect
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // Optional rounded corners
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Padding inside the card
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align items to the start
-                              children: [
-                                Container(
-                                  height: 40,
-                                  child: TextField(
-                                    controller: _assignedSearchController,
-                                    onChanged: (query) =>
-                                        filterMembers(query),
-                                    decoration: InputDecoration(
-                                      hintText: "Search member",
-                                      hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Inter"),
-                                      filled: true,
-                                      fillColor: Color(0xffffffff),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      contentPadding: EdgeInsets.all(8.0),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                    height:
-                                    10), // Space between TextField and ListView
-                                Container(
-                                    height:
-                                    180, // Set a fixed height for the dropdown list
-                                    child:filteredmembers.length>0?
-                                    ListView.builder(
-                                      itemCount: filteredmembers.length,
-                                      itemBuilder: (context, index) {
-                                        var data = filteredmembers[index];
-                                        return ListTile(
-                                          minTileHeight: 30,
-                                          title: Text(
-                                            data.fullName?? "",
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontSize: 15,
-                                                fontWeight:
-                                                FontWeight.w400),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              isAssignedtoDropdownOpen =
-                                              false;
-                                              selectedAssignedValue =
-                                                  data.fullName;
-                                              selectedAssignedID = data.id;
-                                              _validateAssignedTo="";
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ):Center(child: Text("No Data found!"))
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_validateAssignedTo.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateAssignedTo,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Collaborators'),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isCollaboraterDropdownOpen = !isCollaboraterDropdownOpen;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(7.0),
-                            border: Border.all(color: Color(0xffD0CBDB)),
-                            color: Color(0xffFCFAFF),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GestureDetector(
+                            _label(text: 'Title'),
+                            SizedBox(height: 6),
+                            Container(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.050,
+                              child: TextFormField(
+                                controller: _titleController,
+                                keyboardType: TextInputType.text,
+                                cursorColor: themeProvider.curserColor,
                                 onTap: () {
+                                  closeDropdown();
                                   setState(() {
-                                    isCollaboraterDropdownOpen = !isCollaboraterDropdownOpen;
+                                    _validateTitle = "";
                                   });
                                 },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start, // Center content horizontally
-                                  children: [
-                                    Expanded(
-                                      child: selectedNames.isNotEmpty
-                                          ? Wrap(
-                                        alignment: WrapAlignment.start, // Center align chips
-                                        spacing: 4.0, // Space between chips
-                                        children: selectedNames.map((name) {
-                                          return Chip(
-                                            padding: EdgeInsets.all(2),
-                                            label: Text(name,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              fontFamily: "Inter"
-                                            ),),
-                                            deleteIcon: Icon(Icons.clear, size: 18),
-                                            onDeleted: () {
-                                              setState(() {
-                                                isCollaboraterDropdownOpen=false;
-                                                int index = selectedNames.indexOf(name);
-                                                selectedIds.removeAt(index);
-                                                selectedNames.removeAt(index);
-                                              });
-                                            },
-                                          );
-                                        }).toList(),
-                                      )
-                                          : Text(
-                                            "Select collaborator",
-                                            style: TextStyle(color: Colors.black),
-                                          ),
-                                    ),
-                                    Icon(
-                                      isCollaboraterDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                                    ),
-                                  ],
+                                onChanged: (v) {
+                                  setState(() {
+                                    _validateTitle = "";
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  hintText: "Title",
+                                  hintStyle: TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 14,
+                                    letterSpacing: 0,
+                                    height: 19.36 / 14,
+                                    color: themeProvider.decorationColor,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: true,
+                                  fillColor: themeProvider.containerColor,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: const BorderSide(
+                                        width: 1, color: Color(0xffd0cbdb)),
+                                  ),
                                 ),
+                                textAlignVertical: TextAlignVertical.center,
                               ),
-
-                            ],
-                          ),
-                        )
-                      ),
-                      if (isCollaboraterDropdownOpen) ...[
-                        SizedBox(height: 5),
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 40,
-                                  child: TextField(
-                                    onChanged: (query) {
-                                      FilterCollaboraters(query);
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: "Search member",
-                                      filled: true,
-                                      fillColor: Color(0xffffffff),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                          width: 1,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                          width: 1,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                      contentPadding: EdgeInsets.all(8.0),
+                            ),
+                            if (_validateTitle.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(
+                                    left: 8, bottom: 10, top: 5),
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateTitle,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 10),
-                                Container(
-                                  height: 180,
-                                  child: filteredCollaboraters.length>0
-                                      ? ListView.builder(
-                                    itemCount: filteredCollaboraters.length,
-                                    itemBuilder: (context, index) {
-                                      var data = filteredCollaboraters[index];
-                                      bool isSelected = selectedIds.contains(data.id);
-                                      return ListTile(
-                                        minVerticalPadding: 0,
-                                        title: Text(
-                                          data.fullName ?? "",
-                                          style: TextStyle(
-                                            fontFamily: "Inter",
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        trailing: Checkbox(
-                                          value: isSelected,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              isCollaboraterDropdownOpen=false;
-                                              _validateCollaborators="";
-                                            });
-                                            toggleSelection(data.id!, data.fullName!);
-                                          },
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            isCollaboraterDropdownOpen=false;
-                                            _validateCollaborators="";
-                                          });
-                                          toggleSelection(data.id!, data.fullName!);
+                              ),
+                            ] else ...[
+                              SizedBox(height: 15),
+                            ],
+                            DottedBorder(
+                              color: Color(0xffD0CBDB),
+                              strokeWidth: 1,
+                              dashPattern: [2, 2],
+                              borderType: BorderType.RRect,
+                              radius: Radius.circular(8),
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      closeDropdown();
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return SafeArea(
+                                            child: Wrap(
+                                              children: <Widget>[
+                                                ListTile(
+                                                  leading:
+                                                      Icon(Icons.camera_alt),
+                                                  title: Text('Take a photo'),
+                                                  onTap: () {
+                                                    _pickImage(
+                                                        ImageSource.camera);
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  leading:
+                                                      Icon(Icons.photo_library),
+                                                  title: Text(
+                                                      'Choose from gallery'),
+                                                  onTap: () {
+                                                    _pickImage(
+                                                        ImageSource.gallery);
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
                                         },
                                       );
                                     },
-                                  )
-                                      : Center(child: Text("No Data found!")),
-                                ),
-                                SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_validateCollaborators.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateCollaborators,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
+                                    child: Container(
+                                      height: 35,
+                                      width: w * 0.35,
+                                      decoration: BoxDecoration(
+                                        color: themeProvider.containerColor,
+                                        border: Border.all(
+                                          color: Color(0xff8856F4),
+                                          width: 1.0,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Choose File',
+                                          style: TextStyle(
+                                            color: Color(0xff8856F4),
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Center(
+                                    child: Text(
+                                      (filename != "")
+                                          ? filename
+                                          : 'No File Chosen',
+                                      style: TextStyle(
+                                        color: themeProvider.textColor,
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Status'),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isStatusDropdownOpen =
-                            !isStatusDropdownOpen;
-                            filteredstatuses = [];
-                            filteredstatuses = statuses;
-
-                            isMilestoneDropdownOpen=false;
-                            isAssignedtoDropdownOpen=false;
-                            isPriorityDropdownOpen=false;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.0),
-                              border:
-                              Border.all(color: Color(0xffD0CBDB)),
-                              color: Color(0xffFCFAFF)),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(selectedStatusValue ??
-                                  "Select status"),
-                              Icon(isStatusDropdownOpen
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (isStatusDropdownOpen) ...[
-                        SizedBox(height: 5),
-                        Card(
-                          elevation:
-                          4, // Optional elevation for shadow effect
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // Optional rounded corners
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Padding inside the card
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align items to the start
-                              children: [
-                                Container(
-                                  height: 40,
-                                  child: TextField(
-                                    controller: _statusSearchController,
-                                    onChanged: (query) =>
-                                        filterStatuses(query),
-                                    decoration: InputDecoration(
-                                      hintText: "Search status",
-                                      hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Inter"),
-                                      filled: true,
-                                      fillColor: Color(0xffffffff),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      contentPadding: EdgeInsets.all(8.0),
+                            if (_validatefile.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validatefile,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                    height:
-                                    10), // Space between TextField and ListView
-                                Container(
-                                    height:
-                                    180, // Set a fixed height for the dropdown list
-                                    child:filteredstatuses.length>0?
-                                    ListView.builder(
-                                      itemCount: filteredstatuses.length,
-                                      itemBuilder: (context, index) {
-                                        var data = filteredstatuses[index];
-                                        return ListTile(
-                                          minTileHeight: 30,
-                                          title: Text(
-                                            data.statusValue?? "",
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontSize: 15,
-                                                fontWeight:
-                                                FontWeight.w400),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              isStatusDropdownOpen =
-                                              false;
-                                              selectedStatusValue =
-                                                  data.statusValue;
-                                              selectedStatusID = data.statusKey;
-                                              _validateStatus="";
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ):Center(child: Text("No Data found!"))
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Description'),
+                            SizedBox(height: 4),
+                            Container(
+                              height: h * 0.13,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Color(0xffE8ECFF))),
+                              child: TextFormField(
+                                cursorColor: Color(0xff8856F4),
+                                scrollPadding: EdgeInsets.only(top: 5),
+                                controller: _descriptionController,
+                                textInputAction: TextInputAction.done,
+                                maxLines: 100,
+                                onTap: () {
+                                  closeDropdown();
+                                  setState(() {
+                                    _validateDescription = "";
+                                  });
+                                },
+                                onChanged: (v) {
+                                  setState(() {
+                                    _validateDescription = "";
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 10, top: 10),
+                                  hintText: "Description",
+                                  hintStyle: TextStyle(
+                                    fontSize: 15,
+                                    letterSpacing: 0,
+                                    height: 1.2,
+                                    color: themeProvider.textColor,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  filled: true,
+                                  fillColor: themeProvider.containerColor,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: BorderSide(
+                                        width: 1, color: Color(0xffD0CBDB)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    borderSide: BorderSide(
+                                        width: 1, color: Color(0xffD0CBDB)),
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_validateStatus.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateStatus,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Priority'),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPriorityDropdownOpen =
-                            !isPriorityDropdownOpen;
-                            filteredpriorities = [];
-                            filteredpriorities = priorities;
-
-                            isMilestoneDropdownOpen=false;
-                            isAssignedtoDropdownOpen=false;
-                            isStatusDropdownOpen=false;
-                          });
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7.0),
-                              border:
-                              Border.all(color: Color(0xffD0CBDB)),
-                              color: Color(0xffFCFAFF)),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(selectedPriorityValue ??
-                                  "Select priority"),
-                              Icon(isPriorityDropdownOpen
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (isPriorityDropdownOpen) ...[
-                        SizedBox(height: 5),
-                        Card(
-                          elevation:
-                          4, // Optional elevation for shadow effect
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // Optional rounded corners
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Padding inside the card
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align items to the start
-                              children: [
-                                Container(
-                                  height: 40,
-                                  child: TextField(
-                                    controller: _prioritySearchController,
-                                    onChanged: (query) =>
-                                        filterPriorities(query),
-                                    decoration: InputDecoration(
-                                      hintText: "Search priority",
-                                      hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Inter"),
-                                      filled: true,
-                                      fillColor: Color(0xffffffff),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Color(0xff000000)),
-                                      ),
-                                      contentPadding: EdgeInsets.all(8.0),
+                            if (_validateDescription.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateDescription,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                    height:
-                                    10), // Space between TextField and ListView
-                                Container(
-                                    height:
-                                    180, // Set a fixed height for the dropdown list
-                                    child:filteredpriorities.length>0?
-                                    ListView.builder(
-                                      itemCount: filteredpriorities.length,
-                                      itemBuilder: (context, index) {
-                                        var data = filteredpriorities[index];
-                                        return ListTile(
-                                          minTileHeight: 30,
-                                          title: Text(
-                                            data.priorityValue?? "",
-                                            style: TextStyle(
-                                                fontFamily: "Inter",
-                                                fontSize: 15,
-                                                fontWeight:
-                                                FontWeight.w400),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              isPriorityDropdownOpen =
-                                              false;
-                                              selectedPriorityValue =
-                                                  data.priorityValue;
-                                              selectedPriorityID = data.priorityKey;
-                                              _validatePriority="";
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ):Center(child: Text("No Data found!"))
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Milestone'),
+                            SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isMilestoneDropdownOpen =
+                                      !isMilestoneDropdownOpen;
+                                  filteredMilestones = [];
+                                  filteredMilestones = milestones;
+
+                                  isAssignedtoDropdownOpen = false;
+                                  isStatusDropdownOpen = false;
+                                  isPriorityDropdownOpen = false;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                        Border.all(color: Color(0xffD0CBDB)),
+                                    color: themeProvider.containerColor),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(selectedMilestoneValue ??
+                                        "Select milestone"),
+                                    Icon(isMilestoneDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_validatePriority.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validatePriority,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
+                            if (isMilestoneDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                color: themeProvider.containerColor,
+                                elevation:
+                                    2, // Optional elevation for shadow effect
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextFormField(
+                                          controller:
+                                              _milestoneSearchController,
+                                          onChanged: (query) =>
+                                              filterMilestones(query),
+                                          decoration: InputDecoration(
+                                            hintText: "Search milestone",
+                                            hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                color: themeProvider.textColor,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
+                                            filled: true,
+                                            fillColor:
+                                                themeProvider.containerColor,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                              10), // Space between TextField and ListView
+                                      Container(
+                                          height:
+                                              180, // Set a fixed height for the dropdown list
+                                          child: filteredMilestones.length > 0
+                                              ? ListView.builder(
+                                                  itemCount:
+                                                      filteredMilestones.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var data =
+                                                        filteredMilestones[
+                                                            index];
+                                                    return ListTile(
+                                                      minTileHeight: 30,
+                                                      title: Text(
+                                                        data.title ?? "",
+                                                        style: TextStyle(
+                                                            fontFamily: "Inter",
+                                                            fontSize: 15,
+                                                            color: themeProvider
+                                                                .textColor,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          isMilestoneDropdownOpen =
+                                                              false;
+                                                          selectedMilestoneValue =
+                                                              data.title;
+                                                          selectedMilestoneID =
+                                                              data.id;
+                                                          _validateMileStone =
+                                                              "";
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              : Center(
+                                                  child: Text(
+                                                  "No Data found!",
+                                                  style: TextStyle(
+                                                      color: themeProvider
+                                                          .textColor),
+                                                ))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            if (_validateMileStone.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateMileStone,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Assign to'),
+                            SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isAssignedtoDropdownOpen =
+                                      !isAssignedtoDropdownOpen;
+                                  filteredmembers = [];
+                                  filteredmembers = members;
+
+                                  isMilestoneDropdownOpen = false;
+                                  isPriorityDropdownOpen = false;
+                                  isStatusDropdownOpen = false;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                        Border.all(color: Color(0xffD0CBDB)),
+                                    color: themeProvider.containerColor),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(selectedAssignedValue ??
+                                        "Select assigned to"),
+                                    Icon(isAssignedtoDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (isAssignedtoDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                color: themeProvider.containerColor,
+                                elevation:
+                                    2, // Optional elevation for shadow effect
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextField(
+                                          controller: _assignedSearchController,
+                                          onChanged: (query) =>
+                                              filterMembers(query),
+                                          decoration: InputDecoration(
+                                            hintText: "Search member",
+                                            hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
+                                            filled: true,
+                                            fillColor:
+                                                themeProvider.containerColor,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                              10), // Space between TextField and ListView
+                                      Container(
+                                          decoration: BoxDecoration(
+                                              color:
+                                                  themeProvider.containerColor),
+                                          height:
+                                              180, // Set a fixed height for the dropdown list
+                                          child: filteredmembers.length > 0
+                                              ? ListView.builder(
+                                                  itemCount:
+                                                      filteredmembers.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var data =
+                                                        filteredmembers[index];
+                                                    return ListTile(
+                                                      minTileHeight: 30,
+                                                      title: Text(
+                                                        data.fullName ?? "",
+                                                        style: TextStyle(
+                                                            fontFamily: "Inter",
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          isAssignedtoDropdownOpen =
+                                                              false;
+                                                          selectedAssignedValue =
+                                                              data.fullName;
+                                                          selectedAssignedID =
+                                                              data.id;
+                                                          _validateAssignedTo =
+                                                              "";
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              : Center(
+                                                  child: Text(
+                                                  "No Data found!",
+                                                  style: TextStyle(
+                                                      color: themeProvider
+                                                          .textColor),
+                                                ))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            if (_validateAssignedTo.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateAssignedTo,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Collaborators'),
+                            SizedBox(height: 4),
+                            GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    isCollaboraterDropdownOpen =
+                                        !isCollaboraterDropdownOpen;
+                                  });
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                        Border.all(color: Color(0xffD0CBDB)),
+                                    color: themeProvider.containerColor,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isCollaboraterDropdownOpen =
+                                                !isCollaboraterDropdownOpen;
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .start, // Center content horizontally
+                                          children: [
+                                            Expanded(
+                                              child: selectedNames.isNotEmpty
+                                                  ? Wrap(
+                                                      alignment: WrapAlignment
+                                                          .start, // Center align chips
+                                                      spacing:
+                                                          4.0, // Space between chips
+                                                      children: selectedNames
+                                                          .map((name) {
+                                                        return Chip(
+                                                          padding:
+                                                              EdgeInsets.all(2),
+                                                          label: Text(
+                                                            name,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontFamily:
+                                                                    "Inter"),
+                                                          ),
+                                                          deleteIcon: Icon(
+                                                              Icons.clear,
+                                                              size: 18),
+                                                          onDeleted: () {
+                                                            setState(() {
+                                                              isCollaboraterDropdownOpen =
+                                                                  false;
+                                                              int index =
+                                                                  selectedNames
+                                                                      .indexOf(
+                                                                          name);
+                                                              selectedIds
+                                                                  .removeAt(
+                                                                      index);
+                                                              selectedNames
+                                                                  .removeAt(
+                                                                      index);
+                                                            });
+                                                          },
+                                                        );
+                                                      }).toList(),
+                                                    )
+                                                  : Text(
+                                                      "Select collaborator",
+                                                      style: TextStyle(
+                                                          color: themeProvider
+                                                              .textColor),
+                                                    ),
+                                            ),
+                                            Icon(
+                                              isCollaboraterDropdownOpen
+                                                  ? Icons.arrow_drop_up
+                                                  : Icons.arrow_drop_down,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                            if (isCollaboraterDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                color: themeProvider.containerColor,
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextField(
+                                          onChanged: (query) {
+                                            FilterCollaboraters(query);
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: "Search member",
+                                            filled: true,
+                                            fillColor:
+                                                themeProvider.containerColor,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xff000000),
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xff000000),
+                                              ),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Container(
+                                        height: 180,
+                                        child: filteredCollaboraters.length > 0
+                                            ? ListView.builder(
+                                                itemCount: filteredCollaboraters
+                                                    .length,
+                                                itemBuilder: (context, index) {
+                                                  var data =
+                                                      filteredCollaboraters[
+                                                          index];
+                                                  bool isSelected = selectedIds
+                                                      .contains(data.id);
+                                                  return ListTile(
+                                                    minVerticalPadding: 0,
+                                                    title: Text(
+                                                      data.fullName ?? "",
+                                                      style: TextStyle(
+                                                        fontFamily: "Inter",
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                    ),
+                                                    trailing: Checkbox(
+                                                      value: isSelected,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          isCollaboraterDropdownOpen =
+                                                              false;
+                                                          _validateCollaborators =
+                                                              "";
+                                                        });
+                                                        toggleSelection(
+                                                            data.id!,
+                                                            data.fullName!);
+                                                      },
+                                                    ),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        isCollaboraterDropdownOpen =
+                                                            false;
+                                                        _validateCollaborators =
+                                                            "";
+                                                      });
+                                                      toggleSelection(data.id!,
+                                                          data.fullName!);
+                                                    },
+                                                  );
+                                                },
+                                              )
+                                            : Center(
+                                                child: Text(
+                                                "No Data found!",
+                                                style: TextStyle(
+                                                    color: themeProvider
+                                                        .textColor),
+                                              )),
+                                      ),
+                                      SizedBox(height: 10),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            if (_validateCollaborators.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateCollaborators,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Status'),
+                            SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isStatusDropdownOpen = !isStatusDropdownOpen;
+                                  filteredstatuses = [];
+                                  filteredstatuses = statuses;
+
+                                  isMilestoneDropdownOpen = false;
+                                  isAssignedtoDropdownOpen = false;
+                                  isPriorityDropdownOpen = false;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border:
+                                        Border.all(color: Color(0xffD0CBDB)),
+                                    color: themeProvider.containerColor),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                        selectedStatusValue ?? "Select status"),
+                                    Icon(isStatusDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (isStatusDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                color: themeProvider.containerColor,
+                                elevation:
+                                    4, // Optional elevation for shadow effect
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextField(
+                                          controller: _statusSearchController,
+                                          onChanged: (query) =>
+                                              filterStatuses(query),
+                                          decoration: InputDecoration(
+                                            hintText: "Search status",
+                                            hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
+                                            filled: true,
+                                            fillColor:
+                                                themeProvider.containerColor,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                              10), // Space between TextField and ListView
+                                      Container(
+                                          height:
+                                              180, // Set a fixed height for the dropdown list
+                                          child: filteredstatuses.length > 0
+                                              ? ListView.builder(
+                                                  itemCount:
+                                                      filteredstatuses.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var data =
+                                                        filteredstatuses[index];
+                                                    return ListTile(
+                                                      minTileHeight: 30,
+                                                      title: Text(
+                                                        data.statusValue ?? "",
+                                                        style: TextStyle(
+                                                            fontFamily: "Inter",
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          isStatusDropdownOpen =
+                                                              false;
+                                                          selectedStatusValue =
+                                                              data.statusValue;
+                                                          selectedStatusID =
+                                                              data.statusKey;
+                                                          _validateStatus = "";
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              : Center(
+                                                  child:
+                                                      Text("No Data found!"))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            if (_validateStatus.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateStatus,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Priority'),
+                            SizedBox(height: 4),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isPriorityDropdownOpen =
+                                      !isPriorityDropdownOpen;
+                                  filteredpriorities = [];
+                                  filteredpriorities = priorities;
+
+                                  isMilestoneDropdownOpen = false;
+                                  isAssignedtoDropdownOpen = false;
+                                  isStatusDropdownOpen = false;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    border: Border.all(color: Colors.white),
+                                    color: themeProvider.containerColor),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(selectedPriorityValue ??
+                                        "Select priority"),
+                                    Icon(isPriorityDropdownOpen
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (isPriorityDropdownOpen) ...[
+                              SizedBox(height: 5),
+                              Card(
+                                color: themeProvider.containerColor,
+                                elevation:
+                                    4, // Optional elevation for shadow effect
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // Optional rounded corners
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // Padding inside the card
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Align items to the start
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        child: TextField(
+                                          controller: _prioritySearchController,
+                                          onChanged: (query) =>
+                                              filterPriorities(query),
+                                          decoration: InputDecoration(
+                                            hintText: "Search priority",
+                                            hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: "Inter"),
+                                            filled: true,
+                                            fillColor:
+                                                themeProvider.containerColor,
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Colors.white),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7.0),
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xff000000)),
+                                            ),
+                                            contentPadding: EdgeInsets.all(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height:
+                                              10), // Space between TextField and ListView
+                                      Container(
+                                          height:
+                                              180, // Set a fixed height for the dropdown list
+                                          child: filteredpriorities.length > 0
+                                              ? ListView.builder(
+                                                  itemCount:
+                                                      filteredpriorities.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var data =
+                                                        filteredpriorities[
+                                                            index];
+                                                    return ListTile(
+                                                      minTileHeight: 30,
+                                                      title: Text(
+                                                        data.priorityValue ??
+                                                            "",
+                                                        style: TextStyle(
+                                                            fontFamily: "Inter",
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          isPriorityDropdownOpen =
+                                                              false;
+                                                          selectedPriorityValue =
+                                                              data.priorityValue;
+                                                          selectedPriorityID =
+                                                              data.priorityKey;
+                                                          _validatePriority =
+                                                              "";
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              : Center(
+                                                  child: Text(
+                                                  "No Data found!",
+                                                  style: TextStyle(
+                                                      color: themeProvider
+                                                          .textColor),
+                                                ))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            if (_validatePriority.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validatePriority,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Start Date'),
+                            SizedBox(height: 4),
+                            _buildDateField(
+                              _startDateController,
+                            ),
+                            if (_validateStartDate.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateStartDate,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            _label(text: 'Deadline'),
+                            SizedBox(height: 4),
+                            _buildDateField(
+                              _deadlineController,
+                            ),
+                            if (_validateDeadline.isNotEmpty) ...[
+                              Container(
+                                alignment: Alignment.topLeft,
+                                margin: EdgeInsets.only(bottom: 5),
+                                child: ShakeWidget(
+                                  key: Key("value"),
+                                  duration: Duration(milliseconds: 700),
+                                  child: Text(
+                                    _validateDeadline,
+                                    style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                            SizedBox(height: 30),
+                          ],
                         ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Start Date'),
-                      SizedBox(height: 4),
-                      _buildDateField(
-                        _startDateController,
                       ),
-                      if (_validateStartDate.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateStartDate,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      _label(text: 'Deadline'),
-                      SizedBox(height: 4),
-                      _buildDateField(
-                        _deadlineController,
-                      ),
-                      if (_validateDeadline.isNotEmpty) ...[
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 5),
-                          child: ShakeWidget(
-                            key: Key("value"),
-                            duration: Duration(milliseconds: 700),
-                            child: Text(
-                              _validateDeadline,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                      SizedBox(height: 30),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-                    ),
-                  ),
-          ),
+            ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
         decoration: BoxDecoration(color: themeProvider.containerbcColor),
@@ -1662,14 +1769,14 @@ class _AddTaskState extends State<AddTask> {
                   child: _isLoading
                       ? spinkits.getFadingCircleSpinner()
                       : Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Color(0xffffffff),
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
+                          'Save',
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -1678,49 +1785,54 @@ class _AddTaskState extends State<AddTask> {
       ),
     );
   }
+
   Widget _buildDateField(TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.05,
-          child: TextField(
-            controller: controller,
-            readOnly: true,
-            onTap: () {
-              _selectDate(context, controller);
-            },
-            decoration: InputDecoration(
-              hintText: "Select date",
-              suffixIcon: Container(
-                  padding: EdgeInsets.only(top: 12, bottom: 12),
-                  child: Image.asset(
-                    "assets/calendar.png",
-                    color: Color(0xff000000),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.contain,
-                  )),
-              hintStyle: TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 1.2,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
+        Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.05,
+              child: TextField(
+                controller: controller,
+                readOnly: true,
+                onTap: () {
+                  _selectDate(context, controller);
+                },
+                decoration: InputDecoration(
+                  hintText: "Select date",
+                  suffixIcon: Container(
+                      padding: EdgeInsets.only(top: 12, bottom: 12),
+                      child: Image.asset(
+                        "assets/calendar.png",
+                        color: themeProvider.textColor,
+                        width: 16,
+                        height: 16,
+                        fit: BoxFit.contain,
+                      )),
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                    letterSpacing: 0,
+                    height: 1.2,
+                    color: themeProvider.textColor,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w400,
+                  ),
+                  filled: true,
+                  fillColor: themeProvider.containerColor,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(7),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                    borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                  ),
+                ),
               ),
-              filled: true,
-              fillColor: Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7.0),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-              ),
-            ),
-          ),
+            );
+          },
         ),
       ],
     );
@@ -1740,16 +1852,16 @@ class _AddTaskState extends State<AddTask> {
   }
 
   static Widget _label({required String text}) {
-    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
-      return Text(
-        text,
-        style: TextStyle(
-          color: themeProvider.textColor,
-          fontSize: 14,
-        ),
-      );
-    },
-
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Text(
+          text,
+          style: TextStyle(
+            color: themeProvider.textColor,
+            fontSize: 14,
+          ),
+        );
+      },
     );
   }
 
@@ -1766,7 +1878,7 @@ class _AddTaskState extends State<AddTask> {
           text,
           style: TextStyle(
             color:
-            color == Color(0xffF8FCFF) ? Color(0xff8856F4) : Colors.white,
+                color == Color(0xffF8FCFF) ? Color(0xff8856F4) : Colors.white,
             fontSize: 16.0,
           ),
         ),
