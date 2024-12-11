@@ -437,348 +437,350 @@ class _MileStoneState extends State<MileStone> {
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
+          return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+            return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
 
-                Future<void> PostMilestoneApi(String editId) async {
-                  var res;
-                  if (editId != "") {
-                    res = await Userapi.putMileStone(editId, _titleController.text,
-                        _descriptionController.text, _deadlineController.text);
-                  } else {
-                    res = await Userapi.PostMileStone(_titleController.text,
-                        _descriptionController.text, widget.id, _deadlineController.text);
+                  Future<void> PostMilestoneApi(String editId) async {
+                    var res;
+                    if (editId != "") {
+                      res = await Userapi.putMileStone(editId, _titleController.text,
+                          _descriptionController.text, _deadlineController.text);
+                    } else {
+                      res = await Userapi.PostMileStone(_titleController.text,
+                          _descriptionController.text, widget.id, _deadlineController.text);
+                    }
+                    if (res != null) {
+                      setState(() {
+                        if (res.settings?.success == 1) {
+                          _isLoading=false;
+                          CustomSnackBar.show(context, "${res.settings?.message}");
+                          Navigator.pop(context);
+                          GetMileStone();
+                        } else {
+                          _isLoading=false;
+                          CustomSnackBar.show(context, "${res.settings?.message}");
+                        }
+                      });
+                    } else {
+                      CustomSnackBar.show(context, "${res?.settings?.message}");
+                    }
                   }
-                  if (res != null) {
-                    setState(() {
-                      if (res.settings?.success == 1) {
-                        _isLoading=false;
-                        CustomSnackBar.show(context, "${res.settings?.message}");
-                        Navigator.pop(context);
-                        GetMileStone();
-                      } else {
-                        _isLoading=false;
-                        CustomSnackBar.show(context, "${res.settings?.message}");
-                      }
-                    });
-                  } else {
-                    CustomSnackBar.show(context, "${res?.settings?.message}");
-                  }
-                }
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Container(
-                height: h,
-                padding:
-                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-                decoration: BoxDecoration(
-                  color: Color(0xffffffff),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: w * 0.1,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Container(
+                      height: h,
+                      padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+                      decoration: BoxDecoration(
+                        color: themeProvider.containerColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Text(
-                          ("${mode} Milestones"),
-                          style: TextStyle(
-                            color: Color(0xff1C1D22),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                            fontFamily: 'Inter',
-                            height: 18 / 16,
-                          ),
-                        ),
-                        Spacer(),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pop(); // Close the BottomSheet when tapped
-                          },
-                          child: Container(
-                            width: w * 0.05,
-                            height: w * 0.05,
-                            decoration: BoxDecoration(
-                              color: Color(0xffE5E5E5),
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                "assets/crossblue.png",
-                                fit: BoxFit.contain,
-                                width: w * 0.023,
-                                height: w * 0.023,
-                                color: Color(0xff8856F4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Container(
+                              width: w * 0.1,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _label(text: 'Title'),
-                            SizedBox(height: 6),
-                            Container(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.050,
-                              child: TextFormField(
-                                controller: _titleController,
-                                focusNode: _focusNodetitle,
-                                keyboardType: TextInputType.text,
-                                cursorColor: Color(0xff8856F4),
-                                decoration: InputDecoration(
-                                  hintText: "Enter Title.",
-                                  hintStyle: const TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: 0,
-                                    height: 19.36 / 14,
-                                    color: Color(0xffAFAFAF),
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  filled: true,
-                                  fillColor: const Color(0xffFCFAFF),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(7),
-                                    borderSide: const BorderSide(
-                                        width: 1, color: Color(0xffd0cbdb)),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(7),
-                                    borderSide: const BorderSide(
-                                        width: 1, color: Color(0xffd0cbdb)),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(7),
-                                    borderSide: const BorderSide(
-                                        width: 1, color: Color(0xffd0cbdb)),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(7),
-                                    borderSide: const BorderSide(
-                                        width: 1, color: Color(0xffd0cbdb)),
-                                  ),
+                          SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Text(
+                                ("${mode} Milestones"),
+                                style: TextStyle(
+                                  color: themeProvider.textColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  fontFamily: 'Inter',
+                                  height: 18 / 16,
                                 ),
                               ),
-                            ),
-                            if (title.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(
-                                    left: 8, bottom: 10, top: 5),
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
+                              Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the BottomSheet when tapped
+                                },
+                                child: Container(
+                                  width: w * 0.05,
+                                  height: w * 0.05,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffE5E5E5),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: Center(
+                                    child: Image.asset(
+                                      "assets/crossblue.png",
+                                      fit: BoxFit.contain,
+                                      width: w * 0.023,
+                                      height: w * 0.023,
+                                      color: Color(0xff8856F4),
                                     ),
                                   ),
                                 ),
                               ),
-                            ] else ...[
-                              SizedBox(height: 15),
                             ],
-                            _label(text: 'Description'),
-                            SizedBox(height: 4),
-                            Container(
-                              height: h * 0.2,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Color(0xffE8ECFF))),
-                              child: TextFormField(
-                                cursorColor: Color(0xff8856F4),
-                                scrollPadding: const EdgeInsets.only(top: 5),
-                                controller: _descriptionController,
-                                textInputAction: TextInputAction.done,
-                                maxLines: 100,
+                          ),
+                          SizedBox(height: 16),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _label(text: 'Title'),
+                                  SizedBox(height: 6),
+                                  Container(
+                                    height:
+                                    MediaQuery.of(context).size.height * 0.050,
+                                    child: TextFormField(
+                                      controller: _titleController,
+                                      focusNode: _focusNodetitle,
+                                      keyboardType: TextInputType.text,
+                                      cursorColor: Color(0xff8856F4),
+                                      decoration: InputDecoration(
+                                        hintText: "Enter Title.",
+                                        hintStyle: const TextStyle(
+                                          fontSize: 14,
+                                          letterSpacing: 0,
+                                          height: 19.36 / 14,
+                                          color: Color(0xffAFAFAF),
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        filled: true,
+                                        fillColor: const Color(0xffFCFAFF),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                              width: 1, color: Color(0xffd0cbdb)),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                              width: 1, color: Color(0xffd0cbdb)),
+                                        ),
+                                        errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                              width: 1, color: Color(0xffd0cbdb)),
+                                        ),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                              width: 1, color: Color(0xffd0cbdb)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (title.isNotEmpty) ...[
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      margin: EdgeInsets.only(
+                                          left: 8, bottom: 10, top: 5),
+                                      width: MediaQuery.of(context).size.width * 0.6,
+                                      child: ShakeWidget(
+                                        key: Key("value"),
+                                        duration: Duration(milliseconds: 700),
+                                        child: Text(
+                                          title,
+                                          style: TextStyle(
+                                            fontFamily: "Poppins",
+                                            fontSize: 12,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    SizedBox(height: 15),
+                                  ],
+                                  _label(text: 'Description'),
+                                  SizedBox(height: 4),
+                                  Container(
+                                    height: h * 0.2,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Color(0xffE8ECFF))),
+                                    child: TextFormField(
+                                      cursorColor: Color(0xff8856F4),
+                                      scrollPadding: const EdgeInsets.only(top: 5),
+                                      controller: _descriptionController,
+                                      textInputAction: TextInputAction.done,
+                                      maxLines: 100,
+                                      onTap: () {
+                                        setState(() {
+                                          description = "";
+                                        });
+                                      },
+                                      onChanged: (v) {
+                                        setState(() {
+                                          description = "";
+                                        });
+                                      },
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                        const EdgeInsets.only(left: 10, top: 10),
+                                        hintText: "Description",
+                                        hintStyle: TextStyle(
+                                          fontSize: 15,
+                                          letterSpacing: 0,
+                                          height: 1.2,
+                                          color: Color(0xffAFAFAF),
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        filled: true,
+                                        fillColor: themeProvider.containerColor,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7),
+                                          borderSide: BorderSide(
+                                            width: 1,color: themeProvider.themeData==lightTheme?Color(0xffD0CBDB) : Color(0xffffffff),),
+
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7.0),
+                                          borderSide: BorderSide(
+                                              width: 1,color: themeProvider.themeData==lightTheme?Color(0xffD0CBDB) : Color(0xffffffff),),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (description.isNotEmpty) ...[
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      margin: EdgeInsets.only(
+                                          left: 8, bottom: 10, top: 5),
+                                      width: MediaQuery.of(context).size.width * 0.6,
+                                      child: ShakeWidget(
+                                        key: Key("value"),
+                                        duration: Duration(milliseconds: 700),
+                                        child: Text(
+                                          description,
+                                          style: TextStyle(
+                                            fontFamily: "Poppins",
+                                            fontSize: 12,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    SizedBox(height: 15),
+                                  ],
+                                  _label(text: 'Deadline'),
+                                  SizedBox(height: 4),
+                                  _buildDateField(_deadlineController),
+                                  if (deadline.isNotEmpty) ...[
+                                    Container(
+                                      alignment: Alignment.topLeft,
+                                      margin: EdgeInsets.only(
+                                          left: 8, bottom: 10, top: 5),
+                                      width: MediaQuery.of(context).size.width * 0.6,
+                                      child: ShakeWidget(
+                                        key: Key("value"),
+                                        duration: Duration(milliseconds: 700),
+                                        child: Text(
+                                          deadline,
+                                          style: TextStyle(
+                                            fontFamily: "Poppins",
+                                            fontSize: 12,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    SizedBox(height: 15),
+                                  ],
+                                  SizedBox(height: 15),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: w * 0.43,
+                                  decoration: BoxDecoration(
+                                    color: themeProvider.containerColor,
+                                    border: Border.all(
+                                      color: AppColors.primaryColor,
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Close',
+                                      style: TextStyle(
+                                        color: AppColors.primaryColor,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                              InkResponse(
                                 onTap: () {
                                   setState(() {
-                                    description = "";
+                                    title = _titleController.text.isEmpty
+                                        ? "Please enter title"
+                                        : "";
+                                    description = _descriptionController.text.isEmpty
+                                        ? "Please enter a description"
+                                        : "";
+                                    deadline = _deadlineController.text.isEmpty
+                                        ? "Please enter a deadline"
+                                        : "";
+
+                                    _isLoading = title.isEmpty &&
+                                        description.isEmpty &&
+                                        deadline.isEmpty;
+
+                                    if (_isLoading) {
+                                      if (mode == "Edit") {
+                                        PostMilestoneApi(id);
+                                      } else {
+                                        PostMilestoneApi("");
+                                      }
+                                    }
                                   });
                                 },
-                                onChanged: (v) {
-                                  setState(() {
-                                    description = "";
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 10, top: 10),
-                                  hintText: "Description",
-                                  hintStyle: TextStyle(
-                                    fontSize: 15,
-                                    letterSpacing: 0,
-                                    height: 1.2,
-                                    color: Color(0xffAFAFAF),
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  filled: true,
-                                  fillColor: Color(0xffFCFAFF),
-                                  enabledBorder: OutlineInputBorder(
+                                child: Container(
+                                  height: 40,
+                                  width: w * 0.43,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor,
                                     borderRadius: BorderRadius.circular(7),
-                                    borderSide: BorderSide(
-                                        width: 1, color: Color(0xffD0CBDB)),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(7.0),
-                                    borderSide: BorderSide(
-                                        width: 1, color: Color(0xffD0CBDB)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (description.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(
-                                    left: 8, bottom: 10, top: 5),
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    description,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              SizedBox(height: 15),
-                            ],
-                            _label(text: 'Deadline'),
-                            SizedBox(height: 4),
-                            _buildDateField(_deadlineController),
-                            if (deadline.isNotEmpty) ...[
-                              Container(
-                                alignment: Alignment.topLeft,
-                                margin: EdgeInsets.only(
-                                    left: 8, bottom: 10, top: 5),
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: ShakeWidget(
-                                  key: Key("value"),
-                                  duration: Duration(milliseconds: 700),
-                                  child: Text(
-                                    deadline,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      fontSize: 12,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ] else ...[
-                              SizedBox(height: 15),
-                            ],
-                            SizedBox(height: 15),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 40,
-                            width: w * 0.43,
-                            decoration: BoxDecoration(
-                              color: Color(0xffF8FCFF),
-                              border: Border.all(
-                                color: AppColors.primaryColor,
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Close',
-                                style: TextStyle(
-                                  color: AppColors.primaryColor,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        InkResponse(
-                          onTap: () {
-                            setState(() {
-                              title = _titleController.text.isEmpty
-                                  ? "Please enter title"
-                                  : "";
-                              description = _descriptionController.text.isEmpty
-                                  ? "Please enter a description"
-                                  : "";
-                              deadline = _deadlineController.text.isEmpty
-                                  ? "Please enter a deadline"
-                                  : "";
-
-                              _isLoading = title.isEmpty &&
-                                  description.isEmpty &&
-                                  deadline.isEmpty;
-
-                              if (_isLoading) {
-                                if (mode == "Edit") {
-                                  PostMilestoneApi(id);
-                                } else {
-                                  PostMilestoneApi("");
-                                }
-                              }
-                            });
-                          },
-                          child: Container(
-                            height: 40,
-                            width: w * 0.43,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor,
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Center(
-                              child: _isLoading
-                                  ? spinkit.getFadingCircleSpinner()
-                                  : Text(
+                                  child: Center(
+                                    child: _isLoading
+                                        ? spinkit.getFadingCircleSpinner()
+                                        : Text(
                                       'Save',
                                       style: TextStyle(
                                         color: Color(0xffffffff),
@@ -787,16 +789,19 @@ class _MileStoneState extends State<MileStone> {
                                         fontFamily: 'Inter',
                                       ),
                                     ),
-                            ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            );
-          });
+                  );
+                });
+          },
+
+          );
         }).whenComplete(() {
       _titleController.text = "";
       _descriptionController.text = "";
@@ -811,45 +816,49 @@ class _MileStoneState extends State<MileStone> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.05,
-          child: TextField(
-            controller: controller,
-            readOnly: true,
-            onTap: () {
-              _selectDate(context, controller);
-            },
-            decoration: InputDecoration(
-              hintText: "Select Date from Date Picker",
-              suffixIcon: Container(
-                  padding: EdgeInsets.only(top: 12, bottom: 12),
-                  child: Image.asset(
-                    "assets/calendar.png",
-                    color: Color(0xff000000),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.contain,
-                  )),
-              hintStyle: TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 1.2,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-              ),
-              filled: true,
-              fillColor: Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7.0),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+        Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.05,
+            child: TextField(
+              controller: controller,
+              readOnly: true,
+              onTap: () {
+                _selectDate(context, controller);
+              },
+              decoration: InputDecoration(
+                hintText: "Select Date from Date Picker",
+                suffixIcon: Container(
+                    padding: EdgeInsets.only(top: 12, bottom: 12),
+                    child: Image.asset(
+                      "assets/calendar.png",
+                      color: themeProvider.textColor,
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.contain,
+                    )),
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  letterSpacing: 0,
+                  height: 1.2,
+                  color: Color(0xffAFAFAF),
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w400,
+                ),
+                filled: true,
+                fillColor: themeProvider.containerColor,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7),
+                  borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7.0),
+                  borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                ),
               ),
             ),
-          ),
+          );
+        },
+
         ),
       ],
     );
@@ -858,12 +867,15 @@ class _MileStoneState extends State<MileStone> {
   Widget _label({
     required String text,
   }) {
-    return Text(text,
-        style: TextStyle(
-            color: Color(0xff141516),
-            fontFamily: 'Inter',
-            fontSize: 14,
-            height: 16.36 / 14,
-            fontWeight: FontWeight.w400));
+    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+     return Text(text,
+          style: TextStyle(
+              color: themeProvider.textColor,
+              fontFamily: 'Inter',
+              fontSize: 14,
+              height: 16.36 / 14,
+              fontWeight: FontWeight.w400));
+    },
+    );
   }
 }
