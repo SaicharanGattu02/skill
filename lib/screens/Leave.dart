@@ -652,11 +652,11 @@ class _LeaveState extends State<Leave> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(150, 16), // Title shimmer
+                      shimmerText(150, 16,context), // Title shimmer
                       const SizedBox(height: 4),
-                      shimmerText(200, 14), // Subtitle shimmer
+                      shimmerText(200, 14,context), // Subtitle shimmer
                       const SizedBox(height: 8),
-                      shimmerText(180, 12), // Date and time shimmer
+                      shimmerText(180, 12,context), // Date and time shimmer
                       const SizedBox(height: 16),
                       Align(
                         alignment: Alignment.centerRight,
@@ -686,11 +686,11 @@ class _LeaveState extends State<Leave> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          shimmerRectangle(50), // Shimmer for task name
+          shimmerRectangle(50,context), // Shimmer for task name
           const SizedBox(height: 10),
-          shimmerText(150, 11), // Shimmer for description
+          shimmerText(150, 11,context), // Shimmer for description
           const SizedBox(height: 10),
-          shimmerText(80, 11), // Shimmer for date/time
+          shimmerText(80, 11,context), // Shimmer for date/time
         ],
       ),
     );

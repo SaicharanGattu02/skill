@@ -2324,6 +2324,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildShimmerGrid(double width) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
@@ -2332,8 +2333,8 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                shimmerText(100, 16),
-                shimmerText(100, 16),
+                shimmerText(100, 16,context),
+                shimmerText(100, 16,context),
               ],
             ),
             SizedBox(
@@ -2342,40 +2343,40 @@ class _DashboardState extends State<Dashboard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      shimmerCircle(70), // Shimmer for profile image
+                      shimmerCircle(70,context), // Shimmer for profile image
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            shimmerText(80, 10), // Shimmer for Skill ID
+                            shimmerText(80, 10,context), // Shimmer for Skill ID
                             const SizedBox(height: 5),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                shimmerText(120, 16), // Shimmer for full name
-                                shimmerText(50, 12), // Shimmer for status
+                                shimmerText(120, 16,context), // Shimmer for full name
+                                shimmerText(50, 12,context), // Shimmer for status
                               ],
                             ),
                             const SizedBox(height: 8),
-                            shimmerText(200, 12), // Shimmer for job title
+                            shimmerText(200, 12,context), // Shimmer for job title
                             const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
                                     child: shimmerText(
-                                        120, 11)), // Shimmer for mobile
+                                        120, 11,context)), // Shimmer for mobile
                                 const SizedBox(width: 8),
                                 Expanded(
                                     child: shimmerText(
-                                        120, 11)), // Shimmer for email
+                                        120, 11,context)), // Shimmer for email
                               ],
                             ),
                           ],
@@ -2392,8 +2393,8 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                shimmerText(100, 16),
-                shimmerText(100, 16),
+                shimmerText(100, 16,context),
+                shimmerText(100, 16,context),
               ],
             ),
             SizedBox(
@@ -2414,26 +2415,26 @@ class _DashboardState extends State<Dashboard> {
                   return Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDarkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        shimmerCircle(48), // Shimmer for the circular image
+                        shimmerCircle(48,context), // Shimmer for the circular image
                         const SizedBox(height: 8),
-                        shimmerText(100, 16), // Shimmer for title text
+                        shimmerText(100, 16,context), // Shimmer for title text
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            shimmerText(50, 12), // Shimmer for progress label
-                            shimmerText(30, 12), // Shimmer for percentage text
+                            shimmerText(50, 12,context), // Shimmer for progress label
+                            shimmerText(30, 12,context), // Shimmer for percentage text
                           ],
                         ),
                         const SizedBox(height: 4),
                         shimmerLinearProgress(
-                            7), // Shimmer for progress indicator
+                            7,context), // Shimmer for progress indicator
                       ],
                     ),
                   );
@@ -2446,7 +2447,7 @@ class _DashboardState extends State<Dashboard> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -2461,10 +2462,10 @@ class _DashboardState extends State<Dashboard> {
                           child: Column(
                             children: [
                               shimmerContainer(width * 0.16,
-                                  width * 0.115), // Shimmer for count
+                                  width * 0.115,context), // Shimmer for count
                               SizedBox(height: 8),
                               shimmerText(60,
-                                  10), // Shimmer for label (e.g., "PROJECTS")
+                                  10,context), // Shimmer for label (e.g., "PROJECTS")
                             ],
                           ),
                         ),
@@ -2472,7 +2473,7 @@ class _DashboardState extends State<Dashboard> {
                     }),
                   ),
                   SizedBox(height: 20),
-                  shimmerContainer(width, 40,
+                  shimmerContainer(width, 40,context,
                       isButton: true), // Shimmer for the "Punch In" button
                 ],
               ),

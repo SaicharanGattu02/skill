@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../Model/MileStoneModel.dart';
 import '../Providers/ThemeProvider.dart';
@@ -13,6 +14,7 @@ import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class MileStone extends StatefulWidget {
   final String id;
@@ -227,7 +229,7 @@ class _MileStoneState extends State<MileStone> {
                       ],
                     ),
                     SizedBox(height: 8),
-                    _isLoading?_buildShimmerList():
+                    _isLoading?_buildShimmerList(context):
                     filteredRooms.isEmpty
                         ? Center(
                       child: Column(
@@ -266,7 +268,7 @@ class _MileStoneState extends State<MileStone> {
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                             borderRadius: BorderRadius.circular(7),
                           ),
                           child: Column(
@@ -284,7 +286,7 @@ class _MileStoneState extends State<MileStone> {
                                   Text(
                                     milestone.dueDate ?? "",
                                     style: TextStyle(
-                                      color: const Color(0xff1D1C1D),
+                                      color: themeProvider.themeData==lightTheme? Color(0xff1D1C1D) : themeProvider.textColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15,
                                       height: 19.41 / 15,
@@ -302,7 +304,7 @@ class _MileStoneState extends State<MileStone> {
                                       fit: BoxFit.contain,
                                       width: w * 0.06,
                                       height: w * 0.05,
-                                      color:AppColors.primaryColor,
+                                      color: themeProvider.themeData==lightTheme?AppColors.primaryColor : themeProvider.textColor,
                                     ),
                                   ),
                                 ],
@@ -321,10 +323,10 @@ class _MileStoneState extends State<MileStone> {
                               const SizedBox(height: 4),
                               Text(
                                 milestone.description ?? "",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   height: 18.15 / 14,
-                                  color: Color(0xff6C848F),
+                                  color:themeProvider.themeData==lightTheme? Color(0xff6C848F) : themeProvider.textColor,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: 'Inter',
                                 ),
@@ -345,10 +347,10 @@ class _MileStoneState extends State<MileStone> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                   Text(
                                     "Progress",
                                     style: TextStyle(
-                                      color: Color(0xff6C848F),
+                                      color:themeProvider.themeData==lightTheme? Color(0xff6C848F) : themeProvider.textColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
                                       fontFamily: "Inter",
@@ -356,8 +358,8 @@ class _MileStoneState extends State<MileStone> {
                                   ),
                                   Text(
                                     "${(((milestone.totalTasks != 0) ? (milestone.tasksDone ?? 0) / (milestone.totalTasks ?? 1) : 0.0) * 100).toStringAsFixed(0)}%", // Round to nearest integer
-                                    style: const TextStyle(
-                                      color: Color(0xff6C848F),
+                                    style: TextStyle(
+                                      color:themeProvider.themeData==lightTheme? Color(0xff6C848F) : themeProvider.textColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
                                       fontFamily: "Inter",
@@ -377,7 +379,8 @@ class _MileStoneState extends State<MileStone> {
     );
   }
 
-  Widget _buildShimmerList() {
+  Widget _buildShimmerList(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       itemCount: 10, // Adjust the number of shimmer items as needed
       shrinkWrap: true,
@@ -387,7 +390,7 @@ class _MileStoneState extends State<MileStone> {
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(7),
           ),
           child: Column(
@@ -395,25 +398,25 @@ class _MileStoneState extends State<MileStone> {
             children: [
               Row(
                 children: [
-                  shimmerRectangle(20), // Shimmer for calendar icon
+                  shimmerRectangle(20,context), // Shimmer for calendar icon
                   const SizedBox(width: 8),
-                  shimmerText(100, 15), // Shimmer for due date
+                  shimmerText(100, 15,context), // Shimmer for due date
                   const Spacer(),
-                  shimmerRectangle(20), // Shimmer for edit icon
+                  shimmerRectangle(20, context), // Shimmer for edit icon
                 ],
               ),
               const SizedBox(height: 20),
-              shimmerText(150, 20), // Shimmer for milestone title
+              shimmerText(150, 20,context), // Shimmer for milestone title
               const SizedBox(height: 4),
-              shimmerText(300, 14), // Shimmer for milestone description
+              shimmerText(300, 14,context), // Shimmer for milestone description
               const SizedBox(height: 10),
-              shimmerText(350, 14),
+              shimmerText(350, 14,context),
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  shimmerText(60, 14), // Shimmer for "Progress" label
-                  shimmerText(40, 14), // Shimmer for percentage
+                  shimmerText(60, 14,context), // Shimmer for "Progress" label
+                  shimmerText(40, 14,context), // Shimmer for percentage
                 ],
               ),
             ],
@@ -422,7 +425,6 @@ class _MileStoneState extends State<MileStone> {
       },
     );
   }
-
 
   void _bottomSheet(
     BuildContext context,

@@ -998,11 +998,11 @@ class _ProjectFileState extends State<ProjectFile> {
             children: [
               Row(
                 children: [
-                  shimmerRectangle(20), // Shimmer for calendar icon
+                  shimmerRectangle(20,context), // Shimmer for calendar icon
                   const SizedBox(width: 8),
-                  shimmerText(100, 15), // Shimmer for formatted date
+                  shimmerText(100, 15,context), // Shimmer for formatted date
                   const Spacer(),
-                  shimmerRectangle(20), // Shimmer for edit icon
+                  shimmerRectangle(20,context), // Shimmer for edit icon
                 ],
               ),
               const SizedBox(height: 12),
@@ -1010,21 +1010,21 @@ class _ProjectFileState extends State<ProjectFile> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  shimmerRectangle(20), // Shimmer for gallery icon
+                  shimmerRectangle(20,context), // Shimmer for gallery icon
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        shimmerText(150, 15), // Shimmer for file name
+                        shimmerText(150, 15,context), // Shimmer for file name
                         const SizedBox(height: 10),
-                        shimmerText(100, 14), // Shimmer for category
+                        shimmerText(100, 14,context), // Shimmer for category
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            shimmerCircle(24), // Shimmer for user image
+                            shimmerCircle(24,context), // Shimmer for user image
                             const SizedBox(width: 8),
-                            shimmerText(100, 14), // Shimmer for uploaded by
+                            shimmerText(100, 14,context), // Shimmer for uploaded by
                           ],
                         ),
                       ],

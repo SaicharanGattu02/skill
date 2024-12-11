@@ -607,36 +607,36 @@ class _TaskListState extends State<TaskList> {
             children: [
               Row(
                 children: [
-                  shimmerText(20, 20), // Shimmer for status label
+                  shimmerText(20, 20,context), // Shimmer for status label
                   const Spacer(),
-                  shimmerRectangle(24), // Shimmer for delete icon
+                  shimmerRectangle(24,context), // Shimmer for delete icon
                   const SizedBox(width: 8),
-                  shimmerRectangle(24), // Shimmer for edit icon
+                  shimmerRectangle(24,context), // Shimmer for edit icon
                 ],
               ),
               const SizedBox(height: 6),
-              shimmerText(150, 16), // Shimmer for task title
+              shimmerText(150, 16,context), // Shimmer for task title
               const SizedBox(height: 8),
-              shimmerText(200, 12), // Shimmer for task description
+              shimmerText(200, 12,context), // Shimmer for task description
               const SizedBox(height: 8),
               Row(
                 children: [
-                  shimmerCircle(24), // Shimmer for assigned user image
+                  shimmerCircle(24,context), // Shimmer for assigned user image
                   const SizedBox(width: 4),
-                  shimmerText(100, 12), // Shimmer for collaborators text
+                  shimmerText(100, 12,context), // Shimmer for collaborators text
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  shimmerText(50, 12), // Shimmer for "Start Date:"
+                  shimmerText(50, 12,context), // Shimmer for "Start Date:"
                   const SizedBox(width: 4),
-                  shimmerText(90, 12), // Shimmer for start date value
+                  shimmerText(90, 12,context), // Shimmer for start date value
                   const Spacer(),
-                  shimmerText(50, 12), // Shimmer for "End Date:"
+                  shimmerText(50, 12,context), // Shimmer for "End Date:"
                   const SizedBox(width: 4),
-                  shimmerText(90, 12), // Shimmer for end date value
+                  shimmerText(90, 12,context), // Shimmer for end date value
                 ],
               ),
             ],

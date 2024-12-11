@@ -199,19 +199,19 @@ final spinkit=Spinkits();
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              shimmerCircle(48), // Shimmer for the circular image
+              shimmerCircle(48,context), // Shimmer for the circular image
               const SizedBox(height: 8),
-              shimmerText(100, 16), // Shimmer for title text
+              shimmerText(100, 16,context), // Shimmer for title text
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  shimmerText(50, 12), // Shimmer for progress label
-                  shimmerText(30, 12), // Shimmer for percentage text
+                  shimmerText(50, 12,context), // Shimmer for progress label
+                  shimmerText(30, 12,context), // Shimmer for percentage text
                 ],
               ),
               const SizedBox(height: 4),
-              shimmerLinearProgress(7), // Shimmer for progress indicator
+              shimmerLinearProgress(7,context), // Shimmer for progress indicator
             ],
           ),
         );

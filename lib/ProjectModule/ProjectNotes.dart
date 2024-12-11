@@ -463,19 +463,19 @@ class _ProjectNotesState extends State<ProjectNotes> {
             children: [
               Row(
                 children: [
-                  shimmerRectangle(20), // Shimmer for calendar icon
+                  shimmerRectangle(20,context), // Shimmer for calendar icon
                   const SizedBox(width: 8),
-                  shimmerText(100, 15), // Shimmer for due date
+                  shimmerText(100, 15,context), // Shimmer for due date
                   const Spacer(),
-                  shimmerRectangle(20), // Shimmer for edit icon
+                  shimmerRectangle(20,context), // Shimmer for edit icon
                   const SizedBox(width: 8),
-                  shimmerRectangle(20), // Shimmer for eye icon (file)
+                  shimmerRectangle(20,context), // Shimmer for eye icon (file)
                 ],
               ),
               const SizedBox(height: 20),
-              shimmerText(150, 20), // Shimmer for note title
+              shimmerText(150, 20,context), // Shimmer for note title
               const SizedBox(height: 4),
-              shimmerText(280, 15), // Shimmer for note description
+              shimmerText(280, 15,context), // Shimmer for note description
             ],
           ),
         );

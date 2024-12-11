@@ -877,13 +877,13 @@ class _TimeSheetState extends State<TimeSheet> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(80, 16), // Shimmer for "Start Time"
+                      shimmerText(80, 16,context), // Shimmer for "Start Time"
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          shimmerRectangle(20), // Shimmer for time icon
+                          shimmerRectangle(20,context), // Shimmer for time icon
                           const SizedBox(width: 8),
-                          shimmerText(100, 14), // Shimmer for formatted time
+                          shimmerText(100, 14,context), // Shimmer for formatted time
                         ],
                       ),
                     ],
@@ -891,13 +891,13 @@ class _TimeSheetState extends State<TimeSheet> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(80, 16), // Shimmer for "End Time"
+                      shimmerText(80, 16,context), // Shimmer for "End Time"
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          shimmerRectangle(20), // Shimmer for time icon
+                          shimmerRectangle(20,context), // Shimmer for time icon
                           const SizedBox(width: 8),
-                          shimmerText(100, 14), // Shimmer for formatted time
+                          shimmerText(100, 14,context), // Shimmer for formatted time
                         ],
                       ),
                     ],
@@ -907,16 +907,16 @@ class _TimeSheetState extends State<TimeSheet> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  shimmerCircle(24), // Shimmer for member image
+                  shimmerCircle(24,context), // Shimmer for member image
                   const SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(120, 14), // Shimmer for member name
+                      shimmerText(120, 14,context), // Shimmer for member name
                       const SizedBox(height: 6),
-                      shimmerText(150, 15), // Shimmer for task
+                      shimmerText(150, 15,context), // Shimmer for task
                       const SizedBox(height: 6),
-                      shimmerText(200, 14), // Shimmer for note
+                      shimmerText(200, 14,context), // Shimmer for note
                     ],
                   ),
                 ],
@@ -924,11 +924,11 @@ class _TimeSheetState extends State<TimeSheet> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  shimmerRectangle(20), // Shimmer for time icon
+                  shimmerRectangle(20,context), // Shimmer for time icon
                   const SizedBox(width: 8),
-                  shimmerText(100, 14), // Shimmer for "Total Hours"
+                  shimmerText(100, 14,context), // Shimmer for "Total Hours"
                   const SizedBox(width: 4),
-                  shimmerText(50, 14), // Shimmer for total time value
+                  shimmerText(50, 14,context), // Shimmer for total time value
                 ],
               ),
             ],

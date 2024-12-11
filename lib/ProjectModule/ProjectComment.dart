@@ -782,26 +782,26 @@ class _ProjectCommentState extends State<ProjectComment> {
               // Shimmer for user image and name
               Row(
                 children: [
-                  shimmerCircle(30), // Shimmer for user image
+                  shimmerCircle(30,context), // Shimmer for user image
                   const SizedBox(width: 8),
-                  shimmerText(100, 16), // Shimmer for user name
+                  shimmerText(100, 16,context), // Shimmer for user name
                   const Spacer(),
-                  shimmerRectangle(20), // Shimmer for delete icon
+                  shimmerRectangle(20,context), // Shimmer for delete icon
                 ],
               ),
               const SizedBox(height: 12),
-              shimmerText(200, 14), // Shimmer for comment text
+              shimmerText(200, 14,context), // Shimmer for comment text
               const SizedBox(height: 20),
               if (index % 2 == 0) // Show files for some shimmer items
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    shimmerRectangle(20), // Shimmer for file icon
+                    shimmerRectangle(20,context), // Shimmer for file icon
                     const SizedBox(width: 8),
-                    shimmerText(120, 15), // Shimmer for file name
+                    shimmerText(120, 15,context), // Shimmer for file name
                     const Spacer(),
-                    shimmerText(80, 14), // Shimmer for "Click to view" text
+                    shimmerText(80, 14,context), // Shimmer for "Click to view" text
                   ],
                 ),
             ],

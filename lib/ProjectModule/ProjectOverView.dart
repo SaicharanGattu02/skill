@@ -220,12 +220,12 @@ class _OverViewState extends State<OverView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      shimmerText(130, 20),
-                      shimmerText(130, 20),
+                      shimmerText(130, 20,context),
+                      shimmerText(130, 20,context),
                     ],
                   ),
                   const SizedBox(height: 15),
-                  shimmerText(350, 20),
+                  shimmerText(350, 20,context),
                   SizedBox(
                     height: MediaQuery.of(context).size.height,
                     child: ListView.builder(
@@ -244,20 +244,20 @@ class _OverViewState extends State<OverView> {
                               ),
                               child: Row(
                                 children: [
-                                  shimmerCircle(32),
+                                  shimmerCircle(32,context),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        shimmerText(100, 16),
+                                        shimmerText(100, 16,context),
                                         const SizedBox(height: 5),
-                                        shimmerText(160, 12),
+                                        shimmerText(160, 12,context),
                                       ],
                                     ),
                                   ),
-                                  shimmerText(50, 12),
+                                  shimmerText(50, 12,context),
                                 ],
                               ),
                             ),
@@ -286,9 +286,9 @@ class _OverViewState extends State<OverView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          shimmerText(150, 20),
+          shimmerText(150, 20,context),
           const SizedBox(height: 15),
-          shimmerCircle(120),
+          shimmerCircle(120,context),
           const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -305,13 +305,13 @@ class _OverViewState extends State<OverView> {
   Widget _buildShimmerColumn() {
     return Column(
       children: [
-        shimmerText(60, 10),
+        shimmerText(60, 10,context),
         const SizedBox(height: 5),
-        shimmerText(60, 10),
+        shimmerText(60, 10,context),
         const SizedBox(height: 5),
-        shimmerText(60, 10),
+        shimmerText(60, 10,context),
         const SizedBox(height: 5),
-        shimmerText(60, 10),
+        shimmerText(60, 10,context),
       ],
     );
   }

@@ -400,27 +400,27 @@ class _MeetingsState extends State<Meetings> {
                 children: [
                   Row(
                     children: [
-                      shimmerText(50, 15), // Shimmer for "Today" label
+                      shimmerText(50, 15,context), // Shimmer for "Today" label
                       const Spacer(),
-                      shimmerRectangle(24), // Shimmer for delete icon
+                      shimmerRectangle(24,context), // Shimmer for delete icon
                       const SizedBox(width: 8),
-                      shimmerRectangle(24), // Shimmer for edit icon
+                      shimmerRectangle(24,context), // Shimmer for edit icon
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      shimmerCircle(10), // Shimmer for status dot
+                      shimmerCircle(10,context), // Shimmer for status dot
                       const SizedBox(width: 8),
-                      shimmerText(150, 12), // Shimmer for start date
+                      shimmerText(150, 12,context), // Shimmer for start date
                       const SizedBox(width: 8),
-                      shimmerCircle(12), // Shimmer for meeting icon
+                      shimmerCircle(12,context), // Shimmer for meeting icon
                     ],
                   ),
                   const SizedBox(height: 8),
-                  shimmerText(150, 12), // Shimmer for task title
+                  shimmerText(150, 12,context), // Shimmer for task title
                   const SizedBox(height: 8),
-                  shimmerText(200, 12), // Shimmer for meeting link
+                  shimmerText(200, 12,context), // Shimmer for meeting link
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
@@ -428,7 +428,7 @@ class _MeetingsState extends State<Meetings> {
                       borderRadius: BorderRadius.circular(100),
                       color: Colors.grey[300], // Shimmer background color
                     ),
-                    child: shimmerText(100, 12), // Shimmer for meeting link button
+                    child: shimmerText(100, 12,context), // Shimmer for meeting link button
                   ),
                 ],
               ),

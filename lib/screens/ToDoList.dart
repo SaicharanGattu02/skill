@@ -1631,19 +1631,19 @@ class _TodolistState extends State<Todolist> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              shimmerRectangle(20), // Shimmer for the icon
+              shimmerRectangle(20,context), // Shimmer for the icon
               const SizedBox(width: 8),
-              shimmerCircle(20),
+              shimmerCircle(20,context),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    shimmerText(150, 13), // Shimmer for task name
+                    shimmerText(150, 13,context), // Shimmer for task name
                     const SizedBox(height: 5),
-                    shimmerText(200, 11), // Shimmer for description
+                    shimmerText(200, 11,context), // Shimmer for description
                     const SizedBox(height: 5),
-                    shimmerText(120, 11), // Shimmer for date/time
+                    shimmerText(120, 11,context), // Shimmer for date/time
                   ],
                 ),
               ),

@@ -61,40 +61,48 @@ FadeShimmer_box_porter(height, width, radius) {
 }
 
 // Shimmer component for a circular image
-shimmerCircle(double size) {
+shimmerCircle(double size,BuildContext context) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+  final highlightColor = isDarkMode ? Colors.grey[700]! : Colors.grey[100]!;
   return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
+    baseColor:baseColor,
+    highlightColor: highlightColor,
     child: Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.grey,
+        color: Colors.white,
       ),
     ),
   );
 }
 
-shimmerRectangle(double size) {
+Widget shimmerRectangle(double size,BuildContext context) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+  final highlightColor = isDarkMode ? Colors.grey[700]! : Colors.grey[100]!;
   return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
+    baseColor: baseColor,
+    highlightColor: highlightColor,
     child: Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
-        color: Colors.grey,
+        color: Colors.white,
       ),
     ),
   );
 }
-
- shimmerContainer(double width, double height, {bool isButton = false}) {
+shimmerContainer(double width, double height,BuildContext context,{bool isButton = false}) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+  final highlightColor = isDarkMode ? Colors.grey[700]! : Colors.grey[100]!;
   return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
+    baseColor: baseColor,
+    highlightColor: highlightColor,
     child: Container(
       width: width,
       height: height,
@@ -103,17 +111,20 @@ shimmerRectangle(double size) {
         borderRadius: BorderRadius.circular(8),
       ),
       child: isButton
-          ? Center(child: shimmerText(80, 18))
+          ? Center(child: shimmerText(80, 18,context))
           : SizedBox(),
     ),
   );
 }
 
 // Shimmer component for text
-shimmerText(double width, double height) {
+shimmerText(double width, double height,BuildContext context) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+  final highlightColor = isDarkMode ? Colors.grey[700]! : Colors.grey[100]!;
   return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
+    baseColor: baseColor,
+    highlightColor: highlightColor,
     child: Container(
       width: width,
       height: height,
@@ -124,10 +135,13 @@ shimmerText(double width, double height) {
 }
 
 // Shimmer component for linear progress bar
-shimmerLinearProgress(double height) {
+shimmerLinearProgress(double height,BuildContext context) {
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  final baseColor = isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+  final highlightColor = isDarkMode ? Colors.grey[700]! : Colors.grey[100]!;
   return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
+    baseColor:baseColor,
+    highlightColor:highlightColor,
     child: Container(
       height: height,
       decoration: BoxDecoration(

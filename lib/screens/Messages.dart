@@ -396,21 +396,21 @@ class _MessagesState extends State<Messages> {
               ),
               child: Row(
                 children: [
-                  shimmerCircle(32), // Use your shimmer circle
+                  shimmerCircle(32,context), // Use your shimmer circle
                   const SizedBox(width: 10),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        shimmerText(100, 16), // Shimmer for user name
+                        shimmerText(100, 16,context), // Shimmer for user name
                         const SizedBox(height: 5),
-                        shimmerText(160, 12), // Shimmer for message
+                        shimmerText(160, 12,context), // Shimmer for message
                       ],
                     ),
                   ),
                   const Spacer(),
-                  shimmerText(50, 12), // Shimmer for formatted time
+                  shimmerText(50, 12,context), // Shimmer for formatted time
                 ],
               ),
             ),
