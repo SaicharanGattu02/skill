@@ -19,14 +19,14 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 
-class Todolist extends StatefulWidget {
-  const Todolist({super.key});
+class ToDoScreen extends StatefulWidget {
+  const ToDoScreen({super.key});
 
   @override
-  State<Todolist> createState() => _TodolistState();
+  State<ToDoScreen> createState() => _ToDoScreenState();
 }
 
-class _TodolistState extends State<Todolist> {
+class _ToDoScreenState extends State<ToDoScreen> {
   TextEditingController _labelnameController = TextEditingController();
   TextEditingController _labelcolorController = TextEditingController();
   TextEditingController _dateController = TextEditingController();

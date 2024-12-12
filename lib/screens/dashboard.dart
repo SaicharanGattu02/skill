@@ -1377,7 +1377,7 @@ class _DashboardState extends State<Dashboard> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          Todolist()));
+                                                          ToDoScreen()));
                                             },
 
                                             child: Column(
@@ -2047,7 +2047,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>Todolist()));
+                                  builder: (context) =>ToDoScreen()));
                         },
                         child: Container(
                           child: Column(
