@@ -27,7 +27,7 @@ class _OverViewState extends State<OverView> {
 
   bool _loading = true;
   final spinkit = Spinkits();
-  String my_employeeID ="";
+  String my_employeeID = "";
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _OverViewState extends State<OverView> {
 
   List<PieChartSectionData> pieChartSectionData = [];
   Future<void> GetProjectsOverviewData() async {
-    my_employeeID = await PreferenceService().getString("my_employeeID")??"";
+    my_employeeID = await PreferenceService().getString("my_employeeID") ?? "";
     print("my_employeeID:${my_employeeID}");
     var res = await Userapi.GetProjectsOverviewApi(widget.id);
     setState(() {
@@ -94,20 +94,22 @@ class _OverViewState extends State<OverView> {
 
   double _parseToDouble(dynamic value) {
     if (value is String) {
-      return double.tryParse(value) ?? 0.0;  // Safely parse String to double
+      return double.tryParse(value) ?? 0.0; // Safely parse String to double
     } else if (value is int) {
-      return value.toDouble();  // Convert int to double
+      return value.toDouble(); // Convert int to double
     }
-    return 0.0;  // Default to 0.0 if it's neither a String nor an int
+    return 0.0; // Default to 0.0 if it's neither a String nor an int
   }
-
 
   void _updatePieChartData() {
     pieChartSectionData = [
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        value: (_parseToDouble(data?.todoPercent) ?? 0).toInt().toDouble(), // Convert to double
-        title: '${((_parseToDouble(data?.todoPercent) ?? 0)).round()}%', // Display as an integer
+        value: (_parseToDouble(data?.todoPercent) ?? 0)
+            .toInt()
+            .toDouble(), // Convert to double
+        title:
+            '${((_parseToDouble(data?.todoPercent) ?? 0)).round()}%', // Display as an integer
         color: Color(0xff8856F4),
         radius: 25,
       ),
@@ -115,7 +117,8 @@ class _OverViewState extends State<OverView> {
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         value: _parseToDouble(data?.inProgressPercent) ?? 0,
-        title: '${data?.inProgressPercent}%', // Title with in-progress percentage
+        title:
+            '${data?.inProgressPercent}%', // Title with in-progress percentage
         color: Color(0xffCAA0F8),
         radius: 25,
       ),
@@ -123,14 +126,13 @@ class _OverViewState extends State<OverView> {
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         value: (_parseToDouble(data?.totalPercent) ?? 0).toInt().toDouble(),
-        title: '${((_parseToDouble(data?.totalPercent) ?? 0)).round()}%', // Display as an integer
+        title:
+            '${((_parseToDouble(data?.totalPercent) ?? 0)).round()}%', // Display as an integer
         color: Color(0xffEDDFFC),
         radius: 25,
       ),
     ];
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +174,7 @@ class _OverViewState extends State<OverView> {
                   margin: EdgeInsets.only(left: 16, right: 16, top: 16),
                   decoration: BoxDecoration(
                       color: themeProvider.themeData == lightTheme
-                          ?  Color(0xFFF0E5FC)
+                          ? Color(0xFFF0E5FC)
                           : AppColors.darkmodeContainerColor,
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(18),
@@ -226,12 +228,12 @@ class _OverViewState extends State<OverView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      shimmerText(130, 20,context),
-                      shimmerText(130, 20,context),
+                      shimmerText(130, 20, context),
+                      shimmerText(130, 20, context),
                     ],
                   ),
                   const SizedBox(height: 15),
-                  shimmerText(350, 20,context),
+                  shimmerText(350, 20, context),
                   SizedBox(
                     height: MediaQuery.of(context).size.height,
                     child: ListView.builder(
@@ -245,25 +247,27 @@ class _OverViewState extends State<OverView> {
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: isDarkMode ? Colors.black :  Color(0xffF7F4FC),
+                                color: isDarkMode
+                                    ? Colors.black
+                                    : Color(0xffF7F4FC),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Row(
                                 children: [
-                                  shimmerCircle(32,context),
+                                  shimmerCircle(32, context),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        shimmerText(100, 16,context),
+                                        shimmerText(100, 16, context),
                                         const SizedBox(height: 5),
-                                        shimmerText(160, 12,context),
+                                        shimmerText(160, 12, context),
                                       ],
                                     ),
                                   ),
-                                  shimmerText(50, 12,context),
+                                  shimmerText(50, 12, context),
                                 ],
                               ),
                             ),
@@ -293,9 +297,9 @@ class _OverViewState extends State<OverView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          shimmerText(150, 20,context),
+          shimmerText(150, 20, context),
           const SizedBox(height: 15),
-          shimmerCircle(120,context),
+          shimmerCircle(120, context),
           const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -312,13 +316,13 @@ class _OverViewState extends State<OverView> {
   Widget _buildShimmerColumn() {
     return Column(
       children: [
-        shimmerText(60, 10,context),
+        shimmerText(60, 10, context),
         const SizedBox(height: 5),
-        shimmerText(60, 10,context),
+        shimmerText(60, 10, context),
         const SizedBox(height: 5),
-        shimmerText(60, 10,context),
+        shimmerText(60, 10, context),
         const SizedBox(height: 5),
-        shimmerText(60, 10,context),
+        shimmerText(60, 10, context),
       ],
     );
   }
@@ -329,7 +333,7 @@ class _OverViewState extends State<OverView> {
       width: MediaQuery.of(context).size.width * 0.45,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color:themeProvider.themeData == lightTheme
+        color: themeProvider.themeData == lightTheme
             ? Color(0xffffffff)
             : AppColors.darkmodeContainerColor,
         borderRadius: BorderRadius.circular(7),
@@ -339,7 +343,7 @@ class _OverViewState extends State<OverView> {
           Text(
             "Project Status",
             style: TextStyle(
-              color:themeProvider.themeData == lightTheme
+              color: themeProvider.themeData == lightTheme
                   ? Color(0xff16192C)
                   : themeProvider.textColor,
               fontWeight: FontWeight.w500,
@@ -360,8 +364,8 @@ class _OverViewState extends State<OverView> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       decoration: BoxDecoration(
-        color:themeProvider.themeData == lightTheme
-            ?  Color(0xFFF0E5FC)
+        color: themeProvider.themeData == lightTheme
+            ? Color(0xFFF0E5FC)
             : AppColors.darkmodeContainerColor,
         shape: BoxShape.circle,
       ),
@@ -381,11 +385,10 @@ class _OverViewState extends State<OverView> {
             // Parse the value, multiply by 100, then round and display as an integer
             '${((_parseToDouble(data?.totalPercent) ?? 0)).round()}%',
             style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Inter",
-              color: themeProvider.textColor
-            ),
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+                color: themeProvider.textColor),
           ),
         ],
       ),
@@ -425,41 +428,43 @@ class _OverViewState extends State<OverView> {
       children: [
         Text(title,
             style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
-                fontSize: 10,
-                color:themeProvider.themeData == lightTheme
-                    ?  Color(0xff8A8A8E)
-                    : themeProvider.textColor,
-               )),
+              fontWeight: FontWeight.w400,
+              fontFamily: "Inter",
+              fontSize: 10,
+              color: themeProvider.themeData == lightTheme
+                  ? Color(0xff8A8A8E)
+                  : themeProvider.textColor,
+            )),
         Text(value,
             style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-                fontSize: 10,
-                color:themeProvider.themeData == lightTheme
-                    ? Color(0xff16192C)
-                    : themeProvider.textColor,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+              fontSize: 10,
+              color: themeProvider.themeData == lightTheme
+                  ? Color(0xff16192C)
+                  : themeProvider.textColor,
             )),
         SizedBox(
           height: 2,
         ),
         Text(secondTitle,
             style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
-                fontSize: 10,
-                color:themeProvider.themeData == lightTheme
-                    ?  Color(0xff8A8A8E)
-                    : themeProvider.textColor,)),
+              fontWeight: FontWeight.w400,
+              fontFamily: "Inter",
+              fontSize: 10,
+              color: themeProvider.themeData == lightTheme
+                  ? Color(0xff8A8A8E)
+                  : themeProvider.textColor,
+            )),
         Text(secondValue,
             style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-                fontSize: 10,
-                color: themeProvider.themeData == lightTheme
-                    ? Color(0xff16192C)
-                    : themeProvider.textColor,)),
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+              fontSize: 10,
+              color: themeProvider.themeData == lightTheme
+                  ? Color(0xff16192C)
+                  : themeProvider.textColor,
+            )),
       ],
     );
   }
@@ -470,7 +475,7 @@ class _OverViewState extends State<OverView> {
       width: MediaQuery.of(context).size.width * 0.45,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color:themeProvider.themeData == lightTheme
+        color: themeProvider.themeData == lightTheme
             ? Color(0xffffffff)
             : AppColors.darkmodeContainerColor,
         borderRadius: BorderRadius.circular(7),
@@ -482,7 +487,7 @@ class _OverViewState extends State<OverView> {
           Text(
             "Task Status",
             style: TextStyle(
-              color:themeProvider.themeData == lightTheme
+              color: themeProvider.themeData == lightTheme
                   ? Color(0xff16192C)
                   : themeProvider.textColor,
               fontWeight: FontWeight.w500,
@@ -493,93 +498,93 @@ class _OverViewState extends State<OverView> {
           SizedBox(height: 16),
           Container(
             height: MediaQuery.of(context).size.width * 0.33,
-            child: Stack(alignment: Alignment.center,
-                children:[
-                  PieChart(
-                PieChartData(
-                  sections: pieChartSectionData,
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 40,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PieChart(
+                  PieChartData(
+                    sections: pieChartSectionData,
+                    borderData: FlBorderData(show: false),
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 40,
+                  ),
                 ),
-              ),
-                  // PieChart(
-                  //   PieChartData(
-                  //     sections: pieChartSectionData,
-                  //     borderData: FlBorderData(show: false),
-                  //     sectionsSpace: 2,
-                  //     // centerSpaceRadius: 40, // Center space radius for the pie chart
-                  //   ),
-                  // ),
-                  // // Title (Percentage) inside a black container
-                  // Positioned(
-                  //   left: 0,
-                  //   child: Container(
-                  //     width: MediaQuery.of(context).size.width * 0.12,
-                  //     height: MediaQuery.of(context).size.height * 0.06,
-                  //     decoration: BoxDecoration(
-                  //       color: Color(0xffECEAF8),  // Background color for the title container
-                  //       borderRadius: BorderRadius.circular(100),
-                  //     ),
-                  //     child: Center(
-                  //       child: Text(
-                  //      '${data?.todoPercent}%',  // Display percentage title for the first section
-                  //         style: TextStyle(
-                  //           color: Colors.black,
-                  //           fontWeight: FontWeight.w600,
-                  //           fontSize: 14,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // // Title (Percentage) for the second section (inProgressPercent) inside a container
-                  // Positioned(
-                  //   top: MediaQuery.of(context).size.height * 0.05,  // Adjust position for second title
-                  //   right: MediaQuery.of(context).size.width * 0.10, // Adjusted right position
-                  //   child: Container(
-                  //     width: MediaQuery.of(context).size.width * 0.12,
-                  //     height: MediaQuery.of(context).size.height * 0.06,
-                  //     decoration: BoxDecoration(
-                  //       color: Color(0xffECEAF8),  // Background color for the title container
-                  //       borderRadius: BorderRadius.circular(100),
-                  //     ),
-                  //     child: Center(
-                  //       child: Text(
-                  //         '${data?.inProgressPercent}%',
-                  //         style: TextStyle(
-                  //           color: Colors.black,
-                  //           fontWeight: FontWeight.w600,
-                  //           fontSize: 14,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // // Title (Percentage) for the third section (inProgressPercent) inside a container
-                  // Positioned(
-                  //   right: 0,
-                  //   child: Container(
-                  //     width: MediaQuery.of(context).size.width * 0.12,
-                  //     height: MediaQuery.of(context).size.height * 0.06,
-                  //     decoration: BoxDecoration(
-                  //       color: Color(0xffECEAF8),  // Background color for the title container
-                  //       borderRadius: BorderRadius.circular(100),
-                  //     ),
-                  //     child: Center(
-                  //       child: Text(
-                  //         '${data?.totalPercent}%',
-                  //         style: TextStyle(
-                  //           color: Colors.black,
-                  //           fontWeight: FontWeight.w600,
-                  //           fontSize: 14,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                ],
-
+                // PieChart(
+                //   PieChartData(
+                //     sections: pieChartSectionData,
+                //     borderData: FlBorderData(show: false),
+                //     sectionsSpace: 2,
+                //     // centerSpaceRadius: 40, // Center space radius for the pie chart
+                //   ),
+                // ),
+                // // Title (Percentage) inside a black container
+                // Positioned(
+                //   left: 0,
+                //   child: Container(
+                //     width: MediaQuery.of(context).size.width * 0.12,
+                //     height: MediaQuery.of(context).size.height * 0.06,
+                //     decoration: BoxDecoration(
+                //       color: Color(0xffECEAF8),  // Background color for the title container
+                //       borderRadius: BorderRadius.circular(100),
+                //     ),
+                //     child: Center(
+                //       child: Text(
+                //      '${data?.todoPercent}%',  // Display percentage title for the first section
+                //         style: TextStyle(
+                //           color: Colors.black,
+                //           fontWeight: FontWeight.w600,
+                //           fontSize: 14,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // // Title (Percentage) for the second section (inProgressPercent) inside a container
+                // Positioned(
+                //   top: MediaQuery.of(context).size.height * 0.05,  // Adjust position for second title
+                //   right: MediaQuery.of(context).size.width * 0.10, // Adjusted right position
+                //   child: Container(
+                //     width: MediaQuery.of(context).size.width * 0.12,
+                //     height: MediaQuery.of(context).size.height * 0.06,
+                //     decoration: BoxDecoration(
+                //       color: Color(0xffECEAF8),  // Background color for the title container
+                //       borderRadius: BorderRadius.circular(100),
+                //     ),
+                //     child: Center(
+                //       child: Text(
+                //         '${data?.inProgressPercent}%',
+                //         style: TextStyle(
+                //           color: Colors.black,
+                //           fontWeight: FontWeight.w600,
+                //           fontSize: 14,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // // Title (Percentage) for the third section (inProgressPercent) inside a container
+                // Positioned(
+                //   right: 0,
+                //   child: Container(
+                //     width: MediaQuery.of(context).size.width * 0.12,
+                //     height: MediaQuery.of(context).size.height * 0.06,
+                //     decoration: BoxDecoration(
+                //       color: Color(0xffECEAF8),  // Background color for the title container
+                //       borderRadius: BorderRadius.circular(100),
+                //     ),
+                //     child: Center(
+                //       child: Text(
+                //         '${data?.totalPercent}%',
+                //         style: TextStyle(
+                //           color: Colors.black,
+                //           fontWeight: FontWeight.w600,
+                //           fontSize: 14,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+              ],
             ),
           ),
           SizedBox(height: 20),
@@ -594,19 +599,25 @@ class _OverViewState extends State<OverView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
         Row(
           children: [
             _buildLegendItem(Color(0xff8856F4), "To do"),
           ],
         ),
-        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
         Row(
           children: [
             _buildLegendItem(Color(0xffCAA0F8), "In Progress"),
           ],
         ),
-        SizedBox(height: MediaQuery.of(context).size.height*0.01,),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
         Row(
           children: [
             _buildLegendItem(Color(0xffEDDFFC), "Done"),
@@ -634,15 +645,14 @@ class _OverViewState extends State<OverView> {
                 fontWeight: FontWeight.w500,
                 fontFamily: "Inter",
                 fontSize: 11,
-                color:themeProvider.textColor)),
+                color: themeProvider.textColor)),
       ],
     );
   }
 
   Widget _buildTabSwitcher(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return
-      Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         GestureDetector(
@@ -651,30 +661,34 @@ class _OverViewState extends State<OverView> {
               isMembersTab = true;
             });
           },
-          child:
-          Column(
+          child: Column(
             children: [
               Text(
                 'Members',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color:
-                  isMembersTab ?AppColors.primaryColor: Color(0xff3c3c43)
-                ),
+                    fontSize: 16,
+                    fontWeight:
+                        isMembersTab ? FontWeight.w500 : FontWeight.w500,
+                    color: isMembersTab
+                        ? themeProvider.themeData == lightTheme
+                            ? AppColors.primaryColor
+                            : themeProvider.textColor
+                        : themeProvider.themeData == lightTheme
+                            ? Color(0xff3c3c43)
+                            : themeProvider.textColor.withOpacity(0.7)),
               ),
               if (isMembersTab)
                 Container(
-                  margin: EdgeInsets.only(top: 4),
-                  height: 2,
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  color: Color(0xff8856f4),
-                ),
+                    margin: EdgeInsets.only(top: 4),
+                    height: 2,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    color: themeProvider.themeData == lightTheme
+                        ? AppColors.primaryColor
+                        : themeProvider.textColor),
             ],
           ),
         ),
         GestureDetector(
-
           onTap: () {
             setState(() {
               isMembersTab = false;
@@ -685,19 +699,25 @@ class _OverViewState extends State<OverView> {
               Text(
                 'Activity',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
-                  color:
-                      isMembersTab ? Color(0xff3c3c43) : AppColors.primaryColor,
-                ),
+                    fontSize: 16,
+                    fontWeight:
+                        isMembersTab ? FontWeight.w500 : FontWeight.w500,
+                    color: isMembersTab
+                        ? themeProvider.themeData == lightTheme
+                            ? AppColors.primaryColor
+                            : themeProvider.textColor.withOpacity(0.7)
+                        : themeProvider.themeData == lightTheme
+                            ? Color(0xff3c3c43)
+                            : themeProvider.textColor),
               ),
               if (!isMembersTab)
                 Container(
-                  margin: EdgeInsets.only(top: 4),
-                  height: 2,
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  color: Color(0xff8856f4),
-                ),
+                    margin: EdgeInsets.only(top: 4),
+                    height: 2,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    color: themeProvider.themeData == lightTheme
+                        ? AppColors.primaryColor
+                        : themeProvider.textColor),
             ],
           ),
         ),

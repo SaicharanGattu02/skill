@@ -339,7 +339,7 @@ class ActivityCard extends StatelessWidget {
                   children: [
                     Text(name,
                         style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500,
                             fontFamily: "Inter",
                             color: themeProvider.textColor)),
