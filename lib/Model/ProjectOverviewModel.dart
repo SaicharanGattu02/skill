@@ -35,8 +35,8 @@ class Data {
   String? startDate;
   String? endDate;
   String? totalTimeWorked;
-  int? totalPercent;
-  int? todoPercent;
+  String? totalPercent;
+  String? todoPercent;
   String? inProgressPercent;
 
   Data({
@@ -75,9 +75,9 @@ class Data {
     totalTimeWorked = json['total_time_worked'];
 
     // Safely parsing the percent values
-    totalPercent = json['total_percent'];
-    todoPercent = json['todo_percent'];
-    inProgressPercent = json['in_progress_percent'];
+    totalPercent = json['total_percent'].toString();
+    todoPercent = json['todo_percent'].toString();
+    inProgressPercent = json['in_progress_percent'].toString();
   }
 
   Map<String, dynamic> toJson() {

@@ -178,7 +178,9 @@ class _ProjectCommentState extends State<ProjectComment> {
               margin: EdgeInsets.symmetric(vertical: 6),
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+                color: themeProvider.themeData == lightTheme
+                    ? Color(0xffffffff)
+                    : AppColors.darkmodeContainerColor,
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Column(
@@ -236,7 +238,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                   Text(
                     "Write Comment",
                     style: TextStyle(
-                      color:themeProvider.themeData==lightTheme?  Color(0xff141516) : themeProvider.textColor,
+                      color: themeProvider.themeData == lightTheme
+                          ? Color(0xff141516)
+                          : themeProvider.textColor,
                       fontFamily: 'Inter',
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -535,7 +539,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+                                color: themeProvider.themeData == lightTheme
+                                    ? Color(0xffffffff)
+                                    : AppColors.darkmodeContainerColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Column(
@@ -564,7 +570,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                       Text(
                                         comments.commentBy ?? "",
                                         style: TextStyle(
-                                          color:themeProvider.textColor,
+                                          color: themeProvider.textColor,
                                           fontFamily: 'Inter',
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
@@ -599,7 +605,10 @@ class _ProjectCommentState extends State<ProjectComment> {
                                   Text(
                                     comments.comment ?? "",
                                     style: TextStyle(
-                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F): themeProvider.textColor,
+                                      color:
+                                          themeProvider.themeData == lightTheme
+                                              ? Color(0xff6C848F)
+                                              : themeProvider.textColor,
                                       fontFamily: 'Inter',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -640,7 +649,10 @@ class _ProjectCommentState extends State<ProjectComment> {
                                             style: TextStyle(
                                               fontSize: 15,
                                               height: 21.78 / 15,
-                                              color:themeProvider.themeData==lightTheme? Color(0xff1D1C1D): themeProvider.textColor,
+                                              color: themeProvider.themeData ==
+                                                      lightTheme
+                                                  ? Color(0xff1D1C1D)
+                                                  : themeProvider.textColor,
                                               fontWeight: FontWeight.w500,
                                               fontFamily: 'Inter',
                                             ),

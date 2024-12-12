@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 
 import '../ProjectModule/TaskForm.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import 'CustomSnackBar.dart';
+import 'constants.dart';
 
 FadeShimmer_circle(size) {
   return Container(
@@ -241,6 +244,7 @@ class _MemberCardState extends State<MemberCard> {
   }
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -264,7 +268,7 @@ class _MemberCardState extends State<MemberCard> {
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                     fontFamily: "Inter",
-                    color: Colors.black,
+                    color: themeProvider.textColor,
                   ),
                 ),
               ],
@@ -306,6 +310,7 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -337,7 +342,7 @@ class ActivityCard extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             fontFamily: "Inter",
-                            color: Colors.black)),
+                            color: themeProvider.textColor)),
                     SizedBox(
                       width: 10,
                     ),
@@ -364,14 +369,18 @@ class ActivityCard extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: "Inter",
-                        color: Color(0xff6c848f))),
+                        color: Color(0xff6c848f)
+                    )),
                 
                 Text("${desc}",
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         fontFamily: "Inter",
-                        color: Color(0xff6c848f))),
+                        color: themeProvider.themeData == lightTheme
+                            ?   Color(0xff6c848f)
+                            : themeProvider.textColor,
+                    )),
               ],
             ),
           ),

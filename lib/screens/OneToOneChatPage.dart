@@ -9,14 +9,17 @@ import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/FetchmesgsModel.dart';
 import '../Model/RoomsDetailsModel.dart';
 import '../Model/RoomsModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 import 'UserProfile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,13 +27,14 @@ import 'package:permission_handler/permission_handler.dart';
 class ChatPage extends StatefulWidget {
   final String roomId;
   final String ID;
-  ChatPage({required this.roomId,required this.ID});
+  ChatPage({required this.roomId, required this.ID});
 
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin {
+class _ChatPageState extends State<ChatPage>
+    with SingleTickerProviderStateMixin {
   late IOWebSocketChannel _socket;
   TextEditingController _messageController = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -40,7 +44,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   bool _isRecording = false;
   bool _isCancelled = false;
   bool _isPlaying = false;
-  int _recordingTime = 0;  // in seconds
+  int _recordingTime = 0; // in seconds
   Timer? _timer;
   String? _recordedFilePath;
 
@@ -60,7 +64,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   String userimage = "";
   String userID = "";
 
-  bool isLoading=true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -122,7 +126,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
   // Start recording audio
   Future<String> _startRecording() async {
     final tempDir = await getTemporaryDirectory();
-    final filePath = '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+    final filePath =
+        '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
     await _audioRecorder.startRecorder(toFile: filePath);
 
     // Start the recording timer
@@ -195,13 +200,13 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
         user_id = res.data?.userId ?? "";
 
         print("USERID :${userID}");
-        isLoading=false;
+        isLoading = false;
         // Scroll to the bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
-            _scrollToBottom();
+          _scrollToBottom();
         });
       } else {
-        isLoading=false;
+        isLoading = false;
         print('Failed to create room');
       }
     });
@@ -220,7 +225,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     // If no files are selected, handle the null case
     if (pickedFiles != null && pickedFiles.isNotEmpty) {
       setState(() {
-        _files = pickedFiles;  // Update the list with the selected files
+        _files = pickedFiles; // Update the list with the selected files
       });
 
       // Call your upload function and pass the list of selected files
@@ -260,7 +265,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
       return message;
     }
   }
-
 
   Future<void> _fetchMessages() async {
     print('Fetching messages for page $_currentPage...');
@@ -328,11 +332,11 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  void _initializeWebSocket() async{
+  void _initializeWebSocket() async {
     final token = await PreferenceService().getString("token");
     print('Attempting to connect to WebSocket...');
-    _socket = IOWebSocketChannel.connect(
-        Uri.parse('wss://stage.skil.in/ws/chat/${widget.roomId}?token=${token}'));
+    _socket = IOWebSocketChannel.connect(Uri.parse(
+        'wss://stage.skil.in/ws/chat/${widget.roomId}?token=${token}'));
     print(
         'Connected to WebSocket at: wss://stage.skil.in/ws/chat/${widget.roomId}?token=${token}');
     setState(() {
@@ -395,7 +399,6 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     }
   }
 
-
   void _reconnectWebSocket() {
     Future.delayed(Duration(seconds: 5), () {
       print('Reconnecting to WebSocket...');
@@ -410,7 +413,7 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
       try {
         final payload = jsonEncode(
-            {'command': 'new_message', 'message': message, 'user':widget.ID});
+            {'command': 'new_message', 'message': message, 'user': widget.ID});
         print("Payload :${payload}");
         _socket.sink.add(payload);
       } catch (e) {
@@ -483,8 +486,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     }
   }
 
-
-  void _openImageViewer(BuildContext context, List<Media> media, int initialIndex) {
+  void _openImageViewer(
+      BuildContext context, List<Media> media, int initialIndex) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -501,7 +504,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
           backgroundDecoration: BoxDecoration(
             color: Colors.black,
           ),
-          pageController: PageController(initialPage: initialIndex), // Start from the selected index
+          pageController: PageController(
+              initialPage: initialIndex), // Start from the selected index
         ),
       ),
     );
@@ -509,7 +513,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 
   Future<void> _openVideoPlayer(BuildContext context, Media mediaItem) async {
     // Create a VideoPlayerController
-    VideoPlayerController controller = VideoPlayerController.network(mediaItem.file ?? '');
+    VideoPlayerController controller =
+        VideoPlayerController.network(mediaItem.file ?? '');
     await controller.initialize();
 
     // Display the video player
@@ -545,18 +550,17 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     );
   }
 
-
-
-
-  Widget _buildMessageBubble(String message, String sender, String datetime, List<Media>? media) {
+  Widget _buildMessageBubble(
+      String message, String sender, String datetime, List<Media>? media) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     bool isMe = sender == 'you';
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Row(
-          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment:
+              isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
@@ -579,7 +583,13 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
               margin: EdgeInsets.symmetric(vertical: 5),
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isMe ? Color(0xffEAE1FF) : Colors.white,
+                color: isMe
+                    ? themeProvider.themeData == lightTheme
+                        ? Color(0xffEAE1FF)
+                        : themeProvider.containerColor
+                    : themeProvider.themeData == lightTheme
+                        ? Color(0xffffffff)
+                        : themeProvider.containerColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
@@ -588,35 +598,36 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                 ),
               ),
               child: Column(
-                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // Display the message text
                   if (message != "")
                     Text(
                       message,
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color:themeProvider.textColor,fontFamily: "Inter"),
                     ),
 
                   // Check if there's media and handle different media types
                   if (media != null && media.isNotEmpty) ...[
                     if (media.length == 1) ...[
-                        // Display image
-                        GestureDetector(
-                          onTap: () => _openImageViewer(context, media, 0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child: Image.network(
-                              media[0].file ?? '',
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                            ),
+                      // Display image
+                      GestureDetector(
+                        onTap: () => _openImageViewer(context, media, 0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.network(
+                            media[0].file ?? '',
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
                           ),
                         ),
+                      ),
                       // ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
                       //   // Display video (with an icon for preview)
                       //   GestureDetector(
@@ -690,7 +701,10 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                           crossAxisSpacing: 3,
                           mainAxisSpacing: 3,
                         ),
-                        itemCount: media.length > 3 ? 4 : media.length, // Show up to 4 items, with a "more" option
+                        itemCount: media.length > 3
+                            ? 4
+                            : media
+                                .length, // Show up to 4 items, with a "more" option
                         itemBuilder: (context, index) {
                           if (index == 3 && media.length > 3) {
                             // If it's the last index and we have more than 3 items, display the +X more
@@ -732,7 +746,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                           } else {
                             final mediaItem = media[index];
                             return GestureDetector(
-                              onTap: () => _openImageViewer(context, media, index),
+                              onTap: () =>
+                                  _openImageViewer(context, media, index),
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -753,7 +768,8 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
                   Text(
                     datetime,
                     style: TextStyle(
-                      color: Colors.black54,
+                      color:themeProvider.textColor.withOpacity(0.7),
+                      fontFamily: "Inter",
                       fontSize: 10,
                     ),
                   ),
@@ -769,10 +785,10 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
 // A helper function to return the appropriate widget for each media type
   Widget getMediaWidget(Media mediaItem) {
     // if (mediaItem.contentType?.startsWith('image') ?? false) {
-      return Image.network(
-        mediaItem.file ?? '',
-        fit: BoxFit.cover,
-      );
+    return Image.network(
+      mediaItem.file ?? '',
+      fit: BoxFit.cover,
+    );
     // } else if (mediaItem.contentType?.startsWith('video') ?? false) {
     //   return Stack(
     //     alignment: Alignment.center,
@@ -803,16 +819,15 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
     // }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
-      backgroundColor: const Color(0xffF3ECFB),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Scaffold(
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: themeProvider.themeData == lightTheme
+            ? AppColors.primaryColor
+            : Color(0xff000000),
         automaticallyImplyLeading: false,
         title: Row(
           children: [
@@ -826,8 +841,11 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
             SizedBox(width: 10),
             InkWell(
               onTap: () async {
-                var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(userID: userID)));
-                if(res == true) {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UserProfile(userID: userID)));
+                if (res == true) {
                   _initializeWebSocket();
                   RoomDetailsApi();
                 }
@@ -841,8 +859,11 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
             Expanded(
               child: InkResponse(
                 onTap: () async {
-                  var res = await Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile(userID: userID)));
-                  if(res == true) {
+                  var res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserProfile(userID: userID)));
+                  if (res == true) {
                     _initializeWebSocket();
                     RoomDetailsApi();
                   }
@@ -889,170 +910,192 @@ class _ChatPageState extends State<ChatPage> with SingleTickerProviderStateMixin
         //   ),
         // ],
       ),
-      body:  isLoading? Center(child: CircularProgressIndicator()):
-      Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _messages.length + (_isLoadingMore ? 1 : 0), // Add 1 for the loader
-              itemBuilder: (context, index) {
-                if (index == _messages.length && _isLoadingMore) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                final message = _messages[index];
-                final messageText = message.msg;
-                final sender = message.sentUser == widget.ID ? "you" : "remote";
-                final datetime = message.lastUpdated ?? "";
-                final media = message.media;
-
-                return _buildMessageBubble(messageText ?? "", sender, datetime, media);
-              },
-            ),
-          ),
-          // Animated file picker dialog
-          if (_isPickerVisible)
-            AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, child) {
-                return FadeTransition(
-                  opacity: _fadeAnimation, // Apply fade animation
-                  child: SlideTransition(
-                    position: _slideAnimation, // Apply slide animation
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 10, right: 20), // Adjust for the button position
-                        width: 250,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Color(0xffEAE0FF),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child:Icon(Icons.camera_alt,size: 40,color: Color(0xff8856F4),),
-                            ),
-                            SizedBox(width: 10,),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child:Icon(Icons.photo,size: 40,color: Color(0xff8856F4),),
-                            )
-
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5.0,
-                    spreadRadius: 1.0,
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller:_messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Your Message',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.attach_file_outlined,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      _pickImage(ImageSource.gallery);
-                    },
-                  ),
-                  // GestureDetector(
-                  //   onLongPressStart: (_) {
-                  //     _startRecording();
-                  //   },
-                  //   onLongPressEnd: (_) {
-                  //     if (!_isCancelled) {
-                  //       _stopRecording();
-                  //     }
-                  //   },
-                  //   onHorizontalDragUpdate: (details) {
-                  //     if (details.localPosition.dx < 0) {
-                  //       _cancelRecording();
-                  //     }
-                  //   },
-                  //   child: IconButton(
-                  //     icon: Icon(
-                  //       _isRecording ? Icons.stop : Icons.mic,
-                  //       color: _isRecording ? Colors.red : Colors.blue,
-                  //     ),
-                  //     onPressed: () {},
-                  //   ),
-                  // ),
-                  // _isRecording
-                  //     ? Column(
-                  //   children: [
-                  //     Text("Recording: ${_recordingTime}s"),
-                  //     // Placeholder for audio frequency visualizer (like waveform)
-                  //     LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
-                  //   ],
-                  // )
-                  //     : Container(),
-                  InkResponse(
-                    onTap: (){
-                      _sendMessage();
-                    },
-                    child: Container(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Image(
-                          image: AssetImage(
-                            "assets/container.png",
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: _messages.length +
+                        (_isLoadingMore ? 1 : 0), // Add 1 for the loader
+                    itemBuilder: (context, index) {
+                      if (index == _messages.length && _isLoadingMore) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
                           ),
-                          height: 36,
-                          width: 36,
-                        )),
+                        );
+                      }
+                      final message = _messages[index];
+                      final messageText = message.msg;
+                      final sender =
+                          message.sentUser == widget.ID ? "you" : "remote";
+                      final datetime = message.lastUpdated ?? "";
+                      final media = message.media;
+
+                      return _buildMessageBubble(
+                          messageText ?? "", sender, datetime, media);
+                    },
                   ),
-                ],
-              ),
+                ),
+                // Animated file picker dialog
+                if (_isPickerVisible)
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return FadeTransition(
+                        opacity: _fadeAnimation, // Apply fade animation
+                        child: SlideTransition(
+                          position: _slideAnimation, // Apply slide animation
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  top: 10,
+                                  right: 20), // Adjust for the button position
+                              width: 250,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                color: Color(0xffEAE0FF),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: EdgeInsets.all(10),
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 40,
+                                      color: Color(0xff8856F4),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.photo,
+                                      size: 40,
+                                      color: Color(0xff8856F4),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:themeProvider.themeData == lightTheme
+                          ? Color(0xffffffff)
+                          : themeProvider.containerColor,
+                      borderRadius: BorderRadius.circular(100),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 5.0,
+                          spreadRadius: 1.0,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _messageController,
+                            decoration: InputDecoration(
+                              hintText: 'Type message here...',
+                              hintStyle: TextStyle(
+                                fontFamily: "Inter",
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.attach_file_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            _pickImage(ImageSource.gallery);
+                          },
+                        ),
+                        // GestureDetector(
+                        //   onLongPressStart: (_) {
+                        //     _startRecording();
+                        //   },
+                        //   onLongPressEnd: (_) {
+                        //     if (!_isCancelled) {
+                        //       _stopRecording();
+                        //     }
+                        //   },
+                        //   onHorizontalDragUpdate: (details) {
+                        //     if (details.localPosition.dx < 0) {
+                        //       _cancelRecording();
+                        //     }
+                        //   },
+                        //   child: IconButton(
+                        //     icon: Icon(
+                        //       _isRecording ? Icons.stop : Icons.mic,
+                        //       color: _isRecording ? Colors.red : Colors.blue,
+                        //     ),
+                        //     onPressed: () {},
+                        //   ),
+                        // ),
+                        // _isRecording
+                        //     ? Column(
+                        //   children: [
+                        //     Text("Recording: ${_recordingTime}s"),
+                        //     // Placeholder for audio frequency visualizer (like waveform)
+                        //     LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
+                        //   ],
+                        // )
+                        //     : Container(),
+                        InkResponse(
+                          onTap: () {
+                            _sendMessage();
+                          },
+                          child: Container(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Image(
+                                image: AssetImage(
+                                  "assets/container.png",
+                                ),
+                                height: 36,
+                                width: 36,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 }

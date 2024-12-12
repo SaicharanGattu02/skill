@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/Mywidgets.dart';
 import '../Model/ProjectOverviewModel.dart';
@@ -9,6 +11,7 @@ import '../Model/ProjectActivityModel.dart';
 import '../utils/Preferances.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class OverView extends StatefulWidget {
   final String id;
@@ -133,6 +136,7 @@ class _OverViewState extends State<OverView> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
         body: _loading
             ? _buildShimmerGrid(w)
@@ -167,7 +171,9 @@ class _OverViewState extends State<OverView> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   margin: EdgeInsets.only(left: 16, right: 16, top: 16),
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: themeProvider.themeData == lightTheme
+                          ?  Color(0xFFF0E5FC)
+                          : AppColors.darkmodeContainerColor,
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(18),
                           topLeft: Radius.circular(18))),
@@ -318,11 +324,14 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildProjectStatusCard(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       width: MediaQuery.of(context).size.width * 0.45,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:themeProvider.themeData == lightTheme
+            ? Color(0xffffffff)
+            : AppColors.darkmodeContainerColor,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
@@ -330,7 +339,9 @@ class _OverViewState extends State<OverView> {
           Text(
             "Project Status",
             style: TextStyle(
-              color: Color(0xff16192C),
+              color:themeProvider.themeData == lightTheme
+                  ? Color(0xff16192C)
+                  : themeProvider.textColor,
               fontWeight: FontWeight.w500,
               fontSize: 18,
               fontFamily: 'Inter',
@@ -346,9 +357,12 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildCircularProgress() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFFF0E5FC),
+        color:themeProvider.themeData == lightTheme
+            ?  Color(0xFFF0E5FC)
+            : AppColors.darkmodeContainerColor,
         shape: BoxShape.circle,
       ),
       width: 150,
@@ -370,6 +384,7 @@ class _OverViewState extends State<OverView> {
               fontSize: 24,
               fontWeight: FontWeight.w600,
               fontFamily: "Inter",
+              color: themeProvider.textColor
             ),
           ),
         ],
@@ -378,6 +393,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildProjectDetails() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -403,6 +419,7 @@ class _OverViewState extends State<OverView> {
     required String secondTitle,
     required String secondValue,
   }) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -411,13 +428,19 @@ class _OverViewState extends State<OverView> {
                 fontWeight: FontWeight.w400,
                 fontFamily: "Inter",
                 fontSize: 10,
-                color: Color(0xff8A8A8E))),
+                color:themeProvider.themeData == lightTheme
+                    ?  Color(0xff8A8A8E)
+                    : themeProvider.textColor,
+               )),
         Text(value,
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontFamily: "Inter",
                 fontSize: 10,
-                color: Color(0xff16192C))),
+                color:themeProvider.themeData == lightTheme
+                    ? Color(0xff16192C)
+                    : themeProvider.textColor,
+            )),
         SizedBox(
           height: 2,
         ),
@@ -426,23 +449,30 @@ class _OverViewState extends State<OverView> {
                 fontWeight: FontWeight.w400,
                 fontFamily: "Inter",
                 fontSize: 10,
-                color: Color(0xff8A8A8E))),
+                color:themeProvider.themeData == lightTheme
+                    ?  Color(0xff8A8A8E)
+                    : themeProvider.textColor,)),
         Text(secondValue,
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontFamily: "Inter",
                 fontSize: 10,
-                color: Color(0xff16192C))),
+                color: themeProvider.themeData == lightTheme
+                    ? Color(0xff16192C)
+                    : themeProvider.textColor,)),
       ],
     );
   }
 
   Widget _buildTaskStatusCard(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       width: MediaQuery.of(context).size.width * 0.45,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:themeProvider.themeData == lightTheme
+            ? Color(0xffffffff)
+            : AppColors.darkmodeContainerColor,
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
@@ -452,7 +482,9 @@ class _OverViewState extends State<OverView> {
           Text(
             "Task Status",
             style: TextStyle(
-              color: Color(0xff16192C),
+              color:themeProvider.themeData == lightTheme
+                  ? Color(0xff16192C)
+                  : themeProvider.textColor,
               fontWeight: FontWeight.w500,
               fontSize: 18,
               fontFamily: 'Inter',
@@ -461,7 +493,6 @@ class _OverViewState extends State<OverView> {
           SizedBox(height: 16),
           Container(
             height: MediaQuery.of(context).size.width * 0.33,
-
             child: Stack(alignment: Alignment.center,
                 children:[
                   PieChart(
@@ -559,6 +590,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildTaskLegend() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -585,6 +617,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildLegendItem(Color color, String label) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       children: [
         Container(
@@ -601,12 +634,13 @@ class _OverViewState extends State<OverView> {
                 fontWeight: FontWeight.w500,
                 fontFamily: "Inter",
                 fontSize: 11,
-                color: Colors.black)),
+                color:themeProvider.textColor)),
       ],
     );
   }
 
   Widget _buildTabSwitcher(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return
       Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -626,7 +660,7 @@ class _OverViewState extends State<OverView> {
                   fontSize: 16,
                   fontWeight: isMembersTab ? FontWeight.w500 : FontWeight.w500,
                   color:
-                      isMembersTab ?AppColors.primaryColor: Color(0xff3c3c43)
+                  isMembersTab ?AppColors.primaryColor: Color(0xff3c3c43)
                 ),
               ),
               if (isMembersTab)
@@ -672,6 +706,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildMembersTab(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     double w = MediaQuery.of(context).size.width;
     return Column(
       children: [
@@ -822,6 +857,7 @@ class _OverViewState extends State<OverView> {
   }
 
   Widget _buildAcitivityTab(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     double w = MediaQuery.of(context).size.width;
     return Column(
       children: [

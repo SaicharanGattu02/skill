@@ -361,8 +361,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           child: Radio<String>(
                             value: 'male',
                             groupValue: _gender,
-                            activeColor:
-                                Color(0xff8856F4), // Change the active color
+                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -372,7 +371,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         ), // Decrease the space between the Radio and the Text
                         Text('Male',
                             style: TextStyle(
-                                color: Color(0xff4A4A4A),
+                                color: themeProvider.themeData==lightTheme? Color(0xff4A4A4A):themeProvider.textColor,
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 height: 16.36 / 14,
@@ -380,14 +379,14 @@ class _GeneralInfoState extends State<GeneralInfo> {
                       ],
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Transform.scale(
                           scale: 0.9, // Adjust the scale to decrease the size
                           child: Radio<String>(
                             value: 'female',
                             groupValue: _gender,
-                            activeColor:
-                                Color(0xff8856F4), // Change the active color
+                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -396,9 +395,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           ),
                         ),
                         // Decrease the space between the Radio and the Text
-                        const Text('FeMale',
+                         Text('FeMale',
                             style: TextStyle(
-                                color: Color(0xff4A4A4A),
+                                color: themeProvider.themeData==lightTheme? Color(0xff4A4A4A):themeProvider.textColor,
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 height: 16.36 / 14,
@@ -412,8 +411,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           child: Radio<String>(
                             value: 'other',
                             groupValue: _gender,
-                            activeColor:
-                                Color(0xff8856F4), // Change the active color
+                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -422,9 +420,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           ),
                         ),
                         // Decrease the space between the Radio and the Text
-                        const Text('Other',
+                         Text('Other',
                             style: TextStyle(
-                                color: Color(0xff4A4A4A),
+                                color: themeProvider.themeData==lightTheme? Color(0xff4A4A4A):themeProvider.textColor,
                                 fontFamily: 'Inter',
                                 fontSize: 14,
                                 height: 16.36 / 14,
@@ -545,8 +543,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
                         borderRadius: BorderRadius.circular(7),
                         border: Border.all(
                           color: Color(0xffD0CBDB),
+                          width: 0.5
                         ),
-                        color: Color(0xffFCFAFF),
+                        color: themeProvider.themeData==lightTheme? Color(0xffFCFAFF): themeProvider.containerColor,
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton2<String>(
@@ -554,6 +553,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                             children: [
                               Image.asset(
                                 'assets/globe.png',
+                                color: themeProvider.textColor,
                                 fit: BoxFit.contain,
                                 height: h * 0.02, // Match height of the container
                                 width: w * 0.04,
@@ -562,16 +562,16 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                   width: 8), // Space between image and text
                               Text(
                                 selectedValue ?? 'Select an option',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                  color:themeProvider.textColor,
                                 ),
                               ),
                               Spacer(),
                               Icon(
                                 Icons.keyboard_arrow_down_sharp,
-                                color: Colors.black,
+                                color: themeProvider.textColor,
                                 size: 20,
                               ),
                             ],
@@ -861,7 +861,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
           )),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: themeProvider.containerbcColor),
         child: Row(
           children: [
             InkResponse(
@@ -872,7 +872,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xffF8FCFF),
+                  color: themeProvider.containerbcColor,
                   border: Border.all(
                     color: Color(0xff8856F4),
                     width: 1.0,
