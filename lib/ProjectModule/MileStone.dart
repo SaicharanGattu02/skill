@@ -560,7 +560,7 @@ class _MileStoneState extends State<MileStone> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                         filled: true,
-                                        fillColor: const Color(0xffFCFAFF),
+                                        fillColor: themeProvider.fillColor,
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(7),
                                           borderSide: const BorderSide(
@@ -614,7 +614,9 @@ class _MileStoneState extends State<MileStone> {
                                     decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(color: Color(0xffE8ECFF))),
+                                        // border: Border.all(color: Color(0xffE8ECFF)
+                                        // )
+                                    ),
                                     child: TextFormField(
                                       cursorColor: Color(0xff8856F4),
                                       scrollPadding: const EdgeInsets.only(top: 5),

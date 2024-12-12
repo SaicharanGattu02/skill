@@ -53,6 +53,7 @@ class _TaskListState extends State<TaskList> {
   Data? assign;
   @override
   void initState() {
+
     super.initState();
     GetProjectTasks();
     // Initialize filteredData with all data
@@ -104,7 +105,6 @@ class _TaskListState extends State<TaskList> {
     });
   }
 
-
   @override
   void dispose() {
     _searchController.removeListener(filterData); // Remove listener
@@ -112,16 +112,15 @@ class _TaskListState extends State<TaskList> {
     super.dispose();
   }
 
-
   Future<void> GetProjectsOverviewData() async {
     var res = await Userapi.GetProjectsOverviewApi(widget.id1);
     setState(() {
       if (res != null && res.data != null) {
-        if(res.settings?.success==1){
+        if (res.settings?.success == 1) {
           assign = res.data;
           members = assign?.members ?? [];
           print("members: $members");
-        }else {}
+        } else {}
       }
     });
   }
@@ -164,7 +163,8 @@ class _TaskListState extends State<TaskList> {
   }
 
   Future<void> GetProjectTasks() async {
-    var Res = await Userapi.GetTask(widget.id1,milestoneid,statusid,assignedid,priorityid,_deadlineController.text);
+    var Res = await Userapi.GetTask(widget.id1, milestoneid, statusid,
+        assignedid, priorityid, _deadlineController.text);
     setState(() {
       if (Res?.data != null) {
         if (Res?.settings?.success == 1) {
@@ -376,7 +376,9 @@ class _TaskListState extends State<TaskList> {
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+                                color: themeProvider.themeData == lightTheme
+                                    ? Color(0xffffffff)
+                                    : AppColors.darkmodeContainerColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Column(
@@ -426,12 +428,10 @@ class _TaskListState extends State<TaskList> {
                                           var res = await Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddTask(
-                                                          title: 'Edit Task',
-                                                          projectId: widget.id1,
-                                                          taskid:
-                                                              task.id ?? "")));
+                                                  builder: (context) => AddTask(
+                                                      title: 'Edit Task',
+                                                      projectId: widget.id1,
+                                                      taskid: task.id ?? "")));
                                           if (res == true) {
                                             setState(() {
                                               _loading = true;
@@ -445,7 +445,7 @@ class _TaskListState extends State<TaskList> {
                                             fit: BoxFit.contain,
                                             width: w * 0.06,
                                             height: w * 0.05,
-                                            color:AppColors.primaryColor,
+                                            color: AppColors.primaryColor,
                                           ),
                                         ),
                                       ),
@@ -454,39 +454,48 @@ class _TaskListState extends State<TaskList> {
                                   SizedBox(height: 6),
                                   Text(
                                     task.title ?? "",
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color:themeProvider.themeData==lightTheme? Color(0xff1D1C1D) : themeProvider.textColor,
+                                      color:
+                                          themeProvider.themeData == lightTheme
+                                              ? Color(0xff1D1C1D)
+                                              : themeProvider.textColor,
                                       height: 21 / 16,
                                     ),
                                   ),
-
-                                  if(task.description!="")...[
+                                  if (task.description != "") ...[
                                     const SizedBox(height: 8),
                                     Text(
                                       task.description ?? "",
                                       style: TextStyle(
                                         fontSize: 12,
                                         height: 16 / 12,
-                                        color:themeProvider.themeData==lightTheme? Color(0xff787486) : themeProvider.textColor,
+                                        color: themeProvider.themeData ==
+                                                lightTheme
+                                            ? Color(0xff787486)
+                                            : themeProvider.textColor,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                   ],
-
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       // Adding the images before the collaborators text
-                                      Text("Assigned to :",
+                                      Text(
+                                        "Assigned to :",
                                         style: TextStyle(
-                                          fontSize: 15,
-                                          color:themeProvider.themeData==lightTheme?  Color(0xff64748B) : themeProvider.textColor,
-                                          fontWeight: FontWeight.w500
-                                        ),
+                                            fontSize: 15,
+                                            color: themeProvider.themeData ==
+                                                    lightTheme
+                                                ? Color(0xff64748B)
+                                                : themeProvider.textColor,
+                                            fontWeight: FontWeight.w500),
                                       ),
-                                      SizedBox(width: 10,),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
                                       if (task.assignedToImage != null)
                                         Padding(
                                           padding:
@@ -507,13 +516,15 @@ class _TaskListState extends State<TaskList> {
                                         task.assignedTo.toString() ?? "",
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
+                                          color: themeProvider.themeData ==
+                                                  lightTheme
+                                              ? Color(0xff64748B)
+                                              : themeProvider.textColor,
                                         ),
                                       ),
                                     ],
                                   ),
-
-                                  if(collaboratorImages.length!=0)...[
+                                  if (collaboratorImages.length != 0) ...[
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -546,12 +557,15 @@ class _TaskListState extends State<TaskList> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                       Text(
+                                      Text(
                                         "Start Date: ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
+                                          color: themeProvider.themeData ==
+                                                  lightTheme
+                                              ? Color(0xff64748B)
+                                              : themeProvider.textColor,
                                         ),
                                       ),
                                       Text(
@@ -563,12 +577,15 @@ class _TaskListState extends State<TaskList> {
                                         ),
                                       ),
                                       const Spacer(),
-                                       Text(
+                                      Text(
                                         "End Date: ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
+                                          color: themeProvider.themeData ==
+                                                  lightTheme
+                                              ? Color(0xff64748B)
+                                              : themeProvider.textColor,
                                         ),
                                       ),
                                       Text(
@@ -612,36 +629,37 @@ class _TaskListState extends State<TaskList> {
             children: [
               Row(
                 children: [
-                  shimmerText(20, 20,context), // Shimmer for status label
+                  shimmerText(20, 20, context), // Shimmer for status label
                   const Spacer(),
-                  shimmerRectangle(24,context), // Shimmer for delete icon
+                  shimmerRectangle(24, context), // Shimmer for delete icon
                   const SizedBox(width: 8),
-                  shimmerRectangle(24,context), // Shimmer for edit icon
+                  shimmerRectangle(24, context), // Shimmer for edit icon
                 ],
               ),
               const SizedBox(height: 6),
-              shimmerText(150, 16,context), // Shimmer for task title
+              shimmerText(150, 16, context), // Shimmer for task title
               const SizedBox(height: 8),
-              shimmerText(200, 12,context), // Shimmer for task description
+              shimmerText(200, 12, context), // Shimmer for task description
               const SizedBox(height: 8),
               Row(
                 children: [
-                  shimmerCircle(24,context), // Shimmer for assigned user image
+                  shimmerCircle(24, context), // Shimmer for assigned user image
                   const SizedBox(width: 4),
-                  shimmerText(100, 12,context), // Shimmer for collaborators text
+                  shimmerText(
+                      100, 12, context), // Shimmer for collaborators text
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  shimmerText(50, 12,context), // Shimmer for "Start Date:"
+                  shimmerText(50, 12, context), // Shimmer for "Start Date:"
                   const SizedBox(width: 4),
-                  shimmerText(90, 12,context), // Shimmer for start date value
+                  shimmerText(90, 12, context), // Shimmer for start date value
                   const Spacer(),
-                  shimmerText(50, 12,context), // Shimmer for "End Date:"
+                  shimmerText(50, 12, context), // Shimmer for "End Date:"
                   const SizedBox(width: 4),
-                  shimmerText(90, 12,context), // Shimmer for end date value
+                  shimmerText(90, 12, context), // Shimmer for end date value
                 ],
               ),
             ],
@@ -652,50 +670,53 @@ class _TaskListState extends State<TaskList> {
   }
 
   Widget _buildDateField(TextEditingController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.05,
-          child: TextField(
-            controller: controller,
-            readOnly: true,
-            onTap: () {
-              _selectDate(context, controller);
-            },
-            decoration: InputDecoration(
-              hintText: "Select Date",
-              suffixIcon: Container(
-                  padding: EdgeInsets.only(top: 12, bottom: 12),
-                  child: Image.asset(
-                    "assets/calendar.png",
-                    color: Color(0xff000000),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.contain,
-                  )),
-              hintStyle: TextStyle(
-                fontSize: 14,
-                letterSpacing: 0,
-                height: 1.2,
-                color: Color(0xffAFAFAF),
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w400,
-              ),
-              filled: true,
-              fillColor: Color(0xffFCFAFF),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7.0),
-                borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+      return  Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.05,
+            child: TextField(
+              controller: controller,
+              readOnly: true,
+              onTap: () {
+                _selectDate(context, controller);
+              },
+              decoration: InputDecoration(
+                hintText: "Select Date",
+                suffixIcon: Container(
+                    padding: EdgeInsets.only(top: 12, bottom: 12),
+                    child: Image.asset(
+                      "assets/calendar.png",
+                      color: themeProvider.textColor,
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.contain,
+                    )),
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  letterSpacing: 0,
+                  height: 1.2,
+                  color: themeProvider.textColor,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w400,
+                ),
+                filled: true,
+                fillColor:themeProvider.fillColor,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7),
+                  borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7.0),
+                  borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      );
+    },
     );
   }
 
@@ -712,13 +733,19 @@ class _TaskListState extends State<TaskList> {
     }
   }
 
-  static Widget _label({required String text}) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: Color(0xff141516),
-        fontSize: 14,
-      ),
+
+   Widget _label(BuildContext context,{required String text}) {
+
+    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+      return Text(
+        text,
+        style: TextStyle(
+          color: themeProvider.textColor,
+          fontSize: 14,
+        ),
+      );
+    },
+
     );
   }
 
@@ -731,581 +758,617 @@ class _TaskListState extends State<TaskList> {
         context: context,
         isScrollControlled: true,
         builder: (BuildContext context) {
-
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Container(
-                    height: h,
+            return Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                return Padding(
                     padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Color(0xffffffff),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Container(
-                            width: w * 0.1,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Container(
+                        height: h,
+                        padding: EdgeInsets.only(
+                            left: 20, right: 20, top: 10, bottom: 20),
+                        decoration: BoxDecoration(
+                          color: themeProvider.containerColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Filters',
-                              style: TextStyle(
-                                color: Color(0xff1C1D22),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                fontFamily: 'Inter',
-                                height: 18 / 16,
-                              ),
-                            ),
-                            Spacer(),
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context)
-                                    .pop(); // Close the BottomSheet when tapped
-                              },
+                            Center(
                               child: Container(
-                                width: w * 0.05,
-                                height: w * 0.05,
+                                width: w * 0.1,
+                                height: 5,
                                 decoration: BoxDecoration(
-                                  color: Color(0xffE5E5E5),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    "assets/crossblue.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.023,
-                                    height: w * 0.023,
-                                    color: Color(0xff8856F4),
-                                  ),
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            SizedBox(height: 20),
+                            Row(
                               children: [
-                                _label(text: 'Milestone'),
-                                SizedBox(height: 4),
-                                Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.050,
-                                  child: TypeAheadField<Milestones>(
-                                    controller: _mileStoneController,
-                                    builder: (context, controller, focusNode) {
-                                      return TextField(
-                                        controller: controller,
-                                        focusNode: focusNode,
-                                        onTap: () {
-                                          setState(() {
-                                            _validateMileStone = "";
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() {
-                                            _validateMileStone = "";
-                                          });
-                                        },
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          height: 1.2,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 10),
-                                          hintText: "Select Milestone",
-                                          hintStyle: TextStyle(
-                                              fontSize: 15,
-                                              letterSpacing: 0,
-                                              height: 1.2,
-                                              color: Color(0xffAFAFAF),
-                                              fontFamily: 'Poppins',
-                                              fontWeight: FontWeight.w400,
-                                              overflow: TextOverflow.ellipsis),
-                                          filled: true,
-                                          fillColor: Color(0xffFCFAFF),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7.0),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                        ),
-                                        textAlignVertical: TextAlignVertical
-                                            .center, // Vertically center the
-                                      );
-                                    },
-                                    suggestionsCallback: (pattern) {
-                                      return milestones
-                                          .where((item) => item.title!
-                                              .toLowerCase()
-                                              .contains(pattern.toLowerCase()))
-                                          .toList();
-                                    },
-                                    itemBuilder: (context, suggestion) {
-                                      return ListTile(
-                                        title: Text(
-                                          suggestion.title!,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontFamily: "Inter",
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    onSelected: (suggestion) {
-                                      setState(() {
-                                        _mileStoneController.text =
-                                            suggestion.title!;
-                                        // You can use suggestion.statusKey to send to the server
-                                        milestoneid = suggestion.id!;
-                                        // Call your API with the selected key here if needed
-                                        _validateMileStone = "";
-                                      });
-                                    },
+                                Text(
+                                  'Filters',
+                                  style: TextStyle(
+                                    color:themeProvider.textColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    fontFamily: 'Inter',
+                                    height: 18 / 16,
                                   ),
                                 ),
-                                SizedBox(height: 16),
-                                _label(text: 'Priority'),
-                                SizedBox(height: 4),
-                                Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.050,
-                                  child: TypeAheadField<Priorities>(
-                                    controller: _priorityController,
-                                    builder: (context, controller, focusNode) {
-                                      return TextField(
-                                        controller: controller,
-                                        focusNode: focusNode,
-                                        onTap: () {
-                                          setState(() {
-                                            _validatePriority = "";
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() {
-                                            _validatePriority = "";
-                                          });
-                                        },
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          height: 1.2,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: "Select Priority",
-                                          hintStyle: TextStyle(
-                                            fontSize: 15,
-                                            letterSpacing: 0,
-                                            height: 1.2,
-                                            color: Color(0xffAFAFAF),
-                                            fontFamily: 'Poppins',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          filled: true,
-                                          fillColor: Color(0xffFCFAFF),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7.0),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    suggestionsCallback: (pattern) {
-                                      return priorities
-                                          .where((item) => item.priorityValue!
-                                              .toLowerCase()
-                                              .contains(pattern.toLowerCase()))
-                                          .toList();
-                                    },
-                                    itemBuilder: (context, suggestion) {
-                                      return ListTile(
-                                        title: Text(
-                                          suggestion.priorityValue!,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontFamily: "Inter",
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    onSelected: (suggestion) {
-                                      setState(() {
-                                        _priorityController.text =
-                                            suggestion.priorityValue!;
-                                        // You can use suggestion.statusKey to send to the server
-                                        priorityid = suggestion.priorityKey!;
-                                        // Call your API with the selected key here if needed
-                                        _validatePriority = "";
-                                      });
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                _label(text: 'Assign to'),
-                                SizedBox(height: 4),
-                                Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.050,
-                                  child: TypeAheadField<Members>(
-                                    controller: _assignedToController,
-
-                                    builder: (context, controller, focusNode) {
-
-                                      return TextField(
-                                        controller: controller,
-                                        focusNode: focusNode,
-                                        onTap: () {
-                                          setState(() {
-                                            _validateAssignedTo = "";
-
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() {
-                                            _validateAssignedTo = "";
-                                          });
-                                        },
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          height: 1.2,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: "Select Assigned to Person",
-                                          hintStyle: TextStyle(
-                                            fontSize: 15,
-                                            letterSpacing: 0,
-                                            height: 1.2,
-                                            color: Color(0xffAFAFAF),
-                                            fontFamily: 'Poppins',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          filled: true,
-                                          fillColor: Color(0xffFCFAFF),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7.0),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                        ),
-                                      );
-
-
-                                    },
-
-                                    // suggestionsCallback: (pattern) {
-                                    //   return members
-                                    //       .where((item) => item.fullName!
-                                    //       .toLowerCase()
-                                    //       .contains(pattern.toLowerCase()))
-                                    //       .toList();
-                                    // },
-
-                                    suggestionsCallback: (pattern) {
-
-                                      var matches = members
-                                          .where((item) => item.fullName!
-                                          .toLowerCase()
-                                          .contains(pattern.toLowerCase()))
-                                          .toList();
-
-
-                                      if (matches.isEmpty){
-                                        _assignedToController.clear();
-                                      }
-
-
-                                      return matches;
-                                    },
-
-                                    itemBuilder: (context, suggestion) {
-                                      return ListTile(
-                                        title: Text(
-                                          suggestion.fullName!,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontFamily: "Inter",
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      );
-                                    },
-
-                                    onSelected: (suggestion) {
-
-                                      setState(() {
-
-
-
-                                        _assignedToController.text =
-                                            suggestion.fullName!;
-                                        // You can use suggestion.statusKey to send to the server
-                                        assignedid = suggestion.id!;
-                                        // Call your API with the selected key here if needed
-                                        _validateAssignedTo = "";
-                                      });
-                                    },
-
-
-                                  ),
-                                ),
-
-
-
-
-
-
-                                SizedBox(height: 16),
-                                _label(text: 'Status'),
-
-                                SizedBox(height: 4),
-                                Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.050,
-                                  child: TypeAheadField<Statuses>(
-                                    controller: _statusController,
-                                    builder: (context, controller, focusNode) {
-                                      return TextField(
-                                        controller: controller,
-                                        focusNode: focusNode,
-                                        onTap: () {
-                                          setState(() {
-                                            _validateStatus = "";
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() {
-                                            _validateStatus = "";
-                                          });
-                                        },
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          height: 1.2,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: "Select Status",
-                                          hintStyle: TextStyle(
-                                            fontSize: 15,
-                                            letterSpacing: 0,
-                                            height: 1.2,
-                                            color: Color(0xffAFAFAF),
-                                            fontFamily: 'Poppins',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          filled: true,
-                                          fillColor: Color(0xffFCFAFF),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(7.0),
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Color(0xffD0CBDB)),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    suggestionsCallback: (pattern) {
-                                      return statuses
-                                          .where((item) => item.statusValue!
-                                              .toLowerCase()
-                                              .contains(pattern.toLowerCase()))
-                                          .toList();
-                                    },
-                                    itemBuilder: (context, suggestion) {
-                                      return ListTile(
-                                        title: Text(
-                                          suggestion.statusValue!,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontFamily: "Inter",
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    onSelected: (suggestion) {
-                                      setState(() {
-                                        _statusController.text =
-                                            suggestion.statusValue!;
-                                        // You can use suggestion.statusKey to send to the server
-                                        statusid = suggestion.statusKey!;
-                                        // Call your API with the selected key here if needed
-                                        _validateStatus = "";
-                                      });
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                _label(text: 'Deadline'),
-                                SizedBox(height: 4),
-                                _buildDateField(
-                                  _deadlineController,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(18),
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkResponse(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    statusid="";
-                                    priorityid="";
-                                    milestoneid="";
-                                    assignedid="";
-                                    _deadlineController.text="";
-                                    _statusController.text="";
-                                    _priorityController.text="";
-                                    _mileStoneController.text="";
-                                    _assignedToController.text="";
-                                    data=[];
-                                    filteredData=[];
-                                    GetProjectTasks();
-                                    _loading=true;
-                                  });
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: w * 0.35,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffF8FCFF),
-                                    border: Border.all(
-                                      color: Color(0xff8856F4),
-                                      width: 1.0,
+                                Spacer(),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the BottomSheet when tapped
+                                  },
+                                  child: Container(
+                                    width: w * 0.05,
+                                    height: w * 0.05,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffE5E5E5),
+                                      borderRadius: BorderRadius.circular(100),
                                     ),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Close',
-                                      style: TextStyle(
+                                    child: Center(
+                                      child: Image.asset(
+                                        "assets/crossblue.png",
+                                        fit: BoxFit.contain,
+                                        width: w * 0.023,
+                                        height: w * 0.023,
                                         color: Color(0xff8856F4),
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'Inter',
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Spacer(),
-                              InkResponse(
-                                onTap: () {
-                                  setState((){
-                                    data=[];
-                                    filteredData=[];
-                                    _loading=true;
-                                    GetProjectTasks();
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: w * 0.35,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff8856F4),
-                                    border: Border.all(
-                                      color: Color(0xff8856F4),
-                                      width: 1.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: Center(
-                                    child: _loading
-                                        ? spinkits.getFadingCircleSpinner()
-                                        : Text(
-                                            'Save',
+                              ],
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _label(context,text: 'Milestone'),
+                                    SizedBox(height: 4),
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.050,
+                                      child: TypeAheadField<Milestones>(
+                                        controller: _mileStoneController,
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: controller,
+                                            focusNode: focusNode,
+                                            onTap: () {
+                                              setState(() {
+                                                _validateMileStone = "";
+                                              });
+                                            },
+                                            onChanged: (v) {
+                                              setState(() {
+                                                _validateMileStone = "";
+                                              });
+                                            },
                                             style: TextStyle(
-                                              color: Color(0xffffffff),
-                                              fontSize: 16.0,
+                                              fontSize: 16,
+                                              letterSpacing: 0,
+                                              height: 1.2,
+                                              color: themeProvider.textColor,
                                               fontWeight: FontWeight.w400,
-                                              fontFamily: 'Inter',
                                             ),
-                                          ),
-                                  ),
+
+                                            decoration: InputDecoration(
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 0,
+                                                      horizontal: 10),
+                                              hintText: "Select Milestone",
+                                              hintStyle: TextStyle(
+                                                  fontSize: 15,
+                                                  letterSpacing: 0,
+                                                  height: 1.2,
+                                                  color: themeProvider.textColor,
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight: FontWeight.w400,
+                                                  overflow:
+                                                      TextOverflow.ellipsis),
+                                              filled: true,
+                                              fillColor:themeProvider.fillColor,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7.0),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                            ),
+
+                                            textAlignVertical: TextAlignVertical
+                                                .center, // Vertically center the
+                                          );
+                                        },
+                                        suggestionsCallback: (pattern) {
+                                          return milestones
+                                              .where((item) => item.title!
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+                                        },
+                                        decorationBuilder: (context, child) => Material(
+                                          color: themeProvider.containerColor,
+                                          type: MaterialType.card,
+                                          elevation: 2,
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          child: child,
+
+                                        ),
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(
+                                              suggestion.title!,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onSelected: (suggestion) {
+                                          setState(() {
+                                            _mileStoneController.text =
+                                                suggestion.title!;
+                                            // You can use suggestion.statusKey to send to the server
+                                            milestoneid = suggestion.id!;
+                                            // Call your API with the selected key here if needed
+                                            _validateMileStone = "";
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    _label(context,text: 'Priority'),
+                                    SizedBox(height: 4),
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.050,
+                                      child: TypeAheadField<Priorities>(
+                                        controller: _priorityController,
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: controller,
+                                            focusNode: focusNode,
+                                            onTap: () {
+                                              setState(() {
+                                                _validatePriority = "";
+                                              });
+                                            },
+                                            onChanged: (v) {
+                                              setState(() {
+                                                _validatePriority = "";
+                                              });
+                                            },
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              letterSpacing: 0,
+                                              height: 1.2,
+                                              color: themeProvider.textColor,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: "Select Priority",
+                                              hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                letterSpacing: 0,
+                                                height: 1.2,
+                                                color: themeProvider.textColor,
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              filled: true,
+                                              fillColor:themeProvider.fillColor,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7.0),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        suggestionsCallback: (pattern) {
+                                          return priorities
+                                              .where((item) => item
+                                                  .priorityValue!
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+                                        },
+                                        decorationBuilder: (context, child) => Material(
+                                          color: themeProvider.containerColor,
+                                          type: MaterialType.card,
+                                          elevation: 2,
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          child: child,
+
+                                        ),
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(
+                                              suggestion.priorityValue!,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onSelected: (suggestion) {
+                                          setState(() {
+                                            _priorityController.text =
+                                                suggestion.priorityValue!;
+                                            // You can use suggestion.statusKey to send to the server
+                                            priorityid =
+                                                suggestion.priorityKey!;
+                                            // Call your API with the selected key here if needed
+                                            _validatePriority = "";
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    _label(context,text: 'Assign to'),
+                                    SizedBox(height: 4),
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.050,
+                                      child: TypeAheadField<Members>(
+                                        controller: _assignedToController,
+
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: controller,
+                                            focusNode: focusNode,
+                                            onTap: () {
+                                              setState(() {
+                                                _validateAssignedTo = "";
+                                              });
+                                            },
+                                            onChanged: (v) {
+                                              setState(() {
+                                                _validateAssignedTo = "";
+                                              });
+                                            },
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              letterSpacing: 0,
+                                              height: 1.2,
+                                              color: themeProvider.textColor,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  "Select Assigned to Person",
+                                              hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                letterSpacing: 0,
+                                                height: 1.2,
+                                                color: themeProvider.textColor,
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              filled: true,
+                                              fillColor:themeProvider.fillColor,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7.0),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                            ),
+                                          );
+                                        },
+
+                                        // suggestionsCallback: (pattern) {
+                                        //   return members
+                                        //       .where((item) => item.fullName!
+                                        //       .toLowerCase()
+                                        //       .contains(pattern.toLowerCase()))
+                                        //       .toList();
+                                        // },
+
+                                        suggestionsCallback: (pattern) {
+                                          var matches = members
+                                              .where((item) => item.fullName!
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+
+                                          if (matches.isEmpty) {
+                                            _assignedToController.clear();
+                                          }
+
+                                          return matches;
+                                        },
+                                        decorationBuilder: (context, child) => Material(
+                                          color: themeProvider.containerColor,
+                                          type: MaterialType.card,
+                                          elevation: 2,
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          child: child,
+
+                                        ),
+
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(
+                                              suggestion.fullName!,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          );
+                                        },
+
+                                        onSelected: (suggestion) {
+                                          setState(() {
+                                            _assignedToController.text =
+                                                suggestion.fullName!;
+                                            // You can use suggestion.statusKey to send to the server
+                                            assignedid = suggestion.id!;
+                                            // Call your API with the selected key here if needed
+                                            _validateAssignedTo = "";
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    _label(context,text: 'Status'),
+                                    SizedBox(height: 4),
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.050,
+                                      child: TypeAheadField<Statuses>(
+                                        controller: _statusController,
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: controller,
+                                            focusNode: focusNode,
+                                            onTap: () {
+                                              setState(() {
+                                                _validateStatus = "";
+                                              });
+                                            },
+                                            onChanged: (v) {
+                                              setState(() {
+                                                _validateStatus = "";
+                                              });
+                                            },
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              letterSpacing: 0,
+                                              height: 1.2,
+                                              color:themeProvider.textColor,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: "Select Status",
+                                              hintStyle: TextStyle(
+                                                fontSize: 15,
+                                                letterSpacing: 0,
+                                                height: 1.2,
+                                                color: themeProvider.textColor,
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              filled: true,
+                                              fillColor: themeProvider.fillColor,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(7.0),
+                                                borderSide: BorderSide(
+                                                    width: 1,
+                                                    color: Color(0xffD0CBDB)),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        suggestionsCallback: (pattern) {
+                                          return statuses
+                                              .where((item) => item.statusValue!
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+                                        },
+                                        decorationBuilder: (context, child) => Material(
+                                          color: themeProvider.containerColor,
+                                          type: MaterialType.card,
+                                          elevation: 2,
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          child: child,
+
+                                        ),
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(
+                                              suggestion.statusValue!,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onSelected: (suggestion) {
+                                          setState(() {
+                                            _statusController.text =
+                                                suggestion.statusValue!;
+                                            // You can use suggestion.statusKey to send to the server
+                                            statusid = suggestion.statusKey!;
+                                            // Call your API with the selected key here if needed
+                                            _validateStatus = "";
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    _label(context,text: 'Deadline'),
+                                    SizedBox(height: 4),
+                                    _buildDateField(
+                                      _deadlineController,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )));
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(18),
+                              decoration: BoxDecoration(color: themeProvider.containerColor),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  InkResponse(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        statusid = "";
+                                        priorityid = "";
+                                        milestoneid = "";
+                                        assignedid = "";
+                                        _deadlineController.text = "";
+                                        _statusController.text = "";
+                                        _priorityController.text = "";
+                                        _mileStoneController.text = "";
+                                        _assignedToController.text = "";
+                                        data = [];
+                                        filteredData = [];
+                                        GetProjectTasks();
+                                        _loading = true;
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: w * 0.35,
+                                      decoration: BoxDecoration(
+                                        color: themeProvider.containerColor,
+                                        border: Border.all(
+                                          color: Color(0xff8856F4),
+                                          width: 1.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Close',
+                                          style: TextStyle(
+                                            color: Color(0xff8856F4),
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  InkResponse(
+                                    onTap: () {
+                                      setState(() {
+                                        data = [];
+                                        filteredData = [];
+                                        _loading = true;
+                                        GetProjectTasks();
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: w * 0.35,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xff8856F4),
+                                        border: Border.all(
+                                          color: Color(0xff8856F4),
+                                          width: 1.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: Center(
+                                        child: _loading
+                                            ? spinkits.getFadingCircleSpinner()
+                                            : Text(
+                                                'Save',
+                                                style: TextStyle(
+                                                  color: Color(0xffffffff),
+                                                  fontSize: 16.0,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontFamily: 'Inter',
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )));
+              },
+            );
           });
         });
   }
