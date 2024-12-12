@@ -33,7 +33,6 @@ class _TodolistState extends State<Todolist> {
   String _validateLabelColor = "";
   String labelid = "";
   String labelColorid = "";
-
   bool isChecked = false;
 
   bool _isLoading = true;

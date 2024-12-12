@@ -308,6 +308,8 @@ class ActivityCard extends StatelessWidget {
     required this.project_name,
   }) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
