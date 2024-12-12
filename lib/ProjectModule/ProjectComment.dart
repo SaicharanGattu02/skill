@@ -4,15 +4,18 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:path/path.dart' as p;
 import 'package:skill/utils/CustomAppBar.dart';
 
+import '../Providers/ThemeProvider.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class ProjectComment extends StatefulWidget {
   final String id;
@@ -164,8 +167,8 @@ class _ProjectCommentState extends State<ProjectComment> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -175,7 +178,7 @@ class _ProjectCommentState extends State<ProjectComment> {
               margin: EdgeInsets.symmetric(vertical: 6),
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Column(
@@ -233,7 +236,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   Text(
                     "Write Comment",
                     style: TextStyle(
-                      color: Color(0xff141516),
+                      color:themeProvider.themeData==lightTheme?  Color(0xff141516) : themeProvider.textColor,
                       fontFamily: 'Inter',
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -245,10 +248,6 @@ class _ProjectCommentState extends State<ProjectComment> {
                   ),
                   Container(
                     height: h * 0.1,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Color(0xffE8ECFF))),
                     child: TextFormField(
                       cursorColor: Color(0xff8856F4),
                       scrollPadding: const EdgeInsets.only(top: 5),
@@ -279,16 +278,26 @@ class _ProjectCommentState extends State<ProjectComment> {
                           fontWeight: FontWeight.w400,
                         ),
                         filled: true,
-                        fillColor: Color(0xffFCFAFF),
+                        fillColor: themeProvider.containerColor,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(7),
-                          borderSide:
-                              BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                          borderSide: const BorderSide(
+                              width: 1, color: Color(0xffd0cbdb)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                          borderSide:
-                              BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide: const BorderSide(
+                              width: 1, color: Color(0xffd0cbdb)),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide: const BorderSide(
+                              width: 1, color: Color(0xffd0cbdb)),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide: const BorderSide(
+                              width: 1, color: Color(0xffd0cbdb)),
                         ),
                       ),
                     ),
@@ -526,7 +535,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Column(
@@ -555,7 +564,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                       Text(
                                         comments.commentBy ?? "",
                                         style: TextStyle(
-                                          color: Color(0xff000000),
+                                          color:themeProvider.textColor,
                                           fontFamily: 'Inter',
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
@@ -590,7 +599,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                   Text(
                                     comments.comment ?? "",
                                     style: TextStyle(
-                                      color: Color(0xff6C848F),
+                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F): themeProvider.textColor,
                                       fontFamily: 'Inter',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -628,10 +637,10 @@ class _ProjectCommentState extends State<ProjectComment> {
                                             comments.commentFiles![0]
                                                     .fileName ??
                                                 "",
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 15,
                                               height: 21.78 / 15,
-                                              color: Color(0xff1D1C1D),
+                                              color:themeProvider.themeData==lightTheme? Color(0xff1D1C1D): themeProvider.textColor,
                                               fontWeight: FontWeight.w500,
                                               fontFamily: 'Inter',
                                             ),
@@ -675,7 +684,7 @@ class _ProjectCommentState extends State<ProjectComment> {
       ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: themeProvider.containerbcColor),
         child: Row(
           children: [
             InkResponse(
@@ -692,7 +701,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xffF8FCFF),
+                  color: themeProvider.containerbcColor,
                   border: Border.all(
                     color: AppColors.primaryColor,
                     width: 1.0,

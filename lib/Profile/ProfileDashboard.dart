@@ -420,23 +420,22 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                     ),
                     Container(
                       width: w,
-                      decoration: BoxDecoration(color: Color(0xffffffff)),
+                      decoration: BoxDecoration( color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,),
                       child: TabBar(
                         dividerColor: Colors.transparent,
                         padding: EdgeInsets.zero,
                         controller: _tabController,
                         isScrollable: true,
-                        indicatorColor: Color(0xff8856F4),
+                        indicatorColor:themeProvider.themeData==lightTheme?  AppColors.primaryColor : Color(0xffffffff),
                         indicatorWeight: 1.0,
                         tabAlignment: TabAlignment.start,
-                        labelPadding:
-                            EdgeInsets.symmetric(horizontal: w * 0.09),
+                        labelPadding: EdgeInsets.symmetric(horizontal: w * 0.09),
                         labelStyle: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                           fontSize: 13,
                           height: 1.6,
-                          color: Color(0xff8856F4),
+                          color: themeProvider.themeData==lightTheme?AppColors.primaryColor : Color(0xffffffff),
                           letterSpacing: 0.15,
                         ),
                         unselectedLabelStyle: TextStyle(

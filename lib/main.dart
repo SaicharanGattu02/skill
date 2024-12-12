@@ -273,7 +273,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
             home: Splash(),
-            navigatorKey: navigatorKey, // Add this line
+            navigatorKey: navigatorKey,
             onGenerateRoute: (settings) {
             if (settings.name == '/chat_screen') {
               final args = settings.arguments as Map<String, dynamic>;

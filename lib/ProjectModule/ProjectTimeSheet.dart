@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/AddLogTime.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class TimeSheet extends StatefulWidget {
   final String id;
@@ -66,8 +69,8 @@ class _TimeSheetState extends State<TimeSheet> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
       body:
 
       // (isloading)?Center(
@@ -391,7 +394,7 @@ class _TimeSheetState extends State<TimeSheet> {
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                         borderRadius: BorderRadius.circular(7),
                       ),
                       child: Column(
@@ -406,7 +409,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                   Text(
                                     "Start Time",
                                     style: TextStyle(
-                                      color: const Color(0xff6C848F),
+                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F) : themeProvider.textColor,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 16,
                                       height: 19.41 / 16,
@@ -437,7 +440,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                         child: Text(
                                           "${formattedTime}",
                                           style: TextStyle(
-                                            color: const Color(0xff1D1C1D),
+                                            color: themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
                                             fontWeight: FontWeight.w400,
                                             fontSize: 14,
                                             height: 16.94 / 14,
@@ -458,7 +461,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                   Text(
                                     "End Time",
                                     style: TextStyle(
-                                      color: const Color(0xff6C848F),
+                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F) : themeProvider.textColor,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 16,
                                       height: 19.41 / 16,
@@ -489,7 +492,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                         child: Text(
                                           "${formattedTime1}",
                                           style: TextStyle(
-                                            color: const Color(0xff1D1C1D),
+                                            color:themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
                                             fontWeight: FontWeight.w400,
                                             fontSize: 14,
                                             height: 16.94 / 14,
@@ -581,11 +584,10 @@ class _TimeSheetState extends State<TimeSheet> {
                                     children: [
                                       Text(
                                         detail.member ?? "",
-                                        // "Prashanth Chary",
-                                        style: const TextStyle(
+                                        style:  TextStyle(
                                           fontSize: 14,
                                           height: 24.01 / 14,
-                                          color: Color(0xff1D1C1D),
+                                          color: themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
                                           fontWeight: FontWeight.w500,
                                           fontFamily: 'Inter',
                                         ),
@@ -594,11 +596,11 @@ class _TimeSheetState extends State<TimeSheet> {
                                       Text(
                                         detail.task ?? "",
                                         // "Task - Admin Backend",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 15,
                                           height: 18.15 / 15,
-                                          color: Color(0xff1D1C1D),
-                                          fontWeight: FontWeight.w600,
+                                          color:themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
+                                          fontWeight: FontWeight.w500,
                                           fontFamily: 'Inter',
                                         ),
                                       ),
@@ -609,7 +611,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                           detail.note ?? "",
                                           // "Note - Brief summary of the project's main objectives and significance",
                                           style: TextStyle(
-                                            color: Color(0xff371F41),
+                                            color: themeProvider.themeData==lightTheme?Color(0xff371F41): themeProvider.textColor,
                                             fontFamily: 'Inter',
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400,
@@ -642,8 +644,8 @@ class _TimeSheetState extends State<TimeSheet> {
                                     // note.createdTime?? "",
                                     "Total Hours : ",
                                     style: TextStyle(
-                                      color: const Color(0xff6C848F),
-                                      fontWeight: FontWeight.w700,
+                                      color:themeProvider.themeData==lightTheme?  Color(0xff6C848F): themeProvider.textColor,
+                                      fontWeight: FontWeight.w500,
                                       fontSize: 14,
                                       height: 16.94 / 14,
                                       fontFamily: "Inter",
@@ -654,9 +656,8 @@ class _TimeSheetState extends State<TimeSheet> {
                                   ),
                                   Text(
                                     detail.total ?? "",
-                                    // "0245:00 ",
                                     style: TextStyle(
-                                      color: AppColors.primaryColor,
+                                      color:themeProvider.themeData==lightTheme? AppColors.primaryColor: themeProvider.textColor,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 14,
                                       height: 16.94 / 14,

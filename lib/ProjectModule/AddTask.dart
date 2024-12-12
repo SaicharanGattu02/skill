@@ -703,10 +703,6 @@ class _AddTaskState extends State<AddTask> {
                             SizedBox(height: 4),
                             Container(
                               height: h * 0.13,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Color(0xffE8ECFF))),
                               child: TextFormField(
                                 cursorColor: Color(0xff8856F4),
                                 scrollPadding: EdgeInsets.only(top: 5),

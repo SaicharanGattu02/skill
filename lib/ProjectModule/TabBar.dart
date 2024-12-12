@@ -16,6 +16,7 @@ import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 import 'ProjectNotes.dart';
 import 'ProjectOverView.dart';
 import 'TaskKanbanBoard.dart';
@@ -31,8 +32,6 @@ class MyTabBar extends StatefulWidget {
 
 class _MyTabBarState extends State<MyTabBar>
     with SingleTickerProviderStateMixin {
-
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TabController _tabController;
   late PageController _pageController;
@@ -119,11 +118,12 @@ class _MyTabBarState extends State<MyTabBar>
             key: _scaffoldKey,
             backgroundColor: themeProvider.scaffoldBackgroundColor,
             appBar: AppBar(
+              backgroundColor: themeProvider.themeData==lightTheme?AppColors.primaryColor : AppColors.darkmodeContainerColor,
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_back,
                   color: Color(0xffffffff),
                 ),
@@ -185,7 +185,6 @@ class _MyTabBarState extends State<MyTabBar>
                     ]
                   : null,
             ),
-
             body: _loading
                 ? Center(
                     child: CircularProgressIndicator(
@@ -194,13 +193,13 @@ class _MyTabBarState extends State<MyTabBar>
                 : Column(
                     children: [
                       Container(
-                        decoration: BoxDecoration(color: Color(0xffffffff)),
+                        decoration: BoxDecoration(  color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,),
                         child: TabBar(
                           dividerColor: Colors.transparent,
                           padding: EdgeInsets.zero,
                           controller: _tabController,
                           isScrollable: true,
-                          indicatorColor: AppColors.primaryColor,
+                          indicatorColor:themeProvider.themeData==lightTheme?  AppColors.primaryColor : Color(0xffffffff),
                           indicatorWeight: 1.0,
                           tabAlignment: TabAlignment.start,
                           labelPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -209,13 +208,13 @@ class _MyTabBarState extends State<MyTabBar>
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
                             height: 1.6,
-                            color: AppColors.primaryColor,
+                            color: themeProvider.themeData==lightTheme?AppColors.primaryColor : Color(0xffffffff),
                             letterSpacing: 0.15,
                           ),
                           unselectedLabelStyle: TextStyle(
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w400,
-                            color: Color(0xff6C848F),
+                            color:themeProvider.themeData==lightTheme? Color(0xff6C848F) : Color(0xffffffff),
                             fontSize: 12,
                             height: 1.6,
                             letterSpacing: 0.15,
@@ -288,6 +287,4 @@ class _MyTabBarState extends State<MyTabBar>
           )
         : NoInternetWidget();
   }
-
-
 }

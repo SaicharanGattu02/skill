@@ -4,17 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
 import '../Model/TasklistModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 import 'AddTask.dart';
 
 class TaskList extends StatefulWidget {
@@ -200,6 +203,7 @@ class _TaskListState extends State<TaskList> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
       body: SingleChildScrollView(
@@ -372,7 +376,7 @@ class _TaskListState extends State<TaskList> {
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Column(
@@ -450,10 +454,10 @@ class _TaskListState extends State<TaskList> {
                                   SizedBox(height: 6),
                                   Text(
                                     task.title ?? "",
-                                    style: const TextStyle(
+                                    style:  TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color: Color(0xff1D1C1D),
+                                      color:themeProvider.themeData==lightTheme? Color(0xff1D1C1D) : themeProvider.textColor,
                                       height: 21 / 16,
                                     ),
                                   ),
@@ -465,7 +469,7 @@ class _TaskListState extends State<TaskList> {
                                       style: TextStyle(
                                         fontSize: 12,
                                         height: 16 / 12,
-                                        color: Color(0xff787486),
+                                        color:themeProvider.themeData==lightTheme? Color(0xff787486) : themeProvider.textColor,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
@@ -478,7 +482,7 @@ class _TaskListState extends State<TaskList> {
                                       Text("Assigned to :",
                                         style: TextStyle(
                                           fontSize: 15,
-                                          color: Color(0xff64748B),
+                                          color:themeProvider.themeData==lightTheme?  Color(0xff64748B) : themeProvider.textColor,
                                           fontWeight: FontWeight.w500
                                         ),
                                       ),
@@ -501,9 +505,9 @@ class _TaskListState extends State<TaskList> {
                                       const SizedBox(width: 4),
                                       Text(
                                         task.assignedTo.toString() ?? "",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
-                                          color: Color(0xff64748B),
+                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
                                         ),
                                       ),
                                     ],
@@ -542,12 +546,12 @@ class _TaskListState extends State<TaskList> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      const Text(
+                                       Text(
                                         "Start Date: ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color: Color(0xff64748B),
+                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
                                         ),
                                       ),
                                       Text(
@@ -559,12 +563,12 @@ class _TaskListState extends State<TaskList> {
                                         ),
                                       ),
                                       const Spacer(),
-                                      const Text(
+                                       Text(
                                         "End Date: ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color: Color(0xff64748B),
+                                          color:themeProvider.themeData==lightTheme? Color(0xff64748B) : themeProvider.textColor,
                                         ),
                                       ),
                                       Text(
