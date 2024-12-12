@@ -340,7 +340,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                       children: [
                         InkWell(
                           onTap: () {
-                            showModalBottomSheet(
+                            showModalBottomSheet(backgroundColor: themeProvider.containerColor,
                               context: context,
                               builder: (BuildContext context) {
                                 return SafeArea(
@@ -372,7 +372,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                             height: 35,
                             width: w * 0.35,
                             decoration: BoxDecoration(
-                              color: Color(0xffF8FCFF),
+                              color: themeProvider.containerColor,
                               border: Border.all(
                                 color: AppColors.primaryColor,
                                 width: 1.0,
