@@ -190,6 +190,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     focusNode: _focusNodeFirstName,
                     keyboardType: TextInputType.text,
                     cursorColor:themeProvider.curserColor,
+                    readOnly: true,
                     onTap: () {
                       setState(() {
                         _validateFirstName = "";
@@ -272,6 +273,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                   child: TextFormField(
                     controller: _lastNameController,
                     focusNode: _focusNodeLastName,
+                    readOnly: true,
                     keyboardType: TextInputType.text,
                     cursorColor: Color(0xff8856F4),
                     onTap: () {
