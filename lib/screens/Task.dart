@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:skill/Providers/ThemeProvider.dart';
 import '../Model/DashboardTaksModel.dart';
 import '../Services/UserApi.dart';
+import '../utils/constants.dart';
 
 class Task extends StatefulWidget {
   const Task({super.key});
@@ -10,11 +13,11 @@ class Task extends StatefulWidget {
   @override
   State<Task> createState() => _TaskState();
 }
-bool _loading= false;
+
+bool _loading = false;
+
 class _TaskState extends State<Task> {
   final List<String> daysOfWeek = ['Mo', 'Tu', 'Wed', 'Th', 'Fr', 'Sa', 'Su'];
-
-
 
   List<DateTime> dates = [];
   DateTime selectedDate = DateTime.now();
@@ -28,7 +31,7 @@ class _TaskState extends State<Task> {
     "assets/prashanth.png",
     "assets/prashanth.png",
   ];
-  String formattedDate="";
+  String formattedDate = "";
 
   @override
   void initState() {
@@ -41,8 +44,9 @@ class _TaskState extends State<Task> {
       _scrollToSelectedDate();
     });
   }
-  List<Data> data=[];
-  List<Data> filteredData=[];
+
+  List<Data> data = [];
+  List<Data> filteredData = [];
   Future<void> GetTasksList(String date) async {
     var res = await Userapi.gettaskaApi(date);
     setState(() {
@@ -57,14 +61,16 @@ class _TaskState extends State<Task> {
       }
     });
   }
-  @override  void dispose() {
+
+  @override
+  void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
 
   void _scrollToSelectedDate() {
     final index = dates.indexWhere((date) =>
-        date.day == selectedDate.day &&
+    date.day == selectedDate.day &&
         date.month == selectedDate.month &&
         date.year == selectedDate.year);
 
@@ -86,24 +92,27 @@ class _TaskState extends State<Task> {
     setState(() {
       dates = List.generate(
         endOfMonth.day,
-        (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
+            (index) => DateTime(currentMonth.year, currentMonth.month, index + 1),
       );
     });
   }
-  Future<bool> willPop() async{
-    Navigator.pop(context,true);
+
+  Future<bool> willPop() async {
+    Navigator.pop(context, true);
     return false;
   }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: willPop,
       child: Scaffold(
-        backgroundColor: const Color(0xffF3ECFB),
+        backgroundColor: themeProvider.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xff8856F4),
+          backgroundColor:  themeProvider.themeData==lightTheme?Color(0xff8856F4): themeProvider.containerColor,
           leading: InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -113,24 +122,27 @@ class _TaskState extends State<Task> {
               color: Color(0xffffffff),
             ),
           ),
-          title: const Text(
+          title:  Text(
             "Tasks",
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 24.0,
-              color: Color(0xffffffff),
+              color: themeProvider.textColor,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        body:
-        _loading?Center(child: CircularProgressIndicator(color: Color(0xff8856F4),)):
-        Container(
+        body: _loading
+            ? Center(
+            child: CircularProgressIndicator(
+              color: Color(0xff8856F4),
+            ))
+            : Container(
           width: w,
-          margin: const EdgeInsets.only(top: 16,left: 16,right: 16),
+          margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xffFFFFFF),
+            color: themeProvider.containerColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -153,10 +165,10 @@ class _TaskState extends State<Task> {
                       ),
                       Text(
                         DateFormat('MMMM d, y').format(currentMonth),
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff000000),
+                          color: themeProvider.textColor,
                           fontFamily: "Inter",
                           height: 19.36 / 14,
                         ),
@@ -171,16 +183,17 @@ class _TaskState extends State<Task> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(dates.length, (index) {
-                    final isSelected = dates[index].day == selectedDate.day &&
-                        dates[index].month == selectedDate.month &&
-                        dates[index].year == selectedDate.year;
+                    final isSelected =
+                        dates[index].day == selectedDate.day &&
+                            dates[index].month == selectedDate.month &&
+                            dates[index].year == selectedDate.year;
 
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           selectedDate = dates[index];
-                          formattedDate =
-                              DateFormat('yyyy-MM-dd').format(selectedDate);
+                          formattedDate = DateFormat('yyyy-MM-dd')
+                              .format(selectedDate);
                           print("selectedDate: $formattedDate");
                           data = [];
                           filteredData = [];
@@ -191,7 +204,8 @@ class _TaskState extends State<Task> {
                       },
                       child: ClipRect(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 10),
                           width: 55,
                           decoration: BoxDecoration(
                             color: isSelected
@@ -208,7 +222,7 @@ class _TaskState extends State<Task> {
                                   fontSize: 16,
                                   color: isSelected
                                       ? const Color(0xff8856F4)
-                                      : const Color(0xff000000),
+                                      : themeProvider.textColor,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -229,174 +243,184 @@ class _TaskState extends State<Task> {
                 ),
               ),
               const SizedBox(height: 24),
-              if (data.length == 0) Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                    ),
-                    Image.asset(
-                      'assets/nodata1.png', // Path to your no data image
-                      width: 150,
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "No Data Found",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                        fontFamily: "Inter",
+              if (data.length == 0)
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 100,
                       ),
-                    ),
-                    SizedBox(height: h*0.2,)
-                  ],
-                ),
-              ) else Expanded(
-                child: ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    final task = data[index];
-                    // Extracting image URLs from collaborators
-                    List<String> collaboratorImages = [];
-                    if (task.collaborators != null) {
-                      collaboratorImages = task.collaborators!
-                          .map((collaborator) =>
-                      collaborator.image ?? "")
-                          .toList();
-                    }
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border:
-                            Border.all(color: const Color(0xffD0CBDB), width: 0.5),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                      Image.asset(
+                        'assets/nodata1.png', // Path to your no data image
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.contain,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(
-                                    left: 8, right: 8, top: 1, bottom: 1),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    color: Color(0xffFFAB00).withOpacity(0.10)),
-                                child: Text(
-                                  task.status??"",
-                                  style: TextStyle(
-                                      color: const Color(0xffFFAB00),
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      height: 19.41 / 12,
-                                      letterSpacing: 0.14,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter"),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "No Data Found",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                      SizedBox(
+                        height: h * 0.2,
+                      )
+                    ],
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final task = data[index];
+                      // Extracting image URLs from collaborators
+                      List<String> collaboratorImages = [];
+                      if (task.collaborators != null) {
+                        collaboratorImages = task.collaborators!
+                            .map((collaborator) =>
+                        collaborator.image ?? "")
+                            .toList();
+                      }
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: const Color(0xffD0CBDB), width: 0.5),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                      left: 8,
+                                      right: 8,
+                                      top: 1,
+                                      bottom: 1),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.circular(100),
+                                      color: Color(0xffFFAB00)
+                                          .withOpacity(0.10)),
+                                  child: Text(
+                                    task.status ?? "",
+                                    style: TextStyle(
+                                        color: const Color(0xffFFAB00),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12,
+                                        height: 19.41 / 12,
+                                        letterSpacing: 0.14,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontFamily: "Inter"),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 6,
-                          ),
-                          Text(
-                            task.title ?? "",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff1D1C1D),
-                              overflow: TextOverflow.ellipsis,
-                              height: 21 / 16,
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          if(task.description!="")
-                          Text(
-                            task.description ?? "",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              height: 16 / 12,
-                              color: Color(0xff787486),
-                              fontWeight: FontWeight.w400,
+                            SizedBox(
+                              height: 6,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              FlutterImageStack(
-                                imageList: collaboratorImages,
-                                totalCount: collaboratorImages.length,
-                                showTotalCount: true,
-                                extraCountTextStyle: TextStyle(
-                                  color: Color(0xff8856F4),
-                                ),
-                                backgroundColor: Colors.white,
-                                itemRadius: 25,
+                            Text(
+                              task.title ?? "",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff1D1C1D),
+                                overflow: TextOverflow.ellipsis,
+                                height: 21 / 16,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (task.description != "")
                               Text(
-                                "Collaborators",
+                                task.description ?? "",
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  color: Color(0xff64748B),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Start Date: ",
-                                style: const TextStyle(
-                                  fontSize: 12,
+                                  height: 16 / 12,
+                                  color: Color(0xff787486),
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xff64748B),
                                 ),
                               ),
-                              Text(
-                                // task.dateTime ?? "",
-                                "25/09/2024",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff64748B),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                FlutterImageStack(
+                                  imageList: collaboratorImages,
+                                  totalCount: collaboratorImages.length,
+                                  showTotalCount: true,
+                                  extraCountTextStyle: TextStyle(
+                                    color: Color(0xff8856F4),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  itemRadius: 25,
                                 ),
-                              ),
-                              Spacer(),
-                              Text(
-                                "End Date: ",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff64748B),
+                                SizedBox(
+                                  width: 10,
                                 ),
-                              ),
-                              Text(
-                                // task.dateTime ?? "",
-                                "25/09/2024",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff64748B),
+                                Text(
+                                  "Collaborators",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xff64748B),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Start Date: ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xff64748B),
+                                  ),
+                                ),
+                                Text(
+                                  // task.dateTime ?? "",
+                                  "25/09/2024",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff64748B),
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  "End Date: ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xff64748B),
+                                  ),
+                                ),
+                                Text(
+                                  // task.dateTime ?? "",
+                                  "25/09/2024",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ),
