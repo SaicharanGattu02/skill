@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'app_colors.dart';
 
@@ -58,4 +59,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class Spinkits1 {
+  Widget getSpinningLinespinkit() {
+    return SizedBox(
+      height: 20,
+      width: 55,
+      child: SpinKitSpinningLines(
+        color: Color(0xffffffff),
+      ),
+    );
+  }
 }

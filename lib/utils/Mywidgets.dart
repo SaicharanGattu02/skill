@@ -33,7 +33,8 @@ FadeShimmer_box(height, width, radius) {
     width: width,
   );
 }
-Widget shimmerRoundedContainer(double width, double height) {
+
+Widget shimmerRoundedContainer(double width, double height,) {
   return Container(
     width: width,
     height: height,
@@ -43,6 +44,7 @@ Widget shimmerRoundedContainer(double width, double height) {
     ),
   );
 }
+
 FadeShimmer_box_elite(height, width, radius) {
   return Container(
     margin: EdgeInsets.all(5),

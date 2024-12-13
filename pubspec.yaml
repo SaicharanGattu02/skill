@@ -83,6 +83,7 @@ dependencies:
   video_player: ^2.9.2
   file_picker: ^5.2.6
   url_launcher: ^6.3.1
+
 #  flutter_file_downloader: ^2.0.0
 
 dev_dependencies:

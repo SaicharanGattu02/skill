@@ -204,7 +204,9 @@ class _TaskListState extends State<TaskList> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Scaffold(
+    return Scaffold(   backgroundColor: themeProvider.themeData == lightTheme
+        ? Color(0xffEFE2FF).withOpacity(0.1)
+        : themeProvider.containerColor,
       key: _scaffoldKey,
       body: SingleChildScrollView(
         child: Padding(

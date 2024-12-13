@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/ThemeProvider.dart';
 import 'package:skill/Services/UserApi.dart';
+import 'package:skill/utils/constants.dart';
 import '../Model/TaskKanBanModel.dart';
 import '../Providers/KanbanProvider.dart';
 import '../utils/CustomSnackBar.dart';
@@ -123,10 +125,12 @@ class _TaskKanBanState extends State<TaskKanBan> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
-      body: _loading
+      backgroundColor:themeProvider.themeData==lightTheme? Color(0xffEFE2FF).withOpacity(0.1):themeProvider.containerColor,
+      body:
+      _loading
           ? Center(
               child: CircularProgressIndicator(
                 color: Color(0xff8856F4),

@@ -168,7 +168,9 @@ class _ProjectCommentState extends State<ProjectComment> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Scaffold(
+    return Scaffold(   backgroundColor: themeProvider.themeData == lightTheme
+        ? Color(0xffEFE2FF).withOpacity(0.1)
+        : themeProvider.containerColor,
       resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(16),

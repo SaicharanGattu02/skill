@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,6 +36,7 @@ import '../ProjectModule/TabBar.dart';
 import '../Model/UserDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
+import '../utils/CustomAppBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
@@ -103,7 +105,8 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void initUniLinks() async {
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       _handleNotificationTap(jsonEncode(initialMessage.data));
     }
@@ -119,7 +122,7 @@ class _DashboardState extends State<Dashboard> {
       if (roomId != null) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) =>
-            ChatPage(ID: myEmployeeID ?? "", roomId: roomId)));
+                ChatPage(ID: myEmployeeID ?? "", roomId: roomId)));
       } else {
         print("No room_id found in the payload");
       }
@@ -133,7 +136,10 @@ class _DashboardState extends State<Dashboard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatPage(roomId: res.data?.room ?? "",ID:userdata?.employee?.id??"",),
+            builder: (context) => ChatPage(
+              roomId: res.data?.room ?? "",
+              ID: userdata?.employee?.id ?? "",
+            ),
           ),
         );
       } else {
@@ -417,10 +423,10 @@ class _DashboardState extends State<Dashboard> {
     var res = await Userapi.notifyUser(id);
     setState(() {
       if (res != null) {
-        if(res.settings?.success==1){
-            is_notify=false;
-        }else{
-          is_notify=false;
+        if (res.settings?.success == 1) {
+          is_notify = false;
+        } else {
+          is_notify = false;
         }
       }
     });
@@ -457,8 +463,9 @@ class _DashboardState extends State<Dashboard> {
         Provider.of<ProfileProvider>(context, listen: false);
     try {
       await profileProvider.fetchUserDetails();
-       userdata = profileProvider.userProfile;
-      PreferenceService().saveString("my_employeeID", userdata?.employee?.id ?? "");
+      userdata = profileProvider.userProfile;
+      PreferenceService()
+          .saveString("my_employeeID", userdata?.employee?.id ?? "");
     } catch (e) {
       print("Error: $e");
     } finally {
@@ -468,6 +475,8 @@ class _DashboardState extends State<Dashboard> {
       });
     }
   }
+
+  final spinkits = Spinkits1();
 
   Future<void> _refreshItems() async {
     await Future.delayed(Duration(seconds: 2));
@@ -492,7 +501,8 @@ class _DashboardState extends State<Dashboard> {
             isDeviceConnected == "ConnectivityResult.mobile")
         ? Scaffold(
             key: _scaffoldKey,
-            backgroundColor: themeProvider.scaffoldBackgroundColor, // Use dynamic background color
+            backgroundColor: themeProvider
+                .scaffoldBackgroundColor, // Use dynamic background color
             appBar: AppBar(
               automaticallyImplyLeading: false,
               leading: null, // Hides the leading icon (for drawer)
@@ -550,7 +560,8 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => NotificationsScreen()));
+                                    builder: (context) =>
+                                        NotificationsScreen()));
                           },
                           child: Container(
                             width:
@@ -692,7 +703,10 @@ class _DashboardState extends State<Dashboard> {
                                 return Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      color:themeProvider.themeData==lightTheme? AppColors.primaryColor : AppColors.darkmodeContainerColor,
+                                      color: themeProvider.themeData ==
+                                              lightTheme
+                                          ? AppColors.primaryColor
+                                          : AppColors.darkmodeContainerColor,
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Column(
                                     children: [
@@ -700,12 +714,34 @@ class _DashboardState extends State<Dashboard> {
                                         children: [
                                           ClipOval(
                                             child: Center(
-                                              child: Image.network(
-                                                userdata?.image ?? "",
-                                                width: 70,
-                                                height: 70,
-                                                fit: BoxFit.cover,
-                                              ),
+                                              child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      userdata?.image ?? "",
+                                                  width: 70,
+                                                  height: 70,
+                                                  fit: BoxFit.cover,
+                                                  placeholder:
+                                                      (BuildContext context,
+                                                          String url) {
+                                                    return Center(
+                                                      child: spinkits
+                                                          .getSpinningLinespinkit(),
+                                                    );
+                                                  },
+                                                  errorWidget:
+                                                      (BuildContext context,
+                                                          String url,
+                                                          dynamic error) {
+                                                    // Handle error in case the image fails to load
+                                                    return Icon(Icons.error);
+                                                  }),
+
+                                              // Image.network(
+                                              //   userdata?.image ?? "",
+                                              //   width: 70,
+                                              //   height: 70,
+                                              //   fit: BoxFit.cover,
+                                              // ),
                                             ),
                                           ),
                                           const SizedBox(width: 10),
@@ -1017,7 +1053,10 @@ class _DashboardState extends State<Dashboard> {
                                 Text(
                                   "Projects",
                                   style: TextStyle(
-                                      color: themeProvider.themeData==lightTheme? Color(0xff16192C) :  themeProvider.textColor,
+                                      color:
+                                          themeProvider.themeData == lightTheme
+                                              ? Color(0xff16192C)
+                                              : themeProvider.textColor,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 18,
                                       height: 24.48 / 18,
@@ -1103,7 +1142,11 @@ class _DashboardState extends State<Dashboard> {
                                               top: 10,
                                               bottom: 10),
                                           decoration: BoxDecoration(
-                                            color: themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
+                                            color: themeProvider.themeData ==
+                                                    lightTheme
+                                                ? Color(0xffffffff)
+                                                : AppColors
+                                                    .darkmodeContainerColor,
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -1123,7 +1166,12 @@ class _DashboardState extends State<Dashboard> {
                                               Text(
                                                 data.name ?? "",
                                                 style: TextStyle(
-                                                    color: themeProvider.themeData==lightTheme? Color(0xff4F3A84) : themeProvider.textColor,
+                                                    color: themeProvider
+                                                                .themeData ==
+                                                            lightTheme
+                                                        ? Color(0xff4F3A84)
+                                                        : themeProvider
+                                                            .textColor,
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: 16,
                                                     height: 19.36 / 16,
@@ -1144,7 +1192,8 @@ class _DashboardState extends State<Dashboard> {
                                                       Text(
                                                         "Progress",
                                                         style: TextStyle(
-                                                            color:themeProvider.textColor,
+                                                            color: themeProvider
+                                                                .textColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 12,
@@ -1155,7 +1204,8 @@ class _DashboardState extends State<Dashboard> {
                                                       Text(
                                                         "${data.totalPercent ?? ""}%",
                                                         style: TextStyle(
-                                                            color:themeProvider.textColor,
+                                                            color: themeProvider
+                                                                .textColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 12,
@@ -1302,7 +1352,7 @@ class _DashboardState extends State<Dashboard> {
                                 return Container(
                                   padding: EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                        color:themeProvider.containerColor,
+                                      color: themeProvider.containerColor,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     children: [
@@ -1331,7 +1381,12 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color:themeProvider.themeData==lightTheme?Color(0x1A8856F4) :  themeProvider.scaffoldBackgroundColor,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0x1A8856F4)
+                                                          : themeProvider
+                                                              .scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1341,7 +1396,8 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color: themeProvider.textColor,
+                                                          color: themeProvider
+                                                              .textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1356,7 +1412,8 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "PROJECTS",
                                                   style: TextStyle(
-                                                      color: themeProvider.textColor,
+                                                      color: themeProvider
+                                                          .textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1376,7 +1433,6 @@ class _DashboardState extends State<Dashboard> {
                                                       builder: (context) =>
                                                           ToDoScreen()));
                                             },
-
                                             child: Column(
                                               children: [
                                                 Container(
@@ -1388,7 +1444,12 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color:themeProvider.themeData==lightTheme? Color(0xffF1FFF3) :  themeProvider.scaffoldBackgroundColor,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xffF1FFF3)
+                                                          : themeProvider
+                                                              .scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1398,7 +1459,8 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color: themeProvider.textColor,
+                                                          color: themeProvider
+                                                              .textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1413,7 +1475,8 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "TO DO",
                                                   style: TextStyle(
-                                                      color: themeProvider.textColor,
+                                                      color: themeProvider
+                                                          .textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1444,7 +1507,12 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color:themeProvider.themeData==lightTheme?  Color(0x1AFBBC04) :  themeProvider.scaffoldBackgroundColor,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0x1AFBBC04)
+                                                          : themeProvider
+                                                              .scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1454,7 +1522,8 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color: themeProvider.textColor,
+                                                          color: themeProvider
+                                                              .textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1469,7 +1538,8 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "TASKS",
                                                   style: TextStyle(
-                                                      color: themeProvider.textColor,
+                                                      color: themeProvider
+                                                          .textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1500,7 +1570,12 @@ class _DashboardState extends State<Dashboard> {
                                                       top: 2,
                                                       bottom: 2),
                                                   decoration: BoxDecoration(
-                                                      color:themeProvider.themeData==lightTheme?  Color(0x1A08BED0) :  themeProvider.scaffoldBackgroundColor,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0x1A08BED0)
+                                                          : themeProvider
+                                                              .scaffoldBackgroundColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8)),
@@ -1510,7 +1585,8 @@ class _DashboardState extends State<Dashboard> {
                                                               .toString() ??
                                                           "",
                                                       style: TextStyle(
-                                                          color: themeProvider.textColor,
+                                                          color: themeProvider
+                                                              .textColor,
                                                           fontSize: 25,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -1525,7 +1601,8 @@ class _DashboardState extends State<Dashboard> {
                                                 Text(
                                                   "MEETINGS",
                                                   style: TextStyle(
-                                                      color: themeProvider.textColor,
+                                                      color: themeProvider
+                                                          .textColor,
                                                       fontSize: 10,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1595,7 +1672,9 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
             drawer: Drawer(
-              backgroundColor:themeProvider.themeData==lightTheme? AppColors.primaryColor:  themeProvider.scaffoldBackgroundColor,
+              backgroundColor: themeProvider.themeData == lightTheme
+                  ? AppColors.primaryColor
+                  : themeProvider.scaffoldBackgroundColor,
               width: w * 0.65,
               child: Column(
                 children: [
@@ -1645,7 +1724,9 @@ class _DashboardState extends State<Dashboard> {
                           if (text.isNotEmpty) {
                             // Filter employeeData based on the search query
                             employeeData = tempemployeeData.where((employee) {
-                              return employee.name!.toLowerCase().contains(text.toLowerCase());
+                              return employee.name!
+                                  .toLowerCase()
+                                  .contains(text.toLowerCase());
                             }).toList();
                           } else {
                             // Reset to original data if the search field is empty
@@ -1696,12 +1777,39 @@ class _DashboardState extends State<Dashboard> {
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               final employee = employeeData[index];
-                              final bool isAnimating = _animatingIndex == index; // Check if the current index is animating
+                              final bool isAnimating = _animatingIndex ==
+                                  index; // Check if the current index is animating
                               return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(employee.image ?? ""),
+                                leading:
+                                CircleAvatar(
+                                  child: CachedNetworkImage(
+                                      imageUrl:
+                                      employee.image ?? "",
+                                      width: 28,
+                                      height: 28,
+                                      fit: BoxFit.cover,
+                                      placeholder:
+                                          (BuildContext context,
+                                          String url) {
+                                        return Center(
+                                          child: spinkits
+                                              .getSpinningLinespinkit(),
+                                        );
+                                      },
+                                      errorWidget:
+                                          (BuildContext context,
+                                          String url,
+                                          dynamic error) {
+                                        // Handle error in case the image fails to load
+                                        return Icon(Icons.error);
+                                      }),
                                 ),
+
+                                // CircleAvatar(
+                                //   backgroundImage:
+                                //       NetworkImage(employee.image ?? ""),
+                                // ),
+
                                 title: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -1730,14 +1838,14 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                         InkResponse(
                                           onTap: () async {
-                                            if(is_notify){
-
-                                            }else{
+                                            if (is_notify) {
+                                            } else {
                                               setState(() {
                                                 Notifyuser(employee.id ?? "");
-                                                Vibration.vibrate(duration: 300);
+                                                Vibration.vibrate(
+                                                    duration: 300);
                                                 _animatingIndex = index;
-                                                is_notify=true;
+                                                is_notify = true;
                                               });
                                             }
                                             await Future.delayed(
@@ -1763,18 +1871,18 @@ class _DashboardState extends State<Dashboard> {
                                   try {
                                     FocusScope.of(context).unfocus();
                                     Navigator.pop(context, true);
-                                    if(employee.room_id!=""){
+                                    if (employee.room_id != "") {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ChatPage(
                                             roomId: employee.room_id ?? "",
-                                            ID: userdata?.employee?.id?? "",
+                                            ID: userdata?.employee?.id ?? "",
                                           ),
                                         ),
                                       );
-                                    }else{
-                                      createRoom(employee.id??"");
+                                    } else {
+                                      createRoom(employee.id ?? "");
                                     }
                                   } catch (error) {
                                     // Handle error
@@ -1969,7 +2077,9 @@ class _DashboardState extends State<Dashboard> {
             ),
             endDrawer: Drawer(
               width: w * 0.3,
-              backgroundColor:themeProvider.themeData==lightTheme? Colors.white:themeProvider.scaffoldBackgroundColor,
+              backgroundColor: themeProvider.themeData == lightTheme
+                  ? Colors.white
+                  : themeProvider.scaffoldBackgroundColor,
               child: Padding(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 40),
                 child: Container(
@@ -2045,10 +2155,9 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>ToDoScreen()));
+                                  builder: (context) => ToDoScreen()));
                         },
                         child: Container(
-
                           child: Column(
                             children: [
                               Container(
@@ -2229,42 +2338,47 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ),
                       Spacer(),
-                      // InkResponse(
-                      //   onTap: () {
-                      //     Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //             builder: (context) => MyHomePage(
-                      //                   title: "Demo chat bubble",
-                      //                 ))
-                      //     );
-                      //   },
-                      //   child: Container(
-                      //     padding: EdgeInsets.all(4),
-                      //     width: 32,
-                      //     height: 32,
-                      //     decoration: BoxDecoration(
-                      //         color: Color(0xffffffff),
-                      //         borderRadius: BorderRadius.circular(4)),
-                      //     child: Image.asset("assets/Settings.png"),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   height: 4,
-                      // ),
-                      // Text(
-                      //   "Settings",
-                      //   style: TextStyle(
-                      //     color: Color(0xff6C848F),
-                      //     fontWeight: FontWeight.w400,
-                      //     fontSize: 14,
-                      //     overflow: TextOverflow.ellipsis,
-                      //     fontFamily: "Inter",
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
+                      InkResponse(
+                        onTap: () {
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => MyHomePage(
+                          //               title: "Demo chat bubble",
+                          //             ))
+                          // );
+                        },
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Image.asset("assets/Settings.png"),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Settings",
+                                style: TextStyle(
+                                  color: Color(0xff6C848F),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis,
+                                  fontFamily: "Inter",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       InkWell(
                         onTap: () {
                           PreferenceService().remove("token");
@@ -2333,8 +2447,8 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                shimmerText(100, 16,context),
-                shimmerText(100, 16,context),
+                shimmerText(100, 16, context),
+                shimmerText(100, 16, context),
               ],
             ),
             SizedBox(
@@ -2350,33 +2464,37 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   Row(
                     children: [
-                      shimmerCircle(70,context), // Shimmer for profile image
+                      shimmerCircle(70, context), // Shimmer for profile image
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            shimmerText(80, 10,context), // Shimmer for Skill ID
+                            shimmerText(
+                                80, 10, context), // Shimmer for Skill ID
                             const SizedBox(height: 5),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                shimmerText(120, 16,context), // Shimmer for full name
-                                shimmerText(50, 12,context), // Shimmer for status
+                                shimmerText(
+                                    120, 16, context), // Shimmer for full name
+                                shimmerText(
+                                    50, 12, context), // Shimmer for status
                               ],
                             ),
                             const SizedBox(height: 8),
-                            shimmerText(200, 12,context), // Shimmer for job title
+                            shimmerText(
+                                200, 12, context), // Shimmer for job title
                             const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
-                                    child: shimmerText(
-                                        120, 11,context)), // Shimmer for mobile
+                                    child: shimmerText(120, 11,
+                                        context)), // Shimmer for mobile
                                 const SizedBox(width: 8),
                                 Expanded(
                                     child: shimmerText(
-                                        120, 11,context)), // Shimmer for email
+                                        120, 11, context)), // Shimmer for email
                               ],
                             ),
                           ],
@@ -2393,8 +2511,8 @@ class _DashboardState extends State<Dashboard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                shimmerText(100, 16,context),
-                shimmerText(100, 16,context),
+                shimmerText(100, 16, context),
+                shimmerText(100, 16, context),
               ],
             ),
             SizedBox(
@@ -2421,20 +2539,23 @@ class _DashboardState extends State<Dashboard> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        shimmerCircle(48,context), // Shimmer for the circular image
+                        shimmerCircle(
+                            48, context), // Shimmer for the circular image
                         const SizedBox(height: 8),
-                        shimmerText(100, 16,context), // Shimmer for title text
+                        shimmerText(100, 16, context), // Shimmer for title text
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            shimmerText(50, 12,context), // Shimmer for progress label
-                            shimmerText(30, 12,context), // Shimmer for percentage text
+                            shimmerText(
+                                50, 12, context), // Shimmer for progress label
+                            shimmerText(
+                                30, 12, context), // Shimmer for percentage text
                           ],
                         ),
                         const SizedBox(height: 4),
                         shimmerLinearProgress(
-                            7,context), // Shimmer for progress indicator
+                            7, context), // Shimmer for progress indicator
                       ],
                     ),
                   );
@@ -2461,11 +2582,11 @@ class _DashboardState extends State<Dashboard> {
                           margin: EdgeInsets.symmetric(horizontal: 8),
                           child: Column(
                             children: [
-                              shimmerContainer(width * 0.16,
-                                  width * 0.115,context), // Shimmer for count
+                              shimmerContainer(width * 0.16, width * 0.115,
+                                  context), // Shimmer for count
                               SizedBox(height: 8),
-                              shimmerText(60,
-                                  10,context), // Shimmer for label (e.g., "PROJECTS")
+                              shimmerText(60, 10,
+                                  context), // Shimmer for label (e.g., "PROJECTS")
                             ],
                           ),
                         ),
@@ -2473,7 +2594,7 @@ class _DashboardState extends State<Dashboard> {
                     }),
                   ),
                   SizedBox(height: 20),
-                  shimmerContainer(width, 40,context,
+                  shimmerContainer(width, 40, context,
                       isButton: true), // Shimmer for the "Punch In" button
                 ],
               ),
