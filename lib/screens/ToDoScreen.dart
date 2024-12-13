@@ -10,6 +10,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectLabelModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../Model/UserDetailsModel.dart';
+import '../Providers/TODOProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/Mywidgets.dart';
@@ -67,6 +68,11 @@ class _ToDoScreenState extends State<ToDoScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
+  }
+
+  Future<void>GetTODOList() async {
+    final profileProvider = Provider.of<TODOProvider>(context, listen: false);
+    profileProvider.fetchTODOList(formattedDate); // Get the user profile data
   }
 
   String? selectedValue;

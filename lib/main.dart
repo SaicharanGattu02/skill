@@ -10,13 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:skill/Authentication/LogInScreen.dart';
-import 'package:skill/Authentication/Otp.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
-import 'package:skill/utils/constants.dart';
 import 'Helpers/DatabaseHelper.dart';
 import 'Model/NotificationModel.dart';
 import 'Providers/ProfileProvider.dart';
@@ -24,10 +21,10 @@ import 'Providers/ThemeProvider.dart';
 
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
+    'high_importance_channel',
+    'High Importance Notifications',
     description:
-        'This channel is used for important notifications.', // description
+        'This channel is used for important notifications.',
     importance: Importance.high,
     playSound: true);
 

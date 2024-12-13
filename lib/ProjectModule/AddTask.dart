@@ -1763,7 +1763,12 @@ class _AddTaskState extends State<AddTask> {
             Spacer(),
             InkResponse(
               onTap: () {
-                _validateFields();
+                if(_isLoading){
+
+                }else{
+                  _validateFields();
+                }
+
               },
               child: Container(
                 height: 40,

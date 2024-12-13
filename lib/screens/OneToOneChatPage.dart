@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/FetchmesgsModel.dart';
 import '../Model/RoomsDetailsModel.dart';
@@ -23,6 +22,8 @@ import '../utils/constants.dart';
 import 'UserProfile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'VideoPlayerScreen.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
@@ -511,29 +512,6 @@ class _ChatPageState extends State<ChatPage>
     );
   }
 
-  Future<void> _openVideoPlayer(BuildContext context, Media mediaItem) async {
-    // Create a VideoPlayerController
-    VideoPlayerController controller =
-        VideoPlayerController.network(mediaItem.file ?? '');
-    await controller.initialize();
-
-    // Display the video player
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.black,
-          child: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: VideoPlayer(controller),
-          ),
-        );
-      },
-    );
-
-    // Play the video
-    controller.play();
-  }
 
   Future<void> _openDocument(BuildContext context, Media mediaItem) async {
     // Show PDF in a full-screen viewer
@@ -559,8 +537,7 @@ class _ChatPageState extends State<ChatPage>
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Row(
-          mainAxisAlignment:
-              isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
@@ -585,11 +562,11 @@ class _ChatPageState extends State<ChatPage>
               decoration: BoxDecoration(
                 color: isMe
                     ? themeProvider.themeData == lightTheme
-                        ? Color(0xffEAE1FF)
-                        : themeProvider.containerColor
+                    ? Color(0xffEAE1FF)
+                    : themeProvider.containerColor
                     : themeProvider.themeData == lightTheme
-                        ? Color(0xffffffff)
-                        : themeProvider.containerColor,
+                    ? Color(0xffffffff)
+                    : themeProvider.containerColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
@@ -599,100 +576,113 @@ class _ChatPageState extends State<ChatPage>
               ),
               child: Column(
                 crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // Display the message text
-                  if (message != "")
+                  if (message.isNotEmpty)
                     Text(
                       message,
-                      style: TextStyle(color:themeProvider.textColor,fontFamily: "Inter"),
+                      style: TextStyle(
+                          color: themeProvider.textColor, fontFamily: "Inter"),
                     ),
 
-                  // Check if there's media and handle different media types
+                  // Handle media
                   if (media != null && media.isNotEmpty) ...[
+                    // Single Media Item
                     if (media.length == 1) ...[
-                      // Display image
-                      GestureDetector(
-                        onTap: () => _openImageViewer(context, media, 0),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 4,
-                          clipBehavior: Clip.hardEdge,
-                          child: Image.network(
-                            media[0].file ?? '',
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
+                      if (media[0].contentType?.startsWith('image') ?? false) ...[
+                        // Render Image (including GIF)
+                        GestureDetector(
+                          onTap: () => _openImageViewer(context, media, 0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Image.network(
+                              media[0].file ?? '',
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
                           ),
                         ),
-                      ),
-                      // ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
-                      //   // Display video (with an icon for preview)
-                      //   GestureDetector(
-                      //     onTap: () => _openVideoPlayer(context, media[0]),
-                      //     child: Card(
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(16),
-                      //       ),
-                      //       elevation: 4,
-                      //       clipBehavior: Clip.hardEdge,
-                      //       child: Stack(
-                      //         alignment: Alignment.center,
-                      //         children: [
-                      //           Image.network(
-                      //             media[0].file ?? '',
-                      //             fit: BoxFit.cover,
-                      //             width: 100,
-                      //             height: 100,
-                      //           ),
-                      //           Icon(
-                      //             Icons.play_circle_fill,
-                      //             color: Colors.white,
-                      //             size: 50,
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ] else if (media[0].contentType?.startsWith('application/pdf') ?? false) ...[
-                      //   // Display PDF icon
-                      //   GestureDetector(
-                      //     onTap: () => _openDocument(context, media[0]),
-                      //     child: Card(
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(10),
-                      //       ),
-                      //       elevation: 4,
-                      //       clipBehavior: Clip.hardEdge,
-                      //       child: Icon(
-                      //         Icons.insert_drive_file,
-                      //         color: Colors.blue,
-                      //         size: 50, // Adjust icon size
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ] else ...[
-                      //   // If it's an unsupported type, show a default icon
-                      //   // GestureDetector(
-                      //   //   onTap: () => _openFile(context, media[0]),
-                      //   //   child: Card(
-                      //   //     shape: RoundedRectangleBorder(
-                      //   //       borderRadius: BorderRadius.circular(16),
-                      //   //     ),
-                      //   //     elevation: 4,
-                      //   //     clipBehavior: Clip.hardEdge,
-                      //   //     child: Icon(
-                      //   //       Icons.help_outline,
-                      //   //       color: Colors.grey,
-                      //   //       size: 50,
-                      //   //     ),
-                      //   //   ),
-                      //   // ),
-                      // ]
+                      ] else if (media[0].contentType == 'image/gif') ...[
+                        // Render GIF
+                        GestureDetector(
+                          onTap: () => _openImageViewer(context, media, 0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Image.network(
+                              media[0].file ?? '',
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                          ),
+                        ),
+                      ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
+                        // Render Video with Play Icon
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VideoPlayerScreen(
+                                  videoUrl: media[0].file ?? '', // Pass the video URL
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  media[0].file ?? '',
+                                  fit: BoxFit.cover,
+                                  width: 100,
+                                  height: 100,
+                                ),
+                                Icon(
+                                  Icons.play_circle_fill,
+                                  color: Colors.white,
+                                  size: 50,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ] else if (media[0].contentType == 'application/pdf') ...[
+                        // Render PDF with Icon
+                        GestureDetector(
+                          onTap: () => _openDocument(context, media[0]),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Icon(
+                              Icons.insert_drive_file,
+                              color: Colors.blue,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                      ]
                     ] else if (media.length > 1) ...[
-                      // If there are multiple media items
+                      // Render Multiple Media Items
                       GridView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -701,15 +691,11 @@ class _ChatPageState extends State<ChatPage>
                           crossAxisSpacing: 3,
                           mainAxisSpacing: 3,
                         ),
-                        itemCount: media.length > 3
-                            ? 4
-                            : media
-                                .length, // Show up to 4 items, with a "more" option
+                        itemCount: media.length > 3 ? 4 : media.length,
                         itemBuilder: (context, index) {
                           if (index == 3 && media.length > 3) {
-                            // If it's the last index and we have more than 3 items, display the +X more
                             return GestureDetector(
-                              onTap: () => _openImageViewer(context, media, 3),
+                              onTap: () => _openImageViewer(context, media, index),
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -727,15 +713,12 @@ class _ChatPageState extends State<ChatPage>
                                       ),
                                     ),
                                     Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          '+${media.length - 3}',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                      child: Text(
+                                        '+${media.length - 3}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -760,7 +743,7 @@ class _ChatPageState extends State<ChatPage>
                           }
                         },
                       ),
-                    ],
+                    ]
                   ],
 
                   // Message timestamp
@@ -768,7 +751,7 @@ class _ChatPageState extends State<ChatPage>
                   Text(
                     datetime,
                     style: TextStyle(
-                      color:themeProvider.textColor.withOpacity(0.7),
+                      color: themeProvider.textColor.withOpacity(0.7),
                       fontFamily: "Inter",
                       fontSize: 10,
                     ),
@@ -781,6 +764,7 @@ class _ChatPageState extends State<ChatPage>
       ),
     );
   }
+
 
 // A helper function to return the appropriate widget for each media type
   Widget getMediaWidget(Media mediaItem) {

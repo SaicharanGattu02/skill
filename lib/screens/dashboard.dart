@@ -54,7 +54,6 @@ class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   late IOWebSocketChannel _socket;
-  bool _isListVisible = true; // Variable to track visibility
   String userid = "";
   List<Rooms> rooms = [];
   String selectedEmployee = "";
@@ -94,9 +93,8 @@ class _DashboardState extends State<Dashboard> {
     initConnectivity();
     GetUserDeatails();
     GetEmployeeData();
-    GetRoomsList();
+    // GetRoomsList();
     initUniLinks();
-
     GetProjectsData();
     get_lat_log();
     _connectivitySubscription =
@@ -454,7 +452,6 @@ class _DashboardState extends State<Dashboard> {
   }
 
   UserData? userdata;
-  // Function to fetch user details
   Future<void> GetUserDeatails() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
