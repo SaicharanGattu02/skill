@@ -12,6 +12,7 @@ import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
+import '../utils/constants.dart';
 
 class AddToDo extends StatefulWidget {
   const AddToDo({super.key});
@@ -199,7 +200,7 @@ class _AddToDoState extends State<AddToDo> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _label(text: 'Name'),
+                    _label(context,text: 'Name'),
                     SizedBox(height: 6),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
@@ -219,7 +220,7 @@ class _AddToDoState extends State<AddToDo> {
                             fontWeight: FontWeight.w400,
                           ),
                           filled: true,
-                          fillColor: const Color(0xffFCFAFF),
+                          fillColor: themeProvider.fillColor,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide: const BorderSide(
@@ -265,14 +266,14 @@ class _AddToDoState extends State<AddToDo> {
                     ] else ...[
                       SizedBox(height: 15),
                     ],
-                    _label(text: 'Description'),
+                    _label(context,text: 'Description'),
                     SizedBox(height: 4),
                     Container(
                       height: h * 0.1,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Color(0xffE8ECFF))),
+                         ),
                       child: TextFormField(
                         cursorColor: Color(0xff8856F4),
                         scrollPadding: const EdgeInsets.only(top: 5),
@@ -302,7 +303,7 @@ class _AddToDoState extends State<AddToDo> {
                             fontWeight: FontWeight.w400,
                           ),
                           filled: true,
-                          fillColor: Color(0xffFCFAFF),
+                          fillColor: themeProvider.fillColor,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(7),
                             borderSide:
@@ -339,9 +340,9 @@ class _AddToDoState extends State<AddToDo> {
                       SizedBox(height: 15),
                     ],
                     SizedBox(height: 10),
-                    _label(text: 'Date'),
+                    _label(context,text: 'Date'),
                     SizedBox(height: 4),
-                    _buildDateField(
+                    _buildDateField(context,
                       _DateController,
                     ),
                     if (_validDate.isNotEmpty) ...[
@@ -366,12 +367,12 @@ class _AddToDoState extends State<AddToDo> {
                     ] else ...[
                       SizedBox(height: 15),
                     ],
-                    _label(text: 'Priority'),
+                    _label(context,text: 'Priority'),
                     SizedBox(height: 4),
                     DropdownButtonHideUnderline(
                       child: DropdownButton2<String>(
                         isExpanded: true,
-                        hint: const Row(
+                        hint:  Row(
                           children: [
                             Expanded(
                               child: Text(
@@ -380,7 +381,7 @@ class _AddToDoState extends State<AddToDo> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: "Inter",
-                                  color: Color(0xffAFAFAF),
+                                  color:  themeProvider.textColor,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -411,10 +412,10 @@ class _AddToDoState extends State<AddToDo> {
                                 SizedBox(width: 5,),
                                 Text(
                                   item,
-                                  style: const TextStyle(
+                                  style:  TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
-                                    color: Colors.black,
+                                    color:  themeProvider.textColor,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -439,13 +440,14 @@ class _AddToDoState extends State<AddToDo> {
                             border: Border.all(
                               color: Color(0xffD0CBDB),
                             ),
-                            color: Color(0xffFCFAFF),
+                            color:  themeProvider.fillColor,
                           ),
                         ),
-                        iconStyleData: const IconStyleData(
+                        iconStyleData:  IconStyleData(
                           icon: Icon(
                             Icons.arrow_drop_down,
                             size: 25,
+                            color: themeProvider.textColor,
                           ),
                           iconSize: 14,
                           iconEnabledColor: Colors.black,
@@ -455,7 +457,7 @@ class _AddToDoState extends State<AddToDo> {
                           maxHeight: 200,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14),
-                            color: Colors.white,
+                            color:  themeProvider.containerColor,
                           ),
                           scrollbarTheme: ScrollbarThemeData(
                             radius: const Radius.circular(40),
@@ -492,7 +494,7 @@ class _AddToDoState extends State<AddToDo> {
                         height: 15,
                       ),
                     ],
-                    _label(text: 'Label'),
+                    _label(context,text: 'Label'),
                     SizedBox(height: 4),
                     GestureDetector(
                       onTap: () {
@@ -512,7 +514,7 @@ class _AddToDoState extends State<AddToDo> {
                             borderRadius: BorderRadius.circular(7.0),
                             border:
                             Border.all(color: Color(0xffD0CBDB)),
-                            color: Color(0xffFCFAFF)),
+                            color:themeProvider.fillColor),
                         child: Row(
                           mainAxisAlignment:
                           MainAxisAlignment.spaceBetween,
@@ -528,9 +530,9 @@ class _AddToDoState extends State<AddToDo> {
                     ),
                     if (isLabelDropdownOpen) ...[
                       SizedBox(height: 5),
-                      Card(
+                      Card(color: themeProvider.containerColor,
                         elevation:
-                        4, // Optional elevation for shadow effect
+                        2, // Optional elevation for shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                               8), // Optional rounded corners
@@ -554,13 +556,13 @@ class _AddToDoState extends State<AddToDo> {
                                         fontWeight: FontWeight.w400,
                                         fontFamily: "Inter"),
                                     filled: true,
-                                    fillColor: Color(0xffffffff),
+                                    fillColor:themeProvider.fillColor,
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius:
                                       BorderRadius.circular(7),
                                       borderSide: BorderSide(
-                                          width: 1,
-                                          color: Color(0xff000000)),
+                                          width: 0.5,
+                                          color: themeProvider.themeData== lightTheme?Colors.black:Color(0xffD0CBDB)),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius:
@@ -600,6 +602,7 @@ class _AddToDoState extends State<AddToDo> {
                                               style: TextStyle(
                                                   fontFamily: "Inter",
                                                   fontSize: 15,
+                                                  color: themeProvider.textColor,
                                                   fontWeight:
                                                   FontWeight.w400),
                                             ),
@@ -752,22 +755,27 @@ class _AddToDoState extends State<AddToDo> {
     );
   }
 
-  Widget _label({
+  Widget _label(BuildContext context,{
     required String text,
   }) {
-    return Text(text,
-        style: TextStyle(
-            color: Color(0xff141516),
-            fontFamily: 'Inter',
-            fontSize: 14,
-            height: 16.36 / 14,
-            fontWeight: FontWeight.w400));
+
+    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
+      return Text(text,
+          style: TextStyle(
+              color: Color(0xff141516),
+              fontFamily: 'Inter',
+              fontSize: 14,
+              height: 16.36 / 14,
+              fontWeight: FontWeight.w400));
+    },
+    );
   }
 
-  Widget _buildDateField(TextEditingController controller) {
+  Widget _buildDateField(BuildContext context,TextEditingController controller) {
     final DateTime now = DateTime.now();
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final String formattedDate = formatter.format(now);
+    final themeProvider =Provider.of<ThemeProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -787,7 +795,7 @@ class _AddToDoState extends State<AddToDo> {
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   child: Image.asset(
                     "assets/calendar.png",
-                    color: Color(0xff000000),
+                    color: themeProvider.textColor,
                     width: 16,
                     height: 16,
                     fit: BoxFit.contain,
@@ -801,7 +809,7 @@ class _AddToDoState extends State<AddToDo> {
                 fontWeight: FontWeight.w400,
               ),
               filled: true,
-              fillColor: Color(0xffFCFAFF),
+              fillColor: themeProvider.fillColor,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide: BorderSide(width: 1, color: Color(0xffCDE2FB)),
