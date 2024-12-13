@@ -600,7 +600,7 @@ class _AddTaskState extends State<AddTask> {
                                   InkWell(
                                     onTap: () {
                                       closeDropdown();
-                                      showModalBottomSheet(
+                                      showModalBottomSheet(backgroundColor: themeProvider.containerColor,
                                         context: context,
                                         builder: (BuildContext context) {
                                           return SafeArea(
