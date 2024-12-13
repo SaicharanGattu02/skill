@@ -1,19 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:web_socket_channel/io.dart';
 import '../Model/FetchmesgsModel.dart';
 import '../Model/RoomsDetailsModel.dart';
-import '../Model/RoomsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/Preferances.dart';
@@ -72,33 +71,34 @@ class _ChatPageState extends State<ChatPage>
     super.initState();
     _initializeWebSocket();
     RoomDetailsApi();
-    print("ID:${widget.ID}");
+//     print("ID:${widget.ID}");
 // Initialize the AnimationController
-//     _animationController = AnimationController(
-//       vsync: this,
-//       duration: Duration(milliseconds: 500), // Total duration of both animations
-//     );
-    //
-    // // Slide Animation: From right to left
-    // _slideAnimation = Tween<Offset>(
-    //   begin: Offset(1.5, 0),  // Start position: off-screen to the right
-    //   end: Offset(0, 0),      // End position: aligned with the text field
-    // ).animate(CurvedAnimation(
-    //   parent: _animationController,
-    //   curve: Curves.easeInOut,
-    // ));
-    //
-    // // Fade Animation: From invisible to visible
-    // _fadeAnimation = Tween<double>(
-    //   begin: 0.0,  // Start opacity: invisible
-    //   end: 1.0,    // End opacity: fully visible
-    // ).animate(CurvedAnimation(
-    //   parent: _animationController,
-    //   curve: Curves.easeInOut,
-    // ));
+    _animationController = AnimationController(
+      vsync: this,
+      duration:
+          Duration(milliseconds: 500), // Total duration of both animations
+    );
+
+    // Slide Animation: From right to left
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(1.5, 0), // Start position: off-screen to the right
+      end: Offset(0, 0), // End position: aligned with the text field
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Fade Animation: From invisible to visible
+    _fadeAnimation = Tween<double>(
+      begin: 0.0, // Start opacity: invisible
+      end: 1.0, // End opacity: fully visible
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
 // Add listener for scrolling
-    // print(widget.roomId);
-    // _initializeAudio();
+//     print(widget.roomId);
+//     _initializeAudio();
   }
 
   Future<void> _initializeAudio() async {
@@ -213,34 +213,65 @@ class _ChatPageState extends State<ChatPage>
     });
   }
 
-  // Declare the files at the class level
-  List<XFile> _files = [];
+  List<XFile> _selectedFiles = [];
+  final picker = ImagePicker(); // For Camera functionality
 
-  // Function to pick image(s) from either camera or gallery
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
+// Unified media picker function for Camera and Gallery
+  Future<void> _pickMedia({bool isCamera = false}) async {
+    try {
+      if (isCamera) {
+        // Camera - Single Image Capture
+        final XFile? capturedFile =
+            await picker.pickImage(source: ImageSource.camera);
+        if (capturedFile != null) {
+          setState(() {
+            _selectedFiles = [capturedFile]; // Single captured file
+          });
+          uploadFiles(); // Pass to upload function
+        } else {
+          print("No image captured.");
+        }
+        return;
+      }
 
-    // Use pickMultiImage for selecting multiple images
-    final pickedFiles = await picker.pickMultiImage();
+      // Gallery - Pick both images and videos
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.media, // Allow both images and videos
+        allowMultiple: true, // Allow selecting multiple files
+      );
 
-    // If no files are selected, handle the null case
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
-      setState(() {
-        _files = pickedFiles; // Update the list with the selected files
-      });
+      if (result != null) {
+        setState(() {
+          _selectedFiles =
+              result.files.map((file) => XFile(file.path!)).toList();
+        });
+        uploadFiles(); // Pass to upload function
+      } else {
+        print("No media selected.");
+      }
+    } catch (e) {
+      print("Error picking media: $e");
+    }
+  }
 
-      // Call your upload function and pass the list of selected files
-      uploadFiles(); // Now passing the correct List<XFile>
-    } else {
-      // If no files selected
-      print("No images selected.");
+  Future<void> _pickDocument() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx'],
+    );
+    if (result != null && result.files.isNotEmpty) {
+      // Process the selected document
+      _selectedFiles =
+          result.files.map((file) => XFile(file.path!)).toList();
+      uploadFiles(); // Pass to upload function
+      print("Selected Document Path: ${result.files.first.path}");
     }
   }
 
   // Call the API to upload files
   Future<void> uploadFiles() async {
     try {
-      var res = await Userapi.uploadFilesAsMultipart(userID, _files);
+      var res = await Userapi.uploadFilesAsMultipart(userID, _selectedFiles);
 
       if (res.statusCode == 200) {
         // Success
@@ -426,56 +457,7 @@ class _ChatPageState extends State<ChatPage>
     }
   }
 
-  // // Function to show the dialog
-  // void _showPickerDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: true, // Allows the dialog to be dismissed when tapping outside
-  //     builder: (BuildContext context) {
-  //       return Dialog(
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(16),
-  //         ),
-  //         elevation: 16,
-  //         child: Padding(
-  //           padding: const EdgeInsets.all(16.0),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               Text(
-  //                 'Choose an option',
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //               SizedBox(height: 20),
-  //               ListTile(
-  //                 leading: Icon(Icons.camera_alt),
-  //                 title: Text("Take Photo"),
-  //                 onTap: () {
-  //                   _pickImage(ImageSource.camera);
-  //                   Navigator.of(context).pop(); // Close the dialog after picking
-  //                 },
-  //               ),
-  //               ListTile(
-  //                 leading: Icon(Icons.photo_library),
-  //                 title: Text("Choose from Gallery"),
-  //                 onTap: () {
-  //                   _pickImage(ImageSource.gallery);
-  //                   Navigator.of(context).pop(); // Close the dialog after picking
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Toggle the visibility of the file picker and start animation
-  void _showPickerDialog() {
+  void _togglePickerVisibility() {
     setState(() {
       _isPickerVisible = !_isPickerVisible;
     });
@@ -512,21 +494,43 @@ class _ChatPageState extends State<ChatPage>
     );
   }
 
-
   Future<void> _openDocument(BuildContext context, Media mediaItem) async {
-    // Show PDF in a full-screen viewer
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.white,
-          child: PDFView(
-            filePath: mediaItem.file ?? '',
-          ),
-        );
-      },
-    );
+    final filePath = mediaItem.file;
+    if (filePath == null || filePath.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid file path')),
+      );
+      return;
+    }
+
+    final Uri fileUri = Uri.parse(filePath);
+    if (await canLaunchUrl(fileUri)) {
+      await launchUrl(fileUri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No application found to open the PDF')),
+      );
+    }
   }
+
+
+  // Helper function to get the file extension
+  String getFileExtension(String? url) {
+    if (url != null) {
+      return url.split('.').last.toLowerCase();
+    }
+    return '';
+  }
+
+  String? _getFileNameWithExtension(String? filePath) {
+    if (filePath == null || filePath.isEmpty) return null;
+
+    // Extract the file name with extension
+    final segments = Uri.parse(filePath).pathSegments;
+    return segments.isNotEmpty ? segments.last : null;
+  }
+
+
 
   Widget _buildMessageBubble(
       String message, String sender, String datetime, List<Media>? media) {
@@ -537,7 +541,8 @@ class _ChatPageState extends State<ChatPage>
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Row(
-          mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment:
+              isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
@@ -562,11 +567,11 @@ class _ChatPageState extends State<ChatPage>
               decoration: BoxDecoration(
                 color: isMe
                     ? themeProvider.themeData == lightTheme
-                    ? Color(0xffEAE1FF)
-                    : themeProvider.containerColor
+                        ? Color(0xffEAE1FF)
+                        : themeProvider.containerColor
                     : themeProvider.themeData == lightTheme
-                    ? Color(0xffffffff)
-                    : themeProvider.containerColor,
+                        ? Color(0xffffffff)
+                        : themeProvider.containerColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
@@ -576,7 +581,7 @@ class _ChatPageState extends State<ChatPage>
               ),
               child: Column(
                 crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // Display the message text
                   if (message.isNotEmpty)
@@ -587,10 +592,15 @@ class _ChatPageState extends State<ChatPage>
                     ),
 
                   // Handle media
+                  // Your existing media rendering logic
                   if (media != null && media.isNotEmpty) ...[
                     // Single Media Item
                     if (media.length == 1) ...[
-                      if (media[0].contentType?.startsWith('image') ?? false) ...[
+                      // Check for images
+                      if (getFileExtension(media[0].file) == 'jpg' ||
+                          getFileExtension(media[0].file) == 'jpeg' ||
+                          getFileExtension(media[0].file) == 'png' ||
+                          getFileExtension(media[0].file) == 'gif') ...[
                         // Render Image (including GIF)
                         GestureDetector(
                           onTap: () => _openImageViewer(context, media, 0),
@@ -608,28 +618,15 @@ class _ChatPageState extends State<ChatPage>
                             ),
                           ),
                         ),
-                      ] else if (media[0].contentType == 'image/gif') ...[
-                        // Render GIF
-                        GestureDetector(
-                          onTap: () => _openImageViewer(context, media, 0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child: Image.network(
-                              media[0].file ?? '',
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 100,
-                            ),
-                          ),
-                        ),
-                      ] else if (media[0].contentType?.startsWith('video') ?? false) ...[
-                        // Render Video with Play Icon
+                      ]
+
+                      // Check for videos
+                      else if (getFileExtension(media[0].file) == 'mp4' ||
+                          getFileExtension(media[0].file) == 'mov' ||
+                          getFileExtension(media[0].file) == 'avi') ...[
                         GestureDetector(
                           onTap: () {
+                            // Navigate to the Video Player Screen when tapped
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -645,14 +642,26 @@ class _ChatPageState extends State<ChatPage>
                             ),
                             elevation: 4,
                             clipBehavior: Clip.hardEdge,
-                            child: Stack(
+                            child:Stack(
                               alignment: Alignment.center,
                               children: [
                                 Image.network(
-                                  media[0].file ?? '',
+                                  media[0].file??"",
                                   fit: BoxFit.cover,
                                   width: 100,
                                   height: 100,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 100,
+                                      height: 100,
+                                      color: Colors.grey[300],
+                                      child: Icon(
+                                        Icons.videocam_off,
+                                        color: Colors.red,
+                                        size: 50,
+                                      ),
+                                    );
+                                  },
                                 ),
                                 Icon(
                                   Icons.play_circle_fill,
@@ -660,28 +669,91 @@ class _ChatPageState extends State<ChatPage>
                                   size: 50,
                                 ),
                               ],
-                            ),
+                            )
                           ),
-                        ),
-                      ] else if (media[0].contentType == 'application/pdf') ...[
-                        // Render PDF with Icon
-                        GestureDetector(
-                          onTap: () => _openDocument(context, media[0]),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child: Icon(
-                              Icons.insert_drive_file,
-                              color: Colors.blue,
-                              size: 50,
-                            ),
-                          ),
-                        ),
+                        )
+
                       ]
-                    ] else if (media.length > 1) ...[
+
+                      // Check for PDFs
+                      else if (getFileExtension(media[0].file) == 'pdf') ...[
+                          // Render PDF with Icon
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: media
+                                  .where((mediaItem) => getFileExtension(mediaItem.file) == 'pdf')
+                                  .map(
+                                    (mediaItem) => GestureDetector(
+                                  onTap: () => _openDocument(context, mediaItem),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 4,
+                                    clipBehavior: Clip.hardEdge,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // Placeholder for the first page thumbnail
+                                        Container(
+                                          color: Colors.grey[200],
+                                          width: 150,
+                                          height: 150,
+                                          child: Icon(
+                                            Icons.picture_as_pdf,
+                                            color: Colors.red,
+                                            size: 100,
+                                          ),
+                                        ),
+                                        // File name below the thumbnail
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            _getFileNameWithExtension(mediaItem.file) ?? 'Untitled Document',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                                  .toList(),
+                            ),
+                          )
+                        ]
+
+                        // Handle fallback if file type is not recognized
+                        else ...[
+                            // Handle unsupported or unknown file types (if needed)
+                            GestureDetector(
+                              onTap: () => _openDocument(context, media[0]),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 4,
+                                clipBehavior: Clip.hardEdge,
+                                child: Icon(
+                                  Icons.file_present,
+                                  color: Colors.grey,
+                                  size: 50,
+                                ),
+                              ),
+                            ),
+                          ]
+                    ]
+
+                    // Multiple Media Items
+                    else if (media.length > 1) ...[
                       // Render Multiple Media Items
                       GridView.builder(
                         shrinkWrap: true,
@@ -729,8 +801,7 @@ class _ChatPageState extends State<ChatPage>
                           } else {
                             final mediaItem = media[index];
                             return GestureDetector(
-                              onTap: () =>
-                                  _openImageViewer(context, media, index),
+                              onTap: () => _openImageViewer(context, media, index),
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -764,7 +835,6 @@ class _ChatPageState extends State<ChatPage>
       ),
     );
   }
-
 
 // A helper function to return the appropriate widget for each media type
   Widget getMediaWidget(Media mediaItem) {
@@ -933,15 +1003,13 @@ class _ChatPageState extends State<ChatPage>
                     animation: _animationController,
                     builder: (context, child) {
                       return FadeTransition(
-                        opacity: _fadeAnimation, // Apply fade animation
+                        opacity: _fadeAnimation,
                         child: SlideTransition(
-                          position: _slideAnimation, // Apply slide animation
+                          position: _slideAnimation,
                           child: Align(
                             alignment: Alignment.topRight,
                             child: Container(
-                              margin: EdgeInsets.only(
-                                  top: 10,
-                                  right: 20), // Adjust for the button position
+                              margin: EdgeInsets.only(top: 10, right: 20),
                               width: 250,
                               height: 150,
                               decoration: BoxDecoration(
@@ -949,36 +1017,73 @@ class _ChatPageState extends State<ChatPage>
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: EdgeInsets.all(10),
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      size: 40,
-                                      color: Color(0xff8856F4),
+                                  // Camera
+                                  GestureDetector(
+                                    onTap: () async {
+                                      _togglePickerVisibility();
+                                      _pickMedia(
+                                          isCamera:
+                                              true); // Trigger camera mode
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        size: 40,
+                                        color: Color(0xff8856F4),
+                                      ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 10,
+
+                                  // Gallery
+                                  GestureDetector(
+                                    onTap: () async {
+                                      _togglePickerVisibility();
+                                      _pickMedia(
+                                          isCamera:
+                                              false); // Trigger gallery mode
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(
+                                        Icons.photo,
+                                        size: 40,
+                                        color: Color(0xff8856F4),
+                                      ),
+                                    ),
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
+
+                                  // Document Picker
+                                  GestureDetector(
+                                    onTap: () async {
+                                      _togglePickerVisibility();
+                                      await _pickDocument();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(
+                                        Icons.insert_drive_file,
+                                        size: 40,
+                                        color: Color(0xff8856F4),
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.photo,
-                                      size: 40,
-                                      color: Color(0xff8856F4),
-                                    ),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -991,7 +1096,7 @@ class _ChatPageState extends State<ChatPage>
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color:themeProvider.themeData == lightTheme
+                      color: themeProvider.themeData == lightTheme
                           ? Color(0xffffffff)
                           : themeProvider.containerColor,
                       borderRadius: BorderRadius.circular(100),
@@ -1011,12 +1116,12 @@ class _ChatPageState extends State<ChatPage>
                             decoration: InputDecoration(
                               hintText: 'Type message here...',
                               hintStyle: TextStyle(
-                                fontFamily: "Inter",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500
-                              ),
+                                  fontFamily: "Inter",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500),
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 16.0),
                             ),
                           ),
                         ),
@@ -1026,7 +1131,7 @@ class _ChatPageState extends State<ChatPage>
                             color: Colors.grey,
                           ),
                           onPressed: () {
-                            _pickImage(ImageSource.gallery);
+                            _togglePickerVisibility();
                           },
                         ),
                         // GestureDetector(
