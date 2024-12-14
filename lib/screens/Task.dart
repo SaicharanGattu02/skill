@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/TaskProvider.dart';
 import 'package:skill/Providers/ThemeProvider.dart';
 import 'package:skill/utils/Mywidgets.dart';
 import '../Model/DashboardTaksModel.dart';
@@ -31,26 +32,11 @@ class _TaskState extends State<Task> {
     _scrollController = ScrollController();
     _generateDates();
     formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    GetTasksList(formattedDate);
+    // GetTasksList(formattedDate);
+    Provider.of<TaskProvider>(context, listen: false)
+        .GetTasksList(formattedDate);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
-    });
-  }
-
-  List<Data> data = [];
-  List<Data> filteredData = [];
-  Future<void> GetTasksList(String date) async {
-    var res = await Userapi.gettaskaApi(date);
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          data = res.data ?? [];
-          filteredData = data; // Initialize the filtered list to the full list
-        } else {
-          data = [];
-          filteredData = [];
-        }
-      }
     });
   }
 
@@ -98,6 +84,8 @@ class _TaskState extends State<Task> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
+    final taskProvider = Provider.of<TaskProvider>(context);
+
     final themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: willPop,
@@ -175,6 +163,7 @@ class _TaskState extends State<Task> {
                     final isSelected = dates[index].day == selectedDate.day &&
                         dates[index].month == selectedDate.month &&
                         dates[index].year == selectedDate.year;
+                    final taskProvider = Provider.of<TaskProvider>(context);
 
                     return GestureDetector(
                       onTap: () {
@@ -183,10 +172,13 @@ class _TaskState extends State<Task> {
                           formattedDate =
                               DateFormat('yyyy-MM-dd').format(selectedDate);
                           print("selectedDate: $formattedDate");
-                          data = [];
-                          filteredData = [];
+                          // data = [];
+                          // filteredData = [];
                           // _isLoading=true;
-                          GetTasksList(formattedDate);
+                          taskProvider.isLoading;
+                          taskProvider.data;
+                          taskProvider.fillterData;
+                          taskProvider.GetTasksList(formattedDate);
                         });
                         _scrollToSelectedDate();
                       },
@@ -233,7 +225,7 @@ class _TaskState extends State<Task> {
               Expanded(
                 child: (_loading)
                     ? _buildShimmerList()
-                    : data.isEmpty
+                    : taskProvider.data.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -263,10 +255,9 @@ class _TaskState extends State<Task> {
                             ),
                           )
                         : ListView.builder(
-                            itemCount: data.length,
+                            itemCount: taskProvider.data.length,
                             itemBuilder: (context, index) {
-                              final task = data[index];
-                              // Extracting image URLs from collaborators
+                              final task = taskProvider.data[index];
                               List<String> collaboratorImages = [];
                               if (task.collaborators != null) {
                                 collaboratorImages = task.collaborators!
@@ -319,7 +310,7 @@ class _TaskState extends State<Task> {
                                     ),
                                     Text(
                                       task.title ?? "",
-                                      style:  TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
                                         color: themeProvider.textColor,
@@ -331,10 +322,13 @@ class _TaskState extends State<Task> {
                                     if (task.description != "")
                                       Text(
                                         task.description ?? "",
-                                        style:  TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
                                           height: 16 / 12,
-                                          color: themeProvider.themeData==lightTheme?Color(0xff787486):themeProvider.textColor,
+                                          color: themeProvider.themeData ==
+                                                  lightTheme
+                                              ? Color(0xff787486)
+                                              : themeProvider.textColor,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
@@ -356,10 +350,13 @@ class _TaskState extends State<Task> {
                                         ),
                                         Text(
                                           "Collaborators",
-                                          style:  TextStyle(
-                                            fontSize: 12,
-                                            color:themeProvider.appThemeMode==lightTheme? Color(0xff64748B):themeProvider.textColor
-                                          ),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: themeProvider
+                                                          .appThemeMode ==
+                                                      lightTheme
+                                                  ? Color(0xff64748B)
+                                                  : themeProvider.textColor),
                                         ),
                                       ],
                                     ),
@@ -427,12 +424,9 @@ class _TaskState extends State<Task> {
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: themeProvider.containerColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                  color: const Color(0xffD0CBDB),
-                  width: 0.5)
-            ),
+                color: themeProvider.containerColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xffD0CBDB), width: 0.5)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -451,38 +445,32 @@ class _TaskState extends State<Task> {
                 ),
                 Row(
                   children: [
-                    shimmerCircle(24,context),
-
-                    shimmerCircle(24,context),
+                    shimmerCircle(24, context),
+                    shimmerCircle(24, context),
                     SizedBox(
                       width: 8,
                     ),
                     shimmerText(70, 10, context),
-
-
                   ],
                 ),
                 SizedBox(
                   height: 8,
                 ),
-                Row(children: [
-                  shimmerText(40, 10, context),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  shimmerText(55, 10, context),
-                  Spacer(),
-                  shimmerText(40, 10, context),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  shimmerText(55, 10, context),
-
-
-
-                ],)
-
-
+                Row(
+                  children: [
+                    shimmerText(40, 10, context),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    shimmerText(55, 10, context),
+                    Spacer(),
+                    shimmerText(40, 10, context),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    shimmerText(55, 10, context),
+                  ],
+                )
               ],
             ),
           );

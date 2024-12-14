@@ -9,8 +9,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
+import 'package:skill/Providers/TaskProvider.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
@@ -177,6 +179,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (context) => ProfileProvider(),  // Provide ProfileProvider here
         ),
+        ChangeNotifierProvider(create: (context)=>TaskProvider()),
 
       ],
       child: MyApp(),
