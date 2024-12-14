@@ -1782,34 +1782,37 @@ class _DashboardState extends State<Dashboard> {
                               return ListTile(
                                 leading:
                                 CircleAvatar(
-                                  child: CachedNetworkImage(
-                                      imageUrl:
-                                      employee.image ?? "",
-                                      width: 28,
-                                      height: 28,
+                                  radius: 24, // Adjust radius for better scaling
+                                  backgroundColor: Colors.grey.shade200, // Adds a background color
+                                  child: ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: employee.image ?? "",
+                                      width: 48, // Matches twice the radius
+                                      height: 48, // Matches twice the radius
                                       fit: BoxFit.cover,
-                                      placeholder:
-                                          (BuildContext context,
-                                          String url) {
+                                      placeholder: (BuildContext context, String url) {
                                         return Center(
-                                          child: spinkits
-                                              .getSpinningLinespinkit(),
+                                          child: SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: spinkits.getSpinningLinespinkit(), // Maintain consistency
+                                          ),
                                         );
                                       },
-                                      errorWidget:
-                                          (BuildContext context,
-                                          String url,
-                                          dynamic error) {
-                                        // Handle error in case the image fails to load
-                                        return Icon(Icons.error);
-                                      }),
+                                      errorWidget: (BuildContext context, String url, dynamic error) {
+                                        return Container(
+                                          width: 48, // Matches image size
+                                          height: 48, // Matches image size
+                                          color: Colors.grey.shade300, // Placeholder background
+                                          child: Icon(
+                                            Icons.error_outline,
+                                            color: Colors.red.shade700, // Error icon styling
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                                 ),
-
-                                // CircleAvatar(
-                                //   backgroundImage:
-                                //       NetworkImage(employee.image ?? ""),
-                                // ),
-
                                 title: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
