@@ -25,7 +25,6 @@ class _TaskState extends State<Task> {
   late ScrollController _scrollController;
 
   String formattedDate = "";
-  bool _loading = false;
   @override
   void initState() {
     super.initState();
@@ -169,15 +168,8 @@ class _TaskState extends State<Task> {
                       onTap: () {
                         setState(() {
                           selectedDate = dates[index];
-                          formattedDate =
-                              DateFormat('yyyy-MM-dd').format(selectedDate);
+                          formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
                           print("selectedDate: $formattedDate");
-                          // data = [];
-                          // filteredData = [];
-                          // _isLoading=true;
-                          taskProvider.isLoading;
-                          taskProvider.data;
-                          taskProvider.fillterData;
                           taskProvider.GetTasksList(formattedDate);
                         });
                         _scrollToSelectedDate();
@@ -223,7 +215,7 @@ class _TaskState extends State<Task> {
               ),
               const SizedBox(height: 24),
               Expanded(
-                child: (_loading)
+                child: (taskProvider.isLoading)
                     ? _buildShimmerList()
                     : taskProvider.data.isEmpty
                         ? Center(

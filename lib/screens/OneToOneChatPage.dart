@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
@@ -16,6 +17,7 @@ import '../Model/FetchmesgsModel.dart';
 import '../Model/RoomsDetailsModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
+import '../utils/CustomAppBar.dart';
 import '../utils/Preferances.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
@@ -67,6 +69,7 @@ class _ChatPageState extends State<ChatPage>
   String userID = "";
 
   bool isLoading = true;
+  final spinkits = Spinkits1();
 
   @override
   void initState() {
@@ -104,60 +107,54 @@ class _ChatPageState extends State<ChatPage>
     await _audioRecorder.openRecorder();
     await _audioPlayer.openPlayer();
   }
-
-  // Start or stop recording
   Future<void> _toggleRecording() async {
     if (_isRecording) {
-      final filePath = await _stopRecording();
-      setState(() {
-        _isRecording = false;
-        _recordedFilePath = filePath;
-      });
+      await _stopRecording();
     } else {
-      final filePath = await _startRecording();
+      await _startRecording();
+    }
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+      await _audioRecorder.startRecorder(toFile: filePath);
+
+      // Update UI state
       setState(() {
         _isRecording = true;
         _recordedFilePath = filePath;
+        _recordingTime = 0; // Reset recording time
       });
+
+      // Start the timer
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _recordingTime++;
+        });
+      });
+    } catch (e) {
+      print("Error starting recording: $e");
     }
   }
 
-  // Start recording audio
-  Future<String> _startRecording() async {
-    final tempDir = await getTemporaryDirectory();
-    final filePath =
-        '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
-    await _audioRecorder.startRecorder(toFile: filePath);
+  Future<void> _stopRecording() async {
+    print("Called _stopRecording");
+    try {
+      final filePath = await _audioRecorder.stopRecorder();
+      _timer?.cancel(); // Stop the timer safely
 
-    // Start the recording timer
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _recordingTime++;
-      });
-    });
-
-    return filePath;
-  }
-
-  // Stop recording and return the file path
-  Future<String> _stopRecording() async {
-    final filePath = await _audioRecorder.stopRecorder();
-    _timer?.cancel();
-    return filePath!;
-  }
-
-  // Cancel the recording (slide to cancel)
-  Future<void> _cancelRecording() async {
-    if (_isRecording) {
-      await _audioRecorder.stopRecorder();
-      _timer?.cancel();
+      // Update UI state
       setState(() {
         _isRecording = false;
-        _isCancelled = true;
+        _recordedFilePath = filePath;
       });
+    } catch (e) {
+      print("Error stopping recording: $e");
     }
   }
-
   // Play recorded audio
   Future<void> _playAudio(String path) async {
     setState(() {
@@ -609,11 +606,31 @@ class _ChatPageState extends State<ChatPage>
                             ),
                             elevation: 4,
                             clipBehavior: Clip.hardEdge,
-                            child: Image.network(
-                              media[0].file ?? '',
-                              fit: BoxFit.cover,
+                            child: CachedNetworkImage(
+                              imageUrl: media[0].file ?? "",
                               width: 150,
                               height: 100,
+                              fit: BoxFit.cover,
+                              placeholder: (BuildContext context, String url) {
+                                return Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: spinkits.getSpinningLinespinkit(), // Maintain consistency
+                                  ),
+                                );
+                              },
+                              errorWidget: (BuildContext context, String url, dynamic error) {
+                                return Container(
+                                  width: 48, // Matches image size
+                                  height: 48, // Matches image size
+                                  color: Colors.grey.shade300, // Placeholder background
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red.shade700, // Error icon styling
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -645,20 +662,28 @@ class _ChatPageState extends State<ChatPage>
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  Image.network(
-                                    media[0].file ?? "",
-                                    fit: BoxFit.cover,
-                                    width: 100,
+                                  CachedNetworkImage(
+                                    imageUrl: media[0].file ?? "",
+                                    width: 150,
                                     height: 100,
-                                    errorBuilder: (context, error, stackTrace) {
+                                    fit: BoxFit.cover,
+                                    placeholder: (BuildContext context, String url) {
+                                      return Center(
+                                        child: SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: spinkits.getSpinningLinespinkit(), // Maintain consistency
+                                        ),
+                                      );
+                                    },
+                                    errorWidget: (BuildContext context, String url, dynamic error) {
                                       return Container(
-                                        width: 100,
-                                        height: 100,
-                                        color: Colors.grey[300],
+                                        width: 48, // Matches image size
+                                        height: 48, // Matches image size
+                                        color: Colors.grey.shade300, // Placeholder background
                                         child: Icon(
-                                          Icons.videocam_off,
-                                          color: Colors.red,
-                                          size: 50,
+                                          Icons.error_outline,
+                                          color: Colors.red.shade700, // Error icon styling
                                         ),
                                       );
                                     },
@@ -779,12 +804,36 @@ class _ChatPageState extends State<ChatPage>
                                 child: Stack(
                                   children: [
                                     Positioned.fill(
-                                      child: Image.network(
-                                        media[0].file ?? '',
+                                      child: CachedNetworkImage(
+                                        imageUrl:  media[0].file ?? '',
                                         fit: BoxFit.cover,
-                                        color: Colors.black.withOpacity(0.4),
-                                        colorBlendMode: BlendMode.darken,
+                                        placeholder: (BuildContext context, String url) {
+                                          return Center(
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: spinkits.getSpinningLinespinkit(), // Maintain consistency
+                                            ),
+                                          );
+                                        },
+                                        errorWidget: (BuildContext context, String url, dynamic error) {
+                                          return Container(
+                                            width: 48, // Matches image size
+                                            height: 48, // Matches image size
+                                            color: Colors.grey.shade300, // Placeholder background
+                                            child: Icon(
+                                              Icons.error_outline,
+                                              color: Colors.red.shade700, // Error icon styling
+                                            ),
+                                          );
+                                        },
                                       ),
+                                      // Image.network(
+                                      //   media[0].file ?? '',
+                                      //   fit: BoxFit.cover,
+                                      //   color: Colors.black.withOpacity(0.4),
+                                      //   colorBlendMode: BlendMode.darken,
+                                      // ),
                                     ),
                                     Center(
                                       child: Text(
@@ -1176,36 +1225,35 @@ class _ChatPageState extends State<ChatPage>
                             _togglePickerVisibility();
                           },
                         ),
-                        GestureDetector(
-                          onLongPressStart: (_) {
-                            _startRecording();
-                          },
-                          onLongPressEnd: (_) {
-                            if (!_isCancelled) {
-                              _stopRecording();
-                            }
-                          },
-                          onHorizontalDragUpdate: (details) {
-                            if (details.localPosition.dx < 0) {
-                              _cancelRecording();
-                            }
-                          },
-                          child: IconButton(
-                            icon: Icon(
-                              _isRecording ? Icons.stop : Icons.mic,
-                              color: _isRecording ? Colors.red : Colors.blue,
+                        Material(
+                          elevation: _isRecording ? 6 : 2,
+                          shape: CircleBorder(),
+                          child: InkWell(
+                            customBorder: CircleBorder(),
+                            onTap: () {
+                              _toggleRecording();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                _isRecording ? Icons.stop : Icons.mic,
+                                color: _isRecording ? Colors.red : Colors.blue,
+                              ),
                             ),
-                            onPressed: () {},
                           ),
                         ),
                         _isRecording
                             ? Column(
                                 children: [
-                                  Text("Recording: ${_recordingTime}s"),
+                                  Text("Recording: ${_recordingTime}s",style: TextStyle(
+                                    color: Colors.white
+                                  ),),
                                   // Placeholder for audio frequency visualizer (like waveform)
                                   LinearProgressIndicator(
                                       value: _recordingTime /
-                                          60), // Example for 60s limit
+                                          60,
+                                    color: Colors.white,
+                                  ), // Example for 60s limit
                                 ],
                               )
                             : Container(),
