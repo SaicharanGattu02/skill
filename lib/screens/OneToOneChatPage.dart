@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
@@ -47,6 +48,7 @@ class _ChatPageState extends State<ChatPage>
   int _recordingTime = 0; // in seconds
   Timer? _timer;
   String? _recordedFilePath;
+  Uint8List? bytes;
 
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
@@ -71,8 +73,6 @@ class _ChatPageState extends State<ChatPage>
     super.initState();
     _initializeWebSocket();
     RoomDetailsApi();
-//     print("ID:${widget.ID}");
-// Initialize the AnimationController
     _animationController = AnimationController(
       vsync: this,
       duration:
@@ -96,9 +96,7 @@ class _ChatPageState extends State<ChatPage>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-// Add listener for scrolling
-//     print(widget.roomId);
-//     _initializeAudio();
+    _initializeAudio();
   }
 
   Future<void> _initializeAudio() async {
@@ -261,8 +259,7 @@ class _ChatPageState extends State<ChatPage>
     );
     if (result != null && result.files.isNotEmpty) {
       // Process the selected document
-      _selectedFiles =
-          result.files.map((file) => XFile(file.path!)).toList();
+      _selectedFiles = result.files.map((file) => XFile(file.path!)).toList();
       uploadFiles(); // Pass to upload function
       print("Selected Document Path: ${result.files.first.path}");
     }
@@ -272,13 +269,18 @@ class _ChatPageState extends State<ChatPage>
   Future<void> uploadFiles() async {
     try {
       var res = await Userapi.uploadFilesAsMultipart(userID, _selectedFiles);
-
       if (res.statusCode == 200) {
         // Success
+        setState(() {
+          _selectedFiles = [];
+        });
         print("Files uploaded successfully!");
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Files uploaded successfully!')));
       } else {
         // // Failure
+        setState(() {
+          _selectedFiles = [];
+        });
         print("Failed to upload files");
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload files')));
       }
@@ -513,7 +515,6 @@ class _ChatPageState extends State<ChatPage>
     }
   }
 
-
   // Helper function to get the file extension
   String getFileExtension(String? url) {
     if (url != null) {
@@ -529,8 +530,6 @@ class _ChatPageState extends State<ChatPage>
     final segments = Uri.parse(filePath).pathSegments;
     return segments.isNotEmpty ? segments.last : null;
   }
-
-
 
   Widget _buildMessageBubble(
       String message, String sender, String datetime, List<Media>? media) {
@@ -613,7 +612,7 @@ class _ChatPageState extends State<ChatPage>
                             child: Image.network(
                               media[0].file ?? '',
                               fit: BoxFit.cover,
-                              width: 100,
+                              width: 150,
                               height: 100,
                             ),
                           ),
@@ -631,125 +630,127 @@ class _ChatPageState extends State<ChatPage>
                               context,
                               MaterialPageRoute(
                                 builder: (context) => VideoPlayerScreen(
-                                  videoUrl: media[0].file ?? '', // Pass the video URL
+                                  videoUrl:
+                                      media[0].file ?? '', // Pass the video URL
                                 ),
                               ),
                             );
                           },
                           child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.hardEdge,
-                            child:Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.network(
-                                  media[0].file??"",
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      width: 100,
-                                      height: 100,
-                                      color: Colors.grey[300],
-                                      child: Icon(
-                                        Icons.videocam_off,
-                                        color: Colors.red,
-                                        size: 50,
-                                      ),
-                                    );
-                                  },
-                                ),
-                                Icon(
-                                  Icons.play_circle_fill,
-                                  color: Colors.white,
-                                  size: 50,
-                                ),
-                              ],
-                            )
-                          ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 4,
+                              clipBehavior: Clip.hardEdge,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Image.network(
+                                    media[0].file ?? "",
+                                    fit: BoxFit.cover,
+                                    width: 100,
+                                    height: 100,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: 100,
+                                        height: 100,
+                                        color: Colors.grey[300],
+                                        child: Icon(
+                                          Icons.videocam_off,
+                                          color: Colors.red,
+                                          size: 50,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Icon(
+                                    Icons.play_circle_fill,
+                                    color: Colors.white,
+                                    size: 50,
+                                  ),
+                                ],
+                              )),
                         )
-
                       ]
 
                       // Check for PDFs
                       else if (getFileExtension(media[0].file) == 'pdf') ...[
-                          // Render PDF with Icon
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: media
-                                  .where((mediaItem) => getFileExtension(mediaItem.file) == 'pdf')
-                                  .map(
-                                    (mediaItem) => GestureDetector(
-                                  onTap: () => _openDocument(context, mediaItem),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    elevation: 4,
-                                    clipBehavior: Clip.hardEdge,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // Placeholder for the first page thumbnail
-                                        Container(
-                                          color: Colors.grey[200],
-                                          width: 150,
-                                          height: 150,
-                                          child: Icon(
-                                            Icons.picture_as_pdf,
-                                            color: Colors.red,
-                                            size: 100,
-                                          ),
-                                        ),
-                                        // File name below the thumbnail
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            _getFileNameWithExtension(mediaItem.file) ?? 'Untitled Document',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              overflow: TextOverflow.ellipsis,
+                        // Render PDF with Icon
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: media
+                                .where((mediaItem) =>
+                                    getFileExtension(mediaItem.file) == 'pdf')
+                                .map(
+                                  (mediaItem) => GestureDetector(
+                                    onTap: () =>
+                                        _openDocument(context, mediaItem),
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      elevation: 4,
+                                      clipBehavior: Clip.hardEdge,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Placeholder for the first page thumbnail
+                                          Container(
+                                            color: Colors.grey[200],
+                                            width: 150,
+                                            height: 150,
+                                            child: Icon(
+                                              Icons.picture_as_pdf,
+                                              color: Colors.red,
+                                              size: 100,
                                             ),
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
                                           ),
-                                        ),
-
-                                      ],
+                                          // File name below the thumbnail
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              _getFileNameWithExtension(
+                                                      mediaItem.file) ??
+                                                  'Untitled Document',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
-                                  .toList(),
-                            ),
-                          )
-                        ]
+                                )
+                                .toList(),
+                          ),
+                        )
+                      ]
 
-                        // Handle fallback if file type is not recognized
-                        else ...[
-                            // Handle unsupported or unknown file types (if needed)
-                            GestureDetector(
-                              onTap: () => _openDocument(context, media[0]),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                elevation: 4,
-                                clipBehavior: Clip.hardEdge,
-                                child: Icon(
-                                  Icons.file_present,
-                                  color: Colors.grey,
-                                  size: 50,
-                                ),
-                              ),
+                      // Handle fallback if file type is not recognized
+                      else ...[
+                        // Handle unsupported or unknown file types (if needed)
+                        GestureDetector(
+                          onTap: () => _openDocument(context, media[0]),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ]
+                            elevation: 4,
+                            clipBehavior: Clip.hardEdge,
+                            child: Icon(
+                              Icons.file_present,
+                              color: Colors.grey,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                      ]
                     ]
 
                     // Multiple Media Items
@@ -767,7 +768,8 @@ class _ChatPageState extends State<ChatPage>
                         itemBuilder: (context, index) {
                           if (index == 3 && media.length > 3) {
                             return GestureDetector(
-                              onTap: () => _openImageViewer(context, media, index),
+                              onTap: () =>
+                                  _openImageViewer(context, media, index),
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -801,7 +803,8 @@ class _ChatPageState extends State<ChatPage>
                           } else {
                             final mediaItem = media[index];
                             return GestureDetector(
-                              onTap: () => _openImageViewer(context, media, index),
+                              onTap: () =>
+                                  _openImageViewer(context, media, index),
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -1111,8 +1114,47 @@ class _ChatPageState extends State<ChatPage>
                     child: Row(
                       children: [
                         Expanded(
-                          child: TextFormField(
+                          child:TextFormField(
                             controller: _messageController,
+                            keyboardType: TextInputType.multiline,
+                            contentInsertionConfiguration: ContentInsertionConfiguration(
+                              allowedMimeTypes: const <String>[
+                                'image/png',
+                                'image/gif',
+                                'image/webp',
+                                'application/x-sticker',
+                              ],
+                              onContentInserted: (KeyboardInsertedContent data) async {
+                                if (data.data != null) {
+                                  // Successfully received binary data for content (image/gif)
+                                  setState(() {
+                                    bytes = data.data; // Store the binary data for display or further use
+                                  });
+
+                                  print("Data received with MIME type: ${data.mimeType}");
+
+                                  // Save bytes as a temporary file
+                                  final tempDir = await getTemporaryDirectory(); // Get the device temporary directory
+                                  final fileName = '${DateTime.now().millisecondsSinceEpoch}.${data.mimeType.split('/').last}';
+
+                                  final tempFile = File('${tempDir.path}/$fileName');
+
+                                  // Write the received bytes to the temporary file
+                                  await tempFile.writeAsBytes(data.data!.cast<int>());
+
+                                  // Add to _selectedFiles
+                                  setState(() {
+                                    _selectedFiles.add(XFile(tempFile.path)); // Add the temp file to the list
+                                  });
+
+                                  // Trigger file upload
+                                  await uploadFiles();
+                                } else {
+                                  // Handle the case where no binary data is received from the keyboard
+                                  print("No binary data received from the keyboard.");
+                                }
+                              },
+                            ),
                             decoration: InputDecoration(
                               hintText: 'Type message here...',
                               hintStyle: TextStyle(
@@ -1120,10 +1162,10 @@ class _ChatPageState extends State<ChatPage>
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500),
                               border: InputBorder.none,
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 16.0),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                             ),
                           ),
+
                         ),
                         IconButton(
                           icon: Icon(
@@ -1134,37 +1176,39 @@ class _ChatPageState extends State<ChatPage>
                             _togglePickerVisibility();
                           },
                         ),
-                        // GestureDetector(
-                        //   onLongPressStart: (_) {
-                        //     _startRecording();
-                        //   },
-                        //   onLongPressEnd: (_) {
-                        //     if (!_isCancelled) {
-                        //       _stopRecording();
-                        //     }
-                        //   },
-                        //   onHorizontalDragUpdate: (details) {
-                        //     if (details.localPosition.dx < 0) {
-                        //       _cancelRecording();
-                        //     }
-                        //   },
-                        //   child: IconButton(
-                        //     icon: Icon(
-                        //       _isRecording ? Icons.stop : Icons.mic,
-                        //       color: _isRecording ? Colors.red : Colors.blue,
-                        //     ),
-                        //     onPressed: () {},
-                        //   ),
-                        // ),
-                        // _isRecording
-                        //     ? Column(
-                        //   children: [
-                        //     Text("Recording: ${_recordingTime}s"),
-                        //     // Placeholder for audio frequency visualizer (like waveform)
-                        //     LinearProgressIndicator(value: _recordingTime / 60), // Example for 60s limit
-                        //   ],
-                        // )
-                        //     : Container(),
+                        GestureDetector(
+                          onLongPressStart: (_) {
+                            _startRecording();
+                          },
+                          onLongPressEnd: (_) {
+                            if (!_isCancelled) {
+                              _stopRecording();
+                            }
+                          },
+                          onHorizontalDragUpdate: (details) {
+                            if (details.localPosition.dx < 0) {
+                              _cancelRecording();
+                            }
+                          },
+                          child: IconButton(
+                            icon: Icon(
+                              _isRecording ? Icons.stop : Icons.mic,
+                              color: _isRecording ? Colors.red : Colors.blue,
+                            ),
+                            onPressed: () {},
+                          ),
+                        ),
+                        _isRecording
+                            ? Column(
+                                children: [
+                                  Text("Recording: ${_recordingTime}s"),
+                                  // Placeholder for audio frequency visualizer (like waveform)
+                                  LinearProgressIndicator(
+                                      value: _recordingTime /
+                                          60), // Example for 60s limit
+                                ],
+                              )
+                            : Container(),
                         InkResponse(
                           onTap: () {
                             _sendMessage();
