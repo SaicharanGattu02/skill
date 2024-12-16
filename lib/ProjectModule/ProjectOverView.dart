@@ -139,9 +139,7 @@ class _OverViewState extends State<OverView> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Scaffold(   backgroundColor: themeProvider.themeData == lightTheme
-        ? Color(0xffEFE2FF).withOpacity(0.1)
-        : themeProvider.containerColor,
+    return Scaffold( backgroundColor: themeProvider.scaffoldBackgroundColor,
         body: _loading
             ? _buildShimmerGrid(w)
             : NestedScrollView(

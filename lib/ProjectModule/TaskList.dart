@@ -6,11 +6,13 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/TaskForm.dart';
+import 'package:skill/Providers/TaskListProvider.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
 import '../Model/TasklistModel.dart';
+import '../Providers/MileStoneProvider.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomSnackBar.dart';
@@ -30,8 +32,6 @@ class TaskList extends StatefulWidget {
 
 class _TaskListState extends State<TaskList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _loading = true;
-
   final spinkits = Spinkits();
 
   final TextEditingController _searchController = TextEditingController();
@@ -47,18 +47,11 @@ class _TaskListState extends State<TaskList> {
   String _validateStatus = "";
   String _validatePriority = "";
 
-  List<TaskListData> data = [];
-  List<TaskListData> filteredData = [];
   List<Members> members = [];
   Data? assign;
   @override
   void initState() {
-
     super.initState();
-    GetProjectTasks();
-    // Initialize filteredData with all data
-    filteredData = List.from(data);
-    _searchController.addListener(filterData);
     _mileStoneController.addListener(() {
       setState(() {
         _validateMileStone = "";
@@ -87,7 +80,13 @@ class _TaskListState extends State<TaskList> {
     GetProjectsOverviewData();
     GetStatuses();
     GetPriorities();
-    // GetMileStone();
+    GetProjectTasks();
+  }
+
+  Future<void> GetProjectTasks() async {
+    final tasklistProvider = Provider.of<TasklistProvider>(context, listen: false);
+    tasklistProvider.fetchTasksList(widget.id1, milestoneid, statusid,
+        assignedid, priorityid,_deadlineController.text);
   }
 
   String milestoneid = "";
@@ -95,20 +94,9 @@ class _TaskListState extends State<TaskList> {
   String statusid = "";
   String priorityid = "";
 
-  void filterData() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      filteredData = data.where((item) {
-        return (item.title?.toLowerCase().contains(query) ?? false) ||
-            (item.description?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    });
-  }
-
   @override
   void dispose() {
-    _searchController.removeListener(filterData); // Remove listener
-    _searchController.dispose(); // Dispose of the controller
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -145,65 +133,11 @@ class _TaskListState extends State<TaskList> {
     });
   }
 
-  List<Milestones> milestones = [];
-  // Future<void> GetMileStone() async {
-  //   var res = await Userapi.GetMileStoneApi(widget.id1);
-  //   setState(() {
-  //     if (res['success']) {
-  //       milestones = res['response'].data ?? []; // Adjust based on your model
-  //       print(milestones);
-  //       // If editing a task, get project task details
-  //     } else {
-  //       CustomSnackBar.show(
-  //           context,
-  //           res['response'] ??
-  //               "Unknown error occurred"); // Show snackbar with the error
-  //     }
-  //   });
-  // }
-
-  Future<void> GetProjectTasks() async {
-    var Res = await Userapi.GetTask(widget.id1, milestoneid, statusid,
-        assignedid, priorityid, _deadlineController.text);
-    setState(() {
-      if (Res?.data != null) {
-        if (Res?.settings?.success == 1) {
-          data = Res?.data ?? [];
-          filteredData = Res?.data ?? [];
-          _loading = false;
-        } else {
-          _loading = false;
-          CustomSnackBar.show(context, Res?.settings?.message ?? "");
-        }
-      } else {
-        print("Task Failure  ${Res?.settings?.message}");
-      }
-    });
-  }
-
-  Future<void> DelateTask(String id) async {
-    var res = await Userapi.ProjectDelateTask(id);
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _loading = true;
-          data = [];
-          filteredData = [];
-          GetProjectTasks();
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      } else {
-        CustomSnackBar.show(context, "${res?.settings?.message}");
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final tasklistProvider = Provider.of<TasklistProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       key: _scaffoldKey,
@@ -234,6 +168,10 @@ class _TaskListState extends State<TaskList> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            onChanged: (v){
+                              tasklistProvider
+                                  .filterTasksList(_searchController.text);
+                            },
                             decoration: InputDecoration(
                               isCollapsed: true,
                               border: InputBorder.none,
@@ -327,9 +265,9 @@ class _TaskListState extends State<TaskList> {
                 ],
               ),
               SizedBox(height: 8),
-              _loading
+              tasklistProvider.isLoading
                   ? _buildShimmerList()
-                  : filteredData.isEmpty
+                  : tasklistProvider.filteredTasks.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -362,10 +300,9 @@ class _TaskListState extends State<TaskList> {
                           shrinkWrap: true,
                           physics:
                               NeverScrollableScrollPhysics(), // Ensures the list doesn't scroll inside the scroll view
-                          itemCount: filteredData.length,
+                          itemCount:  tasklistProvider.filteredTasks.length,
                           itemBuilder: (context, index) {
-                            final task = filteredData[index];
-                            // Extracting image URLs from collaborators
+                            final task = tasklistProvider.filteredTasks[index];
                             List<String> collaboratorImages = [];
                             if (task.collaborators != null) {
                               collaboratorImages = task.collaborators!
@@ -410,8 +347,13 @@ class _TaskListState extends State<TaskList> {
                                       ),
                                       Spacer(),
                                       InkWell(
-                                        onTap: () {
-                                          DelateTask(task.id ?? "");
+                                        onTap: () async {
+                                          var res = await tasklistProvider.deleteTask(task.id ?? "");
+                                          if(res==1){
+                                            CustomSnackBar.show(context, "Task Deleted Successfully!");
+                                          }else{
+                                            CustomSnackBar.show(context, "Task Deleted Failed!");
+                                          }
                                         },
                                         child: Image.asset(
                                           "assets/delate.png",
@@ -435,7 +377,6 @@ class _TaskListState extends State<TaskList> {
                                                       taskid: task.id ?? "")));
                                           if (res == true) {
                                             setState(() {
-                                              _loading = true;
                                               GetProjectTasks();
                                             });
                                           }
@@ -736,7 +677,6 @@ class _TaskListState extends State<TaskList> {
 
 
    Widget _label(BuildContext context,{required String text}) {
-
     return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
       return Text(
         text,
@@ -755,6 +695,7 @@ class _TaskListState extends State<TaskList> {
   ) {
     double h = MediaQuery.of(context).size.height * 0.7;
     double w = MediaQuery.of(context).size.width;
+    final milestoneProvider = Provider.of<MileStoneProvider>(context);
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -906,7 +847,7 @@ class _TaskListState extends State<TaskList> {
                                           );
                                         },
                                         suggestionsCallback: (pattern) {
-                                          return milestones
+                                          return milestoneProvider.milestones
                                               .where((item) => item.title!
                                                   .toLowerCase()
                                                   .contains(
@@ -1051,12 +992,9 @@ class _TaskListState extends State<TaskList> {
                                     _label(context,text: 'Assign to'),
                                     SizedBox(height: 4),
                                     Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.050,
+                                      height: MediaQuery.of(context).size.height * 0.050,
                                       child: TypeAheadField<Members>(
                                         controller: _assignedToController,
-
                                         builder:
                                             (context, controller, focusNode) {
                                           return TextField(
@@ -1296,10 +1234,7 @@ class _TaskListState extends State<TaskList> {
                                         _priorityController.text = "";
                                         _mileStoneController.text = "";
                                         _assignedToController.text = "";
-                                        data = [];
-                                        filteredData = [];
                                         GetProjectTasks();
-                                        _loading = true;
                                       });
                                     },
                                     child: Container(
@@ -1330,9 +1265,6 @@ class _TaskListState extends State<TaskList> {
                                   InkResponse(
                                     onTap: () {
                                       setState(() {
-                                        data = [];
-                                        filteredData = [];
-                                        _loading = true;
                                         GetProjectTasks();
                                       });
                                       Navigator.pop(context);
@@ -1349,9 +1281,11 @@ class _TaskListState extends State<TaskList> {
                                         borderRadius: BorderRadius.circular(7),
                                       ),
                                       child: Center(
-                                        child: _loading
-                                            ? spinkits.getFadingCircleSpinner()
-                                            : Text(
+                                        child:
+                                        // _loading
+                                        //     ? spinkits.getFadingCircleSpinner()
+                                        //     :
+                                        Text(
                                                 'Save',
                                                 style: TextStyle(
                                                   color: Color(0xffffffff),

@@ -17,6 +17,7 @@ import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
+import '../Providers/TaskListProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
@@ -312,9 +313,10 @@ class _AddTaskState extends State<AddTask> {
   }
 
   Future<void> CreateTaskApi() async {
+    final tasklistProvider = Provider.of<TasklistProvider>(context);
     var data;
     if (widget.title == "Edit Task") {
-      data = await Userapi.updateTask(
+      data = await tasklistProvider.EditTask(
           widget.taskid,
           _titleController.text,
           _descriptionController.text,
@@ -327,7 +329,7 @@ class _AddTaskState extends State<AddTask> {
           selectedIds,
           filepath);
     } else {
-      data = await Userapi.CreateTask(
+      data = await tasklistProvider.AddTask(
           widget.projectId,
           _titleController.text,
           _descriptionController.text,
@@ -343,13 +345,13 @@ class _AddTaskState extends State<AddTask> {
     print("Task data:${data}");
     setState(() {
       if (data != null) {
-        if (data.settings.success == 1) {
+        if (data== 1) {
           _loading = false;
           Navigator.pop(context, true);
-          CustomSnackBar.show(context, "${data.settings.message}");
+          CustomSnackBar.show(context, "Task Added Successfully!");
         } else {
           _loading = false;
-          CustomSnackBar.show(context, "${data.settings.message}");
+          CustomSnackBar.show(context, "Task Added Failed!");
         }
       } else {}
     });

@@ -36,10 +36,7 @@ class _MileStoneState extends State<MileStone> {
   String title = "";
   String description = "";
   String deadline = "";
-  List<Milestones> rooms = [];
-  List<Milestones> filteredRooms = [];
-  var isDeviceConnected = "";
-  bool isSaving=false;
+  bool isSaving = false;
 
   @override
   void initState() {
@@ -452,12 +449,14 @@ class _MileStoneState extends State<MileStone> {
                         _deadlineController.text);
                   }
                   if (res == 1) {
-                    CustomSnackBar.show(context, "MileStone Added Successfully!");
+                    CustomSnackBar.show(
+                        context, "MileStone Added Successfully!");
                     Navigator.pop(context);
                   } else {
                     CustomSnackBar.show(context, "MileStone Adding Failed!");
                   }
                 }
+
                 return Padding(
                   padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -755,7 +754,7 @@ class _MileStoneState extends State<MileStone> {
                             InkResponse(
                               onTap: () {
                                 setState(() {
-                                  isSaving=true;
+                                  isSaving = true;
                                   title = _titleController.text.isEmpty
                                       ? "Please enter title"
                                       : "";
@@ -767,20 +766,19 @@ class _MileStoneState extends State<MileStone> {
                                       ? "Please enter a deadline"
                                       : "";
 
-                                  if(title.isEmpty &&
+                                  if (title.isEmpty &&
                                       description.isEmpty &&
-                                      deadline.isEmpty){
-                                    if(isSaving){
-
-                                    }else{
+                                      deadline.isEmpty) {
+                                    if (isSaving) {
+                                    } else {
                                       if (mode == "Edit") {
                                         PostMilestoneApi(id);
                                       } else {
                                         PostMilestoneApi("");
                                       }
                                     }
-                                  }else{
-                                    isSaving=false;
+                                  } else {
+                                    isSaving = false;
                                   }
                                 });
                               },
@@ -792,19 +790,17 @@ class _MileStoneState extends State<MileStone> {
                                   borderRadius: BorderRadius.circular(7),
                                 ),
                                 child: Center(
-                                  child:
-                                      isSaving
-                                          ? spinkit.getFadingCircleSpinner()
-                                          :
-                                      Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: Color(0xffffffff),
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
+                                  child: isSaving
+                                      ? spinkit.getFadingCircleSpinner()
+                                      : Text(
+                                          'Save',
+                                          style: TextStyle(
+                                            color: Color(0xffffffff),
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
