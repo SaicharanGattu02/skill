@@ -84,7 +84,6 @@ class _TaskState extends State<Task> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final taskProvider = Provider.of<TaskProvider>(context);
-
     final themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: willPop,
@@ -162,8 +161,6 @@ class _TaskState extends State<Task> {
                     final isSelected = dates[index].day == selectedDate.day &&
                         dates[index].month == selectedDate.month &&
                         dates[index].year == selectedDate.year;
-                    final taskProvider = Provider.of<TaskProvider>(context);
-
                     return GestureDetector(
                       onTap: () {
                         setState(() {
