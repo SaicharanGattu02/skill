@@ -71,9 +71,7 @@ class _TimeSheetState extends State<TimeSheet> {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeProvider.themeData == lightTheme
-          ? Color(0xffEFE2FF).withOpacity(0.1)
-          : themeProvider.containerColor,
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       body:
 
       // (isloading)?Center(

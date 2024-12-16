@@ -164,8 +164,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       body:
           // _isLoading
           //     ? Center(

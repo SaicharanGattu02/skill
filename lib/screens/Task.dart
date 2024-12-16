@@ -165,7 +165,8 @@ class _TaskState extends State<Task> {
                       onTap: () {
                         setState(() {
                           selectedDate = dates[index];
-                          formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+                          formattedDate =
+                              DateFormat('yyyy-MM-dd').format(selectedDate);
                           print("selectedDate: $formattedDate");
                           taskProvider.GetTasksList(formattedDate);
                         });
@@ -364,7 +365,6 @@ class _TaskState extends State<Task> {
                                         ),
                                         Text(
                                           task.startDate ?? "",
-
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
@@ -382,7 +382,6 @@ class _TaskState extends State<Task> {
                                         ),
                                         Text(
                                           task.endDate ?? "",
-
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,

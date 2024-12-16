@@ -281,8 +281,9 @@ class _ProjectFileState extends State<ProjectFile> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: const Color(0xffEFE2FF).withOpacity(0.1),
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
       body:
         SingleChildScrollView(
               child: Padding(

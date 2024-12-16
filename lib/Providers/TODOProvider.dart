@@ -117,40 +117,51 @@ class TODOProvider with ChangeNotifier {
   }
 
   Future<void> GetLabel() async {
-    _isLoading = true;
-    notifyListeners();
     var res = await Userapi.GetProjectsLabelApi();
     if (res != null && res.label != null) {
-      _isLoading = false;
       _labels = res.label ?? [];
       _filteredLabels = res.label ?? [];
       notifyListeners();
     } else {
-      _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> GetLabelColor() async {
-    _isLoading = true;
-    notifyListeners();
     var res = await Userapi.GetProjectsLabelColorApi();
     if (res != null && res.data != null) {
-      _isLoading = true;
       _labelcolor = res.data ?? [];
       notifyListeners();
     } else {
-      _isLoading = true;
       notifyListeners();
     }
   }
 
-  void _filterTasks(query) {
-    _filteredData = _data.where((task) {
-      return (task.labelName?.toLowerCase().contains(query) ?? false) ||
-          (task.description?.toLowerCase().contains(query) ?? false) ||
-          (task.taskName?.toLowerCase().contains(query) ?? false);
-    }).toList();
+  Future<void> filterTasks(String query) async {
+    if (query.isNotEmpty) {
+      _filteredData = _data.where((task) {
+        return (task.labelName?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+            (task.description?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+            (task.taskName?.toLowerCase().contains(query.toLowerCase()) ?? false);
+      }).toList();
+    } else {
+      // Reset to original data when query is empty
+      _filteredData = _data;
+    }
+    notifyListeners();
+  }
+
+
+  void filterLabels(String query) {
+    if (query.isNotEmpty) {
+      _filteredLabels = labels.where((provider) {
+        return provider.name != null &&
+            provider.name!.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }else{
+      _filteredLabels = labels;
+    }
+      notifyListeners();
   }
 }
 

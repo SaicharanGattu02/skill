@@ -196,247 +196,308 @@ class _TaskRowState extends State<TaskRow> {
         tasks = [];
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-          child: Row(
-            children: [
-              Image.asset(
-                widget.status == "To Do"
-                    ? "assets/box.png"
-                    : widget.status == "In Progress"
-                        ? "assets/inprogress.png"
-                        : "assets/done.png",
-                fit: BoxFit.contain,
-                width: w * 0.045,
-                height: w * 0.05,
-                color:themeProvider.themeData==lightTheme?Color(0xff6C848F):themeProvider.textColor ,
-              ),
-              SizedBox(width: w * 0.02),
-              Text(widget.status,
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
-              SizedBox(width: w * 0.01),
-              Text("(${tasks.length.toString()})",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F):themeProvider.textColor
-                 )),
-            ],
+    return Scaffold(
+      backgroundColor: themeProvider.scaffoldBackgroundColor,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: Row(
+              children: [
+                Image.asset(
+                  widget.status == "To Do"
+                      ? "assets/box.png"
+                      : widget.status == "In Progress"
+                          ? "assets/inprogress.png"
+                          : "assets/done.png",
+                  fit: BoxFit.contain,
+                  width: w * 0.045,
+                  height: w * 0.05,
+                  color:themeProvider.themeData==lightTheme?Color(0xff6C848F):themeProvider.textColor ,
+                ),
+                SizedBox(width: w * 0.02),
+                Text(widget.status,
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
+                SizedBox(width: w * 0.01),
+                Text("(${tasks.length.toString()})",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color:themeProvider.themeData==lightTheme?Color(0xff6C848F):themeProvider.textColor
+                   )),
+              ],
+            ),
           ),
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: DottedBorder(
-              color: Color(0xffCFB9FF),
-              strokeWidth: 1,
-              dashPattern: [5, 3],
-              borderType: BorderType.RRect,
-              radius: Radius.circular(7),
-              child: DragTarget<Kanban>(
-                onAccept: (draggedTask) {
-                  if (draggedTask.status != widget.status) {
-                    Provider.of<KanbanProvider>(context, listen: false)
-                        .updateTaskStatus(draggedTask, widget.status);
-                    UpdateTaskStatusApi(draggedTask.id!, widget.status);
-                  }
-                },
-                builder: (context, candidateData, rejectedData) {
-                  return Container(
-                    width: double.infinity,
-                    height: w * 0.4,
-                    decoration: BoxDecoration(
-                      color: themeProvider.containerColor,
-                    ),
-                    child: tasks.isEmpty
-                        ? Center(
-                            child: Lottie.asset(
-                              'assets/animations/nodata1.json',
-                              height: 100,
-                              width: 100,
-                            ),
-                          )
-                        : SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Scrollbar(
-                              thumbVisibility: true,
-                              radius: Radius.circular(10),
-                              child: Row(
-                                children: tasks.map((task) {
-                                  String formattedStartDate =
-                                      DateTimeFormatter.format(
-                                          task.startDate ?? "",
-                                          includeDate: true,
-                                          includeTime: false);
-                                  String formattedEndDate =
-                                      DateTimeFormatter.format(
-                                          task.endDate ?? "",
-                                          includeDate: true,
-                                          includeTime: false);
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: DottedBorder(
+                color: Color(0xffCFB9FF),
+                strokeWidth: 1,
+                dashPattern: [5, 3],
+                borderType: BorderType.RRect,
+                radius: Radius.circular(7),
+                child: DragTarget<Kanban>(
+                  onAccept: (draggedTask) {
+                    if (draggedTask.status != widget.status) {
+                      Provider.of<KanbanProvider>(context, listen: false)
+                          .updateTaskStatus(draggedTask, widget.status);
+                      UpdateTaskStatusApi(draggedTask.id!, widget.status);
+                    }
+                  },
+                  builder: (context, candidateData, rejectedData) {
+                    return Container(
+                      width: double.infinity,
+                      height: w * 0.4,
+                      decoration: BoxDecoration(
+                        color: themeProvider.containerColor,
+                      ),
+                      child: tasks.isEmpty
+                          ? Center(
+                              child: Lottie.asset(
+                                'assets/animations/nodata1.json',
+                                height: 100,
+                                width: 100,
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Scrollbar(
+                                thumbVisibility: true,
+                                radius: Radius.circular(10),
+                                child: Row(
+                                  children: tasks.map((task) {
+                                    String formattedStartDate =
+                                        DateTimeFormatter.format(
+                                            task.startDate ?? "",
+                                            includeDate: true,
+                                            includeTime: false);
+                                    String formattedEndDate =
+                                        DateTimeFormatter.format(
+                                            task.endDate ?? "",
+                                            includeDate: true,
+                                            includeTime: false);
 
-                                  List<String> collaboratorImages = task
-                                          .collaborators
-                                          ?.map((collaborator) =>
-                                              collaborator.image ?? "")
-                                          .toList() ??
-                                      [];
-                                  return Container(
-                                    width: w * 0.83,
-                                    margin: EdgeInsets.all(8.0),
-                                    child: LongPressDraggable<Kanban>(
-                                      data: task,
-                                      feedback: Card(
-                                        child: Container(
-                                          width: w * 0.8,
-                                          height: w * 0.32,
-                                          decoration: BoxDecoration(
-                                            color: themeProvider.containerColor,
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                          ),
-                                          padding: EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      task.title ?? "",
-                                                      maxLines: 3,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        color: themeProvider
-                                                            .textColor,
+                                    List<String> collaboratorImages = task
+                                            .collaborators
+                                            ?.map((collaborator) =>
+                                                collaborator.image ?? "")
+                                            .toList() ??
+                                        [];
+                                    return Container(
+                                      width: w * 0.83,
+                                      margin: EdgeInsets.all(8.0),
+                                      child: LongPressDraggable<Kanban>(
+                                        data: task,
+                                        feedback: Card(
+                                          child: Container(
+                                            width: w * 0.8,
+                                            height: w * 0.32,
+                                            decoration: BoxDecoration(
+                                              color: themeProvider.containerColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                            padding: EdgeInsets.all(16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        task.title ?? "",
+                                                        maxLines: 3,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          color: themeProvider
+                                                              .textColor,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  Image.asset(
-                                                    "assets/More-vertical.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
+                                                    Image.asset(
+                                                      "assets/More-vertical.png",
+                                                      width: w * 0.045,
+                                                      height: w * 0.06,
+                                                      color: Color(0xff6C848F),
+                                                    ),
+                                                  ],
+                                                ),
+                                                if (collaboratorImages.length !=
+                                                    0) ...[
+                                                  SizedBox(height: 5),
+                                                  Row(
+                                                    children: [
+                                                      FlutterImageStack(
+                                                        imageList:
+                                                            collaboratorImages,
+                                                        totalCount:
+                                                            collaboratorImages
+                                                                .length,
+                                                        showTotalCount: true,
+                                                        extraCountTextStyle:
+                                                            TextStyle(
+                                                          color:
+                                                              Color(0xff8856F4),
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        itemRadius: 25,
+                                                        itemBorderWidth: 3,
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      Text(
+                                                        "Collaborators",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color:
+                                                              Color(0xff6C848F),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
-                                              ),
-                                              if (collaboratorImages.length !=
-                                                  0) ...[
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        childWhenDragging: Container(),
+                                        child: Card(
+                                          elevation: 2,
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                left: 10,
+                                                right: 10,
+                                                top: 5,
+                                                bottom: 5),
+                                            decoration: BoxDecoration(
+                                              color: themeProvider.containerColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        task.title ?? "",
+                                                        maxLines: 2,
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          color: themeProvider
+                                                              .textColor,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Image.asset(
+                                                      "assets/More-vertical.png",
+                                                      width: w * 0.045,
+                                                      height: w * 0.06,
+                                                      color: Color(0xff6C848F),
+                                                    ),
+                                                  ],
+                                                ),
+                                                if (collaboratorImages.length !=
+                                                    0) ...[
+                                                  SizedBox(height: 5),
+                                                  Row(
+                                                    children: [
+                                                      FlutterImageStack(
+                                                        imageList:
+                                                            collaboratorImages,
+                                                        totalCount:
+                                                            collaboratorImages
+                                                                .length,
+                                                        showTotalCount: true,
+                                                        extraCountTextStyle:
+                                                            TextStyle(
+                                                          color:
+                                                              Color(0xff8856F4),
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        itemRadius: 25,
+                                                        itemBorderWidth: 3,
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      Text(
+                                                        "Collaborators",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color: themeProvider
+                                                                      .themeData ==
+                                                                  lightTheme
+                                                              ? Color(0xff6C848F)
+                                                              : themeProvider
+                                                                  .textColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                                 SizedBox(height: 5),
                                                 Row(
                                                   children: [
-                                                    FlutterImageStack(
-                                                      imageList:
-                                                          collaboratorImages,
-                                                      totalCount:
-                                                          collaboratorImages
-                                                              .length,
-                                                      showTotalCount: true,
-                                                      extraCountTextStyle:
-                                                          TextStyle(
-                                                        color:
-                                                            Color(0xff8856F4),
-                                                      ),
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      itemRadius: 25,
-                                                      itemBorderWidth: 3,
+                                                    Image.asset(
+                                                      "assets/calendar.png",
+                                                      width: w * 0.045,
+                                                      height: w * 0.06,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xff6C848F)
+                                                          : themeProvider
+                                                              .textColor,
                                                     ),
                                                     SizedBox(width: 8),
                                                     Text(
-                                                      "Collaborators",
+                                                      formattedStartDate,
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w400,
-                                                        color:
-                                                            Color(0xff6C848F),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      childWhenDragging: Container(),
-                                      child: Card(
-                                        elevation: 2,
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 10,
-                                              right: 10,
-                                              top: 5,
-                                              bottom: 5),
-                                          decoration: BoxDecoration(
-                                            color: themeProvider.containerColor,
-                                            borderRadius:
-                                                BorderRadius.circular(7),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      task.title ?? "",
-                                                      maxLines: 2,
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
                                                         color: themeProvider
-                                                            .textColor,
+                                                                    .themeData ==
+                                                                lightTheme
+                                                            ? Color(0xff6C848F)
+                                                            : themeProvider
+                                                                .textColor,
                                                       ),
                                                     ),
-                                                  ),
-                                                  Image.asset(
-                                                    "assets/More-vertical.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: Color(0xff6C848F),
-                                                  ),
-                                                ],
-                                              ),
-                                              if (collaboratorImages.length !=
-                                                  0) ...[
-                                                SizedBox(height: 5),
-                                                Row(
-                                                  children: [
-                                                    FlutterImageStack(
-                                                      imageList:
-                                                          collaboratorImages,
-                                                      totalCount:
-                                                          collaboratorImages
-                                                              .length,
-                                                      showTotalCount: true,
-                                                      extraCountTextStyle:
-                                                          TextStyle(
-                                                        color:
-                                                            Color(0xff8856F4),
-                                                      ),
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      itemRadius: 25,
-                                                      itemBorderWidth: 3,
+                                                    SizedBox(width: 15),
+                                                    Image.asset(
+                                                      "assets/calendar.png",
+                                                      width: w * 0.045,
+                                                      height: w * 0.06,
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xff6C848F)
+                                                          : themeProvider
+                                                              .textColor,
                                                     ),
                                                     SizedBox(width: 8),
                                                     Text(
-                                                      "Collaborators",
+                                                      formattedEndDate,
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:
@@ -452,81 +513,23 @@ class _TaskRowState extends State<TaskRow> {
                                                   ],
                                                 ),
                                               ],
-                                              SizedBox(height: 5),
-                                              Row(
-                                                children: [
-                                                  Image.asset(
-                                                    "assets/calendar.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: themeProvider
-                                                                .themeData ==
-                                                            lightTheme
-                                                        ? Color(0xff6C848F)
-                                                        : themeProvider
-                                                            .textColor,
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    formattedStartDate,
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: themeProvider
-                                                                  .themeData ==
-                                                              lightTheme
-                                                          ? Color(0xff6C848F)
-                                                          : themeProvider
-                                                              .textColor,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 15),
-                                                  Image.asset(
-                                                    "assets/calendar.png",
-                                                    width: w * 0.045,
-                                                    height: w * 0.06,
-                                                    color: themeProvider
-                                                                .themeData ==
-                                                            lightTheme
-                                                        ? Color(0xff6C848F)
-                                                        : themeProvider
-                                                            .textColor,
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    formattedEndDate,
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: themeProvider
-                                                                  .themeData ==
-                                                              lightTheme
-                                                          ? Color(0xff6C848F)
-                                                          : themeProvider
-                                                              .textColor,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ),
-                          ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
