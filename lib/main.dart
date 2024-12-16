@@ -12,6 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
+import 'package:skill/Providers/TODOProvider.dart';
 import 'package:skill/Providers/TaskProvider.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 import 'package:skill/screens/Splash.dart';
@@ -21,15 +22,11 @@ import 'Model/NotificationModel.dart';
 import 'Providers/ProfileProvider.dart';
 import 'Providers/ThemeProvider.dart';
 
-
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
-    description:
-        'This channel is used for important notifications.',
+    'high_importance_channel', 'High Importance Notifications',
+    description: 'This channel is used for important notifications.',
     importance: Importance.high,
     playSound: true);
-
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -129,8 +126,8 @@ Future<void> main() async {
     initializationSettings,
     onDidReceiveNotificationResponse:
         (NotificationResponse notificationResponse) async {
-          _handleNotificationTap(notificationResponse.payload);
-        },
+      _handleNotificationTap(notificationResponse.payload);
+    },
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -170,17 +167,11 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (context) => ThemeProvider(AppThemeMode.system)),
-
-        ChangeNotifierProvider(
-            create: (context) => KanbanProvider()),
-
-        ChangeNotifierProvider(
-          create: (context) => ProfileProvider(),  // Provide ProfileProvider here
-        ),
-        ChangeNotifierProvider(create: (context)=>TaskProvider()),
-
+        ChangeNotifierProvider(create: (context) => ThemeProvider(AppThemeMode.system)),
+        ChangeNotifierProvider(create: (context) => KanbanProvider()),
+        ChangeNotifierProvider(create: (context) =>ProfileProvider()),
+        ChangeNotifierProvider(create: (context) => TaskProvider()),
+        ChangeNotifierProvider(create: (context) => TODOProvider()),
       ],
       child: MyApp(),
     ),
@@ -208,8 +199,8 @@ Future<void> _handleNotificationTap(String? payload) async {
   }
 }
 
-
-void _saveNotificationToDatabase(RemoteNotification notification, Map<String, dynamic> data) async {
+void _saveNotificationToDatabase(
+    RemoteNotification notification, Map<String, dynamic> data) async {
   print("Sent Notification for saving:${notification}");
   // Create a Notification object to be saved in SQLite
   NotificationModel newNotification = NotificationModel(
@@ -239,7 +230,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // Function to display local notifications
 void showNotification(RemoteNotification notification,
     AndroidNotification android, Map<String, dynamic> data) async {
-  await audioPlayer.play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
+  await audioPlayer
+      .play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
   AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
     'skil_channel_id',
@@ -269,16 +261,17 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-            title: 'Skill',
-            debugShowCheckedModeBanner: false,
-            theme: themeProvider.themeData,
-            home: Splash(),
-            navigatorKey: navigatorKey,
-            onGenerateRoute: (settings) {
+          title: 'Skill',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.themeData,
+          home: Splash(),
+          navigatorKey: navigatorKey,
+          onGenerateRoute: (settings) {
             if (settings.name == '/chat_screen') {
               final args = settings.arguments as Map<String, dynamic>;
               return MaterialPageRoute(
-                builder: (context) => ChatPage(ID: args['employeeId'] ?? "", roomId: args['roomId'] ?? ""),
+                builder: (context) => ChatPage(
+                    ID: args['employeeId'] ?? "", roomId: args['roomId'] ?? ""),
               );
             }
             return null;
