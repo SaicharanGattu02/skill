@@ -195,7 +195,7 @@ class _ChatPageState extends State<ChatPage>
         userID = res.data?.id ?? "";
         user_id = res.data?.userId ?? "";
 
-        print("USERID :${userID}");
+        print("USERID :${user_id}");
         isLoading = false;
         // Scroll to the bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -542,14 +542,26 @@ class _ChatPageState extends State<ChatPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isMe)
-              Padding(
-                padding: const EdgeInsets.only(top: 5.0),
-                child: ClipOval(
-                  child: Image.network(
-                    userimage,
-                    width: 35,
-                    height: 35,
-                    fit: BoxFit.cover,
+              InkResponse(
+                onTap: () async {
+                  var res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserProfile(userID: user_id)));
+                  if (res == true) {
+                    _initializeWebSocket();
+                    RoomDetailsApi();
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: ClipOval(
+                    child: Image.network(
+                      userimage,
+                      width: 35,
+                      height: 35,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -950,7 +962,7 @@ class _ChatPageState extends State<ChatPage>
                 var res = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => UserProfile(userID: userID)));
+                        builder: (context) => UserProfile(userID: user_id)));
                 if (res == true) {
                   _initializeWebSocket();
                   RoomDetailsApi();
@@ -968,7 +980,7 @@ class _ChatPageState extends State<ChatPage>
                   var res = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => UserProfile(userID: userID)));
+                          builder: (context) => UserProfile(userID: user_id)));
                   if (res == true) {
                     _initializeWebSocket();
                     RoomDetailsApi();
