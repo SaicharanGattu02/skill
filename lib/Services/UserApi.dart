@@ -361,46 +361,26 @@ class Userapi {
     }
   }
 
-  static Future<Map<String, dynamic>> GetMileStoneApi(String id) async {
+  static Future<GetMileStoneModel?> getMileStoneApi(String id) async {
     try {
       final headers = await getheader();
       final url = Uri.parse("${host}/project/project-milestones?project_id=$id");
       final res = await http.get(url, headers: headers);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
-        print("GetMileStone Response: ${res.body}");
-        final result = GetMileStoneModel.fromJson(jsonDecode(res.body));
-        return {'success': true, 'response': result};
+        debugPrint("GetMileStone Response: ${res.body}");
+        return GetMileStoneModel.fromJson(jsonDecode(res.body));
       } else {
         final errorResponse = jsonDecode(res.body);
-        return {
-          'success': false,
-          'response': errorResponse
-        };
+        debugPrint("Error Response: ${errorResponse}");
+        return null;
       }
-    } on SocketException {
-      return {
-        'success': false,
-        'response': NO_INTERNET
-      };
-    } on FormatException {
-      return {
-        'success': false,
-        'response':BAD_RESPONSE
-      };
-    } on HttpException {
-      return {
-        'success': false,
-        'response': SOMETHING_WRONG // Server not responding
-      };
     } catch (e) {
       debugPrint('Error: $e');
-      return {
-        'success': false,
-        'response':SOMETHING_WRONG // Handle any other unexpected errors
-      };
+      return null;
     }
   }
+
 
   static Future<ProjectActivityModel?> GetProjectsActivityApi(String id) async {
     try {

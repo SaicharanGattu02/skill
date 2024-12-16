@@ -126,7 +126,7 @@ class _TaskFormState extends State<TaskForm> {
         GetProjectsOverviewData(),
         GetStatuses(),
         GetPriorities(),
-        GetMileStone(),
+        // GetMileStone(),
       ]);
     } catch (e) {
       // Handle any errors that occur during the loading
@@ -175,22 +175,22 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   List<Milestones> milestones = [];
-
-  Future<void> GetMileStone() async {
-    var res = await Userapi.GetMileStoneApi(widget.projectId);
-    setState(() {
-      if (res['success']) {
-        milestones = res['response'].data ?? []; // Adjust based on your model
-        print(milestones);
-        // If editing a task, get project task details
-      } else {
-        CustomSnackBar.show(
-            context,
-            res['response'] ??
-                "Unknown error occurred"); // Show snackbar with the error
-      }
-    });
-  }
+  //
+  // Future<void> GetMileStone() async {
+  //   var res = await Userapi.GetMileStoneApi(widget.projectId);
+  //   setState(() {
+  //     if (res['success']) {
+  //       milestones = res['response'].data ?? []; // Adjust based on your model
+  //       print(milestones);
+  //       // If editing a task, get project task details
+  //     } else {
+  //       CustomSnackBar.show(
+  //           context,
+  //           res['response'] ??
+  //               "Unknown error occurred"); // Show snackbar with the error
+  //     }
+  //   });
+  // }
 
   // String getMilestoneTitleById(String id) {
   //   final milestone = milestones.firstWhere(

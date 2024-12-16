@@ -129,7 +129,7 @@ class _AddTaskState extends State<AddTask> {
         GetProjectsOverviewData(),
         GetStatuses(),
         GetPriorities(),
-        GetMileStone(),
+        // GetMileStone(),
       ]);
     } catch (e) {
       // Handle any errors that occur during the loading
@@ -185,22 +185,22 @@ class _AddTaskState extends State<AddTask> {
 
   List<Milestones> milestones = [];
   List<Milestones> filteredMilestones = [];
-
-  Future<void> GetMileStone() async {
-    var res = await Userapi.GetMileStoneApi(widget.projectId);
-    setState(() {
-      if (res['success']) {
-        milestones = res['response'].data ?? []; // Adjust based on your model
-        filteredMilestones =
-            res['response'].data ?? []; // Adjust based on your model
-      } else {
-        CustomSnackBar.show(
-            context,
-            res['response'] ??
-                "Unknown error occurred"); // Show snackbar with the error
-      }
-    });
-  }
+  //
+  // Future<void> GetMileStone() async {
+  //   var res = await Userapi.GetMileStoneApi(widget.projectId);
+  //   setState(() {
+  //     if (res['success']) {
+  //       milestones = res['response'].data ?? []; // Adjust based on your model
+  //       filteredMilestones =
+  //           res['response'].data ?? []; // Adjust based on your model
+  //     } else {
+  //       CustomSnackBar.show(
+  //           context,
+  //           res['response'] ??
+  //               "Unknown error occurred"); // Show snackbar with the error
+  //     }
+  //   });
+  // }
 
   Future<void> GetProjectTaskDetails() async {
     try {

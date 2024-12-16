@@ -87,7 +87,7 @@ class _TaskListState extends State<TaskList> {
     GetProjectsOverviewData();
     GetStatuses();
     GetPriorities();
-    GetMileStone();
+    // GetMileStone();
   }
 
   String milestoneid = "";
@@ -146,21 +146,21 @@ class _TaskListState extends State<TaskList> {
   }
 
   List<Milestones> milestones = [];
-  Future<void> GetMileStone() async {
-    var res = await Userapi.GetMileStoneApi(widget.id1);
-    setState(() {
-      if (res['success']) {
-        milestones = res['response'].data ?? []; // Adjust based on your model
-        print(milestones);
-        // If editing a task, get project task details
-      } else {
-        CustomSnackBar.show(
-            context,
-            res['response'] ??
-                "Unknown error occurred"); // Show snackbar with the error
-      }
-    });
-  }
+  // Future<void> GetMileStone() async {
+  //   var res = await Userapi.GetMileStoneApi(widget.id1);
+  //   setState(() {
+  //     if (res['success']) {
+  //       milestones = res['response'].data ?? []; // Adjust based on your model
+  //       print(milestones);
+  //       // If editing a task, get project task details
+  //     } else {
+  //       CustomSnackBar.show(
+  //           context,
+  //           res['response'] ??
+  //               "Unknown error occurred"); // Show snackbar with the error
+  //     }
+  //   });
+  // }
 
   Future<void> GetProjectTasks() async {
     var Res = await Userapi.GetTask(widget.id1, milestoneid, statusid,
