@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/ProjectNotesProviders.dart';
 import 'package:skill/Providers/ThemeProvider.dart';
 import '../Model/GetEditProjectNoteModel.dart';
 import '../Model/ProjectNoteModel.dart';
@@ -45,126 +46,23 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
   @override
   void initState() {
-    filteredData = List.from(data);
-    _searchController.addListener(filterData); // Add listener for search
-    GetNote();
+    Provider.of<ProjectNoteProviders>(context,listen: false).GetNote(widget.id);
     super.initState();
   }
 
-  void filterData() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      filteredData = data.where((item) {
-        return (item.title?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    });
-  }
-
-  List<Data> data = []; // Original list of notes
-  List<Data> filteredData = []; // Filtered list for search
-  Future<void> GetNote() async {
-    var res = await Userapi.GetProjectNote(widget.id);
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _isLoading = false;
-          data = res.data ?? [];
-          filteredData = res.data ?? [];
-        } else {
-          _isLoading = false;
-          CustomSnackBar.show(context, res.settings?.message ?? "");
-        }
-      } else {
-        print("Task Failure  ${res?.settings?.message}");
-      }
-    });
-  }
-
-  Future<void> PostAddNoteApi(String editid) async {
-    var res;
-    if (editid != "") {
-      res = await Userapi.PutEditNote(
-        editid,
-        _titleController.text,
-        _descriptionController.text,
-        filepath,
-        widget.id,
-      );
-    } else {
-      res = await Userapi.PostAddNote(
-        _titleController.text,
-        _descriptionController.text,
-        filepath, // Pass null if no image
-        widget.id,
-      );
-    }
-    if (res != null) {
-      setState(() {
-        if (res.settings?.success == 1) {
-          isLoading = false;
-          Navigator.pop(context);
-          GetNote();
-        } else {
-          isLoading = false;
-        }
-      });
-    } else {
-      print("PostAddNoteApi >>>${res?.settings?.message}");
-      CustomSnackBar.show(context, "${res?.settings?.message}");
-    }
-  }
-
-  EditData? editData;
-  Future<void> EditNoteApi(String editid) async {
-    var res = await Userapi.GetProjectEditNotes(editid);
-    setState(() {
-      _isLoading = false;
-      if (res != null) {
-        if (res.editData != null) {
-          _titleController.text = res.editData?.title ?? "";
-          _descriptionController.text = res.editData?.description ?? "";
-          String fileUrl = res.editData?.file ?? "";
-          if (fileUrl != "") {
-            filename = getFileName(fileUrl);
-          }
-          _showBottomSheet1(context, "Edit", editid ?? "", filename);
-
-          print("sucsesss:${filename}");
-        } else {
-          print("Task Failure  ${res.settings?.message}");
-        }
-      }
-    });
-  }
 
   String getFileName(String url) {
     Uri uri = Uri.parse(url);
     return uri.pathSegments.last;
   }
 
-  Future<void> DelateApi(String id) async {
-    var res = await Userapi.ProjectDelateNotes(id);
 
-    if (res != null) {
-      setState(() {
-        _isLoading = false;
-        if (res.settings?.success == 1) {
-          GetNote();
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      });
-    } else {
-      print("DelateApi >>>${res?.settings?.message}");
-      CustomSnackBar.show(context, "${res?.settings?.message}");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final projectNoteProvider = Provider.of<ProjectNoteProviders>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       body:
@@ -201,6 +99,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            onChanged: (v){
+                              projectNoteProvider.filterNotes(_searchController.text);
+                            },
                             decoration: InputDecoration(
                               isCollapsed: true,
                               border: InputBorder.none,
@@ -270,7 +171,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
               SizedBox(height: 8),
               _isLoading
                   ? _buildShimmerList()
-                  : filteredData.isEmpty
+                  : projectNoteProvider.filteredData.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -302,143 +203,165 @@ class _ProjectNotesState extends State<ProjectNotes> {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: filteredData.length,
+                          itemCount: projectNoteProvider.filteredData.length,
                           itemBuilder: (context, index) {
-                            final note = filteredData[index];
+                            final note = projectNoteProvider.filteredData[index];
                             String isoDate = note.createdTime ?? "";
                             String formattedDate = DateTimeFormatter.format(
                                 isoDate,
                                 includeDate: true,
                                 includeTime: false); // Date only
-                            return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(7),
+                            return Dismissible(
+                              key: Key(note.id ?? ''),
+                              direction: DismissDirection.startToEnd,
+                              onDismissed: (direction) {
+                                if (direction == DismissDirection.startToEnd) {
+                                  projectNoteProvider.DelateApi(note.id ?? "");
+                                  setState(() {
+                                    projectNoteProvider.filteredData.removeAt(
+                                        index);
+                                  });
+                                }
+                              },
+                              background: Container(
+                                alignment: Alignment.centerRight,
+                                color: themeProvider.scaffoldBackgroundColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child:
+                                      Icon(Icons.delete, color: Colors.white),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        "assets/calendar.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.06,
-                                        height: w * 0.05,
-                                        color: Color(0xff6C848F),
-                                      ),
-                                      SizedBox(
-                                        width: w * 0.004,
-                                      ),
-                                      Text(
-                                        " ${formattedDate}",
-                                        style: TextStyle(
-                                          color: const Color(0xff1D1C1D),
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 15,
-                                          height: 19.41 / 15,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: "Inter",
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      InkWell(
-                                        onTap: () {
-                                          EditNoteApi(note.id ?? "");
-                                        },
-                                        child: Image.asset(
-                                          "assets/edit.png",
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/calendar.png",
                                           fit: BoxFit.contain,
                                           width: w * 0.06,
                                           height: w * 0.05,
-                                          color: AppColors.primaryColor,
+                                          color: Color(0xff6C848F),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: w * 0.02,
-                                      ),
-                                      if (note.file != null &&
-                                          note.file!.isNotEmpty) ...[
+                                        SizedBox(
+                                          width: w * 0.004,
+                                        ),
+                                        Text(
+                                          " ${formattedDate}",
+                                          style: TextStyle(
+                                            color: const Color(0xff1D1C1D),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                            height: 19.41 / 15,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: "Inter",
+                                          ),
+                                        ),
+                                        Spacer(),
                                         InkWell(
                                           onTap: () {
-                                            // Check if note.file is not null before showing the bottom sheet
-                                            if (note.file != null &&
-                                                note.file!.isNotEmpty) {
-                                              _showBottomSheet(
-                                                  context, note.file!);
-                                            } else {
-                                              // Optionally, show a message or handle the case when the file is null
-                                              print('No file to display');
-                                            }
+                                            projectNoteProvider.PostAddNoteApi(note.id??'', _titleController.text, _descriptionController.text, filepath, widget.id);
                                           },
                                           child: Image.asset(
-                                            "assets/eye.png",
+                                            "assets/edit.png",
                                             fit: BoxFit.contain,
                                             width: w * 0.06,
                                             height: w * 0.05,
                                             color: AppColors.primaryColor,
                                           ),
                                         ),
+                                        SizedBox(
+                                          width: w * 0.02,
+                                        ),
+                                        if (note.file != null &&
+                                            note.file!.isNotEmpty) ...[
+                                          InkWell(
+                                            onTap: () {
+                                              // Check if note.file is not null before showing the bottom sheet
+                                              if (note.file != null &&
+                                                  note.file!.isNotEmpty) {
+                                                _showBottomSheet(
+                                                    context, note.file!);
+                                              } else {
+                                                // Optionally, show a message or handle the case when the file is null
+                                                print('No file to display');
+                                              }
+                                            },
+                                            child: Image.asset(
+                                              "assets/eye.png",
+                                              fit: BoxFit.contain,
+                                              width: w * 0.06,
+                                              height: w * 0.05,
+                                              color: AppColors.primaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                        // SizedBox(
+                                        //   width: w * 0.02,
+                                        // ),
+                                        // Image.asset(
+                                        //   "assets/download.png",
+                                        //   fit: BoxFit.contain,
+                                        //   width: w * 0.06,
+                                        //   height: w * 0.05,
+                                        //   color: Color(0xff8856F4),
+                                        // ),
                                       ],
-                                      // SizedBox(
-                                      //   width: w * 0.02,
-                                      // ),
-                                      // Image.asset(
-                                      //   "assets/download.png",
-                                      //   fit: BoxFit.contain,
-                                      //   width: w * 0.06,
-                                      //   height: w * 0.05,
-                                      //   color: Color(0xff8856F4),
-                                      // ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Text(
-                                    note.title ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      height: 16 / 18,
-                                      color: Color(0xff1D1C1D),
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Inter',
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    note.description ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      height: 18.15 / 15,
-                                      color: Color(0xff6C848F),
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Inter',
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      note.title ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        height: 16 / 18,
+                                        color: Color(0xff1D1C1D),
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Inter',
+                                      ),
                                     ),
-                                  ),
-                                  // const SizedBox(height: 20),
-                                  // InkWell(
-                                  //   onTap: () {
-                                  //     DelateApi(note.id ?? "");
-                                  //   },
-                                  //   child: Text(
-                                  //     "Remove",
-                                  //     style: TextStyle(
-                                  //       color: Color(0xff8856F4),
-                                  //       fontFamily: 'Inter',
-                                  //       fontSize: 15,
-                                  //       fontWeight: FontWeight.w500,
-                                  //       height: 19.36 / 15,
-                                  //       decoration: TextDecoration.underline,
-                                  //       decorationColor: Color(0xff8856F4),
-                                  //     ),
-                                  //   ),
-                                  // )
-                                ],
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      note.description ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        height: 18.15 / 15,
+                                        color: Color(0xff6C848F),
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Inter',
+                                      ),
+                                    ),
+                                    // const SizedBox(height: 20),
+                                    // InkWell(
+                                    //   onTap: () {
+                                    //     DelateApi(note.id ?? "");
+                                    //   },
+                                    //   child: Text(
+                                    //     "Remove",
+                                    //     style: TextStyle(
+                                    //       color: Color(0xff8856F4),
+                                    //       fontFamily: 'Inter',
+                                    //       fontSize: 15,
+                                    //       fontWeight: FontWeight.w500,
+                                    //       height: 19.36 / 15,
+                                    //       decoration: TextDecoration.underline,
+                                    //       decorationColor: Color(0xff8856F4),
+                                    //     ),
+                                    //   ),
+                                    // )
+                                  ],
+                                ),
                               ),
                             );
                           },
-                        ),
+                        )
             ],
           ),
         ),
@@ -449,6 +372,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
   Widget _buildShimmerList() {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
+
       itemCount: 10, // Adjust the number of shimmer items as needed
       shrinkWrap: true,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -493,6 +417,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
+        final projectNoteProvider =Provider.of<ProjectNoteProviders>(context);
         return Consumer<ThemeProvider>(
           builder: (context, themeProvider, child) {
             return StatefulBuilder(
@@ -688,9 +613,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                 Container(
                                   height: h * 0.2,
                                   decoration: BoxDecoration(
-                                      color:themeProvider.containerColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                      ),
+                                    color: themeProvider.containerColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                   child: TextFormField(
                                     cursorColor: Color(0xff8856F4),
                                     scrollPadding:
@@ -930,9 +855,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                 });
                                 if (_isLoading) {
                                   if (mode == "Edit") {
-                                    PostAddNoteApi(id);
+                                    projectNoteProvider.PostAddNoteApi(id, _titleController.text, _descriptionController.text, filepath, widget.id);
                                   } else {
-                                    PostAddNoteApi("");
+                                    projectNoteProvider.PostAddNoteApi('', _titleController.text, _descriptionController.text, filepath, widget.id);
                                   }
                                 }
                               },

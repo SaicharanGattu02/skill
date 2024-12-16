@@ -1,14 +1,14 @@
 class NoteModel {
-  List<Data>? data;
+  List<Notes>? data;
   Settings? settings;
 
   NoteModel({this.data, this.settings});
 
   NoteModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <Notes>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new Notes.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,16 +28,16 @@ class NoteModel {
   }
 }
 
-class Data {
+class Notes {
   String? id;
   String? title;
   String? description;
   String? file;
   String? createdTime;
 
-  Data({this.id, this.title, this.description, this.file, this.createdTime});
+  Notes({this.id, this.title, this.description, this.file, this.createdTime});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Notes.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];

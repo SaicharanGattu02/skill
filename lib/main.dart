@@ -15,6 +15,7 @@ import 'package:skill/Providers/ConnectivityProviders.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/Providers/MileStoneProvider.dart';
 import 'package:skill/Providers/MeetingProvider.dart';
+import 'package:skill/Providers/ProjectNotesProviders.dart';
 import 'package:skill/Providers/TODOProvider.dart';
 import 'package:skill/Providers/TaskProvider.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
@@ -178,6 +179,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => TODOProvider()),
         ChangeNotifierProvider(create: (context) => MileStoneProvider()),
         ChangeNotifierProvider(create: (context) => MeetingProvider()),
+        ChangeNotifierProvider(create: (context) => ProjectNoteProviders()),
 
       ],
       child: MyApp(),
