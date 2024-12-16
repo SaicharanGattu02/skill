@@ -7,7 +7,6 @@ import '../Services/UserApi.dart';
 
 class ProfileProvider with ChangeNotifier {
   UserData? _userProfile;
-
   UserData? get userProfile => _userProfile;
 
   // Fetch user details from the repository

@@ -20,8 +20,8 @@ class ProjectsScreen extends StatefulWidget {
 }
 
 class _ProjectsScreenState extends State<ProjectsScreen> {
-  List<Data> projectsData = [];
-  List<Data> filteredRooms = [];
+  List<ProjectsMeetingsModel> projectsData = [];
+  List<ProjectsMeetingsModel> filteredRooms = [];
   bool isLoading = true;
   bool _loading = true;
 

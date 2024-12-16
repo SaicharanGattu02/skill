@@ -1,14 +1,14 @@
 class ProjectsModel {
-  List<Data>? data;
+  List<ProjectsMeetingsModel>? data;
   Settings? settings;
 
   ProjectsModel({this.data, this.settings});
 
   ProjectsModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <ProjectsMeetingsModel>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new ProjectsMeetingsModel.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,16 +28,16 @@ class ProjectsModel {
   }
 }
 
-class Data {
+class ProjectsMeetingsModel {
   String? id;
   String? name;
   String? description;
   String? icon;
   int? totalPercent;
 
-  Data({this.id, this.name, this.description, this.icon, this.totalPercent});
+  ProjectsMeetingsModel({this.id, this.name, this.description, this.icon, this.totalPercent});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  ProjectsMeetingsModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     description = json['description'];

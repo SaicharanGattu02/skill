@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/MeetingProvider.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/screens/AddMeetings.dart';
 import 'package:skill/utils/CustomAppBar.dart';
-
-import '../Model/MeetingModel.dart';
 import '../Providers/ThemeProvider.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
@@ -29,6 +27,7 @@ class _MeetingsState extends State<Meetings> {
 
   @override
   void initState() {
+
     super.initState();
     _scrollController = ScrollController();
     _generateDates();
@@ -36,39 +35,9 @@ class _MeetingsState extends State<Meetings> {
       _scrollToSelectedDate();
     });
     formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    getMeeting(formattedDate);
+    Provider.of<MeetingProvider>(context,listen: false).getMeeting(formattedDate);
   }
 
-  List<Data> meetings = [];
-  // Future<void> getMeeting() async {
-  //   var res = await Userapi.GetMeeting();
-  //   setState(() {
-  //     if (res != null) {
-  //       if (res.data != null) {
-  //         _loading = false;
-  //         meetings = res.data ?? [];
-  //         print("projectsData List Get SuccFully  ${res.settings!.message}");
-  //       } else {
-  //         _loading = false;
-  //         print("Employee List Failure  ${res.settings?.message}");
-  //       }
-  //     }
-  //   });
-  // }
-
-  Future<void> getMeeting(String date) async {
-    var res = await Userapi.GetMeetingbydate(date);
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _loading = false;
-          meetings = res.data ?? [];
-        } else {
-          _loading = false;
-        }
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -84,7 +53,7 @@ class _MeetingsState extends State<Meetings> {
 
     if (index != -1) {
       final double offset =
-          index * 55.0; // Adjust the 55.0 based on the item width
+          index * 55.0;
       _scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 300),
@@ -109,10 +78,11 @@ class _MeetingsState extends State<Meetings> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final meetingProvider = Provider.of<MeetingProvider>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(
-            context, true); // This will pop the screen and pass 'true' back.
+            context, true);
         return Future.value(
             false); // Returning false prevents the default back navigation behavior
       },
@@ -136,7 +106,7 @@ class _MeetingsState extends State<Meetings> {
                     setState(() {
                       _loading = true;
                     });
-                    getMeeting(formattedDate);
+                    meetingProvider.getMeeting(formattedDate);
                   }
                 },
                 child: Image.asset(
@@ -207,9 +177,8 @@ class _MeetingsState extends State<Meetings> {
                           formattedDate =
                               DateFormat('yyyy-MM-dd').format(selectedDate);
                           print("selectedDate: $formattedDate");
-                          meetings = [];
                           _loading = true;
-                          getMeeting(formattedDate);
+                          meetingProvider.getMeeting(formattedDate);
                         });
                         _scrollToSelectedDate();
                       },
@@ -254,9 +223,9 @@ class _MeetingsState extends State<Meetings> {
               ),
               const SizedBox(height: 24),
               Expanded(
-                child: (_loading)
+                child: (meetingProvider.loading)
                     ? _buildShimmerList()
-                    : meetings.isEmpty
+                    : meetingProvider.meetings.isEmpty
                     ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -286,12 +255,11 @@ class _MeetingsState extends State<Meetings> {
                   ),
                 )
                     : ListView.builder(
-                  itemCount: meetings.length,
+                  itemCount: meetingProvider.meetings.length,
                   itemBuilder: (context, index) {
-                    final task = meetings[index];
+                    final task = meetingProvider.meetings[index];
 
-                    // Check if it's the last item
-                    bool isLastItem = index == meetings.length - 1;
+                    bool isLastItem = index ==meetingProvider.meetings.length - 1;
 
                     return Column(
                       children: [

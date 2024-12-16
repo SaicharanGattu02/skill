@@ -332,7 +332,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  List<Data> projectsData = [];
+  List<ProjectsMeetingsModel> projectsData = [];
   Future<void> GetProjectsData() async {
     var Res = await Userapi.GetProjectsList();
     setState(() {
