@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/TODOProvider.dart';
 import 'package:skill/Providers/ThemeProvider.dart';
 import '../Model/ProjectLabelModel.dart';
 import '../Providers/ProfileProvider.dart';
@@ -40,9 +41,69 @@ class _AddToDoState extends State<AddToDo> {
   String formattedDate = "";
   DateTime selectedDate = DateTime.now();
 
-  bool isLabelDropdownOpen=false;
+  bool isLabelDropdownOpen = false;
   String? selectedLabelvalue;
   String? selectedLabelID;
+
+  void validateFeilds() {
+   setState(() {
+     _isLoading=true;
+     _validtaskName =
+     _taskNameController.text.isEmpty ? "Please enter title" : "";
+     // _validdescription =
+     //     _descriptionController.text.isEmpty
+     //         ? "Please enter a description"
+     //         : "";
+     _validDate = _DateController.text.isEmpty ? "Please select date" : "";
+     // _validatePriority =
+     //     _priorityController.text.isEmpty
+     //         ? "Please select a priority"
+     //         : "";
+     // _validateLabel = _labelController.text.isEmpty
+     //     ? "Please select a label"
+     //     : "";
+
+
+
+     if ( _validtaskName.isEmpty &&
+         // _validdescription.isEmpty &&
+         // _validatePriority.isEmpty &&
+         // _validateLabel.isEmpty &&
+         _validDate.isEmpty){
+       postTodo();
+     }else{
+       _isLoading=false;
+     }
+   });
+  }
+
+  Future<void> postTodo() async {
+    setState(() {
+      _isLoading = true;  // Ensure you're showing loading state
+    });
+
+    var res = await Provider.of<TODOProvider>(context, listen: false).PostToDo(
+      _taskNameController.text,
+      _descriptionController.text,
+      _DateController.text,
+      selectedValue ?? "",
+      selectedLabelID ?? "",
+      formattedDate,
+    );
+
+    print("Response: $res");  // Now you will print the actual value
+
+    setState(() {
+      _isLoading = false;
+      if (res == 1) {
+        Navigator.pop(context, true);
+        CustomSnackBar.show(context, "TODO Added Successfully!");
+      } else {
+        CustomSnackBar.show(context, "TODO Add failed! Please try again.");
+      }
+    });
+  }
+
 
   @override
   void initState() {
@@ -113,29 +174,6 @@ class _AddToDoState extends State<AddToDo> {
     });
   }
 
-  Future<void> PostToDo() async {
-    try {
-      var res = await Userapi.PostProjectTodo(
-        _taskNameController.text,
-        _descriptionController.text,
-        _DateController.text,
-        selectedValue??"",
-        selectedLabelID??"",
-      );
-      if (res != null && res.settings?.success == 1) {
-        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-          await profileProvider.fetchUserDetails();
-          Navigator.pop(context, true);
-        CustomSnackBar.show(context, "TODO Task Added Successfully!");
-      } else {
-        CustomSnackBar.show(context, "${res?.settings?.message}");
-      }
-    } catch (e) {
-      // Handle general errors, like network failures or exceptions
-      print("Error posting ToDo: $e");
-      CustomSnackBar.show(context, "Error posting ToDo. Please try again.");
-    }
-  }
 
   void filterLabels(String query) {
     setState(() {
@@ -145,7 +183,6 @@ class _AddToDoState extends State<AddToDo> {
       }).toList();
     });
   }
-
 
   Color hexToColor(String? hexColor) {
     // Return a default grey color if hexColor is null or empty
@@ -170,12 +207,12 @@ class _AddToDoState extends State<AddToDo> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final todoProvider = Provider.of<TODOProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       appBar: CustomAppBar(
@@ -183,13 +220,12 @@ class _AddToDoState extends State<AddToDo> {
         actions: [Container()],
       ),
       body: Container(
-        height: h*0.77,
+        height: h * 0.77,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        margin: EdgeInsets.only(left: 16,right: 16,top: 16),
+        margin: EdgeInsets.only(left: 16, right: 16, top: 16),
         decoration: BoxDecoration(
-          color: themeProvider.containerbcColor,
-          borderRadius: BorderRadius.circular(20)
-        ),
+            color: themeProvider.containerbcColor,
+            borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -200,7 +236,7 @@ class _AddToDoState extends State<AddToDo> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _label(context,text: 'Name'),
+                    _label(context, text: 'Name'),
                     SizedBox(height: 6),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.050,
@@ -266,14 +302,13 @@ class _AddToDoState extends State<AddToDo> {
                     ] else ...[
                       SizedBox(height: 15),
                     ],
-                    _label(context,text: 'Description'),
+                    _label(context, text: 'Description'),
                     SizedBox(height: 4),
                     Container(
                       height: h * 0.1,
                       decoration: BoxDecoration(
-
-                          borderRadius: BorderRadius.circular(20),
-                         ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: TextFormField(
                         cursorColor: Color(0xff8856F4),
                         scrollPadding: const EdgeInsets.only(top: 5),
@@ -340,9 +375,10 @@ class _AddToDoState extends State<AddToDo> {
                       SizedBox(height: 15),
                     ],
                     SizedBox(height: 10),
-                    _label(context,text: 'Date'),
+                    _label(context, text: 'Date'),
                     SizedBox(height: 4),
-                    _buildDateField(context,
+                    _buildDateField(
+                      context,
                       _DateController,
                     ),
                     if (_validDate.isNotEmpty) ...[
@@ -367,12 +403,12 @@ class _AddToDoState extends State<AddToDo> {
                     ] else ...[
                       SizedBox(height: 15),
                     ],
-                    _label(context,text: 'Priority'),
+                    _label(context, text: 'Priority'),
                     SizedBox(height: 4),
                     DropdownButtonHideUnderline(
                       child: DropdownButton2<String>(
                         isExpanded: true,
-                        hint:  Row(
+                        hint: Row(
                           children: [
                             Expanded(
                               child: Text(
@@ -381,25 +417,26 @@ class _AddToDoState extends State<AddToDo> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   fontFamily: "Inter",
-                                  color:  themeProvider.textColor,
+                                  color: themeProvider.textColor,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                        items: items
-                            .map((String item) {
+                        items: items.map((String item) {
                           // Define a map of priority to color for the flag icon
                           final Map<String, Color> priorityColors = {
-                            'Priority 1': Colors.red,      // Red for Priority 1
-                            'Priority 2': Colors.orange,   // Orange for Priority 2
-                            'Priority 3': Colors.green,    // Green for Priority 3
-                            'Priority 4': Colors.blue,     // Blue for Priority 4
+                            'Priority 1': Colors.red, // Red for Priority 1
+                            'Priority 2':
+                                Colors.orange, // Orange for Priority 2
+                            'Priority 3': Colors.green, // Green for Priority 3
+                            'Priority 4': Colors.blue, // Blue for Priority 4
                           };
 
                           // Get the color for the current item
-                          Color iconColor = priorityColors[item] ?? Colors.black; // Default to black if not found
+                          Color iconColor = priorityColors[item] ??
+                              Colors.black; // Default to black if not found
 
                           return DropdownMenuItem<String>(
                             value: item,
@@ -407,23 +444,25 @@ class _AddToDoState extends State<AddToDo> {
                               children: [
                                 Icon(
                                   Icons.flag_outlined,
-                                  color: iconColor, // Set the color of the flag icon based on the priority
+                                  color:
+                                      iconColor, // Set the color of the flag icon based on the priority
                                 ),
-                                SizedBox(width: 5,),
+                                SizedBox(
+                                  width: 5,
+                                ),
                                 Text(
                                   item,
-                                  style:  TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
-                                    color:  themeProvider.textColor,
+                                    color: themeProvider.textColor,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           );
-                        })
-                            .toList(),
+                        }).toList(),
                         value: selectedValue,
                         onChanged: (value) {
                           setState(() {
@@ -440,10 +479,10 @@ class _AddToDoState extends State<AddToDo> {
                             border: Border.all(
                               color: Color(0xffD0CBDB),
                             ),
-                            color:  themeProvider.fillColor,
+                            color: themeProvider.fillColor,
                           ),
                         ),
-                        iconStyleData:  IconStyleData(
+                        iconStyleData: IconStyleData(
                           icon: Icon(
                             Icons.arrow_drop_down,
                             size: 25,
@@ -457,7 +496,7 @@ class _AddToDoState extends State<AddToDo> {
                           maxHeight: 200,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14),
-                            color:  themeProvider.containerColor,
+                            color: themeProvider.containerColor,
                           ),
                           scrollbarTheme: ScrollbarThemeData(
                             radius: const Radius.circular(40),
@@ -494,33 +533,28 @@ class _AddToDoState extends State<AddToDo> {
                         height: 15,
                       ),
                     ],
-                    _label(context,text: 'Label'),
+                    _label(context, text: 'Label'),
                     SizedBox(height: 4),
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          isLabelDropdownOpen =
-                          !isLabelDropdownOpen;
+                          isLabelDropdownOpen = !isLabelDropdownOpen;
                           filteredLabels = [];
                           filteredLabels = labels;
-
                         });
                       },
                       child: Container(
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7.0),
-                            border:
-                            Border.all(color: Color(0xffD0CBDB)),
-                            color:themeProvider.fillColor),
+                            border: Border.all(color: Color(0xffD0CBDB)),
+                            color: themeProvider.fillColor),
                         child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(selectedLabelvalue ??
-                                "Select Label"),
+                            Text(selectedLabelvalue ?? "Select Label"),
                             Icon(isLabelDropdownOpen
                                 ? Icons.arrow_drop_up
                                 : Icons.arrow_drop_down),
@@ -530,9 +564,9 @@ class _AddToDoState extends State<AddToDo> {
                     ),
                     if (isLabelDropdownOpen) ...[
                       SizedBox(height: 5),
-                      Card(color: themeProvider.containerColor,
-                        elevation:
-                        2, // Optional elevation for shadow effect
+                      Card(
+                        color: themeProvider.containerColor,
+                        elevation: 2, // Optional elevation for shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                               8), // Optional rounded corners
@@ -547,8 +581,7 @@ class _AddToDoState extends State<AddToDo> {
                               Container(
                                 height: 40,
                                 child: TextFormField(
-                                  onChanged: (query) =>
-                                      filterLabels(query),
+                                  onChanged: (query) => filterLabels(query),
                                   decoration: InputDecoration(
                                     hintText: "Search Label",
                                     hintStyle: TextStyle(
@@ -556,20 +589,20 @@ class _AddToDoState extends State<AddToDo> {
                                         fontWeight: FontWeight.w400,
                                         fontFamily: "Inter"),
                                     filled: true,
-                                    fillColor:themeProvider.fillColor,
+                                    fillColor: themeProvider.fillColor,
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(7),
+                                      borderRadius: BorderRadius.circular(7),
                                       borderSide: BorderSide(
                                           width: 0.5,
-                                          color: themeProvider.themeData== lightTheme?Colors.black:Color(0xffD0CBDB)),
+                                          color: themeProvider.themeData ==
+                                                  lightTheme
+                                              ? Colors.black
+                                              : Color(0xffD0CBDB)),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(7.0),
+                                      borderRadius: BorderRadius.circular(7.0),
                                       borderSide: BorderSide(
-                                          width: 1,
-                                          color: Color(0xff000000)),
+                                          width: 1, color: Color(0xff000000)),
                                     ),
                                     contentPadding: EdgeInsets.all(8.0),
                                   ),
@@ -577,50 +610,54 @@ class _AddToDoState extends State<AddToDo> {
                               ),
                               SizedBox(
                                   height:
-                                  10), // Space between TextField and ListView
+                                      10), // Space between TextField and ListView
                               Container(
                                   height:
-                                  180, // Set a fixed height for the dropdown list
-                                  child:filteredLabels.length>0?
-                                  ListView.builder(
-                                    itemCount: filteredLabels.length,
-                                    itemBuilder: (context, index) {
-                                      var data = filteredLabels[index];
-                                      return ListTile(
-                                        minTileHeight: 30,
-                                        title: Row(
-                                          children: [
-                                            Image.asset(
-                                              "assets/label.png",
-                                              width: 18,
-                                              height: 18,
-                                              color: hexToColor(data.color ?? ""),
-                                            ),
-                                            SizedBox(width: 8,),
-                                            Text(
-                                              data.name ?? "",
-                                              style: TextStyle(
-                                                  fontFamily: "Inter",
-                                                  fontSize: 15,
-                                                  color: themeProvider.textColor,
-                                                  fontWeight:
-                                                  FontWeight.w400),
-                                            ),
-                                          ],
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            isLabelDropdownOpen =
-                                            false;
-                                            selectedLabelvalue = data.name;
-                                            selectedLabelID = data.id;
-                                            _validateLabel="";
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ):Center(child: Text("No Data found!"))
-                              ),
+                                      180, // Set a fixed height for the dropdown list
+                                  child: filteredLabels.length > 0
+                                      ? ListView.builder(
+                                          itemCount: filteredLabels.length,
+                                          itemBuilder: (context, index) {
+                                            var data = filteredLabels[index];
+                                            return ListTile(
+                                              minTileHeight: 30,
+                                              title: Row(
+                                                children: [
+                                                  Image.asset(
+                                                    "assets/label.png",
+                                                    width: 18,
+                                                    height: 18,
+                                                    color: hexToColor(
+                                                        data.color ?? ""),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(
+                                                    data.name ?? "",
+                                                    style: TextStyle(
+                                                        fontFamily: "Inter",
+                                                        fontSize: 15,
+                                                        color: themeProvider
+                                                            .textColor,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  isLabelDropdownOpen = false;
+                                                  selectedLabelvalue =
+                                                      data.name;
+                                                  selectedLabelID = data.id;
+                                                  _validateLabel = "";
+                                                });
+                                              },
+                                            );
+                                          },
+                                        )
+                                      : Center(child: Text("No Data found!"))),
                             ],
                           ),
                         ),
@@ -657,8 +694,7 @@ class _AddToDoState extends State<AddToDo> {
           ],
         ),
       ),
-      bottomNavigationBar:
-      Container(
+      bottomNavigationBar: Container(
         color: themeProvider.containerColor,
         padding: EdgeInsets.all(16),
         child: Row(
@@ -682,7 +718,7 @@ class _AddToDoState extends State<AddToDo> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color:AppColors.primaryColor,
+                      color: AppColors.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -694,34 +730,11 @@ class _AddToDoState extends State<AddToDo> {
             Spacer(),
             InkResponse(
               onTap: () {
-                setState(() {
-                  _validtaskName = _taskNameController.text.isEmpty
-                      ? "Please enter title"
-                      : "";
-                  // _validdescription =
-                  //     _descriptionController.text.isEmpty
-                  //         ? "Please enter a description"
-                  //         : "";
-                  _validDate =
-                      _DateController.text.isEmpty ? "Please select date" : "";
-                  // _validatePriority =
-                  //     _priorityController.text.isEmpty
-                  //         ? "Please select a priority"
-                  //         : "";
-                  // _validateLabel = _labelController.text.isEmpty
-                  //     ? "Please select a label"
-                  //     : "";
+                if(_isLoading){
 
-                  _isLoading = _validtaskName.isEmpty &&
-                      // _validdescription.isEmpty &&
-                      // _validatePriority.isEmpty &&
-                      // _validateLabel.isEmpty &&
-                      _validDate.isEmpty;
-
-                  if (_isLoading) {
-                    PostToDo();
-                  }
-                });
+                }else{
+                  validateFeilds();
+                }
               },
               child: Container(
                 height: 40,
@@ -755,27 +768,29 @@ class _AddToDoState extends State<AddToDo> {
     );
   }
 
-  Widget _label(BuildContext context,{
+  Widget _label(
+    BuildContext context, {
     required String text,
   }) {
-
-    return Consumer<ThemeProvider>(builder: (context,themeProvider,child){
-      return Text(text,
-          style: TextStyle(
-              color: Color(0xff141516),
-              fontFamily: 'Inter',
-              fontSize: 14,
-              height: 16.36 / 14,
-              fontWeight: FontWeight.w400));
-    },
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Text(text,
+            style: TextStyle(
+                color: Color(0xff141516),
+                fontFamily: 'Inter',
+                fontSize: 14,
+                height: 16.36 / 14,
+                fontWeight: FontWeight.w400));
+      },
     );
   }
 
-  Widget _buildDateField(BuildContext context,TextEditingController controller) {
+  Widget _buildDateField(
+      BuildContext context, TextEditingController controller) {
     final DateTime now = DateTime.now();
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     final String formattedDate = formatter.format(now);
-    final themeProvider =Provider.of<ThemeProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

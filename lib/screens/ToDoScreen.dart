@@ -61,11 +61,11 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
     formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
 
-     todoProvider =Provider.of<TODOProvider>(context,listen: false).GetToDoList(formattedDate);
+     todoProvider =Provider.of<TODOProvider>(context,listen: false).fetchTODOList(formattedDate);
 
     // filteredData = data;
-
-    _searchController.addListener(_filterTasks);
+    //
+    // _searchController.addListener(Provider.of<TODOProvider>(context,listen: false)._filterTasks(_searchController.text));
 
     _scrollController = ScrollController();
     _generateDates();
@@ -128,60 +128,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
     }
   }
 
-
-  Future<void> GetToDoList(date) async {
-    var res = await Userapi.TODOListApi(
-        date, selectedLabelID ?? "", selectedValue ?? "");
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _isLoading = false;
-          data = res.data ?? [];
-          filteredData = data.reversed
-              .toList(); // Initialize the filtered list to the full list
-        } else {
-          _isLoading = false;
-          data = [];
-          filteredData = [];
-        }
-      }
-    });
-  }
-
-  Future<void> deleteToDoList(String id) async {
-    var res = await Userapi.deleteTask(id);
-    setState(() {
-      _isLoading = false;
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          GetToDoList(formattedDate);
-          CustomSnackBar.show(context, "TODO Done successfully!");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      }
-    });
-  }
-
-  Future<void> PostToDoAddLabel() async {
-    var res = await Userapi.PostProjectTodoAddLabel(
-        _labelnameController.text, labelColorid);
-    setState(() {
-      if (res != null) {
-        _isLoading = false;
-        if (res.settings?.success == 1) {
-          GetToDoList(formattedDate);
-          Navigator.pop(context, true);
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      } else {
-        _isLoading = false;
-      }
-    });
-  }
-
   Future<void> reorderTodos(Map<String, int> todosOrder) async {
     var res = await Userapi.ReorderTodos(todosOrder);
     setState(() {
@@ -190,16 +136,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
     });
   }
 
-  void _filterTasks() {
-    setState(() {
-      String query = _searchController.text.toLowerCase();
-      filteredData = data.where((task) {
-        return (task.labelName?.toLowerCase().contains(query) ?? false) ||
-            (task.description?.toLowerCase().contains(query) ?? false) ||
-            (task.taskName?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    });
-  }
 
   @override
   void dispose() {
@@ -219,7 +155,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       hexColor = '#$hexColor'; // Add '#' if it's missing
     }
 
-    // Ensure the color is valid (either 7 characters for #RRGGBB or 9 for #RRGGBBAA)
+
     if (hexColor.length == 7 || hexColor.length == 9) {
       final buffer = StringBuffer();
       buffer.write('FF'); // Add alpha if it's missing (default to full opacity)
@@ -403,12 +339,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AddToDo()));
-                          if (res == true) {
-                            setState(() {
-                              _isLoading = true;
-                              GetToDoList(formattedDate);
-                            });
-                          }
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -515,8 +445,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                   dates[index].day == selectedDate.day &&
                                       dates[index].month == selectedDate.month &&
                                       dates[index].year == selectedDate.year;
-
-
                               return Consumer<TODOProvider>(builder: (context,todoProvider,child){
                                 return GestureDetector(
                                   onTap: () {
@@ -525,12 +453,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                       formattedDate = DateFormat('yyyy-MM-dd')
                                           .format(selectedDate);
                                       print("selectedDate: $formattedDate");
-                                      // data = [];
-                                      todoProvider.GetToDoList(formattedDate);
-                                      todoProvider.isLoading;
-                                      todoProvider.filteredData;
-
-
+                                      todoProvider.fetchTODOList(formattedDate);
                                     });
                                     _scrollToSelectedDate();
                                   },
@@ -630,14 +553,16 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                 width: 20,
                                                 height: 20,
                                               ),
-                                              // The InkWell here should not interfere with the reorder gesture.
-                                              // It’s better to move the delete action outside of the draggable area.
+
                                               InkWell(
-                                                onTap: () {
-                                                  setState(() {
-                                                    deleteToDoList(
-                                                        tododata.id ?? "");
-                                                  });
+                                                onTap: () async {
+                                                 var res= await todoProvider.deleteToDoList(tododata.id.toString());
+                                                 if(res==1){
+                                                    CustomSnackBar.show(context, "TODO Done successfully!");
+                                                 }else{
+                                                   CustomSnackBar.show(context, "TODO Done Failed!");
+                                                 }
+
                                                 },
                                                 child: Padding(
                                                   padding: const EdgeInsets
@@ -1207,7 +1132,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                           _validateLabelColor.isEmpty;
 
                                       if (_isLoading) {
-                                        PostToDoAddLabel();
+                                        // PostToDoAddLabel();
                                       }
                                     });
                                   },
@@ -1658,7 +1583,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                 selectedLabelvalue = "";
                                                 selectedLabelID = "";
                                                 _dateController.text = "";
-                                                // data = [];
                                                 todoProvider.filteredData??[];
                                               });
                                             },
@@ -1690,11 +1614,10 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                           InkResponse(
                                             onTap: () {
                                               setState(() {
-                                                // data = [];
                                                 todoProvider.filteredData??[];
                                               });
                                               Navigator.pop(context);
-                                              GetToDoList(formattedDate);
+                                              todoProvider.fetchTODOList(formattedDate);
                                             },
                                             child: Container(
                                               height: 40,
