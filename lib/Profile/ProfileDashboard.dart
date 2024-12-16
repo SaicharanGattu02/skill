@@ -9,9 +9,11 @@ import 'package:skill/Profile/JobInfo.dart';
 import 'package:skill/Profile/PaySlips.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 import '../Model/UserDetailsModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../Providers/ProfileProvider.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
+import '../Services/otherservices.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
@@ -38,6 +40,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
   @override
   void initState() {
     super.initState();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     _tabController = TabController(length: 4, vsync: this);
     _pageController = PageController();
   }
@@ -131,6 +134,8 @@ class _ProfileDashboardState extends State<ProfileDashboard>
   void dispose() {
     _tabController.dispose();
     _pageController.dispose();
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
+
     super.dispose();
   }
 
@@ -139,7 +144,12 @@ class _ProfileDashboardState extends State<ProfileDashboard>
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Scaffold(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ?
+      Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor, // Use dynamic background color
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(title: 'Edit Profile', actions: [
@@ -480,7 +490,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                 );
               },
             ),
-    );
+    )     :NoInternetWidget();
   }
 }
 

@@ -6,7 +6,9 @@ import 'package:skill/Providers/TaskProvider.dart';
 import 'package:skill/Providers/ThemeProvider.dart';
 import 'package:skill/utils/Mywidgets.dart';
 import '../Model/DashboardTaksModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../Services/UserApi.dart';
+import '../Services/otherservices.dart';
 import '../utils/constants.dart';
 
 class Task extends StatefulWidget {
@@ -28,6 +30,7 @@ class _TaskState extends State<Task> {
   @override
   void initState() {
     super.initState();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     _scrollController = ScrollController();
     _generateDates();
     formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
@@ -41,6 +44,7 @@ class _TaskState extends State<Task> {
 
   @override
   void dispose() {
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -85,7 +89,11 @@ class _TaskState extends State<Task> {
     var h = MediaQuery.of(context).size.height;
     final taskProvider = Provider.of<TaskProvider>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return WillPopScope(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ? WillPopScope(
       onWillPop: willPop,
       child: Scaffold(
         backgroundColor: themeProvider.scaffoldBackgroundColor,
@@ -400,7 +408,7 @@ class _TaskState extends State<Task> {
           ),
         ),
       ),
-    );
+    ) :NoInternetWidget();
   }
 
   Widget _buildShimmerList() {

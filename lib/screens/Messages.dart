@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/Model/UserDetailsModel.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../Services/UserApi.dart';
+import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
 import 'OneToOneChatPage.dart';
@@ -49,6 +52,7 @@ class _MessagesState extends State<Messages> {
   @override
   void initState() {
     super.initState();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     _searchController.addListener(_onSearchChanged);
     GetRoomsList();
   }
@@ -57,6 +61,7 @@ class _MessagesState extends State<Messages> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
     super.dispose();
   }
 
@@ -108,8 +113,12 @@ class _MessagesState extends State<Messages> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
-    return Scaffold(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ?
+ Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
@@ -376,7 +385,7 @@ class _MessagesState extends State<Messages> {
           ],
         ),
       ),
-    );
+    )      :NoInternetWidget();
   }
 
   Widget _buildShimmerGrid() {

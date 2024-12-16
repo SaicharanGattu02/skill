@@ -12,6 +12,7 @@ import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/ProjectModule/TaskKanBan.dart';
 import 'package:skill/ProjectModule/TaskList.dart';
 import 'dart:developer' as developer;
+import '../Providers/ConnectivityProviders.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/otherservices.dart';
 import '../utils/ShakeWidget.dart';
@@ -38,10 +39,6 @@ class _MyTabBarState extends State<MyTabBar>
   int _selectedTabIndex = 0;
   bool _loading = true;
 
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  var isDeviceConnected = "";
 
   @override
   void initState() {
@@ -67,42 +64,13 @@ class _MyTabBarState extends State<MyTabBar>
       _loading = false;
     });
 
-    initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
   }
 
-  Future<void> initConnectivity() async {
-    List<ConnectivityResult> result;
-    try {
-      // Check connectivity and get the result
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      developer.log('Couldn\'t check connectivity status', error: e);
-      return;
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-
-    return _updateConnectionStatus(result);
-  }
-
-  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
-    setState(() {
-      _connectionStatus = result;
-      for (int i = 0; i < _connectionStatus.length; i++) {
-        setState(() {
-          isDeviceConnected = _connectionStatus[i].toString();
-          print("isDeviceConnected:${isDeviceConnected}");
-        });
-      }
-    });
-    print('Connectivity changed: $_connectionStatus');
-  }
 
   @override
   void dispose() {
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
     _tabController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -112,8 +80,11 @@ class _MyTabBarState extends State<MyTabBar>
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return (isDeviceConnected == "ConnectivityResult.wifi" ||
-            isDeviceConnected == "ConnectivityResult.mobile")
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+
         ? Scaffold(
             key: _scaffoldKey,
             backgroundColor: themeProvider.scaffoldBackgroundColor,

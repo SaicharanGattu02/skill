@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skill/Services/UserApi.dart';
+import 'package:skill/Services/otherservices.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 
 import '../Model/GetLeaveCountModel.dart';
 import '../Model/GetLeaveModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/Preferances.dart';
@@ -31,6 +34,7 @@ class _LeaveState extends State<Leave> {
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -66,9 +70,11 @@ class _LeaveState extends State<Leave> {
   void initState() {
     super.initState();
     getleaves();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     _searchController.addListener(_onSearchChanged);
     getleavesCount();
   }
+
 
   void _onSearchChanged() {
     String query = _searchController.text.toLowerCase();
@@ -144,8 +150,12 @@ class _LeaveState extends State<Leave> {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
-
-    return Scaffold(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ?
+ Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: CustomAppBar(title: "Apply Leave", actions: [Container()]),
       body: _isLoading
@@ -604,7 +614,7 @@ class _LeaveState extends State<Leave> {
                 ],
               ),
             ),
-    );
+    ):NoInternetWidget();
   }
 
   Widget _buildShimmerLeaveRequests(double width) {

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/ConnectivityProviders.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/Providers/MileStoneProvider.dart';
 import 'package:skill/Providers/MeetingProvider.dart';
@@ -170,12 +171,14 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider(AppThemeMode.system)),
+        ChangeNotifierProvider(create: (context) => ConnectivityProviders()),
         ChangeNotifierProvider(create: (context) => KanbanProvider()),
         ChangeNotifierProvider(create: (context) =>ProfileProvider()),
         ChangeNotifierProvider(create: (context) => TaskProvider()),
         ChangeNotifierProvider(create: (context) => TODOProvider()),
         ChangeNotifierProvider(create: (context) => MileStoneProvider()),
         ChangeNotifierProvider(create: (context) => MeetingProvider()),
+
       ],
       child: MyApp(),
     ),

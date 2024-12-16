@@ -10,8 +10,10 @@ import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectLabelModel.dart';
 import '../Model/ToDoListModel.dart';
 import '../Model/UserDetailsModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../Providers/TODOProvider.dart';
 import '../Services/UserApi.dart';
+import '../Services/otherservices.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/ShakeWidget.dart';
@@ -49,11 +51,18 @@ class _ToDoScreenState extends State<ToDoScreen> {
   @override
   void initState() {
     super.initState();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     _generateDates();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
+  }
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
+    super.dispose();
   }
 
   Future<void> GetTODOList() async {
@@ -102,12 +111,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _scrollController.dispose(); // Dispose of the controller
-    super.dispose();
-  }
+
 
   Color hexToColor(String? hexColor) {
     // Return a default grey color if hexColor is null or empty
@@ -172,7 +176,11 @@ class _ToDoScreenState extends State<ToDoScreen> {
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
     final todoProvider = Provider.of<TODOProvider>(context);
-    return WillPopScope(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ? WillPopScope(
       onWillPop: () async {
         // Perform any logic before popping the screen
         Navigator.pop(
@@ -762,7 +770,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
           ),
         ),
       ),
-    );
+    ) :NoInternetWidget();
   }
 
   Widget _label({

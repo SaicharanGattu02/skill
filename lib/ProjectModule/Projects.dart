@@ -6,8 +6,10 @@ import 'package:skill/ProjectModule/TabBar.dart';
 import 'package:skill/utils/CustomAppBar.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectsModel.dart';
+import '../Providers/ConnectivityProviders.dart';
 import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
+import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
@@ -31,6 +33,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    Provider.of<ConnectivityProviders>(context,listen: false).dispose();
     super.dispose();
   }
 
@@ -48,9 +51,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   @override
   void initState() {
     super.initState();
+    Provider.of<ConnectivityProviders>(context, listen: false).initConnectivity();
     _searchController.addListener(_onSearchChanged);
     GetProjectsData();
   }
+
 
   void _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -101,7 +106,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return WillPopScope(
+    var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    return
+      (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
+          connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
+          ? WillPopScope(
       onWillPop: willPop,
       child: Scaffold(
         backgroundColor: themeProvider.scaffoldBackgroundColor,
@@ -178,7 +187,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           ),
         ),
       ),
-    );
+    ):NoInternetWidget();
   }
 
   Widget _buildShimmerGrid(double width) {
