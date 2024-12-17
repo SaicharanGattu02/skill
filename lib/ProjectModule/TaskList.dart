@@ -87,6 +87,8 @@ class _TaskListState extends State<TaskList> {
     final tasklistProvider = Provider.of<TasklistProvider>(context, listen: false);
     tasklistProvider.fetchTasksList(widget.id1, milestoneid, statusid,
         assignedid, priorityid,_deadlineController.text);
+    final milestoneProvider = Provider.of<MileStoneProvider>(context,listen: false);
+    milestoneProvider.fetchMileStonesList(widget.id1);
   }
 
   String milestoneid = "";
@@ -202,7 +204,7 @@ class _TaskListState extends State<TaskList> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () async {
-                        var res = await Navigator.push(
+                     Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddTask(
@@ -211,11 +213,7 @@ class _TaskListState extends State<TaskList> {
                                 taskid: '',
                               ),
                             ));
-                        if (res == true) {
-                          setState(() {
-                            GetProjectTasks();
-                          });
-                        }
+
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -367,19 +365,14 @@ class _TaskListState extends State<TaskList> {
                                         width: w * 0.04,
                                       ),
                                       InkWell(
-                                        onTap: () async {
-                                          var res = await Navigator.push(
+                                        onTap: ()  {
+                                         Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) => AddTask(
                                                       title: 'Edit Task',
                                                       projectId: widget.id1,
                                                       taskid: task.id ?? "")));
-                                          if (res == true) {
-                                            setState(() {
-                                              GetProjectTasks();
-                                            });
-                                          }
                                         },
                                         child: Container(
                                           child: Image.asset(
@@ -695,7 +688,7 @@ class _TaskListState extends State<TaskList> {
   ) {
     double h = MediaQuery.of(context).size.height * 0.7;
     double w = MediaQuery.of(context).size.width;
-    final milestoneProvider = Provider.of<MileStoneProvider>(context);
+    final milestoneProvider = Provider.of<MileStoneProvider>(context,listen: false);
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,

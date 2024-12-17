@@ -17,6 +17,7 @@ import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
+import '../Providers/MileStoneProvider.dart';
 import '../Providers/TaskListProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
@@ -130,7 +131,7 @@ class _AddTaskState extends State<AddTask> {
         GetProjectsOverviewData(),
         GetStatuses(),
         GetPriorities(),
-        // GetMileStone(),
+        GetMileStone(),
       ]);
     } catch (e) {
       // Handle any errors that occur during the loading
@@ -143,6 +144,15 @@ class _AddTaskState extends State<AddTask> {
         }
       });
     }
+  }
+
+
+  List<Milestones> milestones = [];
+
+  Future<void> GetMileStone() async {
+    final milestoneProvider = Provider.of<MileStoneProvider>(context,listen: false);
+    milestoneProvider.fetchMileStonesList(widget.projectId);
+    milestones=milestoneProvider.milestones;
   }
 
   Future<void> GetProjectsOverviewData() async {
@@ -183,25 +193,6 @@ class _AddTaskState extends State<AddTask> {
       }
     });
   }
-
-  List<Milestones> milestones = [];
-  List<Milestones> filteredMilestones = [];
-  //
-  // Future<void> GetMileStone() async {
-  //   var res = await Userapi.GetMileStoneApi(widget.projectId);
-  //   setState(() {
-  //     if (res['success']) {
-  //       milestones = res['response'].data ?? []; // Adjust based on your model
-  //       filteredMilestones =
-  //           res['response'].data ?? []; // Adjust based on your model
-  //     } else {
-  //       CustomSnackBar.show(
-  //           context,
-  //           res['response'] ??
-  //               "Unknown error occurred"); // Show snackbar with the error
-  //     }
-  //   });
-  // }
 
   Future<void> GetProjectTaskDetails() async {
     try {
@@ -275,6 +266,7 @@ class _AddTaskState extends State<AddTask> {
 
   void _validateFields() {
     setState(() {
+      _isLoading=true;
       _validateTitle =
           _titleController.text.isEmpty ? "Please enter a title" : "";
       // _validateDescription = _descriptionController.text.isEmpty
@@ -296,7 +288,7 @@ class _AddTaskState extends State<AddTask> {
           _deadlineController.text.isEmpty ? "Please enter a deadline" : "";
       // _validatefile = _imageFile==null ? "Please choose file." : "";
 
-      _isLoading = _validateTitle.isEmpty &&
+      if(_validateTitle.isEmpty &&
           // _validateDescription.isEmpty &&
           _validateMileStone.isEmpty &&
           _validateAssignedTo.isEmpty &&
@@ -304,19 +296,20 @@ class _AddTaskState extends State<AddTask> {
           // _validateStatus.isEmpty &&
           // _validatePriority.isEmpty &&
           _validateStartDate.isEmpty &&
-          _validateDeadline.isEmpty;
-
-      if (_isLoading) {
+          _validateDeadline.isEmpty){
         CreateTaskApi();
+      }else{
+
       }
     });
   }
 
   Future<void> CreateTaskApi() async {
-    final tasklistProvider = Provider.of<TasklistProvider>(context);
+    final tasklistProvider = Provider.of<TasklistProvider>(context,listen: false);
     var data;
     if (widget.title == "Edit Task") {
       data = await tasklistProvider.EditTask(
+        widget.projectId,
           widget.taskid,
           _titleController.text,
           _descriptionController.text,
@@ -342,7 +335,6 @@ class _AddTaskState extends State<AddTask> {
           selectedIds,
           filepath);
     }
-    print("Task data:${data}");
     setState(() {
       if (data != null) {
         if (data == 1) {
@@ -392,15 +384,6 @@ class _AddTaskState extends State<AddTask> {
     } else {
       print('User canceled the file picking');
     }
-  }
-
-  void filterMilestones(String query) {
-    setState(() {
-      filteredMilestones = milestones.where((provider) {
-        return provider.title != null &&
-            provider.title!.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
   }
 
   void filterMembers(String query) {
@@ -465,8 +448,7 @@ class _AddTaskState extends State<AddTask> {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    print("Selected IDS :${selectedIds}");
-    print("members :${members}");
+    final milestoneProvider = Provider.of<MileStoneProvider>(context,listen: false);
     var items = members.map((member) {
       return DropdownItem<User>(
         label: member.fullName ?? "",
@@ -781,9 +763,6 @@ class _AddTaskState extends State<AddTask> {
                                 setState(() {
                                   isMilestoneDropdownOpen =
                                       !isMilestoneDropdownOpen;
-                                  filteredMilestones = [];
-                                  filteredMilestones = milestones;
-
                                   isAssignedtoDropdownOpen = false;
                                   isStatusDropdownOpen = false;
                                   isPriorityDropdownOpen = false;
@@ -831,10 +810,9 @@ class _AddTaskState extends State<AddTask> {
                                       Container(
                                         height: 40,
                                         child: TextFormField(
-                                          controller:
-                                              _milestoneSearchController,
+                                          controller: _milestoneSearchController,
                                           onChanged: (query) =>
-                                              filterMilestones(query),
+                                              milestoneProvider.filterMileStones(query),
                                           decoration: InputDecoration(
                                             hintText: "Search milestone",
                                             hintStyle: TextStyle(
@@ -879,14 +857,14 @@ class _AddTaskState extends State<AddTask> {
                                       Container(
                                           height:
                                               180, // Set a fixed height for the dropdown list
-                                          child: filteredMilestones.length > 0
+                                          child: milestoneProvider.filteredMilestones.length > 0
                                               ? ListView.builder(
                                                   itemCount:
-                                                      filteredMilestones.length,
+                                                  milestoneProvider.filteredMilestones.length,
                                                   itemBuilder:
                                                       (context, index) {
                                                     var data =
-                                                        filteredMilestones[
+                                                    milestoneProvider.filteredMilestones[
                                                             index];
                                                     return ListTile(
                                                       minTileHeight: 30,
@@ -1809,6 +1787,7 @@ class _AddTaskState extends State<AddTask> {
             InkResponse(
               onTap: () {
                 if (_isLoading) {
+
                 } else {
                   _validateFields();
                 }

@@ -66,6 +66,7 @@ class TasklistProvider with ChangeNotifier {
           image, // Make image optional
          );
       if (res != null && res.settings.success==1) {
+        fetchTasksList(projectId,"","","","","");
         return 1;
       } else {
         return 0;
@@ -77,6 +78,7 @@ class TasklistProvider with ChangeNotifier {
   }
 
   Future<int?>EditTask(
+      String projectID,
       String taskId,
       String title,
       String desc,
@@ -104,6 +106,7 @@ class TasklistProvider with ChangeNotifier {
            image
       ); // Adjust API call as necessary
       if (res != null && res.settings.success==1) {
+        fetchTasksList(projectID,"","","","","");
         return 1;
       } else {
         return 0;
