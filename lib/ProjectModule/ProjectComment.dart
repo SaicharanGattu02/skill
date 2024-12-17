@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:skill/Providers/ProjectCommentProviders.dart';
 import 'package:skill/Services/UserApi.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:path/path.dart' as p;
@@ -28,7 +29,7 @@ class ProjectComment extends StatefulWidget {
 class _ProjectCommentState extends State<ProjectComment> {
   TextEditingController _commentController = TextEditingController();
   final FocusScopeNode focusScopeNode = FocusScopeNode();
-  bool _loading = true;
+  bool isSaving = false;
   final spinkit = Spinkits();
 
   XFile? _imageFile;
@@ -37,73 +38,17 @@ class _ProjectCommentState extends State<ProjectComment> {
 
   @override
   void initState() {
-    GetProjectCommentsApi();
     super.initState();
+    Provider.of<ProjectCommentProviders>(context, listen: false)
+        .GetProjectCommentsApi(widget.id);
   }
 
   String validatecomment = "";
   String _validatefile = "";
 
-  List<Data> data = [];
-  Future<void> GetProjectCommentsApi() async {
-    var res = await Userapi.GetProjectComments(widget.id);
-    setState(() {
-      if (res != null) {
-        if (res.settings?.success == 1) {
-          _loading = false;
-          data = res.data ?? [];
-        } else {
-          _loading = false;
-          CustomSnackBar.show(context, res.settings?.message ?? "");
-        }
-      } else {
-        print("not fetch");
-      }
-    });
-  }
 
-  Future<void> DelateApi(id) async {
-    var res = await Userapi.ProjectDelateComments(id);
-    if (res != null) {
-      setState(() {
-        if (res.settings?.success == 1) {
-          _loading = true;
-          data = [];
-          GetProjectCommentsApi();
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        } else {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      });
-    } else {
-      print("ProjectDelateComments >>>${res?.settings?.message}");
-      CustomSnackBar.show(context, "${res?.settings?.message}");
-    }
-  }
 
-  Future<void> SendComments() async {
-    var res = await Userapi.sendComment(
-        _commentController.text, widget.id, _imageList);
-    setState(() {
-      if (res != null) {
-        _loading = false;
-        if (res.data != null) {
-          CustomSnackBar.show(context, "${res.settings?.message}");
-          _imageList = [];
-          _commentController.text = "";
-          GetProjectCommentsApi();
-        } else {
-          _loading = false;
-          CustomSnackBar.show(context, "${res.settings?.message}");
-        }
-      } else {
-        _loading = false;
-        print("not fetch");
-      }
-    });
-  }
 
-  List<XFile> _imageList = [];
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.camera) {
       var status = await Permission.camera.status;
@@ -122,7 +67,7 @@ class _ProjectCommentState extends State<ProjectComment> {
 
     if (selectedImage != null) {
       setState(() {
-        _imageList.add(selectedImage); // Append the selected image to the list
+        Provider.of<ProjectCommentProviders>(context).imageList.add(selectedImage);
         _validatefile = "";
       });
       print("Selected Image: ${selectedImage.path}");
@@ -168,6 +113,7 @@ class _ProjectCommentState extends State<ProjectComment> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final commentProvider = Provider.of<ProjectCommentProviders>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
@@ -341,7 +287,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                       children: [
                         InkWell(
                           onTap: () {
-                            showModalBottomSheet(backgroundColor: themeProvider.containerColor,
+                            showModalBottomSheet(
+                              backgroundColor: themeProvider.containerColor,
                               context: context,
                               builder: (BuildContext context) {
                                 return SafeArea(
@@ -394,7 +341,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                           ),
                         ),
                         SizedBox(width: 16),
-                        if (_imageList.isNotEmpty) ...[
+                        if (commentProvider.imageList.isNotEmpty) ...[
                           Expanded(
                             child: SingleChildScrollView(
                               physics: AlwaysScrollableScrollPhysics(),
@@ -402,7 +349,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                               child: Row(
                                 children: [
                                   SizedBox(width: 5),
-                                  for (int i = 0; i < _imageList.length; i++)
+                                  for (int i = 0; i < commentProvider.imageList.length; i++)
                                     Stack(
                                       children: [
                                         Card(
@@ -419,7 +366,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                                   BorderRadius.circular(10),
                                               image: DecorationImage(
                                                 image: FileImage(
-                                                    File(_imageList[i].path)),
+                                                    File(commentProvider.imageList[i].path)),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
@@ -431,7 +378,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                           child: InkWell(
                                               onTap: () {
                                                 setState(() {
-                                                  _imageList.removeAt(i);
+                                                  commentProvider.imageList.removeAt(i);
                                                 });
                                               },
                                               child: Container(
@@ -499,9 +446,9 @@ class _ProjectCommentState extends State<ProjectComment> {
               height: 8,
             ),
             Expanded(
-              child: _loading
+              child: commentProvider.isLoading
                   ? _buildShimmerList()
-                  : data.isEmpty
+                  : commentProvider.projectComments.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -533,9 +480,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: data.length,
+                          itemCount: commentProvider.projectComments.length,
                           itemBuilder: (context, index) {
-                            final comments = data[index];
+                            final comments = commentProvider.projectComments[index];
                             return Container(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
@@ -580,8 +527,13 @@ class _ProjectCommentState extends State<ProjectComment> {
                                       ),
                                       Spacer(),
                                       InkWell(
-                                        onTap: () {
-                                          DelateApi(comments.id);
+                                        onTap: () async {
+                                         var res= await commentProvider.DeleteComment(comments.id??"");
+                                         if (res ==1){
+                                           CustomSnackBar.show(context,"Comment Deleted Successfully!");
+                                         }else{
+                                           CustomSnackBar.show(context,"Comment Deleted Failed!");
+                                         }
                                         },
                                         child: Image.asset(
                                           "assets/delete_icon.png",
@@ -707,7 +659,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   _imageFile = null;
                   filepath = null;
                   filename = "";
-                  _imageList = [];
+                  // commentProvider.imageList = [];
                 });
               },
               child: Container(
@@ -737,15 +689,24 @@ class _ProjectCommentState extends State<ProjectComment> {
             Spacer(),
             InkResponse(
               onTap: () {
-                setState(() {
+                setState(() async {
                   validatecomment = _commentController.text.isEmpty
                       ? "Please enter comment"
                       : "";
                   // _validatefile = _imageList.length == 0 ? "Please select a file" : "";
-                  _loading = validatecomment.isEmpty;
-                  if (_loading) {
-                    SendComments();
-                  } else {}
+                  isSaving = validatecomment.isEmpty;
+                  if (isSaving) {
+                    isSaving=false;
+                    var res= await commentProvider.SendComments(_commentController.text,widget.id);
+                    if(res==1){
+                      _commentController.text="";
+                      CustomSnackBar.show(context, "Comment Added Successfully!");
+                    }else{
+                      CustomSnackBar.show(context, "Comment Added Failed!");
+                    }
+                  } else {
+                    isSaving=false;
+                  }
                 });
               },
               child: Container(
@@ -756,7 +717,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(
-                  child: _loading
+                  child: isSaving
                       ? spinkit.getFadingCircleSpinner()
                       : Text(
                           'Submit',
