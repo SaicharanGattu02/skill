@@ -840,7 +840,6 @@ class Userapi {
 
   static Future<LoginModel?> PutEditNote(
       String editid, String title, String description, File? image, String id) async {
-    print("editid2>>${editid}");
 
     String? mimeType;
     if (image != null) {

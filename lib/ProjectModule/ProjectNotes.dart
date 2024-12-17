@@ -46,17 +46,15 @@ class _ProjectNotesState extends State<ProjectNotes> {
 
   @override
   void initState() {
-    Provider.of<ProjectNoteProviders>(context,listen: false).GetNote(widget.id);
+    Provider.of<ProjectNoteProviders>(context, listen: false)
+        .GetNote(widget.id);
     super.initState();
   }
-
 
   String getFileName(String url) {
     Uri uri = Uri.parse(url);
     return uri.pathSegments.last;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +97,9 @@ class _ProjectNotesState extends State<ProjectNotes> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            onChanged: (v){
-                              projectNoteProvider.filterNotes(_searchController.text);
+                            onChanged: (v) {
+                              projectNoteProvider
+                                  .filterNotes(_searchController.text);
                             },
                             decoration: InputDecoration(
                               isCollapsed: true,
@@ -132,7 +131,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () {
-                        _showBottomSheet1(context, "Add", "", "");
+                        _showBottomSheet1(context, "Add", "");
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -169,7 +168,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                 ],
               ),
               SizedBox(height: 8),
-              _isLoading
+              projectNoteProvider.Loading
                   ? _buildShimmerList()
                   : projectNoteProvider.filteredData.isEmpty
                       ? Center(
@@ -205,7 +204,8 @@ class _ProjectNotesState extends State<ProjectNotes> {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: projectNoteProvider.filteredData.length,
                           itemBuilder: (context, index) {
-                            final note = projectNoteProvider.filteredData[index];
+                            final note =
+                                projectNoteProvider.filteredData[index];
                             String isoDate = note.createdTime ?? "";
                             String formattedDate = DateTimeFormatter.format(
                                 isoDate,
@@ -214,12 +214,16 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             return Dismissible(
                               key: Key(note.id ?? ''),
                               direction: DismissDirection.startToEnd,
-                              onDismissed: (direction) {
+                              onDismissed: (direction) async {
                                 if (direction == DismissDirection.startToEnd) {
-                                  projectNoteProvider.DelateApi(note.id ?? "");
+                                var res =  await projectNoteProvider.DelateApi(note.id ?? "");
+                                if(res ==1){
+                                  CustomSnackBar.show(context, "Delated Successfully");
+                                }
                                   setState(() {
-                                    projectNoteProvider.filteredData.removeAt(
-                                        index);
+                                    projectNoteProvider.filteredData
+                                        .removeAt(index);
+
                                   });
                                 }
                               },
@@ -267,8 +271,18 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                         ),
                                         Spacer(),
                                         InkWell(
-                                          onTap: () {
-                                            projectNoteProvider.PostAddNoteApi(note.id??'', _titleController.text, _descriptionController.text, filepath, widget.id);
+                                          onTap: () async{
+                                         var res =  await projectNoteProvider.GetEditDetails(note.id??"");
+                                         if (res!=null){
+                                           setState(() {
+                                             _titleController.text=res.title.toString();
+                                             _descriptionController.text=res.description.toString();
+                                           });
+
+
+                                         }
+                                            _showBottomSheet1(
+                                                context, "Edit", note.id ?? "");
                                           },
                                           child: Image.asset(
                                             "assets/edit.png",
@@ -372,7 +386,6 @@ class _ProjectNotesState extends State<ProjectNotes> {
   Widget _buildShimmerList() {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
-
       itemCount: 10, // Adjust the number of shimmer items as needed
       shrinkWrap: true,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -409,21 +422,19 @@ class _ProjectNotesState extends State<ProjectNotes> {
     );
   }
 
-  void _showBottomSheet1(
-      BuildContext context, String mode, String id, String file) {
+  void _showBottomSheet1(BuildContext context, String mode, String id) {
     double h = MediaQuery.of(context).size.height * 0.5;
     double w = MediaQuery.of(context).size.width;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        final projectNoteProvider =Provider.of<ProjectNoteProviders>(context);
+        final projectNoteProvider = Provider.of<ProjectNoteProviders>(context);
         return Consumer<ThemeProvider>(
           builder: (context, themeProvider, child) {
             return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
                 Future<void> _pickImage(ImageSource source) async {
-                  // Check and request camera/gallery permissions
                   if (source == ImageSource.camera) {
                     var status = await Permission.camera.status;
                     if (!status.isGranted) {
@@ -759,9 +770,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                         child: Center(
                                           child: Text(
                                             (filename != "")
-                                                ? (file != "")
-                                                    ? file
-                                                    : filename
+                                                ? filename
                                                 : 'No File Chosen',
                                             maxLines: 1,
                                             style: TextStyle(
@@ -836,7 +845,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                             ),
                             Spacer(),
                             InkResponse(
-                              onTap: () {
+                              onTap: () async {
                                 setState(() {
                                   _validateTittle =
                                       _titleController.text.isEmpty
@@ -852,12 +861,33 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   _isLoading = _validateTittle.isEmpty &&
                                       _validateDescription.isEmpty;
                                   // && _validatefile.isEmpty;
+                                  // && _validatefile.isEmpty
                                 });
                                 if (_isLoading) {
                                   if (mode == "Edit") {
-                                    projectNoteProvider.PostAddNoteApi(id, _titleController.text, _descriptionController.text, filepath, widget.id);
+                                    // Await the response from PostAddNoteApi
+                                    var res = await projectNoteProvider.PostAddNoteApi(
+                                        id,
+                                        _titleController.text,
+                                        _descriptionController.text,
+                                        filepath,
+                                        widget.id
+                                    );
+                                    if (res == 1) {
+                                      Navigator.pop(context);
+                                    }
                                   } else {
-                                    projectNoteProvider.PostAddNoteApi('', _titleController.text, _descriptionController.text, filepath, widget.id);
+                                    // Await the response from PostAddNoteApi
+                                    var res = await projectNoteProvider.PostAddNoteApi(
+                                        '',
+                                        _titleController.text,
+                                        _descriptionController.text,
+                                        filepath,
+                                        widget.id
+                                    );
+                                    if (res == 1) {
+                                      Navigator.pop(context);
+                                    }
                                   }
                                 }
                               },
@@ -869,7 +899,7 @@ class _ProjectNotesState extends State<ProjectNotes> {
                                   borderRadius: BorderRadius.circular(7),
                                 ),
                                 child: Center(
-                                  child: isLoading
+                                  child: projectNoteProvider.Loading
                                       ? spinkit.getFadingCircleSpinner()
                                       : Text(
                                           'Save',
