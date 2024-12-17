@@ -20,11 +20,11 @@ class TimeSheet extends StatefulWidget {
 
 class _TimeSheetState extends State<TimeSheet> {
   final TextEditingController _searchController = TextEditingController();
+
   void initState() {
     TimeSheetDetails();
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -32,12 +32,12 @@ class _TimeSheetState extends State<TimeSheet> {
     super.dispose();
   }
 
-
   int selectedTabIndex = 0;
-  bool isloading=true;
+  bool isloading = true;
 
   Future<void> TimeSheetDetails() async {
-    final timesheetProvider = Provider.of<TimesheetProvider>(context, listen: false);
+    final timesheetProvider =
+        Provider.of<TimesheetProvider>(context, listen: false);
     timesheetProvider.fetchTimeSheetsList(widget.id);
   }
 
@@ -48,8 +48,7 @@ class _TimeSheetState extends State<TimeSheet> {
     final timesheetProvider = Provider.of<TimesheetProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
-      body:
-      SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -227,14 +226,13 @@ class _TimeSheetState extends State<TimeSheet> {
                 children: [
                   Container(
                     width: w * 0.63,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xffffffff),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child:
-                    Row(
+                    child: Row(
                       children: [
                         Image.asset(
                           "assets/search.png",
@@ -243,12 +241,12 @@ class _TimeSheetState extends State<TimeSheet> {
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(width: 10),
-
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            onChanged: (v){
-                              timesheetProvider.filterTimesheets(_searchController.text);
+                            onChanged: (v) {
+                              timesheetProvider
+                                  .filterTimesheets(_searchController.text);
                             },
                             decoration: InputDecoration(
                               isCollapsed: true,
@@ -280,10 +278,12 @@ class _TimeSheetState extends State<TimeSheet> {
                     height: w * 0.09,
                     child: InkWell(
                       onTap: () async {
-                        var res= await Navigator.push(context,MaterialPageRoute(builder: (context) => Addlogtime(projectId: widget.id,)));
-                        if(res==true){
-                          TimeSheetDetails();
-                        }
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Addlogtime(
+                                      projectId: widget.id,
+                                    )));
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -321,334 +321,406 @@ class _TimeSheetState extends State<TimeSheet> {
               ),
               SizedBox(height: 8),
               if (selectedTabIndex == 0) ...[
-                timesheetProvider.isLoading?_buildShimmerList():
-                timesheetProvider.filteredTimesheetsList.isEmpty
-                    ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).size.height*0.24,),
-                      Image.asset(
-                        'assets/nodata1.png', // Make sure to use the correct image path
-                        width:
-                        150, // Adjust the size according to your design
-                        height: 150,
-                        fit: BoxFit.contain,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "No Data Found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                          fontFamily: "Inter",
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-
-                    :
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: timesheetProvider.filteredTimesheetsList.length,
-                  itemBuilder: (context, index) {
-                    final detail = timesheetProvider.filteredTimesheetsList[index];
-                    String isoDate = detail.startTime ?? "";
-                    String isoDate1 = detail.endTime ?? "";
-
-                    String formattedTime = DateTimeFormatter.format(isoDate, includeDate: false, includeTime: true);
-                    String formattedTime1 = DateTimeFormatter.format(isoDate1, includeDate: false, includeTime: true);
-
-                    print("Start Time: $formattedTime");
-                    print("End Time: $formattedTime1");
-
-                    print("time>>>${formattedTime1}");
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color:themeProvider.themeData==lightTheme? Color(0xffffffff) : AppColors.darkmodeContainerColor,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Start Time",
-                                    style: TextStyle(
-                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F) : themeProvider.textColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      height: 19.41 / 16,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
+                timesheetProvider.isLoading
+                    ? _buildShimmerList()
+                    : timesheetProvider.filteredTimesheetsList.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.24,
+                                ),
+                                Image.asset(
+                                  'assets/nodata1.png', // Make sure to use the correct image path
+                                  width:
+                                      150, // Adjust the size according to your design
+                                  height: 150,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No Data Found",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                    fontFamily: "Inter",
                                   ),
-                                  SizedBox(
-                                    height: w * 0.01,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/tasktime.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.04,
-                                        height: w * 0.04,
-                                        color: Color(0xff6C848F),
-                                      ),
-                                      SizedBox(
-                                        width: w * 0.01,
-                                      ),
-                                      Container(
-                                        width: w * 0.3,
-                                        child: Text(
-                                          "${formattedTime}",
-                                          style: TextStyle(
-                                            color: themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            height: 16.94 / 14,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontFamily: "Inter",
-                                          ),
-                                          maxLines: 2,
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount:
+                                timesheetProvider.filteredTimesheetsList.length,
+                            itemBuilder: (context, index) {
+                              final detail = timesheetProvider
+                                  .filteredTimesheetsList[index];
+                              String isoDate = detail.startTime ?? "";
+                              String isoDate1 = detail.endTime ?? "";
+
+                              String formattedTime = DateTimeFormatter.format(
+                                  isoDate,
+                                  includeDate: false,
+                                  includeTime: true);
+                              String formattedTime1 = DateTimeFormatter.format(
+                                  isoDate1,
+                                  includeDate: false,
+                                  includeTime: true);
+
+                              print("Start Time: $formattedTime");
+                              print("End Time: $formattedTime1");
+
+                              print("time>>>${formattedTime1}");
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: themeProvider.themeData == lightTheme
+                                      ? Color(0xffffffff)
+                                      : AppColors.darkmodeContainerColor,
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Start Time",
+                                              style: TextStyle(
+                                                color: themeProvider
+                                                            .themeData ==
+                                                        lightTheme
+                                                    ? Color(0xff6C848F)
+                                                    : themeProvider.textColor,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
+                                                height: 19.41 / 16,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: "Inter",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: w * 0.01,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Image.asset(
+                                                  "assets/tasktime.png",
+                                                  fit: BoxFit.contain,
+                                                  width: w * 0.04,
+                                                  height: w * 0.04,
+                                                  color: Color(0xff6C848F),
+                                                ),
+                                                SizedBox(
+                                                  width: w * 0.01,
+                                                ),
+                                                Container(
+                                                  width: w * 0.3,
+                                                  child: Text(
+                                                    "${formattedTime}",
+                                                    style: TextStyle(
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xff1D1C1D)
+                                                          : themeProvider
+                                                              .textColor,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: 14,
+                                                      height: 16.94 / 14,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      fontFamily: "Inter",
+                                                    ),
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "End Time",
-                                    style: TextStyle(
-                                      color:themeProvider.themeData==lightTheme?Color(0xff6C848F) : themeProvider.textColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      height: 19.41 / 16,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: w * 0.01,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        "assets/tasktime.png",
-                                        fit: BoxFit.contain,
-                                        width: w * 0.04,
-                                        height: w * 0.04,
-                                        color: Color(0xff6C848F),
-                                      ),
-                                      SizedBox(
-                                        width: w * 0.01,
-                                      ),
-                                      Container(
-                                        width: w * 0.3,
-                                        child: Text(
-                                          "${formattedTime1}",
-                                          style: TextStyle(
-                                            color:themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            height: 16.94 / 14,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontFamily: "Inter",
-                                          ),
-                                          maxLines: 2,
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "End Time",
+                                              style: TextStyle(
+                                                color: themeProvider
+                                                            .themeData ==
+                                                        lightTheme
+                                                    ? Color(0xff6C848F)
+                                                    : themeProvider.textColor,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
+                                                height: 19.41 / 16,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: "Inter",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: w * 0.01,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Image.asset(
+                                                  "assets/tasktime.png",
+                                                  fit: BoxFit.contain,
+                                                  width: w * 0.04,
+                                                  height: w * 0.04,
+                                                  color: Color(0xff6C848F),
+                                                ),
+                                                SizedBox(
+                                                  width: w * 0.01,
+                                                ),
+                                                Container(
+                                                  width: w * 0.3,
+                                                  child: Text(
+                                                    "${formattedTime1}",
+                                                    style: TextStyle(
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xff1D1C1D)
+                                                          : themeProvider
+                                                              .textColor,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: 14,
+                                                      height: 16.94 / 14,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      fontFamily: "Inter",
+                                                    ),
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                                      ],
+                                    ),
+                                    // const SizedBox(height: 12),
+                                    // Column(
+                                    //   mainAxisAlignment: MainAxisAlignment.start,
+                                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                                    //   children: [
+                                    //     Text(
+                                    //       "End Time",
+                                    //       style: TextStyle(
+                                    //         color: const Color(0xff6C848F),
+                                    //         fontWeight: FontWeight.w500,
+                                    //         fontSize: 16,
+                                    //         height: 19.41 / 16,
+                                    //         overflow: TextOverflow.ellipsis,
+                                    //         fontFamily: "Inter",
+                                    //       ),
+                                    //     ),
+                                    //     SizedBox(
+                                    //       height: w * 0.004,
+                                    //     ),
+                                    //     Row(
+                                    //       children: [
+                                    //         Image.asset(
+                                    //           "assets/tasktime.png",
+                                    //           fit: BoxFit.contain,
+                                    //           width: w * 0.045,
+                                    //           height: w * 0.045,
+                                    //           color: Color(0xff6C848F),
+                                    //         ),
+                                    //         SizedBox(
+                                    //           width: w * 0.004,
+                                    //         ),
+                                    //         Text(
+                                    //           detail.startTime?? "",
+                                    //           style: TextStyle(
+                                    //             color: const Color(0xff1D1C1D),
+                                    //             fontWeight: FontWeight.w400,
+                                    //             fontSize: 14,
+                                    //             height: 16.94 / 14,
+                                    //             overflow: TextOverflow.ellipsis,
+                                    //             fontFamily: "Inter",
+                                    //           ),
+                                    //         ),
+                                    //       ],
+                                    //     ),
+                                    //   ],
+                                    // ),
+                                    const SizedBox(height: 12),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (detail.image != null)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 4.0),
+                                                child: ClipOval(
+                                                  child: Image.network(
+                                                    detail.image.toString() ??
+                                                        "",
+                                                    width: 24,
+                                                    height: 24,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            const SizedBox(width: 8),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  detail.member ?? "",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    height: 24.01 / 14,
+                                                    color: themeProvider
+                                                                .themeData ==
+                                                            lightTheme
+                                                        ? Color(0xff1D1C1D)
+                                                        : themeProvider
+                                                            .textColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'Inter',
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  detail.task ?? "",
+                                                  // "Task - Admin Backend",
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    height: 18.15 / 15,
+                                                    color: themeProvider
+                                                                .themeData ==
+                                                            lightTheme
+                                                        ? Color(0xff1D1C1D)
+                                                        : themeProvider
+                                                            .textColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'Inter',
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                Container(
+                                                  width: w * 0.72,
+                                                  child: Text(
+                                                    detail.note ?? "",
+                                                    // "Note - Brief summary of the project's main objectives and significance",
+                                                    style: TextStyle(
+                                                      color: themeProvider
+                                                                  .themeData ==
+                                                              lightTheme
+                                                          ? Color(0xff371F41)
+                                                          : themeProvider
+                                                              .textColor,
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 18.36 / 14,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 3,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 16,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              "assets/tasktime.png",
+                                              fit: BoxFit.contain,
+                                              width: w * 0.045,
+                                              height: w * 0.045,
+                                              color: Color(0xff6C848F),
+                                            ),
+                                            SizedBox(
+                                              width: w * 0.02,
+                                            ),
+                                            Text(
+                                              // note.createdTime?? "",
+                                              "Total Hours : ",
+                                              style: TextStyle(
+                                                color: themeProvider
+                                                            .themeData ==
+                                                        lightTheme
+                                                    ? Color(0xff6C848F)
+                                                    : themeProvider.textColor,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14,
+                                                height: 16.94 / 14,
+                                                fontFamily: "Inter",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: w * 0.002,
+                                            ),
+                                            Text(
+                                              detail.total ?? "",
+                                              style: TextStyle(
+                                                color: themeProvider
+                                                            .themeData ==
+                                                        lightTheme
+                                                    ? AppColors.primaryColor
+                                                    : themeProvider.textColor,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14,
+                                                height: 16.94 / 14,
+                                                fontFamily: "Inter",
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                          // const SizedBox(height: 12),
-                          // Column(
-                          //   mainAxisAlignment: MainAxisAlignment.start,
-                          //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [
-                          //     Text(
-                          //       "End Time",
-                          //       style: TextStyle(
-                          //         color: const Color(0xff6C848F),
-                          //         fontWeight: FontWeight.w500,
-                          //         fontSize: 16,
-                          //         height: 19.41 / 16,
-                          //         overflow: TextOverflow.ellipsis,
-                          //         fontFamily: "Inter",
-                          //       ),
-                          //     ),
-                          //     SizedBox(
-                          //       height: w * 0.004,
-                          //     ),
-                          //     Row(
-                          //       children: [
-                          //         Image.asset(
-                          //           "assets/tasktime.png",
-                          //           fit: BoxFit.contain,
-                          //           width: w * 0.045,
-                          //           height: w * 0.045,
-                          //           color: Color(0xff6C848F),
-                          //         ),
-                          //         SizedBox(
-                          //           width: w * 0.004,
-                          //         ),
-                          //         Text(
-                          //           detail.startTime?? "",
-                          //           style: TextStyle(
-                          //             color: const Color(0xff1D1C1D),
-                          //             fontWeight: FontWeight.w400,
-                          //             fontSize: 14,
-                          //             height: 16.94 / 14,
-                          //             overflow: TextOverflow.ellipsis,
-                          //             fontFamily: "Inter",
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ],
-                          // ),
-                          const SizedBox(height: 12),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (detail.image != null)
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 4.0),
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          detail.image.toString() ?? "",
-                                          width: 24,
-                                          height: 24,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  const SizedBox(width: 8),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        detail.member ?? "",
-                                        style:  TextStyle(
-                                          fontSize: 14,
-                                          height: 24.01 / 14,
-                                          color: themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Inter',
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        detail.task ?? "",
-                                        // "Task - Admin Backend",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          height: 18.15 / 15,
-                                          color:themeProvider.themeData==lightTheme?Color(0xff1D1C1D): themeProvider.textColor,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Inter',
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Container(
-                                        width: w * 0.72,
-                                        child: Text(
-                                          detail.note ?? "",
-                                          // "Note - Brief summary of the project's main objectives and significance",
-                                          style: TextStyle(
-                                            color: themeProvider.themeData==lightTheme?Color(0xff371F41): themeProvider.textColor,
-                                            fontFamily: 'Inter',
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400,
-                                            height: 18.36 / 14,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 3,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/tasktime.png",
-                                    fit: BoxFit.contain,
-                                    width: w * 0.045,
-                                    height: w * 0.045,
-                                    color: Color(0xff6C848F),
-                                  ),
-                                  SizedBox(
-                                    width: w * 0.02,
-                                  ),
-                                  Text(
-                                    // note.createdTime?? "",
-                                    "Total Hours : ",
-                                    style: TextStyle(
-                                      color:themeProvider.themeData==lightTheme?  Color(0xff6C848F): themeProvider.textColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      height: 16.94 / 14,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: w * 0.002,
-                                  ),
-                                  Text(
-                                    detail.total ?? "",
-                                    style: TextStyle(
-                                      color:themeProvider.themeData==lightTheme? AppColors.primaryColor: themeProvider.textColor,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                      height: 16.94 / 14,
-                                      fontFamily: "Inter",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
               ],
               // if (selectedTabIndex == 1) ...[
               //   ListView.builder(
@@ -833,6 +905,7 @@ class _TimeSheetState extends State<TimeSheet> {
       ),
     );
   }
+
   Widget _buildShimmerList() {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
@@ -855,13 +928,15 @@ class _TimeSheetState extends State<TimeSheet> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(80, 16,context), // Shimmer for "Start Time"
+                      shimmerText(80, 16, context), // Shimmer for "Start Time"
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          shimmerRectangle(20,context), // Shimmer for time icon
+                          shimmerRectangle(
+                              20, context), // Shimmer for time icon
                           const SizedBox(width: 8),
-                          shimmerText(100, 14,context), // Shimmer for formatted time
+                          shimmerText(
+                              100, 14, context), // Shimmer for formatted time
                         ],
                       ),
                     ],
@@ -869,13 +944,15 @@ class _TimeSheetState extends State<TimeSheet> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(80, 16,context), // Shimmer for "End Time"
+                      shimmerText(80, 16, context), // Shimmer for "End Time"
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          shimmerRectangle(20,context), // Shimmer for time icon
+                          shimmerRectangle(
+                              20, context), // Shimmer for time icon
                           const SizedBox(width: 8),
-                          shimmerText(100, 14,context), // Shimmer for formatted time
+                          shimmerText(
+                              100, 14, context), // Shimmer for formatted time
                         ],
                       ),
                     ],
@@ -885,16 +962,16 @@ class _TimeSheetState extends State<TimeSheet> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  shimmerCircle(24,context), // Shimmer for member image
+                  shimmerCircle(24, context), // Shimmer for member image
                   const SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      shimmerText(120, 14,context), // Shimmer for member name
+                      shimmerText(120, 14, context), // Shimmer for member name
                       const SizedBox(height: 6),
-                      shimmerText(150, 15,context), // Shimmer for task
+                      shimmerText(150, 15, context), // Shimmer for task
                       const SizedBox(height: 6),
-                      shimmerText(200, 14,context), // Shimmer for note
+                      shimmerText(200, 14, context), // Shimmer for note
                     ],
                   ),
                 ],
@@ -902,11 +979,11 @@ class _TimeSheetState extends State<TimeSheet> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  shimmerRectangle(20,context), // Shimmer for time icon
+                  shimmerRectangle(20, context), // Shimmer for time icon
                   const SizedBox(width: 8),
-                  shimmerText(100, 14,context), // Shimmer for "Total Hours"
+                  shimmerText(100, 14, context), // Shimmer for "Total Hours"
                   const SizedBox(width: 4),
-                  shimmerText(50, 14,context), // Shimmer for total time value
+                  shimmerText(50, 14, context), // Shimmer for total time value
                 ],
               ),
             ],
@@ -915,5 +992,4 @@ class _TimeSheetState extends State<TimeSheet> {
       },
     );
   }
-
 }

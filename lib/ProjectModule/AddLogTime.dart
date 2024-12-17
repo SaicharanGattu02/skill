@@ -73,9 +73,9 @@ class _AddlogtimeState extends State<Addlogtime> {
     });
   }
 
-  Future<void> Addlogtime() async {
+  Future<void> AddlogtimeApi() async {
     final timesheetProvider = Provider.of<TimesheetProvider>(context);
-    var data= timesheetProvider.Addlogtime(  "${_startDateController.text} ${_startTimeController.text}",
+    var data= timesheetProvider.addLogtime(  "${_startDateController.text} ${_startTimeController.text}",
         "${_deadlineController.text} ${_endTimeController.text}",
         _noteController.text,
         taskid,
@@ -253,7 +253,7 @@ class _AddlogtimeState extends State<Addlogtime> {
           _validatenote.isEmpty;
 
       if (_isSaving) {
-        Addlogtime();
+        AddlogtimeApi();
       } else {
 
       }
