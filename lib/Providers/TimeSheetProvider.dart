@@ -43,6 +43,8 @@ class TimesheetProvider with ChangeNotifier {
       if (data != null && data.settings?.success == 1) {
         await fetchTimeSheetsList(projectID); // Ensure refreshed data
         return 1;
+      }else{
+        return 0;
       }
     } catch (e) {
       debugPrint("Error adding logtime: $e");

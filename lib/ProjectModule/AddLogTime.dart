@@ -16,8 +16,7 @@ import '../utils/app_colors.dart'; // For date formatting
 
 class Addlogtime extends StatefulWidget {
   final projectId;
-  Addlogtime({Key? key, required this.projectId})
-      : super(key: key);
+  Addlogtime({Key? key, required this.projectId}) : super(key: key);
 
   @override
   _AddlogtimeState createState() => _AddlogtimeState();
@@ -72,19 +71,26 @@ class _AddlogtimeState extends State<Addlogtime> {
       }
     });
   }
+
   Future<void> AddlogtimeApi() async {
-    final timesheetProvider = Provider.of<TimesheetProvider>(context,listen: false);
-    var data= timesheetProvider.addLogtime(  "${_startDateController.text} ${_startTimeController.text}",
+    final timesheetProvider =
+        Provider.of<TimesheetProvider>(context, listen: false);
+    var data = timesheetProvider.addLogtime(
+        "${_startDateController.text} ${_startTimeController.text}",
         "${_deadlineController.text} ${_endTimeController.text}",
         _noteController.text,
         taskid,
         widget.projectId);
-    if (data==1) {
+    setState(() {
+      if (data == 1) {
         Navigator.pop(context, true);
+        _isSaving=false;
         CustomSnackBar.show(context, "TimeSheet Added Successfully!");
-    } else {
-      CustomSnackBar.show(context, "TimeSheet Added Failed!");
-    }
+      } else {
+        _isSaving=false;
+        CustomSnackBar.show(context, "TimeSheet Added Failed!");
+      }
+    });
   }
 
   Future<void> _selectstartTime(BuildContext context, String startDate) async {
@@ -253,9 +259,7 @@ class _AddlogtimeState extends State<Addlogtime> {
 
       if (_isSaving) {
         AddlogtimeApi();
-      } else {
-
-      }
+      } else {}
     });
   }
 
@@ -328,7 +332,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                   filled: true,
-                                  fillColor:themeProvider.fillColor,
+                                  fillColor: themeProvider.fillColor,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(7),
                                     borderSide: BorderSide(
@@ -458,7 +462,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                                 color: themeProvider.textColor,
                               ),
                               filled: true,
-                              fillColor:themeProvider.fillColor,
+                              fillColor: themeProvider.fillColor,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(7),
                                 borderSide: BorderSide(
@@ -559,7 +563,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                                 color: themeProvider.textColor,
                               ),
                               filled: true,
-                              fillColor:themeProvider.fillColor,
+                              fillColor: themeProvider.fillColor,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(7),
                                 borderSide: BorderSide(
@@ -601,9 +605,9 @@ class _AddlogtimeState extends State<Addlogtime> {
                         Container(
                           height: h * 0.13,
                           decoration: BoxDecoration(
-                              color: themeProvider.containerColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                            color: themeProvider.containerColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           child: TextFormField(
                             cursorColor: Color(0xff8856F4),
                             scrollPadding: const EdgeInsets.only(top: 5),
@@ -680,7 +684,9 @@ class _AddlogtimeState extends State<Addlogtime> {
           ),
           bottomNavigationBar: Container(
             padding: EdgeInsets.all(18),
-            decoration: BoxDecoration(color:themeProvider.containerColor,),
+            decoration: BoxDecoration(
+              color: themeProvider.containerColor,
+            ),
             child: Row(
               children: [
                 InkResponse(
@@ -714,9 +720,8 @@ class _AddlogtimeState extends State<Addlogtime> {
                 Spacer(),
                 InkResponse(
                   onTap: () {
-                    if(_isSaving){
-
-                    }else{
+                    if (_isSaving) {
+                    } else {
                       _validateFields();
                     }
                   },
@@ -762,8 +767,9 @@ class _AddlogtimeState extends State<Addlogtime> {
             });
           },
           child: AbsorbPointer(
-            child: Consumer<ThemeProvider>(builder: (context,themeProvider,child){
-              return   Container(
+            child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+              return Container(
                 height: MediaQuery.of(context).size.height * 0.05,
                 child: TextField(
                   controller: controller,
@@ -790,19 +796,18 @@ class _AddlogtimeState extends State<Addlogtime> {
                     fillColor: themeProvider.fillColor,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(7),
-                      borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                      borderSide:
+                          BorderSide(width: 1, color: Color(0xffD0CBDB)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15.0),
-                      borderSide: BorderSide(width: 1, color: Color(0xffD0CBDB)),
+                      borderSide:
+                          BorderSide(width: 1, color: Color(0xffD0CBDB)),
                     ),
                   ),
                 ),
               );
-    }
-
-
-            ),
+            }),
           ),
         ),
       ],
@@ -833,5 +838,4 @@ class _AddlogtimeState extends State<Addlogtime> {
       );
     });
   }
-
 }
