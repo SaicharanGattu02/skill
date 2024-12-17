@@ -242,7 +242,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-// Function to display local notifications
 void showNotification(RemoteNotification notification,
     AndroidNotification android, Map<String, dynamic> data) async {
   await audioPlayer

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/AddLogTime.dart';
 import 'package:skill/Providers/TimeSheetProvider.dart';
-import 'package:skill/Services/UserApi.dart';
-import '../Model/TimeSheeetDeatilModel.dart';
 import '../Providers/ThemeProvider.dart';
-import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
@@ -610,9 +607,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     height: 24.01 / 14,
-                                                    color: themeProvider
-                                                                .themeData ==
-                                                            lightTheme
+                                                    color: themeProvider.themeData == lightTheme
                                                         ? Color(0xff1D1C1D)
                                                         : themeProvider
                                                             .textColor,
@@ -623,7 +618,6 @@ class _TimeSheetState extends State<TimeSheet> {
                                                 const SizedBox(height: 10),
                                                 Text(
                                                   detail.task ?? "",
-                                                  // "Task - Admin Backend",
                                                   style: TextStyle(
                                                     fontSize: 15,
                                                     height: 18.15 / 15,
