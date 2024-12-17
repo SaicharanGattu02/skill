@@ -109,12 +109,12 @@ class _LogInScreenState extends State<LogInScreen> {
     }
 
     // Check if FCM token is not empty
-    if (fcm_token != null && fcm_token.isNotEmpty) {
+    // if (fcm_token != null && fcm_token.isNotEmpty) {
       // Save FCM token
-      PreferenceService().saveString("fbstoken", fcm_token);
+      PreferenceService().saveString("fbstoken", fcm_token??"");
 
       // Proceed with login API call
-      var data = await Userapi.PostLogin(_emailController.text, _passwordController.text, fcm_token, tokentype);
+      var data = await Userapi.PostLogin(_emailController.text, _passwordController.text, fcm_token??"", tokentype);
 
       if (data != null) {
         setState(() {
@@ -133,10 +133,10 @@ class _LogInScreenState extends State<LogInScreen> {
         print("Login >>>${data?.settings?.message}");
         CustomSnackBar.show(context, "${data?.settings?.message}");
       }
-    } else {
-      print("FCM token is empty");
-      CustomSnackBar.show(context, "Failed to retrieve FCM token. Please try again.");
-    }
+    // } else {
+    //   print("FCM token is empty");
+    //   CustomSnackBar.show(context, "Failed to retrieve FCM token. Please try again.");
+    // }
   }
   void _validateFields() {
     setState(() {

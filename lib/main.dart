@@ -9,7 +9,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Providers/ConnectivityProviders.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
@@ -47,129 +46,129 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-          options: FirebaseOptions(
-            apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI",
-            appId: "1:710798644357:android:9c8595bf181be70423c5ec",
-            messagingSenderId: "710798644357",
-            projectId: "skil-f765f",
-          ),
-        )
-      : await Firebase.initializeApp();
-
-  FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-
-  const fatalError = true;
-  // Non-async exceptions
-  FlutterError.onError = (errorDetails) {
-    if (fatalError) {
-      // If you want to record a "fatal" exception
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-      // ignore: dead_code
-    } else {
-      // If you want to record a "non-fatal" exception
-      FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
-    }
-  };
-  // Async exceptions
-  PlatformDispatcher.instance.onError = (error, stack) {
-    if (fatalError) {
-      // If you want to record a "fatal" exception
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      // ignore: dead_code
-    } else {
-      // If you want to record a "non-fatal" exception
-      FirebaseCrashlytics.instance.recordError(error, stack);
-    }
-    return true;
-  };
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  if (Platform.isAndroid) {
-    FirebaseMessaging.instance.getToken().then((value) {
-      String? token = value;
-      print("Androidfbstoken:{$token} ");
-      PreferenceService().saveString("fbstoken", token!);
-      // toast(BuildContext , token);
-    });
-  } else {
-    FirebaseMessaging.instance.getToken().then((value) {
-      String? token = value;
-      print("IOSfbstoken:{$token}");
-      PreferenceService().saveString("fbstoken", token!);
-      // toast(BuildContext , token);
-    });
-  }
-
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: false,
-  );
-
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: false,
-  );
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  const InitializationSettings initializationSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings());
-
-  flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) async {
-      _handleNotificationTap(notificationResponse.payload);
-    },
-  );
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-    if (notification != null && android != null) {
-      print('A new message received title: ${notification.title}');
-      print('A new message received body: ${notification.body}');
-      print('RemoteMessage data: ${message.data.toString()}');
-
-      // Save notification to SQLite database
-      _saveNotificationToDatabase(notification, message.data);
-
-      // Show a local notification (optional)
-      showNotification(notification, android, message.data);
-    }
-  });
-
-  // Also handle any interaction when the app is in the background via a
-  // Stream listener
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    _handleNotificationTap(jsonEncode(message.data));
-  });
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // debugInvertOversizedImages = true;
-  FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
-  FlutterError.onError = (FlutterErrorDetails details) {
-    // Log the error details to a logging service or print them
-    print("Errrrrrrrrrr:${details.exceptionAsString()}");
-    // Optionally report the error to a remote server
-  };
+  // Platform.isAndroid
+  //     ? await Firebase.initializeApp(
+  //         options: FirebaseOptions(
+  //           apiKey: "AIzaSyDHliXTMOa5PqZUEGiywjRCjABk8EL9yMI",
+  //           appId: "1:710798644357:android:9c8595bf181be70423c5ec",
+  //           messagingSenderId: "710798644357",
+  //           projectId: "skil-f765f",
+  //         ),
+  //       )
+  //     : await Firebase.initializeApp();
+  //
+  // FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  //
+  // const fatalError = true;
+  // // Non-async exceptions
+  // FlutterError.onError = (errorDetails) {
+  //   if (fatalError) {
+  //     // If you want to record a "fatal" exception
+  //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  //     // ignore: dead_code
+  //   } else {
+  //     // If you want to record a "non-fatal" exception
+  //     FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+  //   }
+  // };
+  // // Async exceptions
+  // PlatformDispatcher.instance.onError = (error, stack) {
+  //   if (fatalError) {
+  //     // If you want to record a "fatal" exception
+  //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+  //     // ignore: dead_code
+  //   } else {
+  //     // If you want to record a "non-fatal" exception
+  //     FirebaseCrashlytics.instance.recordError(error, stack);
+  //   }
+  //   return true;
+  // };
+  //
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //
+  // if (Platform.isAndroid) {
+  //   FirebaseMessaging.instance.getToken().then((value) {
+  //     String? token = value;
+  //     print("Androidfbstoken:{$token} ");
+  //     PreferenceService().saveString("fbstoken", token!);
+  //     // toast(BuildContext , token);
+  //   });
+  // } else {
+  //   FirebaseMessaging.instance.getToken().then((value) {
+  //     String? token = value;
+  //     print("IOSfbstoken:{$token}");
+  //     PreferenceService().saveString("fbstoken", token!);
+  //     // toast(BuildContext , token);
+  //   });
+  // }
+  //
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // NotificationSettings settings = await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: false,
+  // );
+  //
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: false,
+  // );
+  //
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //         AndroidFlutterLocalNotificationsPlugin>()
+  //     ?.createNotificationChannel(channel);
+  //
+  // const InitializationSettings initializationSettings = InitializationSettings(
+  //     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  //     iOS: DarwinInitializationSettings());
+  //
+  // flutterLocalNotificationsPlugin.initialize(
+  //   initializationSettings,
+  //   onDidReceiveNotificationResponse:
+  //       (NotificationResponse notificationResponse) async {
+  //     _handleNotificationTap(notificationResponse.payload);
+  //   },
+  // );
+  //
+  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //   RemoteNotification? notification = message.notification;
+  //   AndroidNotification? android = message.notification?.android;
+  //   if (notification != null && android != null) {
+  //     print('A new message received title: ${notification.title}');
+  //     print('A new message received body: ${notification.body}');
+  //     print('RemoteMessage data: ${message.data.toString()}');
+  //
+  //     // Save notification to SQLite database
+  //     _saveNotificationToDatabase(notification, message.data);
+  //
+  //     // Show a local notification (optional)
+  //     showNotification(notification, android, message.data);
+  //   }
+  // });
+  //
+  // // Also handle any interaction when the app is in the background via a
+  // // Stream listener
+  // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+  //   _handleNotificationTap(jsonEncode(message.data));
+  // });
+  //
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //
+  // // debugInvertOversizedImages = true;
+  // FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  //
+  // FlutterError.onError = (FlutterErrorDetails details) {
+  //   // Log the error details to a logging service or print them
+  //   print("Errrrrrrrrrr:${details.exceptionAsString()}");
+  //   // Optionally report the error to a remote server
+  // };
 
   runApp(
     MultiProvider(
@@ -192,81 +191,81 @@ Future<void> main() async {
     ),
   );
 }
-
-Future<void> _handleNotificationTap(String? payload) async {
-  final myEmployeeID = await PreferenceService().getString("my_employeeID");
-
-  if (payload != null) {
-    Map<String, dynamic> data = jsonDecode(payload);
-    String? roomId = data['room_id'];
-    print("roomId:${roomId}");
-    if (roomId != null) {
-      navigatorKey.currentState?.pushNamed(
-        '/chat_screen',
-        arguments: {
-          'roomId': roomId,
-          'employeeId': myEmployeeID,
-        },
-      );
-    } else {
-      print("No room_id found in the payload");
-    }
-  }
-}
-
-void _saveNotificationToDatabase(
-    RemoteNotification notification, Map<String, dynamic> data) async {
-  print("Sent Notification for saving:${notification}");
-  // Create a Notification object to be saved in SQLite
-  NotificationModel newNotification = NotificationModel(
-    title: notification.title,
-    body: notification.body,
-  );
-
-  // Save the notification to SQLite
-  await DatabaseHelper.instance.insertNotification(newNotification);
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  RemoteNotification? notification = message.notification;
-  AndroidNotification? android = message.notification?.android;
-  if (notification != null && android != null) {
-    print('A new message received title: ${notification.title}');
-    print('A new message received body: ${notification.body}');
-    print('RemoteMessage data: ${message.data.toString()}');
-
-    // Save notification to SQLite database
-    _saveNotificationToDatabase(notification, message.data);
-    _handleNotificationTap(jsonEncode(message.data));
-  }
-}
-
-// Function to display local notifications
-void showNotification(RemoteNotification notification,
-    AndroidNotification android, Map<String, dynamic> data) async {
-  await audioPlayer
-      .play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
-  AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    'skil_channel_id',
-    'skil_channel_name',
-    importance: Importance.max,
-    priority: Priority.high,
-    playSound: false,
-    icon: '@mipmap/skillicon',
-  );
-  NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-  await flutterLocalNotificationsPlugin.show(
-    notification.hashCode,
-    notification.title,
-    notification.body,
-    platformChannelSpecifics,
-    payload: jsonEncode(data), // Convert payload data to String
-  );
-}
+//
+// Future<void> _handleNotificationTap(String? payload) async {
+//   final myEmployeeID = await PreferenceService().getString("my_employeeID");
+//
+//   if (payload != null) {
+//     Map<String, dynamic> data = jsonDecode(payload);
+//     String? roomId = data['room_id'];
+//     print("roomId:${roomId}");
+//     if (roomId != null) {
+//       navigatorKey.currentState?.pushNamed(
+//         '/chat_screen',
+//         arguments: {
+//           'roomId': roomId,
+//           'employeeId': myEmployeeID,
+//         },
+//       );
+//     } else {
+//       print("No room_id found in the payload");
+//     }
+//   }
+// }
+//
+// void _saveNotificationToDatabase(
+//     RemoteNotification notification, Map<String, dynamic> data) async {
+//   print("Sent Notification for saving:${notification}");
+//   // Create a Notification object to be saved in SQLite
+//   NotificationModel newNotification = NotificationModel(
+//     title: notification.title,
+//     body: notification.body,
+//   );
+//
+//   // Save the notification to SQLite
+//   await DatabaseHelper.instance.insertNotification(newNotification);
+// }
+//
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+//   RemoteNotification? notification = message.notification;
+//   AndroidNotification? android = message.notification?.android;
+//   if (notification != null && android != null) {
+//     print('A new message received title: ${notification.title}');
+//     print('A new message received body: ${notification.body}');
+//     print('RemoteMessage data: ${message.data.toString()}');
+//
+//     // Save notification to SQLite database
+//     _saveNotificationToDatabase(notification, message.data);
+//     _handleNotificationTap(jsonEncode(message.data));
+//   }
+// }
+//
+// // Function to display local notifications
+// void showNotification(RemoteNotification notification,
+//     AndroidNotification android, Map<String, dynamic> data) async {
+//   await audioPlayer
+//       .play(AssetSource('sounds/bell_sound.mp3')); // Corrected line
+//   AndroidNotificationDetails androidPlatformChannelSpecifics =
+//       AndroidNotificationDetails(
+//     'skil_channel_id',
+//     'skil_channel_name',
+//     importance: Importance.max,
+//     priority: Priority.high,
+//     playSound: false,
+//     icon: '@mipmap/skillicon',
+//   );
+//   NotificationDetails platformChannelSpecifics =
+//       NotificationDetails(android: androidPlatformChannelSpecifics);
+//
+//   await flutterLocalNotificationsPlugin.show(
+//     notification.hashCode,
+//     notification.title,
+//     notification.body,
+//     platformChannelSpecifics,
+//     payload: jsonEncode(data), // Convert payload data to String
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -75,7 +75,7 @@ class _AddlogtimeState extends State<Addlogtime> {
   Future<void> AddlogtimeApi() async {
     final timesheetProvider =
         Provider.of<TimesheetProvider>(context, listen: false);
-    var data = await  timesheetProvider.addLogtime(
+    var data = await timesheetProvider.addLogtime(
         "${_startDateController.text} ${_startTimeController.text}",
         "${_deadlineController.text} ${_endTimeController.text}",
         _noteController.text,
@@ -84,10 +84,10 @@ class _AddlogtimeState extends State<Addlogtime> {
     setState(() {
       if (data == 1) {
         Navigator.pop(context, true);
-        _isSaving=false;
+        _isSaving = false;
         CustomSnackBar.show(context, "TimeSheet Added Successfully!");
       } else {
-        _isSaving=false;
+        _isSaving = false;
         CustomSnackBar.show(context, "TimeSheet Added Failed!");
       }
     });
@@ -239,7 +239,7 @@ class _AddlogtimeState extends State<Addlogtime> {
 
   void _validateFields() {
     setState(() {
-      _isSaving=true;
+      _isSaving = true;
       _validateStartDate =
           _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
@@ -251,17 +251,16 @@ class _AddlogtimeState extends State<Addlogtime> {
           _endTimeController.text.isEmpty ? "Please select end time" : "";
       _validatetask = taskid == "" ? "Please select task" : "";
 
-      if(_validateStartDate.isEmpty &&
+      if (_validateStartDate.isEmpty &&
           _validateDeadline.isEmpty &&
           _validatestarttime.isEmpty &&
           _validateendtime.isEmpty &&
           _validatetask.isEmpty &&
-          _validatenote.isEmpty){
-          AddlogtimeApi();
-      }else{
-        _isSaving=false;
+          _validatenote.isEmpty) {
+        AddlogtimeApi();
+      } else {
+        _isSaving = false;
       }
-
     });
   }
 
