@@ -75,7 +75,7 @@ class _AddlogtimeState extends State<Addlogtime> {
   Future<void> AddlogtimeApi() async {
     final timesheetProvider =
         Provider.of<TimesheetProvider>(context, listen: false);
-    var data = timesheetProvider.addLogtime(
+    var data = await  timesheetProvider.addLogtime(
         "${_startDateController.text} ${_startTimeController.text}",
         "${_deadlineController.text} ${_endTimeController.text}",
         _noteController.text,
@@ -239,6 +239,7 @@ class _AddlogtimeState extends State<Addlogtime> {
 
   void _validateFields() {
     setState(() {
+      _isSaving=true;
       _validateStartDate =
           _startDateController.text.isEmpty ? "Please enter a start date" : "";
       _validateDeadline =
@@ -250,16 +251,17 @@ class _AddlogtimeState extends State<Addlogtime> {
           _endTimeController.text.isEmpty ? "Please select end time" : "";
       _validatetask = taskid == "" ? "Please select task" : "";
 
-      _isSaving = _validateStartDate.isEmpty &&
+      if(_validateStartDate.isEmpty &&
           _validateDeadline.isEmpty &&
           _validatestarttime.isEmpty &&
           _validateendtime.isEmpty &&
           _validatetask.isEmpty &&
-          _validatenote.isEmpty;
+          _validatenote.isEmpty){
+          AddlogtimeApi();
+      }else{
+        _isSaving=false;
+      }
 
-      if (_isSaving) {
-        AddlogtimeApi();
-      } else {}
     });
   }
 
@@ -318,7 +320,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                                   fontSize: 16,
                                   letterSpacing: 0,
                                   height: 1.2,
-                                  color: Colors.black,
+                                  color: themeProvider.textColor,
                                   fontWeight: FontWeight.w400,
                                 ),
                                 decoration: InputDecoration(
