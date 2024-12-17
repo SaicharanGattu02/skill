@@ -6,6 +6,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Providers/ThemeProvider.dart';
+import 'package:skill/Providers/TimeSheetProvider.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
 import '../Model/ProjectUserTasksModel.dart';
 import '../Services/UserApi.dart';
@@ -16,7 +17,7 @@ import '../utils/app_colors.dart'; // For date formatting
 class Addlogtime extends StatefulWidget {
   final projectId;
   Addlogtime({Key? key, required this.projectId})
-      : super(key: key); // Constructor
+      : super(key: key);
 
   @override
   _AddlogtimeState createState() => _AddlogtimeState();
@@ -26,7 +27,7 @@ class _AddlogtimeState extends State<Addlogtime> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _deadlineController = TextEditingController();
-  final TextEditingController _endtTimeController = TextEditingController();
+  final TextEditingController _endTimeController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _taskController = TextEditingController();
 
@@ -36,22 +37,19 @@ class _AddlogtimeState extends State<Addlogtime> {
   String _validatestarttime = "";
   String _validateendtime = "";
   String _validatetask = "";
-
   String taskid = "";
   final spinkit = Spinkits();
 
-  bool _isLoading = false;
+  bool _isSaving = false;
   @override
   void initState() {
     super.initState();
     projecttasklist();
-
     _startDateController.addListener(() {
       setState(() {
         _validateStartDate = "";
       });
     });
-
     _deadlineController.addListener(() {
       setState(() {
         _validateDeadline = "";
@@ -76,21 +74,18 @@ class _AddlogtimeState extends State<Addlogtime> {
   }
 
   Future<void> Addlogtime() async {
-    var data = await Userapi.AddLogtimeApi(
-        "${_startDateController.text} ${_startTimeController.text}",
-        "${_deadlineController.text} ${_endtTimeController.text}",
+    final timesheetProvider = Provider.of<TimesheetProvider>(context);
+    var data= timesheetProvider.Addlogtime(  "${_startDateController.text} ${_startTimeController.text}",
+        "${_deadlineController.text} ${_endTimeController.text}",
         _noteController.text,
         taskid,
         widget.projectId);
-    if (data != null) {
-      if (data.settings?.success == 1) {
+    if (data==1) {
         Navigator.pop(context, true);
-
-        CustomSnackBar.show(context, "${data.settings?.message}");
-      } else {
-        CustomSnackBar.show(context, "${data.settings?.message}");
-      }
-    } else {}
+        CustomSnackBar.show(context, "TimeSheet Added Successfully!");
+    } else {
+      CustomSnackBar.show(context, "TimeSheet Added Failed!");
+    }
   }
 
   Future<void> _selectstartTime(BuildContext context, String startDate) async {
@@ -198,7 +193,7 @@ class _AddlogtimeState extends State<Addlogtime> {
       if (selectedEndDate.isBefore(DateTime(now.year, now.month, now.day))) {
         CustomSnackBar.show(
             context, "Selected end date cannot be in the past.");
-        _endtTimeController.clear();
+        _endTimeController.clear();
         return;
       }
 
@@ -221,16 +216,16 @@ class _AddlogtimeState extends State<Addlogtime> {
           .isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
         if (selectedEndDateTime.isBefore(startDateTime)) {
           CustomSnackBar.show(context, "End time cannot be before start time.");
-          _endtTimeController.clear();
+          _endTimeController.clear();
           return;
         }
       }
 
       // Update the end time field if everything is valid
       setState(() {
-        _endtTimeController.text =
+        _endTimeController.text =
             DateFormat('HH:mm').format(selectedEndDateTime);
-        if (_endtTimeController.text != "") {
+        if (_endTimeController.text != "") {
           _validateendtime = "";
         }
       });
@@ -247,19 +242,21 @@ class _AddlogtimeState extends State<Addlogtime> {
       _validatestarttime =
           _startTimeController.text.isEmpty ? "Please select start time" : "";
       _validateendtime =
-          _endtTimeController.text.isEmpty ? "Please select end time" : "";
+          _endTimeController.text.isEmpty ? "Please select end time" : "";
       _validatetask = taskid == "" ? "Please select task" : "";
 
-      _isLoading = _validateStartDate.isEmpty &&
+      _isSaving = _validateStartDate.isEmpty &&
           _validateDeadline.isEmpty &&
           _validatestarttime.isEmpty &&
           _validateendtime.isEmpty &&
           _validatetask.isEmpty &&
           _validatenote.isEmpty;
 
-      if (_isLoading) {
+      if (_isSaving) {
         Addlogtime();
-      } else {}
+      } else {
+
+      }
     });
   }
 
@@ -270,7 +267,7 @@ class _AddlogtimeState extends State<Addlogtime> {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return Scaffold(
-          backgroundColor: themeProvider.containerColor,
+          backgroundColor: themeProvider.scaffoldBackgroundColor,
           resizeToAvoidBottomInset: true,
           appBar: CustomAppBar(
             title: 'Add Log Time',
@@ -530,7 +527,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                         Container(
                           height: MediaQuery.of(context).size.height * 0.05,
                           child: TextFormField(
-                            controller: _endtTimeController,
+                            controller: _endTimeController,
                             cursorColor: Colors.black,
                             readOnly: true,
                             onTap: () {
@@ -718,7 +715,11 @@ class _AddlogtimeState extends State<Addlogtime> {
                 Spacer(),
                 InkResponse(
                   onTap: () {
-                    _validateFields();
+                    if(_isSaving){
+
+                    }else{
+                      _validateFields();
+                    }
                   },
                   child: Container(
                     height: 40,
@@ -728,7 +729,7 @@ class _AddlogtimeState extends State<Addlogtime> {
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: Center(
-                      child: _isLoading
+                      child: _isSaving
                           ? spinkit.getFadingCircleSpinner()
                           : Text(
                               'Save',
@@ -834,24 +835,4 @@ class _AddlogtimeState extends State<Addlogtime> {
     });
   }
 
-  static Widget _buildButton(String text, VoidCallback onPressed, Color color) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(7),
-      ),
-      child: TextButton(
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: TextStyle(
-            color:
-                color == Color(0xffF8FCFF) ? Color(0xff8856F4) : Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-      ),
-    );
-  }
 }

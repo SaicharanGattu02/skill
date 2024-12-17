@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/ProjectModule/AddLogTime.dart';
+import 'package:skill/Providers/TimeSheetProvider.dart';
 import 'package:skill/Services/UserApi.dart';
 import '../Model/TimeSheeetDeatilModel.dart';
 import '../Providers/ThemeProvider.dart';
@@ -20,24 +21,13 @@ class TimeSheet extends StatefulWidget {
 class _TimeSheetState extends State<TimeSheet> {
   final TextEditingController _searchController = TextEditingController();
   void initState() {
-    _searchController.addListener(filterData); // Add listener for search
     TimeSheetDetails();
     super.initState();
   }
 
-  void filterData() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      filteredData = data.where((item) {
-        return (item.member?.toLowerCase().contains(query) ?? false) ||
-            (item.task?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    });
-  }
 
   @override
   void dispose() {
-    _searchController.removeListener(filterData); // Remove listener
     _searchController.dispose(); // Dispose of the controller
     super.dispose();
   }
@@ -46,37 +36,19 @@ class _TimeSheetState extends State<TimeSheet> {
   int selectedTabIndex = 0;
   bool isloading=true;
 
-  List<Data> data = []; // Original list of notes
-  List<Data> filteredData = []; // Filtered list for search
   Future<void> TimeSheetDetails() async {
-    var res = await Userapi.GetProjectTimeSheetDetails(widget.id);
-    setState(() {
-      if (res != null) {
-        if(res.settings?.success==1) {
-          isloading=false;
-          data = res.data ?? [];
-          filteredData = res.data ?? [];
-        }else{
-          isloading=false;
-          CustomSnackBar.show(context,res.settings?.message??"");
-        }
-      } else {
-        print("not fetch");
-      }
-    });
+    final timesheetProvider = Provider.of<TimesheetProvider>(context, listen: false);
+    timesheetProvider.fetchTimeSheetsList(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final timesheetProvider = Provider.of<TimesheetProvider>(context);
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       body:
-
-      // (isloading)?Center(
-      //   child: CircularProgressIndicator(color: Color(0xff8856F4),),
-      // ):
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -275,6 +247,9 @@ class _TimeSheetState extends State<TimeSheet> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            onChanged: (v){
+                              timesheetProvider.filterTimesheets(_searchController.text);
+                            },
                             decoration: InputDecoration(
                               isCollapsed: true,
                               border: InputBorder.none,
@@ -346,8 +321,8 @@ class _TimeSheetState extends State<TimeSheet> {
               ),
               SizedBox(height: 8),
               if (selectedTabIndex == 0) ...[
-                isloading?_buildShimmerList():
-                filteredData.isEmpty
+                timesheetProvider.isLoading?_buildShimmerList():
+                timesheetProvider.filteredTimesheetsList.isEmpty
                     ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -378,9 +353,9 @@ class _TimeSheetState extends State<TimeSheet> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: filteredData.length,
+                  itemCount: timesheetProvider.filteredTimesheetsList.length,
                   itemBuilder: (context, index) {
-                    final detail = filteredData[index];
+                    final detail = timesheetProvider.filteredTimesheetsList[index];
                     String isoDate = detail.startTime ?? "";
                     String isoDate1 = detail.endTime ?? "";
 

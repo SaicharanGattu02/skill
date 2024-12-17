@@ -13,7 +13,7 @@ class TasklistProvider with ChangeNotifier {
   List<TaskListData> _filteredTasks = [];
   bool _isLoading = true;
   List<TaskListData> get tasks => _tasks;
-  List<TaskListData> get filteredTasks => _tasks;
+  List<TaskListData> get filteredTasks => _filteredTasks;
   bool get isLoading => _isLoading;
 
   // Fetch milestones from API

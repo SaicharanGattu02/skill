@@ -345,7 +345,7 @@ class _AddTaskState extends State<AddTask> {
     print("Task data:${data}");
     setState(() {
       if (data != null) {
-        if (data== 1) {
+        if (data == 1) {
           _loading = false;
           Navigator.pop(context, true);
           CustomSnackBar.show(context, "Task Added Successfully!");
@@ -602,7 +602,9 @@ class _AddTaskState extends State<AddTask> {
                                   InkWell(
                                     onTap: () {
                                       closeDropdown();
-                                      showModalBottomSheet(backgroundColor: themeProvider.containerColor,
+                                      showModalBottomSheet(
+                                        backgroundColor:
+                                            themeProvider.containerColor,
                                         context: context,
                                         builder: (BuildContext context) {
                                           return SafeArea(
@@ -847,17 +849,25 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 0.5,
-                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                width: 0.5,
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 0.5,
-                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
-                                                  ),
+                                                width: 0.5,
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
+                                              ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
@@ -1014,17 +1024,25 @@ class _AddTaskState extends State<AddTask> {
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
-                                                  width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                width: 0.5,
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
-                                                  width: 0.5,
-                                                                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
-    ),
+                                                width: 0.5,
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
+                                              ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
                                           ),
@@ -1234,8 +1252,11 @@ class _AddTaskState extends State<AddTask> {
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
-
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
@@ -1243,8 +1264,11 @@ class _AddTaskState extends State<AddTask> {
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                  color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
-
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
@@ -1412,15 +1436,23 @@ class _AddTaskState extends State<AddTask> {
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
-                                              ),
+                                            ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
@@ -1519,7 +1551,10 @@ class _AddTaskState extends State<AddTask> {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(7.0),
                                     border: Border.all(
-                                      color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                      color:
+                                          themeProvider.themeData == lightTheme
+                                              ? Color(0xffD0CBDB)
+                                              : Color(0xffffffff),
                                     ),
                                     color: themeProvider.containerColor),
                                 child: Row(
@@ -1572,7 +1607,11 @@ class _AddTaskState extends State<AddTask> {
                                                   BorderRadius.circular(7),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
@@ -1580,7 +1619,11 @@ class _AddTaskState extends State<AddTask> {
                                                   BorderRadius.circular(7.0),
                                               borderSide: BorderSide(
                                                 width: 0.5,
-                                                color:themeProvider.themeData==lightTheme? Color(0xffD0CBDB) : Color(0xffffffff),
+                                                color:
+                                                    themeProvider.themeData ==
+                                                            lightTheme
+                                                        ? Color(0xffD0CBDB)
+                                                        : Color(0xffffffff),
                                               ),
                                             ),
                                             contentPadding: EdgeInsets.all(8.0),
@@ -1765,12 +1808,10 @@ class _AddTaskState extends State<AddTask> {
             Spacer(),
             InkResponse(
               onTap: () {
-                if(_isLoading){
-
-                }else{
+                if (_isLoading) {
+                } else {
                   _validateFields();
                 }
-
               },
               child: Container(
                 height: 40,

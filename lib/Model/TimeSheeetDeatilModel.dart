@@ -1,5 +1,5 @@
 class TimeSheetDetailsModel {
-  List<Data>? data;
+  List<TimeSheetList>? data;
   String? totalTime;
   Settings? settings;
 
@@ -8,7 +8,7 @@ class TimeSheetDetailsModel {
   TimeSheetDetailsModel.fromJson(Map<String, dynamic> json) {
     // Check if 'data' is a List and not an empty object
     if (json['data'] is List) {
-      data = (json['data'] as List).map((v) => Data.fromJson(v)).toList();
+      data = (json['data'] as List).map((v) => TimeSheetList.fromJson(v)).toList();
     } else if (json['data'] is Map && json['data'].isEmpty) {
       // If it's an empty object, assign an empty list
       data = [];
@@ -35,7 +35,7 @@ class TimeSheetDetailsModel {
   }
 }
 
-class Data {
+class TimeSheetList {
   String? id;
   String? member;
   String? task;
@@ -45,7 +45,7 @@ class Data {
   String? total;
   String? image;
 
-  Data(
+  TimeSheetList(
       {this.id,
         this.member,
         this.task,
@@ -55,7 +55,7 @@ class Data {
         this.total,
         this.image});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  TimeSheetList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     member = json['member'];
     task = json['task'];

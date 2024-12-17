@@ -19,6 +19,7 @@ import 'package:skill/Providers/ProjectNotesProviders.dart';
 import 'package:skill/Providers/TODOProvider.dart';
 import 'package:skill/Providers/TaskListProvider.dart';
 import 'package:skill/Providers/TaskProvider.dart';
+import 'package:skill/Providers/TimeSheetProvider.dart';
 import 'package:skill/screens/OneToOneChatPage.dart';
 import 'package:skill/screens/Splash.dart';
 import 'package:skill/utils/Preferances.dart';
@@ -182,6 +183,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => MeetingProvider()),
         ChangeNotifierProvider(create: (context) => ProjectNoteProviders()),
         ChangeNotifierProvider(create: (context) => TasklistProvider()),
+        ChangeNotifierProvider(create: (context) => TimesheetProvider()),
 
       ],
       child: MyApp(),
