@@ -1,14 +1,16 @@
+import 'package:skill/ProjectModule/ProjectComment.dart';
+
 class ProjectCommentsModel {
-  List<Data>? data;
+  List<ProjectComment>? data;
   Settings? settings;
 
   ProjectCommentsModel({this.data, this.settings});
 
   ProjectCommentsModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <ProjectComment>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new ProjectComment.fromJson(v));
       });
     }
     settings = json['settings'] != null
@@ -28,7 +30,7 @@ class ProjectCommentsModel {
   }
 }
 
-class Data {
+class ProjectComment {
   String? id;
   String? commentBy;
   String? commentByImage;
@@ -36,7 +38,7 @@ class Data {
   List<CommentFiles>? commentFiles;
   String? createdTime;
 
-  Data(
+  ProjectComment(
       {this.id,
         this.commentBy,
         this.commentByImage,
@@ -44,7 +46,7 @@ class Data {
         this.commentFiles,
         this.createdTime});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  ProjectComment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     commentBy = json['comment_by'];
     commentByImage = json['comment_by_image'];

@@ -15,6 +15,7 @@ import 'package:skill/Providers/ConnectivityProviders.dart';
 import 'package:skill/Providers/KanbanProvider.dart';
 import 'package:skill/Providers/MileStoneProvider.dart';
 import 'package:skill/Providers/MeetingProvider.dart';
+import 'package:skill/Providers/ProjectCommentProviders.dart';
 import 'package:skill/Providers/ProjectNotesProviders.dart';
 import 'package:skill/Providers/TODOProvider.dart';
 import 'package:skill/Providers/TaskListProvider.dart';
@@ -184,6 +185,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ProjectNoteProviders()),
         ChangeNotifierProvider(create: (context) => TasklistProvider()),
         ChangeNotifierProvider(create: (context) => TimesheetProvider()),
+        ChangeNotifierProvider(create: (context) => ProjectCommentProviders()),
 
       ],
       child: MyApp(),
