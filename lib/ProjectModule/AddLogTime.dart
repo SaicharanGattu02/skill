@@ -72,7 +72,6 @@ class _AddlogtimeState extends State<Addlogtime> {
       }
     });
   }
-
   Future<void> AddlogtimeApi() async {
     final timesheetProvider = Provider.of<TimesheetProvider>(context,listen: false);
     var data= timesheetProvider.addLogtime(  "${_startDateController.text} ${_startTimeController.text}",
