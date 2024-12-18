@@ -1,16 +1,12 @@
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:skill/Providers/ProjectCommentProviders.dart';
-import 'package:skill/Services/UserApi.dart';
 import 'package:skill/Model/ProjectCommentsModel.dart';
 import 'package:path/path.dart' as p;
-import 'package:skill/utils/CustomAppBar.dart';
-
 import '../Providers/ThemeProvider.dart';
 import '../utils/CustomSnackBar.dart';
 import '../utils/Mywidgets.dart';
@@ -18,7 +14,7 @@ import '../utils/ShakeWidget.dart';
 import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 
-class ProjectComment extends StatefulWidget {
+class ProjectComment extends StatefulWidget{
   final String id;
   ProjectComment({super.key, required this.id});
 
@@ -46,9 +42,6 @@ class _ProjectCommentState extends State<ProjectComment> {
   String validatecomment = "";
   String _validatefile = "";
 
-
-
-
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.camera) {
       var status = await Permission.camera.status;
@@ -67,7 +60,9 @@ class _ProjectCommentState extends State<ProjectComment> {
 
     if (selectedImage != null) {
       setState(() {
-        Provider.of<ProjectCommentProviders>(context).imageList.add(selectedImage);
+        Provider.of<ProjectCommentProviders>(context)
+            .imageList
+            .add(selectedImage);
         _validatefile = "";
       });
       print("Selected Image: ${selectedImage.path}");
@@ -349,7 +344,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                               child: Row(
                                 children: [
                                   SizedBox(width: 5),
-                                  for (int i = 0; i < commentProvider.imageList.length; i++)
+                                  for (int i = 0;
+                                      i < commentProvider.imageList.length;
+                                      i++)
                                     Stack(
                                       children: [
                                         Card(
@@ -365,8 +362,9 @@ class _ProjectCommentState extends State<ProjectComment> {
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                               image: DecorationImage(
-                                                image: FileImage(
-                                                    File(commentProvider.imageList[i].path)),
+                                                image: FileImage(File(
+                                                    commentProvider
+                                                        .imageList[i].path)),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
@@ -378,7 +376,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                                           child: InkWell(
                                               onTap: () {
                                                 setState(() {
-                                                  commentProvider.imageList.removeAt(i);
+                                                  commentProvider.imageList
+                                                      .removeAt(i);
                                                 });
                                               },
                                               child: Container(
@@ -482,7 +481,8 @@ class _ProjectCommentState extends State<ProjectComment> {
                           physics: AlwaysScrollableScrollPhysics(),
                           itemCount: commentProvider.projectComments.length,
                           itemBuilder: (context, index) {
-                            final comments = commentProvider.projectComments[index];
+                            final comments =
+                                commentProvider.projectComments[index];
                             return Container(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(16),
@@ -528,12 +528,15 @@ class _ProjectCommentState extends State<ProjectComment> {
                                       Spacer(),
                                       InkWell(
                                         onTap: () async {
-                                         var res= await commentProvider.DeleteComment(comments.id??"");
-                                         if (res ==1){
-                                           CustomSnackBar.show(context,"Comment Deleted Successfully!");
-                                         }else{
-                                           CustomSnackBar.show(context,"Comment Deleted Failed!");
-                                         }
+                                          var res = await commentProvider
+                                              .DeleteComment(comments.id ?? "");
+                                          if (res == 1) {
+                                            CustomSnackBar.show(context,
+                                                "Comment Deleted Successfully!");
+                                          } else {
+                                            CustomSnackBar.show(context,
+                                                "Comment Deleted Failed!");
+                                          }
                                         },
                                         child: Image.asset(
                                           "assets/delete_icon.png",
@@ -696,16 +699,18 @@ class _ProjectCommentState extends State<ProjectComment> {
                   // _validatefile = _imageList.length == 0 ? "Please select a file" : "";
                   isSaving = validatecomment.isEmpty;
                   if (isSaving) {
-                    isSaving=false;
-                    var res= await commentProvider.SendComments(_commentController.text,widget.id);
-                    if(res==1){
-                      _commentController.text="";
-                      CustomSnackBar.show(context, "Comment Added Successfully!");
-                    }else{
+                    isSaving = false;
+                    var res = await commentProvider.SendComments(
+                        _commentController.text, widget.id);
+                    if (res == 1) {
+                      _commentController.text = "";
+                      CustomSnackBar.show(
+                          context, "Comment Added Successfully!");
+                    } else {
                       CustomSnackBar.show(context, "Comment Added Failed!");
                     }
                   } else {
-                    isSaving=false;
+                    isSaving = false;
                   }
                 });
               },
