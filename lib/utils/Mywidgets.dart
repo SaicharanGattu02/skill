@@ -169,7 +169,7 @@ class RoundedProgressPainter extends CustomPainter {
     final themeProvider = Provider.of<ThemeProvider>(context,listen: false);
     // Background paint (circle)
     final Paint paintBackground = Paint()
-      ..color = Color(0xffE0C6FD) // Light color for background
+      ..color =themeProvider.primaryColor.withOpacity(0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;

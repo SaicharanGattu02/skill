@@ -96,7 +96,8 @@ class _TaskkanbanboardState extends State<Taskkanbanboard> {
       backgroundColor: themeProvider.themeData == lightTheme
           ? Color(0xffEFE2FF).withOpacity(0.1)
           : themeProvider.containerColor,
-      body: Column(
+      body:
+      _loading?_buildShimmerList(context):Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -106,6 +107,54 @@ class _TaskkanbanboardState extends State<Taskkanbanboard> {
           Expanded(child: TaskRow(status: 'Done', id: widget.id)),
         ],
       ),
+    );
+  }
+
+  Widget _buildShimmerList(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return ListView.builder(
+      itemCount: 10, // Adjust the number of shimmer items as needed
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.black : Colors.white,
+            borderRadius: BorderRadius.circular(7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  shimmerRectangle(20, context), // Shimmer for calendar icon
+                  const SizedBox(width: 8),
+                  shimmerText(100, 15, context), // Shimmer for due date
+                  const Spacer(),
+                  shimmerRectangle(20, context), // Shimmer for edit icon
+                ],
+              ),
+              const SizedBox(height: 20),
+              shimmerText(150, 20, context), // Shimmer for milestone title
+              const SizedBox(height: 4),
+              shimmerText(
+                  300, 14, context), // Shimmer for milestone description
+              const SizedBox(height: 10),
+              shimmerText(350, 14, context),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  shimmerText(60, 14, context), // Shimmer for "Progress" label
+                  shimmerText(40, 14, context), // Shimmer for percentage
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -156,6 +205,7 @@ class _TaskRowState extends State<TaskRow> {
       // Get the provider instance
       final provider = Provider.of<KanbanProvider>(context, listen: false);
 
+      // Process and set data in the provider
       provider.setTodoData(_processResponse(results[0]));
       provider.setInProgressData(_processResponse(results[1]));
       provider.setCompletedData(_processResponse(results[2]));
@@ -163,9 +213,12 @@ class _TaskRowState extends State<TaskRow> {
       // Handle error appropriately
       print("Error fetching data: $error");
     } finally {
-      setState(() {});
+      // Set loading to false only after all APIs have been processed
+      setState(() {
+      });
     }
   }
+
 
   List<Kanban> _processResponse(res) {
     if (res != null && res.settings?.success == 1) {
@@ -181,7 +234,6 @@ class _TaskRowState extends State<TaskRow> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final provider = Provider.of<KanbanProvider>(context);
     List<Kanban> tasks;
-
     switch (widget.status) {
       case 'To Do':
         tasks = provider.todoData;
@@ -198,7 +250,8 @@ class _TaskRowState extends State<TaskRow> {
 
     return Scaffold(
       backgroundColor: themeProvider.scaffoldBackgroundColor,
-      body: Column(
+      body:
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -532,4 +585,6 @@ class _TaskRowState extends State<TaskRow> {
       ),
     );
   }
+
+
 }
