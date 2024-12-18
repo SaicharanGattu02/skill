@@ -368,7 +368,7 @@ class _AddMeetingsState extends State<AddMeetings> {
       ),
       body: _loading
           ? Center(
-              child: spinkit.getFadingCircleSpinner(color: Color(0xff8856F4)))
+              child: spinkit.getFadingCircleSpinner(color: themeProvider.primaryColor))
           : GestureDetector(
               onTap: closeDropdown,
               child: Container(
@@ -407,7 +407,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: TextFormField(
-                                cursorColor: Color(0xff8856F4),
+                                cursorColor: themeProvider.primaryColor,
                                 scrollPadding: const EdgeInsets.only(top: 5),
                                 controller: _descriptionController,
                                 textInputAction: TextInputAction.done,
@@ -906,7 +906,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                               ),
                               dropdownItemDecoration: DropdownItemDecoration(
                                   selectedIcon: Icon(Icons.check_box,
-                                      color: Color(0xff8856F4)),
+                                      color: themeProvider.primaryColor),
                                   disabledIcon: Icon(Icons.lock,
                                       color: Colors.grey.shade300),
                                   selectedBackgroundColor:
@@ -1179,8 +1179,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        color: Color(
-                                            0xff8856F4), // Replace with your desired color
+                                        color:themeProvider.primaryColor, // Replace with your desired color
                                         borderRadius: BorderRadius.circular(
                                             7), // Set border radius
                                       ),
@@ -1307,7 +1306,7 @@ class _AddMeetingsState extends State<AddMeetings> {
             keyboardType: keyboardType,
             obscureText: obscureText,
             readOnly: meeting_created,
-            cursorColor: Color(0xff8856F4),
+            cursorColor: themeProvider.primaryColor,
             onTap: () {
               closeDropdown();
             },

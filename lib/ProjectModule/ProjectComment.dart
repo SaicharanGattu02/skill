@@ -195,7 +195,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   Container(
                     height: h * 0.1,
                     child: TextFormField(
-                      cursorColor: Color(0xff8856F4),
+                      cursorColor: themeProvider.primaryColor,
                       scrollPadding: const EdgeInsets.only(top: 5),
                       controller: _commentController,
                       focusNode: focusScopeNode,
@@ -635,7 +635,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                                               decoration:
                                                   TextDecoration.underline,
                                               decorationColor:
-                                                  Color(0xff8856F4),
+                                                  themeProvider.primaryColor,
                                             ),
                                           ),
                                         ),

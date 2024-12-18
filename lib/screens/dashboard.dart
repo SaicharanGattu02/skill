@@ -776,8 +776,7 @@ class _DashboardState extends State<Dashboard> {
                                                         userdata?.userNumber ??
                                                             "",
                                                         style: TextStyle(
-                                                            color: Color(
-                                                                0xff8856F4),
+                                                            color: themeProvider.primaryColor,
                                                             fontWeight:
                                                                 FontWeight.w500,
                                                             fontSize: 10,
@@ -1279,7 +1278,7 @@ class _DashboardState extends State<Dashboard> {
                             //       child: Text(
                             //         "See all",
                             //         style: TextStyle(
-                            //             color: Color(0xff8856F4),
+                            //             color: themeProvider.primarColor,
                             //             fontWeight: FontWeight.w500,
                             //             fontSize: 14,
                             //             decoration: TextDecoration.underline,
