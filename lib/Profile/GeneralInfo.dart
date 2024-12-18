@@ -275,7 +275,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     focusNode: _focusNodeLastName,
                     readOnly: true,
                     keyboardType: TextInputType.text,
-                    cursorColor: Color(0xff8856F4),
+                    cursorColor:  themeProvider.primaryColor,
                     onTap: () {
                       setState(() {
                         _validateLastName = "";
@@ -470,7 +470,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(10),
                         ],
-                        cursorColor: Color(0xff8856F4),
+                        cursorColor:  themeProvider.primaryColor,
                         onTap: () {
                           setState(() {
                             _validatePhone = "";
@@ -669,7 +669,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     controller: _linkdnController,
                     focusNode: _focusNodeLinkdn,
                     keyboardType: TextInputType.emailAddress,
-                    cursorColor: Color(0xff8856F4),
+                    cursorColor: themeProvider.primaryColor,
                     maxLines: 1,
                     onTap: () {
                       setState(() {
@@ -767,7 +767,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                     controller: _addressController,
                     focusNode: _focusNodeAddress,
                     keyboardType: TextInputType.text,
-                    cursorColor: Color(0xff8856F4),
+                    cursorColor:  themeProvider.primaryColor,
                     maxLines: 1,
                     onTap: () {
                       setState(() {
@@ -876,7 +876,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 decoration: BoxDecoration(
                   color: themeProvider.containerbcColor,
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -885,7 +885,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: Color(0xff8856F4),
+                      color: themeProvider.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -903,9 +903,9 @@ class _GeneralInfoState extends State<GeneralInfo> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
+                  color: themeProvider.primaryColor,
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),

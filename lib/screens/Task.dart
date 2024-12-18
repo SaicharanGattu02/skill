@@ -99,7 +99,7 @@ class _TaskState extends State<Task> {
         backgroundColor: themeProvider.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: themeProvider.themeData == lightTheme
-              ? Color(0xff8856F4)
+              ? themeProvider.primaryColor
               : themeProvider.containerColor,
           leading: InkWell(
             onTap: () {
@@ -142,7 +142,7 @@ class _TaskState extends State<Task> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff8856F4),
+                          color: themeProvider.primaryColor,
                           height: 19.36 / 16,
                         ),
                       ),
@@ -186,7 +186,7 @@ class _TaskState extends State<Task> {
                           width: 55,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xffF0EAFF)
+                                ? themeProvider.primaryColor.withOpacity(0.08)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -198,7 +198,7 @@ class _TaskState extends State<Task> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: isSelected
-                                      ? const Color(0xff8856F4)
+                                      ? themeProvider.primaryColor
                                       : themeProvider.textColor,
                                 ),
                               ),
@@ -338,7 +338,7 @@ class _TaskState extends State<Task> {
                                           totalCount: collaboratorImages.length,
                                           showTotalCount: true,
                                           extraCountTextStyle: TextStyle(
-                                            color: Color(0xff8856F4),
+                                            color: themeProvider.primaryColor
                                           ),
                                           backgroundColor: Colors.white,
                                           itemRadius: 25,

@@ -198,12 +198,12 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                     right: 0,
                                     child: InkWell(
                                       onTap: _pickImage,
-                                      child: const CircleAvatar(
+                                      child:  CircleAvatar(
                                         radius: 15,
                                         backgroundColor: Colors.white,
                                         child: Icon(
                                           Icons.camera_alt,
-                                          color: Color(0xFF8856F4),
+                                          color: themeProvider.primaryColor,
                                           size: 20, // Size of the camera icon
                                         ),
                                       ),
@@ -221,7 +221,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                       padding: const EdgeInsets.only(
                                           left: 4, right: 4, top: 2, bottom: 2),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xff8856F4),
+                                        color: themeProvider.primaryColor,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Column(
@@ -370,7 +370,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                                               BorderRadius
                                                                   .circular(6),
                                                           color:
-                                                              Color(0xff2572ED)
+                                                             themeProvider.primaryColor
                                                                   .withOpacity(
                                                                       0.08)),
                                                       child: Row(
@@ -379,8 +379,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                                             "assets/gmail.png",
                                                             fit: BoxFit.contain,
                                                             width: 12,
-                                                            color: const Color(
-                                                                0xff2572ED),
+                                                            color: (themeProvider.primaryColor),
                                                           ),
                                                           SizedBox(width: 4),
                                                           Expanded(
@@ -389,8 +388,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                                                               userdata?.email ??
                                                                   "",
                                                               style: TextStyle(
-                                                                color: const Color(
-                                                                    0xff2572ED),
+                                                                color: themeProvider.primaryColor,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400,

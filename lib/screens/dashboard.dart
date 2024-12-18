@@ -1076,9 +1076,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: Text(
                                     "See all",
                                     style: TextStyle(
-                                        color: themeProvider.themeData == lightTheme
-                                            ? themeProvider.primaryColor
-                                            : themeProvider.textColor,
+                                        color: themeProvider.primaryColor,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 14,
                                         height: 16.94 / 14,
@@ -1173,7 +1171,7 @@ class _DashboardState extends State<Dashboard> {
                                                     color: themeProvider
                                                                 .themeData ==
                                                             lightTheme
-                                                        ? Color(0xff4F3A84)
+                                                        ? themeProvider.primaryColor
                                                         : themeProvider
                                                             .textColor,
                                                     fontWeight: FontWeight.w500,
@@ -1388,7 +1386,7 @@ class _DashboardState extends State<Dashboard> {
                                                       color: themeProvider
                                                                   .themeData ==
                                                               lightTheme
-                                                          ? Color(0x1A8856F4)
+                                                          ? themeProvider.primaryColor.withOpacity(0.08)
                                                           : themeProvider
                                                               .scaffoldBackgroundColor,
                                                       borderRadius:
@@ -2107,7 +2105,7 @@ class _DashboardState extends State<Dashboard> {
                       Text(
                         "Dashboard",
                         style: TextStyle(
-                          color: Color(0xff8856F4),
+                          color:themeProvider.primaryColor,
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
                           overflow: TextOverflow.ellipsis,

@@ -262,6 +262,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                               width: 20,
                               height: 17,
                               fit: BoxFit.contain,
+                              color: themeProvider.primaryColor,
                             ),
                             SizedBox(width: 10),
                             Expanded(
@@ -275,16 +276,18 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                   isCollapsed: true,
                                   border: InputBorder.none,
                                   hintText: 'Search',
-                                  hintStyle: const TextStyle(
+                                  hintStyle:  TextStyle(
                                     overflow: TextOverflow.ellipsis,
-                                    color: Color(0xff9E7BCA),
+                                    color: themeProvider.primaryColor
+                                        ,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14,
                                     fontFamily: "Nunito",
                                   ),
                                 ),
                                 style: TextStyle(
-                                  color: Color(0xff9E7BCA),
+                                  color: themeProvider.primaryColor
+                                      ,
                                   fontWeight: FontWeight.w400,
                                   fontSize: 16,
                                   fontFamily: "Nunito",
@@ -435,7 +438,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                           width: 55,
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(0xffF0EAFF)
+                                                ? themeProvider.primaryColor
+                                                .withOpacity(
+                                                0.08)
                                                 : Colors.transparent,
                                             borderRadius:
                                                 BorderRadius.circular(16),
@@ -449,7 +454,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   color: isSelected
-                                                      ? const Color(0xff8856F4)
+                                                      ? themeProvider.primaryColor
                                                       : themeProvider.textColor,
                                                 ),
                                               ),
@@ -859,7 +864,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                     fit: BoxFit.contain,
                                     width: w * 0.023,
                                     height: w * 0.023,
-                                    color: Color(0xff8856F4),
+                                    color: themeProvider.primaryColor,
                                   ),
                                 ),
                               ),
@@ -882,7 +887,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                     controller: _labelnameController,
                                     focusNode: _focusNodeLabelName,
                                     keyboardType: TextInputType.text,
-                                    cursorColor: Color(0xff8856F4),
+                                    cursorColor: themeProvider.primaryColor,
                                     decoration: InputDecoration(
                                       hintText: "Enter Label Name",
                                       hintStyle: const TextStyle(
@@ -1252,7 +1257,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                           fit: BoxFit.contain,
                                           width: w * 0.023,
                                           height: w * 0.023,
-                                          color: Color(0xff8856F4),
+                                          color: themeProvider.primaryColor,
                                         ),
                                       ),
                                     ),
@@ -1614,7 +1619,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                         decoration: BoxDecoration(
                                           color: themeProvider.containerColor,
                                           border: Border.all(
-                                            color: Color(0xff8856F4),
+                                            color: themeProvider.primaryColor,
                                             width: 1.0,
                                           ),
                                           borderRadius:
@@ -1624,7 +1629,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                           child: Text(
                                             'Close',
                                             style: TextStyle(
-                                              color: Color(0xff8856F4),
+                                              color: themeProvider.primaryColor,
                                               fontSize: 16.0,
                                               fontWeight: FontWeight.w400,
                                               fontFamily: 'Inter',
@@ -1647,9 +1652,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                         height: 40,
                                         width: w * 0.35,
                                         decoration: BoxDecoration(
-                                          color: Color(0xff8856F4),
+                                          color: themeProvider.primaryColor,
                                           border: Border.all(
-                                            color: Color(0xff8856F4),
+                                            color:themeProvider.primaryColor,
                                             width: 1.0,
                                           ),
                                           borderRadius:

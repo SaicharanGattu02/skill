@@ -244,7 +244,7 @@ class _AddToDoState extends State<AddToDo> {
                         controller: _taskNameController,
                         focusNode: _focusNodeTaskName,
                         keyboardType: TextInputType.text,
-                        cursorColor: Color(0xff8856F4),
+                        cursorColor: themeProvider.primaryColor,
                         decoration: InputDecoration(
                           hintText: "Name",
                           hintStyle: const TextStyle(
@@ -310,7 +310,7 @@ class _AddToDoState extends State<AddToDo> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: TextFormField(
-                        cursorColor: Color(0xff8856F4),
+                        cursorColor: themeProvider.primaryColor,
                         scrollPadding: const EdgeInsets.only(top: 5),
                         controller: _descriptionController,
                         textInputAction: TextInputAction.done,
@@ -740,9 +740,9 @@ class _AddToDoState extends State<AddToDo> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: Color(0xff8856F4),
+                  color: themeProvider.primaryColor,
                   border: Border.all(
-                    color: Color(0xff8856F4),
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
