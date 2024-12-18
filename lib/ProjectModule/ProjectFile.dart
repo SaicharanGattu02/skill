@@ -295,7 +295,7 @@ class _ProjectFileState extends State<ProjectFile> {
                       height: w * 0.08,
                       // padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                          color:AppColors.primaryColor, // Purple background
+                          color:themeProvider.primaryColor, // Purple background
                           borderRadius: BorderRadius.circular(100),
                           border:
                               Border.all(width: 1, color: Color(0xFF9B5FFF))),
@@ -314,7 +314,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: w * 0.08,
                               decoration: BoxDecoration(
                                 color: isFilesSelected
-                                    ? AppColors.primaryColor
+                                    ? themeProvider.primaryColor
                                     : Colors
                                         .white, // White background if selected, purple if not
                                 borderRadius: BorderRadius.only(
@@ -330,7 +330,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     width: 16,
                                     height: 16,
                                     color: !isFilesSelected
-                                        ? AppColors.primaryColor
+                                        ? themeProvider.primaryColor
                                         : Color(0xFFFFFFFF),
                                     fit: BoxFit.contain,
                                   ),
@@ -340,7 +340,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     style: TextStyle(
                                         color: isFilesSelected
                                             ? Colors.white
-                                            : AppColors.primaryColor, // Purple text if selected, white if not
+                                            : themeProvider.primaryColor, // Purple text if selected, white if not
                                         fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                         fontFamily: 'Inter',
@@ -364,7 +364,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: w * 0.08,
                               decoration: BoxDecoration(
                                 color: !isFilesSelected
-                                    ?AppColors.primaryColor
+                                    ?themeProvider.primaryColor
                                     : Colors.white,
                                 borderRadius: BorderRadius.only(
                                     topRight: Radius.circular(50),
@@ -380,7 +380,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     height: 16,
                                     color: !isFilesSelected
                                         ? Colors.white
-                                        : AppColors.primaryColor,
+                                        : themeProvider.primaryColor,
                                     fit: BoxFit.contain,
                                   ),
                                   SizedBox(width: 8),
@@ -389,7 +389,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                     style: TextStyle(
                                         color: !isFilesSelected
                                             ? Colors.white
-                                            :AppColors.primaryColor,
+                                            :themeProvider.primaryColor,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                         fontFamily: 'Inter',
@@ -469,7 +469,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
-                                    color:AppColors.primaryColor,
+                                    color:themeProvider.primaryColor,
                                     borderRadius: BorderRadius.circular(6)),
                                 child: Row(
                                   children: [
@@ -598,7 +598,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                         fit: BoxFit.contain,
                                         width: w * 0.06,
                                         height: w * 0.05,
-                                        color:AppColors.primaryColor,
+                                        color:themeProvider.primaryColor,
                                       ),
                                     ),
                                   ],
@@ -759,7 +759,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
-                                    color: AppColors.primaryColor,
+                                    color: themeProvider.primaryColor,
                                     borderRadius: BorderRadius.circular(6)),
                                 child: Row(
                                   children: [
@@ -888,7 +888,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                           fit: BoxFit.contain,
                                           width: w * 0.06,
                                           height: w * 0.05,
-                                          color:AppColors.primaryColor,
+                                          color:themeProvider.primaryColor,
                                         ),
                                       ),
                                     ],
@@ -1418,7 +1418,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                         decoration: BoxDecoration(
                                           color: themeProvider.containerColor,
                                           border: Border.all(
-                                            color: AppColors.primaryColor,
+                                            color: themeProvider.primaryColor,
                                             width: 1.0,
                                           ),
                                           borderRadius:
@@ -1428,7 +1428,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                           child: Text(
                                             'Choose File',
                                             style: TextStyle(
-                                              color: AppColors.primaryColor,
+                                              color: themeProvider.primaryColor,
                                               fontSize: 16.0,
                                               fontWeight: FontWeight.w500,
                                               fontFamily: 'Poppins',
@@ -1572,7 +1572,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               decoration: BoxDecoration(
                                 color: themeProvider.containerColor,
                                 border: Border.all(
-                                  color:AppColors.primaryColor,
+                                  color:themeProvider.primaryColor,
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(7),
@@ -1581,7 +1581,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                 child: Text(
                                   'Close',
                                   style: TextStyle(
-                                    color: AppColors.primaryColor,
+                                    color: themeProvider.primaryColor,
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.w400,
                                     fontFamily: 'Inter',
@@ -1619,7 +1619,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: 40,
                               width: w * 0.43,
                               decoration: BoxDecoration(
-                                color:AppColors.primaryColor,
+                                color:themeProvider.primaryColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Center(
@@ -1850,7 +1850,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               decoration: BoxDecoration(
                                 color:themeProvider.containerColor,
                                 border: Border.all(
-                                  color: AppColors.primaryColor,
+                                  color: themeProvider.primaryColor,
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(7),
@@ -1859,7 +1859,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                 child: Text(
                                   'Close',
                                   style: TextStyle(
-                                    color: AppColors.primaryColor,
+                                    color: themeProvider.primaryColor,
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.w400,
                                     fontFamily: 'Inter',
@@ -1891,7 +1891,7 @@ class _ProjectFileState extends State<ProjectFile> {
                               height: 40,
                               width: w * 0.43,
                               decoration: BoxDecoration(
-                                color: AppColors.primaryColor,
+                                color: themeProvider.primaryColor,
                                 borderRadius: BorderRadius.circular(7),
                               ),
                               child: Center(

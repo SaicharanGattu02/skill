@@ -709,7 +709,7 @@ class _AddToDoState extends State<AddToDo> {
                 decoration: BoxDecoration(
                   color: themeProvider.containerbcColor,
                   border: Border.all(
-                    color: AppColors.primaryColor,
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -718,7 +718,7 @@ class _AddToDoState extends State<AddToDo> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: AppColors.primaryColor,
+                      color: themeProvider.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',

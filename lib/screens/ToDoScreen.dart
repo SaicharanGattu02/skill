@@ -309,7 +309,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                              color: AppColors.primaryColor,
+                              color: themeProvider.primaryColor,
                               borderRadius: BorderRadius.circular(6)),
                           child: Row(
                             children: [
@@ -348,7 +348,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                           "assets/filter.png",
                           width: 22,
                           height: 22,
-                          color: AppColors.primaryColor,
+                          color: themeProvider.primaryColor,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -381,7 +381,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
-                                        color: AppColors.primaryColor,
+                                        color: themeProvider.primaryColor,
                                         height: 19.36 / 16,
                                       ),
                                     ),
@@ -1098,7 +1098,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                 decoration: BoxDecoration(
                                   color: themeProvider.containerColor,
                                   border: Border.all(
-                                    color: AppColors.primaryColor,
+                                    color: themeProvider.primaryColor,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(7),
@@ -1107,7 +1107,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                   child: Text(
                                     'Close',
                                     style: TextStyle(
-                                      color: AppColors.primaryColor,
+                                      color: themeProvider.primaryColor,
                                       fontSize: 16.0,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: 'Inter',
@@ -1141,7 +1141,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                 height: 40,
                                 width: w * 0.43,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryColor,
+                                  color: themeProvider.primaryColor,
                                   borderRadius: BorderRadius.circular(7),
                                 ),
                                 child: Center(

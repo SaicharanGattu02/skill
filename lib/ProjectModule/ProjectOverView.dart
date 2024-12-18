@@ -671,7 +671,7 @@ class _OverViewState extends State<OverView> {
                         isMembersTab ? FontWeight.w500 : FontWeight.w500,
                     color: isMembersTab
                         ? themeProvider.themeData == lightTheme
-                            ? AppColors.primaryColor
+                            ? themeProvider.primaryColor
                             : themeProvider.textColor
                         : themeProvider.themeData == lightTheme
                             ? Color(0xff3c3c43)
@@ -683,7 +683,7 @@ class _OverViewState extends State<OverView> {
                     height: 2,
                     width: MediaQuery.of(context).size.width * 0.3,
                     color: themeProvider.themeData == lightTheme
-                        ? AppColors.primaryColor
+                        ? themeProvider.primaryColor
                         : themeProvider.textColor),
             ],
           ),
@@ -704,7 +704,7 @@ class _OverViewState extends State<OverView> {
                         isMembersTab ? FontWeight.w500 : FontWeight.w500,
                     color: isMembersTab
                         ? themeProvider.themeData == lightTheme
-                            ? AppColors.primaryColor
+                            ? themeProvider.primaryColor
                             : themeProvider.textColor.withOpacity(0.7)
                         : themeProvider.themeData == lightTheme
                             ? Color(0xff3c3c43)
@@ -716,7 +716,7 @@ class _OverViewState extends State<OverView> {
                     height: 2,
                     width: MediaQuery.of(context).size.width * 0.3,
                     color: themeProvider.themeData == lightTheme
-                        ? AppColors.primaryColor
+                        ? themeProvider.primaryColor
                         : themeProvider.textColor),
             ],
           ),

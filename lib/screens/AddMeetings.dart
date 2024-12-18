@@ -1236,7 +1236,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                 decoration: BoxDecoration(
                   color: themeProvider.containerColor,
                   border: Border.all(
-                    color: AppColors.primaryColor,
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -1245,7 +1245,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                   child: Text(
                     'Close',
                     style: TextStyle(
-                      color: AppColors.primaryColor,
+                      color: themeProvider.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -1263,7 +1263,7 @@ class _AddMeetingsState extends State<AddMeetings> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: themeProvider.primaryColor,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(

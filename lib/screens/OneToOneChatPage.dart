@@ -944,7 +944,7 @@ class _ChatPageState extends State<ChatPage>
       backgroundColor: themeProvider.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: themeProvider.themeData == lightTheme
-            ? AppColors.primaryColor
+            ? themeProvider.primaryColor
             : Color(0xff000000),
         automaticallyImplyLeading: false,
         title: Row(

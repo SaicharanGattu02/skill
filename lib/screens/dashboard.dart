@@ -23,6 +23,7 @@ import 'package:skill/screens/Messages.dart';
 import 'package:skill/screens/Notifications.dart';
 import 'package:skill/ProjectModule/Projects.dart';
 import 'package:skill/screens/PunchInOut.dart';
+import 'package:skill/screens/SettingsScreen.dart';
 import 'package:skill/screens/Task.dart';
 import 'package:skill/screens/ToDoScreen.dart';
 import 'package:skill/utils/CustomSnackBar.dart';
@@ -504,6 +505,7 @@ class _DashboardState extends State<Dashboard> {
             backgroundColor: themeProvider
                 .scaffoldBackgroundColor, // Use dynamic background color
             appBar: AppBar(
+              backgroundColor:themeProvider.appBarColor,
               automaticallyImplyLeading: false,
               leading: null, // Hides the leading icon (for drawer)
               actions: <Widget>[Container()],
@@ -705,7 +707,7 @@ class _DashboardState extends State<Dashboard> {
                                   decoration: BoxDecoration(
                                       color: themeProvider.themeData ==
                                               lightTheme
-                                          ? AppColors.primaryColor
+                                          ? themeProvider.primaryColor
                                           : AppColors.darkmodeContainerColor,
                                       borderRadius: BorderRadius.circular(8)),
                                   child: Column(
@@ -1079,7 +1081,7 @@ class _DashboardState extends State<Dashboard> {
                                         fontSize: 14,
                                         height: 16.94 / 14,
                                         decoration: TextDecoration.underline,
-                                        decorationColor: AppColors.primaryColor,
+                                        decorationColor: themeProvider.primaryColor,
                                         fontFamily: "Inter"),
                                   ),
                                 ),
@@ -1281,7 +1283,7 @@ class _DashboardState extends State<Dashboard> {
                             //             fontWeight: FontWeight.w500,
                             //             fontSize: 14,
                             //             decoration: TextDecoration.underline,
-                            //             decorationColor:AppColors.primaryColor,
+                            //             decorationColor:themeProvider.primaryColor,
                             //             fontFamily: "Inter"),
                             //       ),
                             //     ),
@@ -1632,7 +1634,7 @@ class _DashboardState extends State<Dashboard> {
                                           width: w,
                                           height: 40,
                                           decoration: BoxDecoration(
-                                            color: AppColors.primaryColor,
+                                            color: themeProvider.primaryColor,
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -1673,7 +1675,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
             drawer: Drawer(
               backgroundColor: themeProvider.themeData == lightTheme
-                  ? AppColors.primaryColor
+                  ? themeProvider.primaryColor
                   : themeProvider.scaffoldBackgroundColor,
               width: w * 0.65,
               child: Column(
@@ -2093,7 +2095,7 @@ class _DashboardState extends State<Dashboard> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
+                            color: themeProvider.primaryColor,
                             borderRadius: BorderRadius.circular(4)),
                         child: Image.asset("assets/dashboard.png"),
                       ),
@@ -2343,13 +2345,12 @@ class _DashboardState extends State<Dashboard> {
                       Spacer(),
                       InkResponse(
                         onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => MyHomePage(
-                          //               title: "Demo chat bubble",
-                          //             ))
-                          // );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SettingsScreen(
+                                      ))
+                          );
                         },
                         child: Container(
                           child: Column(

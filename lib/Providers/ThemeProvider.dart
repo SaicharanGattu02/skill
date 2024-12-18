@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/Preferances.dart';
+import '../utils/app_colors.dart';
 import '../utils/constants.dart';
 
 enum AppThemeMode { light, dark, system }
@@ -7,12 +9,34 @@ class ThemeProvider with ChangeNotifier, WidgetsBindingObserver {
   AppThemeMode _appThemeMode;
   Brightness _systemBrightness = Brightness.light;
 
+  Color _primaryColor = AppColors.primaryColor;
+  Color _secondaryColor = AppColors.secondaryColor;
+
   ThemeProvider(this._appThemeMode) {
     WidgetsBinding.instance.addObserver(this);
+    _loadCustomColors(); // Load persisted colors at startup
     _updateSystemBrightness();
   }
 
   AppThemeMode get appThemeMode => _appThemeMode;
+
+  // Accessors for primary and secondary colors
+  Color get primaryColor => _primaryColor;
+  Color get secondaryColor => _secondaryColor;
+
+
+  /// Common AppBar color logic
+  Color get appBarColor {
+    if (_appThemeMode == AppThemeMode.light) {
+      return _primaryColor; // Use primary color in light mode
+    } else if (_appThemeMode == AppThemeMode.dark) {
+      return Colors.black;
+    } else {
+      return _systemBrightness == Brightness.dark
+          ? Colors.black
+          : _primaryColor;
+    }
+  }
 
   /// Get the current theme data based on the selected mode
   ThemeData get themeData {
@@ -186,4 +210,29 @@ class ThemeProvider with ChangeNotifier, WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
+
+  // Method to update theme colors
+  void setCustomColors(Color primary, Color secondary) {
+    _primaryColor = primary;
+    _secondaryColor = secondary;
+    notifyListeners();
+
+    // Save colors to SharedPreferences
+    PreferenceService().saveInt("primaryColor", primary.value);
+    PreferenceService().saveInt("secondaryColor",secondary.value);
+  }
+
+  /// Load custom colors from SharedPreferences
+  Future<void> _loadCustomColors() async {
+    int? primaryValue = await PreferenceService().getInt("primaryColor");
+    int? secondaryValue =  await PreferenceService().getInt("secondaryColor");
+
+    if (primaryValue != null && secondaryValue != null) {
+      _primaryColor = Color(primaryValue);
+      _secondaryColor = Color(secondaryValue);
+      notifyListeners(); // Notify widgets that colors have changed
+    }
+  }
+
 }

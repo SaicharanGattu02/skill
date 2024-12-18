@@ -145,7 +145,7 @@ class _MeetingsState extends State<Meetings> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: AppColors.primaryColor,
+                                color: themeProvider.primaryColor,
                                 height: 19.36 / 16,
                               ),
                             ),

@@ -285,7 +285,7 @@ class _TimeSheetState extends State<TimeSheet> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
+                            color: themeProvider.primaryColor,
                             borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
@@ -698,7 +698,7 @@ class _TimeSheetState extends State<TimeSheet> {
                                                 color: themeProvider
                                                             .themeData ==
                                                         lightTheme
-                                                    ? AppColors.primaryColor
+                                                    ? themeProvider.primaryColor
                                                     : themeProvider.textColor,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14,

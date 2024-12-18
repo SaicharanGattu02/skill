@@ -163,7 +163,7 @@ class _MileStoneState extends State<MileStone> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
+                            color: themeProvider.primaryColor,
                             borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
@@ -283,7 +283,7 @@ class _MileStoneState extends State<MileStone> {
                                           height: w * 0.05,
                                           color: themeProvider.themeData ==
                                                   lightTheme
-                                              ? AppColors.primaryColor
+                                              ? themeProvider.primaryColor
                                               : themeProvider.textColor,
                                         ),
                                       ),
@@ -292,10 +292,10 @@ class _MileStoneState extends State<MileStone> {
                                   const SizedBox(height: 10),
                                   Text(
                                     milestone.title ?? "",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
                                       height: 19.36 / 16,
-                                      color: AppColors.primaryColor,
+                                      color: themeProvider.primaryColor,
                                       fontWeight: FontWeight.w500,
                                       fontFamily: 'Inter',
                                     ),
@@ -732,7 +732,7 @@ class _MileStoneState extends State<MileStone> {
                                 decoration: BoxDecoration(
                                   color: themeProvider.containerColor,
                                   border: Border.all(
-                                    color: AppColors.primaryColor,
+                                    color: themeProvider.primaryColor,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(7),
@@ -741,7 +741,7 @@ class _MileStoneState extends State<MileStone> {
                                   child: Text(
                                     'Close',
                                     style: TextStyle(
-                                      color: AppColors.primaryColor,
+                                      color: themeProvider.primaryColor,
                                       fontSize: 16.0,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: 'Inter',
@@ -786,7 +786,7 @@ class _MileStoneState extends State<MileStone> {
                                 height: 40,
                                 width: w * 0.43,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryColor,
+                                  color: themeProvider.primaryColor,
                                   borderRadius: BorderRadius.circular(7),
                                 ),
                                 child: Center(

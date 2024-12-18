@@ -89,7 +89,7 @@ class _MyTabBarState extends State<MyTabBar>
             key: _scaffoldKey,
             backgroundColor: themeProvider.scaffoldBackgroundColor,
             appBar: AppBar(
-              backgroundColor: themeProvider.themeData==lightTheme?AppColors.primaryColor : AppColors.darkmodeContainerColor,
+              backgroundColor: themeProvider.themeData==lightTheme?themeProvider.primaryColor : AppColors.darkmodeContainerColor,
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(context);
@@ -170,7 +170,7 @@ class _MyTabBarState extends State<MyTabBar>
                           padding: EdgeInsets.zero,
                           controller: _tabController,
                           isScrollable: true,
-                          indicatorColor:themeProvider.themeData==lightTheme?  AppColors.primaryColor : Color(0xffffffff),
+                          indicatorColor:themeProvider.themeData==lightTheme?  themeProvider.primaryColor : Color(0xffffffff),
                           indicatorWeight: 1.0,
                           tabAlignment: TabAlignment.start,
                           labelPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -179,7 +179,7 @@ class _MyTabBarState extends State<MyTabBar>
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
                             height: 1.6,
-                            color: themeProvider.themeData==lightTheme?AppColors.primaryColor : Color(0xffffffff),
+                            color: themeProvider.themeData==lightTheme?themeProvider.primaryColor : Color(0xffffffff),
                             letterSpacing: 0.15,
                           ),
                           unselectedLabelStyle: TextStyle(

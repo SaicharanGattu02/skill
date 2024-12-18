@@ -436,7 +436,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                         padding: EdgeInsets.zero,
                         controller: _tabController,
                         isScrollable: true,
-                        indicatorColor:themeProvider.themeData==lightTheme?  AppColors.primaryColor : Color(0xffffffff),
+                        indicatorColor:themeProvider.themeData==lightTheme?  themeProvider.primaryColor : Color(0xffffffff),
                         indicatorWeight: 1.0,
                         tabAlignment: TabAlignment.start,
                         labelPadding: EdgeInsets.symmetric(horizontal: w * 0.09),
@@ -445,7 +445,7 @@ class _ProfileDashboardState extends State<ProfileDashboard>
                           fontWeight: FontWeight.w400,
                           fontSize: 13,
                           height: 1.6,
-                          color: themeProvider.themeData==lightTheme?AppColors.primaryColor : Color(0xffffffff),
+                          color: themeProvider.themeData==lightTheme?themeProvider.primaryColor : Color(0xffffffff),
                           letterSpacing: 0.15,
                         ),
                         unselectedLabelStyle: TextStyle(

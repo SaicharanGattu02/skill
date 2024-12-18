@@ -218,7 +218,7 @@ class _TaskListState extends State<TaskList> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
+                            color: themeProvider.primaryColor,
                             borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
@@ -256,7 +256,7 @@ class _TaskListState extends State<TaskList> {
                       "assets/filter.png",
                       width: 25,
                       height: 25,
-                      color: AppColors.primaryColor,
+                      color: themeProvider.primaryColor,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -380,7 +380,7 @@ class _TaskListState extends State<TaskList> {
                                             fit: BoxFit.contain,
                                             width: w * 0.06,
                                             height: w * 0.05,
-                                            color: AppColors.primaryColor,
+                                            color: themeProvider.primaryColor,
                                           ),
                                         ),
                                       ),

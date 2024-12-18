@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../Providers/ThemeProvider.dart';
 import 'app_colors.dart';
 
 const defaultPadding = 10.0;
@@ -64,7 +66,6 @@ String geminiApiKey = "AIzaSyCxSSwFx-2e7d8zrBOCdU23gs7pJv0poO4";
 /////////Colors
 var notification_val = 0;
 
-// Define your themes
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -90,7 +91,6 @@ final ThemeData lightTheme = ThemeData(
       const PopupMenuThemeData(color: Colors.white, shadowColor: Colors.white),
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.white,
-    backgroundColor: AppColors.primaryColor,
   ),
   cardTheme: const CardTheme(
     shadowColor: Colors.white,
@@ -131,7 +131,6 @@ final ThemeData darkTheme = ThemeData(
       const PopupMenuThemeData(color: Colors.white, shadowColor: Colors.white),
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.white,
-    backgroundColor: Colors.black
   ),
   cardTheme: const CardTheme(
     shadowColor: Colors.white,

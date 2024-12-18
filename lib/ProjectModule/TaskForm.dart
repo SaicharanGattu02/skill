@@ -10,11 +10,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import '../Model/EmployeeListModel.dart';
 import '../Model/MileStoneModel.dart';
 import '../Model/ProjectOverviewModel.dart';
 import '../Model/ProjectPrioritiesModel.dart';
 import '../Model/ProjectStatusModel.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../utils/CustomAppBar.dart';
 import '../utils/CustomSnackBar.dart';
@@ -423,6 +425,7 @@ class _TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height * 0.75;
     double w = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
     print("Selected IDS :${selectedIds}");
     print("members :${members}");
     var items = members.map((member) {
@@ -450,7 +453,7 @@ class _TaskFormState extends State<TaskForm> {
         body: _loading
             ? Center(
                 child:
-                    spinkits.getFadingCircleSpinner(color: AppColors.primaryColor))
+                    spinkits.getFadingCircleSpinner(color: themeProvider.primaryColor))
             : Container(
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
@@ -528,7 +531,7 @@ class _TaskFormState extends State<TaskForm> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffF8FCFF),
                                         border: Border.all(
-                                          color: AppColors.primaryColor,
+                                          color: themeProvider.primaryColor,
                                           width: 1.0,
                                         ),
                                         borderRadius:
@@ -538,7 +541,7 @@ class _TaskFormState extends State<TaskForm> {
                                         child: Text(
                                           'Choose File',
                                           style: TextStyle(
-                                            color:AppColors.primaryColor,
+                                            color:themeProvider.primaryColor,
                                             fontSize: 16.0,
                                             fontWeight: FontWeight.w500,
                                             fontFamily: 'Poppins',
@@ -1305,7 +1308,7 @@ class _TaskFormState extends State<TaskForm> {
                   decoration: BoxDecoration(
                     color: Color(0xffF8FCFF),
                     border: Border.all(
-                      color:AppColors.primaryColor,
+                      color:themeProvider.primaryColor,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(7),
@@ -1314,7 +1317,7 @@ class _TaskFormState extends State<TaskForm> {
                     child: Text(
                       'Close',
                       style: TextStyle(
-                        color: AppColors.primaryColor,
+                        color: themeProvider.primaryColor,
                         fontSize: 16.0,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Inter',
@@ -1334,7 +1337,7 @@ class _TaskFormState extends State<TaskForm> {
                   decoration: BoxDecoration(
                     color: Color(0xff8856F4),
                     border: Border.all(
-                      color: AppColors.primaryColor,
+                      color: themeProvider.primaryColor,
                       width: 1.0,
                     ),
                     borderRadius: BorderRadius.circular(7),

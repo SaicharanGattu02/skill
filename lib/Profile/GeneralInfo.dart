@@ -363,7 +363,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           child: Radio<String>(
                             value: 'male',
                             groupValue: _gender,
-                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
+                            activeColor: themeProvider.themeData==lightTheme? themeProvider.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -388,7 +388,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           child: Radio<String>(
                             value: 'female',
                             groupValue: _gender,
-                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
+                            activeColor: themeProvider.themeData==lightTheme? themeProvider.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;
@@ -413,7 +413,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           child: Radio<String>(
                             value: 'other',
                             groupValue: _gender,
-                            activeColor: themeProvider.themeData==lightTheme? AppColors.primaryColor:themeProvider.textColor,
+                            activeColor: themeProvider.themeData==lightTheme? themeProvider.primaryColor:themeProvider.textColor,
                             onChanged: (value) {
                               setState(() {
                                 _gender = value!;

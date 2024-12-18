@@ -6,6 +6,7 @@ import 'package:skill/utils/CustomSnackBar.dart';
 
 import '../Model/RoomsModel.dart';
 import '../Providers/ConnectivityProviders.dart';
+import '../Providers/ThemeProvider.dart';
 import '../Services/UserApi.dart';
 import '../Services/otherservices.dart';
 import '../utils/Mywidgets.dart';
@@ -114,6 +115,7 @@ class _MessagesState extends State<Messages> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     var connectiVityStatus =Provider.of<ConnectivityProviders>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return
       (connectiVityStatus.isDeviceConnected == "ConnectivityResult.wifi" ||
           connectiVityStatus.isDeviceConnected == "ConnectivityResult.mobile")
@@ -121,7 +123,7 @@ class _MessagesState extends State<Messages> {
  Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: themeProvider.primaryColor,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);

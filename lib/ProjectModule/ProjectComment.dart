@@ -317,7 +317,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                             decoration: BoxDecoration(
                               color: themeProvider.containerColor,
                               border: Border.all(
-                                color: AppColors.primaryColor,
+                                color: themeProvider.primaryColor,
                                 width: 1.0,
                               ),
                               borderRadius: BorderRadius.circular(8.0),
@@ -326,7 +326,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                               child: Text(
                                 'Upload File',
                                 style: TextStyle(
-                                  color: AppColors.primaryColor,
+                                  color: themeProvider.primaryColor,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w500,
                                   fontFamily: 'Poppins',
@@ -626,10 +626,10 @@ class _ProjectCommentState extends State<ProjectComment> {
                                           },
                                           child: Text(
                                             "Click to view",
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 14,
                                               height: 16.94 / 14,
-                                              color: AppColors.primaryColor,
+                                              color: themeProvider.primaryColor,
                                               fontWeight: FontWeight.w600,
                                               fontFamily: 'Inter',
                                               decoration:
@@ -671,7 +671,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 decoration: BoxDecoration(
                   color: themeProvider.containerbcColor,
                   border: Border.all(
-                    color: AppColors.primaryColor,
+                    color: themeProvider.primaryColor,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(7),
@@ -680,7 +680,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                   child: Text(
                     'Cancel',
                     style: TextStyle(
-                      color: AppColors.primaryColor,
+                      color: themeProvider.primaryColor,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'Inter',
@@ -718,7 +718,7 @@ class _ProjectCommentState extends State<ProjectComment> {
                 height: 40,
                 width: w * 0.43,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: themeProvider.primaryColor,
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Center(

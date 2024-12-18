@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skill/Model/NotificationModel.dart';  // Import your Notification model
 import '../Helpers/DatabaseHelper.dart';  // Import your database helper
+import '../Providers/ThemeProvider.dart';
 import '../utils/app_colors.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -40,10 +42,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: const Color(0xffF3ECFB),
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: themeProvider.primaryColor,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);
