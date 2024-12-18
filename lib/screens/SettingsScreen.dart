@@ -9,16 +9,34 @@ class SettingsScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     List<Color> colorOptions = [
-      Color(0xFF8856f4), // Example colors
+      Color(0xFF8856f4),
       Color(0xFF03DAC6),
       Color(0xFFFF5722),
       Color(0xFF4CAF50),
       Color(0xFF2196F3),
     ];
-
     return Scaffold(
+      backgroundColor:themeProvider.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("Settings"),
+        backgroundColor:themeProvider.appBarColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context,true);
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            color: Color(0xffffffff),
+          ),
+        ),
+        title: Text("Settings",
+          style:  TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 22,
+            color: Color(0xffffffff),
+            fontWeight: FontWeight.w500,
+            height: 26.05 / 22.0,
+          ),
+        ),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16.0),

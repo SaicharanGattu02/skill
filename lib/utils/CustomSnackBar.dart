@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+
+import '../Providers/ThemeProvider.dart';
+import 'app_colors.dart';
+import 'constants.dart';
 
 class CustomSnackBar {
   static void show(BuildContext context, String message) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -10,7 +16,10 @@ class CustomSnackBar {
           style: TextStyle(color: Colors.white, fontFamily: "Inter"),
         ),
         duration: Duration(seconds: 1),
-        backgroundColor: Color(0xFF8856F4),
+        backgroundColor:themeProvider.themeData ==
+            lightTheme
+            ? themeProvider.primaryColor
+            : AppColors.darkmodeContainerColor,
       ),
     );
   }

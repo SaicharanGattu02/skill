@@ -165,11 +165,13 @@ class _TaskListState extends State<TaskList> {
                           width: 20,
                           height: 20,
                           fit: BoxFit.contain,
+                          color: themeProvider.primaryColor,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
+                            cursorColor: Colors.black,
                             onChanged: (v){
                               tasklistProvider
                                   .filterTasksList(_searchController.text);
@@ -178,16 +180,16 @@ class _TaskListState extends State<TaskList> {
                               isCollapsed: true,
                               border: InputBorder.none,
                               hintText: 'Search',
-                              hintStyle: const TextStyle(
+                              hintStyle: TextStyle(
                                 overflow: TextOverflow.ellipsis,
-                                color: Color(0xff9E7BCA),
+                                color:themeProvider.primaryColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14,
                                 fontFamily: "Nunito",
                               ),
                             ),
                             style: TextStyle(
-                                color: Color(0xff9E7BCA),
+                                color:themeProvider.primaryColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                                 decorationColor: Color(0xff9E7BCA),

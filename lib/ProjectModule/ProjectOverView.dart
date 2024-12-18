@@ -102,6 +102,7 @@ class _OverViewState extends State<OverView> {
   }
 
   void _updatePieChartData() {
+    final themeProvider = Provider.of<ThemeProvider>(context,listen: false);
     pieChartSectionData = [
       PieChartSectionData(
         titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
@@ -110,7 +111,7 @@ class _OverViewState extends State<OverView> {
             .toDouble(), // Convert to double
         title:
             '${((_parseToDouble(data?.todoPercent) ?? 0)).round()}%', // Display as an integer
-        color: Color(0xff8856F4),
+        color: themeProvider.primaryColor,
         radius: 25,
       ),
       // In-progress section
@@ -378,7 +379,7 @@ class _OverViewState extends State<OverView> {
             size: Size(136, 136),
             painter: RoundedProgressPainter(
               // Ensure the value is parsed as a double, multiplied by 100, and converted to a double
-              (_parseToDouble(data?.totalPercent) ?? 0),
+              (_parseToDouble(data?.totalPercent) ?? 0),context
             ),
           ),
           Text(
@@ -604,7 +605,7 @@ class _OverViewState extends State<OverView> {
         ),
         Row(
           children: [
-            _buildLegendItem(Color(0xff8856F4), "To do"),
+            _buildLegendItem(themeProvider.primaryColor, "To do"),
           ],
         ),
         SizedBox(

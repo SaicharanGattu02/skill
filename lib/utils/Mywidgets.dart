@@ -157,14 +157,16 @@ shimmerLinearProgress(double height,BuildContext context) {
 }
 
 class RoundedProgressPainter extends CustomPainter {
-  final double progress; // Progress value as a fraction (0.0 to 1.0)
+  final double progress;
+  final BuildContext context;
 
-  RoundedProgressPainter(this.progress);
+  RoundedProgressPainter(this.progress,this.context);
+
 
   @override
   void paint(Canvas canvas, Size size) {
     print("Progress :$progress");
-
+    final themeProvider = Provider.of<ThemeProvider>(context,listen: false);
     // Background paint (circle)
     final Paint paintBackground = Paint()
       ..color = Color(0xffE0C6FD) // Light color for background
@@ -174,7 +176,7 @@ class RoundedProgressPainter extends CustomPainter {
 
     // Foreground paint (arc)
     final Paint paintForeground = Paint()
-      ..color = Color(0xff682FA3) // Color for the progress
+      ..color = themeProvider.primaryColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 20
       ..strokeCap = StrokeCap.round;

@@ -298,7 +298,7 @@ class _ProjectFileState extends State<ProjectFile> {
                           color:themeProvider.primaryColor, // Purple background
                           borderRadius: BorderRadius.circular(100),
                           border:
-                              Border.all(width: 1, color: Color(0xFF9B5FFF))),
+                              Border.all(width: 1, color: themeProvider.primaryColor,)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -425,6 +425,7 @@ class _ProjectFileState extends State<ProjectFile> {
                                   width: 20,
                                   height: 20,
                                   fit: BoxFit.contain,
+                                  color: themeProvider.primaryColor,
                                 ),
                                 const SizedBox(width: 10),
 
@@ -432,20 +433,21 @@ class _ProjectFileState extends State<ProjectFile> {
                                   child: TextField(
                                     controller: _searchController,
                                     focusNode: focusScopeNode,
+                                    cursorColor: Colors.black,
                                     decoration: InputDecoration(
                                       isCollapsed: true,
                                       border: InputBorder.none,
                                       hintText: 'Search',
-                                      hintStyle: const TextStyle(
+                                      hintStyle: TextStyle(
                                         overflow: TextOverflow.ellipsis,
-                                        color: Color(0xff9E7BCA),
+                                        color: themeProvider.primaryColor,
                                         fontWeight: FontWeight.w400,
                                         fontSize: 14,
                                         fontFamily: "Nunito",
                                       ),
                                     ),
                                     style: TextStyle(
-                                        color: Color(0xff9E7BCA),
+                                        color:themeProvider.primaryColor,
                                         fontWeight: FontWeight.w400,
                                         fontSize: 16,
                                         decorationColor: Color(0xff9E7BCA),
