@@ -1237,38 +1237,38 @@ class _ChatPageState extends State<ChatPage>
                             _togglePickerVisibility();
                           },
                         ),
-                        Material(
-                          elevation: _isRecording ? 6 : 2,
-                          shape: CircleBorder(),
-                          child: InkWell(
-                            customBorder: CircleBorder(),
-                            onTap: () {
-                              _toggleRecording();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(
-                                _isRecording ? Icons.stop : Icons.mic,
-                                color: _isRecording ? Colors.red : Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                        _isRecording
-                            ? Column(
-                                children: [
-                                  Text("Recording: ${_recordingTime}s",style: TextStyle(
-                                    color: Colors.white
-                                  ),),
-                                  // Placeholder for audio frequency visualizer (like waveform)
-                                  LinearProgressIndicator(
-                                      value: _recordingTime /
-                                          60,
-                                    color: Colors.white,
-                                  ), // Example for 60s limit
-                                ],
-                              )
-                            : Container(),
+                        // Material(
+                        //   elevation: _isRecording ? 6 : 2,
+                        //   shape: CircleBorder(),
+                        //   child: InkWell(
+                        //     customBorder: CircleBorder(),
+                        //     onTap: () {
+                        //       _toggleRecording();
+                        //     },
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.all(8.0),
+                        //       child: Icon(
+                        //         _isRecording ? Icons.stop : Icons.mic,
+                        //         color: _isRecording ? Colors.red : Colors.blue,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // _isRecording
+                        //     ? Column(
+                        //         children: [
+                        //           Text("Recording: ${_recordingTime}s",style: TextStyle(
+                        //             color: Colors.white
+                        //           ),),
+                        //           // Placeholder for audio frequency visualizer (like waveform)
+                        //           LinearProgressIndicator(
+                        //               value: _recordingTime /
+                        //                   60,
+                        //             color: Colors.white,
+                        //           ), // Example for 60s limit
+                        //         ],
+                        //       )
+                        //     : Container(),
                         InkResponse(
                           onTap: () {
                             _sendMessage();
