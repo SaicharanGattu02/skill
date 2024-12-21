@@ -55,6 +55,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
     });
+    GetTODOList();
   }
 
   @override
@@ -66,7 +67,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
   Future<void> GetTODOList() async {
     final todoProvider = Provider.of<TODOProvider>(context, listen: false);
-    todoProvider.fetchTODOList(formattedDate); // Get the user profile data
+    todoProvider.fetchTODOList(formattedDate);
     todoProvider.GetLabel();
     todoProvider.GetLabelColor();
   }

@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // For ChangeNotifier
 import 'package:provider/provider.dart';
@@ -30,6 +31,7 @@ class TODOProvider with ChangeNotifier {
   Future<void> fetchTODOList(date) async {
     _isLoading = true;
     notifyListeners();
+    try {
     var res = await Userapi.TODOListApi(
         date, selectedLabelID ?? "", selectedValue ?? "");
 
@@ -47,6 +49,13 @@ class TODOProvider with ChangeNotifier {
         _filteredData = _todolist.reversed.toList();
         notifyListeners();
       }
+    }
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(e, stack,
+          reason: "Error in fetchTODOList - date: $date");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -76,9 +85,10 @@ class TODOProvider with ChangeNotifier {
         notifyListeners();
         return 0;  // Indicating failure
       }
-    } catch (e) {
-      print("Error posting ToDo: $e");
-      return 0;  // If an error occurs, return failure
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(e, stack,
+          reason: "Error in PostToDo - Task Name: $taskName");
+      return 0;
     }
   }
 
